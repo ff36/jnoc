@@ -1,0 +1,126 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ez="http://xmlns.jcp.org/jsf/composite/ezcomp">
+
+        <h:head>
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+            <h:outputStylesheet name="css/public.css"/>
+            <h:outputStylesheet name="css/common.css"/>
+            <link rel="shortcut icon" type="image/png" href="#{request.contextPath}/resources/graphics/favicon.ico" />
+            <title><ui:insert name="title">#{webBundle['default.page.title']}</ui:insert></title>
+        </h:head>
+
+
+        <h:body>
+
+            <!-- Begin Wrapper -->
+            <div id="main-wrapper">
+
+                <div id="header-bg"/>
+
+                <!-- Begin Header -->
+                <div id="header-wrapper">
+
+                    <ui:insert name="header">
+
+                        <div id="header-content">
+
+                            <p:graphicImage id="header-logo" value="#{pathUtil.s3Logo('dastrax_logo_v2.png')}"/>
+
+                            <h:form id="header-form"
+                                    rendered="#{request.userPrincipal ne null}">
+
+                                <h:panelGrid id="logout"
+                                             columns="2"
+                                             styleClass="box2d">
+
+                                    <p:commandLink action="access-login-page"
+                                                   value="My Account"
+                                                   ajax="false"/>
+
+                                    <p:commandLink action="#{request.logout()}"
+                                                   value="Sign out"
+                                                   ajax="false"/>
+
+                                </h:panelGrid>
+
+                            </h:form>
+
+                            <!-- Composite Navigation -->
+                            <ez:navigation-public id="navigation" tab="#{tab}"/>
+                        </div>
+
+                    </ui:insert>		 
+
+                </div>
+                <!-- End Header -->
+
+                <!-- Begin Content -->
+                <div id="content">	
+                    <ui:insert name="content">
+                        <p:spacer height="100" width="10"/>
+                    </ui:insert>
+                </div>
+                <!-- End Content -->
+
+                <div id="push"></div>
+
+                <!-- Begin Footer -->
+                <div id="footer-bg">
+                    <div id="footer">
+
+                        <ui:insert name="footer">
+                            <!-- Composite Footer -->
+                            <h:form>
+                                <h:panelGrid columns="4"
+                                             columnClasses="col-1, col-2, col-3, col-4">
+
+                                    <h:panelGrid columns="1">
+
+                                        <p:commandLink value="Site Terms"
+                                                       action="access-legal-page"/>
+
+                                        <p:commandLink value="Contact Us"
+                                                       action="access-contact-page"/>
+
+                                    </h:panelGrid>
+
+                                    <h:panelGrid columns="1"> 
+
+                                    </h:panelGrid>
+
+                                    <h:panelGrid columns="1">
+
+                                    </h:panelGrid>
+
+                                    <h:panelGrid columns="1" styleClass="copyright">
+
+                                        <h:outputText value="Intelligent Monitoring (v#{webBundle['version']})"
+                                                      styleClass="footer-logo"/>
+
+                                        <h:outputText value="© 2013 Solid Technologies Inc."/>
+
+                                    </h:panelGrid>
+
+                                </h:panelGrid>
+                            </h:form>
+
+                        </ui:insert>		
+
+                    </div>
+                </div>
+                <!-- End Footer -->
+
+            </div>
+            <!-- End Wrapper -->
+
+            <!-- JIRA -->
+            <script type="text/javascript" src="https://dastrax.atlassian.net/s/d41d8cd98f00b204e9800998ecf8427e/en_US-hgwqx7-1988229788/6132/31/1.4.0-m5/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?collectorId=5962a16e"></script>
+
+        </h:body>
+
+</html>

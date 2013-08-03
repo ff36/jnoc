@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:cc="http://xmlns.jcp.org/jsf/composite"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <!-- INTERFACE -->
+    <cc:interface>
+        <cc:attribute required="true" name="type"/>
+        <cc:attribute required="true" name="coutry"/>
+        <cc:attribute required="true" name="number" type="java.lang.String"/>
+    </cc:interface>
+
+    <!-- IMPLEMENTATION -->
+    <cc:implementation>
+        <table>
+            <tr>
+                <td class="telephone-number-type">
+                    <p:selectOneMenu value="#{cc.attrs.type}" style="width: 70px">
+                        <f:selectItem itemLabel="Desk" itemValue="Desk" />  
+                        <f:selectItem itemLabel="Cell" itemValue="Cell" />  
+                        <f:selectItem itemLabel="Fax" itemValue="Fax" />
+                    </p:selectOneMenu>  
+                </td>
+                <td>
+                    <p:inplace styleClass="inplace tel-country" label="#{cc.attrs.coutry}">
+                        <p:selectOneMenu value="#{cc.attrs.coutry}" 
+                                         effect="fade"
+                                         style="width: 180px"> 
+                            <f:selectItems value="#{countryUtil.countriesUtil.worldCountries}"/> 
+                        </p:selectOneMenu>
+                    </p:inplace>
+                </td>
+                <td>
+                    <p:inputText value="#{cc.attrs.number}"
+                                 style="margin-left: 10px"/>
+                </td>
+            </tr>
+        </table>
+
+    </cc:implementation>
+</html>

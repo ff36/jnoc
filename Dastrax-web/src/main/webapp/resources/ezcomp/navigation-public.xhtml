@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:cc="http://xmlns.jcp.org/jsf/composite"
+      xmlns:p="http://primefaces.org/ui">
+
+    <!-- INTERFACE -->
+    <cc:interface>
+        <cc:attribute name="tab" default="100"/>
+    </cc:interface>
+
+    <!-- IMPLEMENTATION -->
+    <cc:implementation>
+        <p:tabMenu id="navmenu" 
+                   activeIndex="#{cc.attrs.tab}"
+                   styleClass="box2d">  
+            
+            <p:menuitem value="Home" outcome="access-home-page"/>
+            <p:menuitem value="Contact" outcome="access-contact-page"/>
+ 
+        </p:tabMenu> 
+    </cc:implementation>
+</html>

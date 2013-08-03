@@ -1,0 +1,130 @@
+/*
+Copyright 2013 SOLiD Inc ALL RIGHTS RESERVED.
+Developed by: Tarka L'Herpiniere <info@tarka.tv>.
+
+ 
+Created on : Jul 17, 2013, 8:34:55 AM
+Author     : Tarka L'Herpiniere <info@tarka.tv>
+*/
+*
+{
+	margin: 0;
+}
+HTML, BODY
+{
+	height: 100%;
+}
+TABLE TD
+{
+	padding-bottom: 5px;
+}
+BODY
+{
+	background-color: #FFFFFF;
+	font-size: 12px;
+	font-family: Verdana, Geneva, sans-serif;
+	color: #000000;
+	min-height: 100%;
+	height: auto !important;
+	height: 100%;
+	margin: 0 auto -80px;
+	width: 100%;
+	position: relative;
+	background-image: url(data:image/jpeg;base64,/9j/4AAQSkZJRgABAgAAZABkAAD/7AARRHVja3kAAQAEAAAAZAAA/+4ADkFkb2JlAGTAAAAAAf/bAIQAAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQICAgICAgICAgICAwMDAwMDAwMDAwEBAQEBAQECAQECAgIBAgIDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMD/8AAEQgBZwAGAwERAAIRAQMRAf/EAIsAAQEBAAIDAAAAAAAAAAAAAAUGBAEDBwgJAQEAAwEBAAAAAAAAAAAAAAAAAQIDBAUQAAECBAIFCQQHCQEAAAAAAAECAwAREwQSBWEiFBUG8CFRkaHR4SMWMUGBUnGxMkKS0iSisjNT0zQ1VZUHEQEAAQQCAwAAAAAAAAAAAAAAEfABIWFB8XGBEv/aAAwDAQACEQMRAD8A9gd5L/mK6z+aPXmqs5cIbb9I/EO6KTZKH3gPn7DGXpdEbxHIjvjP6unOkLvAdJ6z+WKSnFdvGXqzJP8AdZV/0bP+vGc2rpaPD61ucXf+mbpZpcTZhveR2ipnWb0MGF3DRw3OHavsTxeVixfdlGayHcYys8NW7Cs/fbtEtLCL5L+BT5ouA2q7Y+a6wgKlsw1wlITOYgOld5lvpth1XDtwu0KHMFoGcSGVBkk3arqdZtlwEyuJYz7YDgu8T+nUXAcy6WxuPOOSe2o2WzoU2sK/gbRgxFXNL7PvnAZV2WV+m2T6guK4ZW4Mv2kKb2hST+lNiBUbbS4ggLIw6xV7FCAXcOWDhy3QeHnw+pKmk5mpmkwq4m8K6MwBLtwrGkmiZJEimckiAs3LXiUcKsECx3aWClZRLbzZSeEnqo2engAlT82WGfPigE3sry08M2jm+rhdyHlK3Sp8O27Tk7rmRYp8y2UZzqnVOI/MICpft7NXDtlbJydxu7Reu1M2LCEtvpBecopuRJbi0oeSCgkhISD0SbOFzc2GdemMvD6Wtzbwe2RQS1tBe/UTx4TipY6+GYxTnPVwQFK7lNiMrtXW75Tt8q5drZYbZ5Ldu2rEkPJuFeStawwjFLnIUkc2AzCxct7FWXs26MuDd828px3MdqWovtGrJk2hFFuWJOsDPU0mAtF2+YHKmGV/4zbn1Mp8n+8bZZL2sDX1WrhPMTg1ubnnAUBsWQyhYWC6px1K2aQAQ2hLJacqTwrLqlrGGWrgn94QDdIYQMElAqJXi51JIQEpl7AElJOmegQCVDR9cAtS0dvjAL0dB6xALUdHZAMUR8p/D4QC9DR+zAM7Po+qAZoDo/dgGdnHQOzugGNnHQOzugGdnGjl8IBihyn4QDFDT2+EAvR+nrHdAMUTp6xALUTyTAK0Ro7e+AVo6D1iASo6B1mASp/Ry+EAhT0jqgN9LQnq8IDbgHy+7o90Bswj5hy+MB//2Q==);
+	background-repeat: repeat-x;
+}
+/*LINK*/
+A:link, A:visited
+{
+	color: #606060;
+	text-decoration: none;
+}
+A:link:hover, A:visited:hover
+{
+	color: #606060;
+	text-decoration: none;
+}
+/*LAYOUT*/
+#authenticate
+{
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	margin-top: -89px;
+	margin-left: -162px;
+	width: 312px;
+	height: 180px;
+}
+#footer
+{
+	/*+placement:anchor-bottom-left 0px 0px;*/
+	position: absolute;
+	left: 0px;
+	bottom: 0px;
+	width: 100%;
+	padding: 10px 0px;
+	height: 30px;
+	background-color: #000000;
+	border-top: 3px solid #C6D146;
+	border-bottom: 1px solid #606060;
+}
+#footer A
+{
+	/*+placement:float-right 0px 0px;*/
+	float: right;
+	position: relative;
+	left: 0px;
+	top: 0px;
+	margin-right: 20px;
+	color: #FFFFFF;
+	font-weight: bold;
+	padding-top: 5px;
+}
+#footer .ui-button
+{
+	margin-left: 20px;
+}
+#footer .ui-button-text
+{
+	font-size: 8pt;
+	color: #606060;
+}
+#authenticate .ui-inputfield
+{
+	width: 300px;
+	height: 40px;
+}
+#authenticate .ui-inputtext
+{
+	font-size: 17pt;
+}
+#authenticate .ui-password
+{
+	font-size: 17pt;
+}
+#authenticate .ui-button
+{
+	/*+placement:anchor-bottom-right 0px 0px;*/
+	position: absolute;
+	right: 0px;
+	bottom: 0px;
+	width: 310px;
+	height: 50px;
+	margin-bottom: 4px;
+}
+#authenticate .ui-button-text
+{
+	font-size: 14pt;
+	color: #606060;
+}
+#logo
+{
+	position: fixed;
+	left: 50%;
+	top: 20%;
+	margin-left: -142px;
+}
+#messages
+{
+	padding: 10px;
+}

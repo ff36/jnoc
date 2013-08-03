@@ -1,0 +1,133 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:ez="http://xmlns.jcp.org/jsf/composite/ezcomp"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <h:outputStylesheet name="css/auth-a.css"/>
+        <h:outputStylesheet name="css/common.css"/>
+        <link rel="shortcut icon" type="image/png" href="#{request.contextPath}/resources/graphics/favicon.ico" />
+        <title>#{webBundle['default.page.title']} | #{webBundle['admin.ticket.create.page.title']}</title>
+    </h:head>
+
+    <h:body>
+
+        <h:form id="form">
+            
+            <pe:ajaxErrorHandler />
+
+            <p:growl id="growl" 
+                     redisplay="false"
+                     showDetail="false" 
+                     sticky="false" />
+
+            <ez:navigation-a/>
+
+            <pe:layout stateCookie="false" widgetVar="layourWgt" >
+
+                <pe:layoutPane id="west" position="west" resizeWhileDragging="true" size="250">
+
+                    <p:panel id="option-panel-1" styleClass="ticket-options">
+
+                        <h:panelGrid id="option-grid-1" columns="1">
+
+                            <h:outputText value="Requester*" styleClass="super-field-label"/>
+                            <p:selectOneMenu effect="fade"
+                                             style="width: 200px"
+                                             required="true"
+                                             requiredMessage="Requester required">  
+                                <f:selectItem itemLabel="" itemValue="" />  
+                            </p:selectOneMenu>
+
+                        </h:panelGrid>
+
+                    </p:panel>
+                    
+                    <p:spacer width="100%" height="10px"/>
+                    
+                    <p:panel id="option-panel-2" styleClass="ticket-options">
+
+                        <h:panelGrid id="option-grid-2" columns="1">
+
+                            <h:outputText value="Assignee*" styleClass="super-field-label"/>
+                            <p:selectOneMenu effect="fade"
+                                             style="width: 200px"
+                                             required="true"
+                                             requiredMessage="Assignee required">  
+                                <f:selectItem itemLabel="" itemValue="" />  
+                            </p:selectOneMenu>
+
+                        </h:panelGrid>
+
+                    </p:panel>
+                    
+                    <p:spacer width="100%" height="10px"/>
+
+                    <p:panel id="option-panel-3" styleClass="ticket-options">
+
+                        <h:panelGrid id="option-grid-3" columns="1">
+
+                            <h:outputText value="Type*" styleClass="super-field-label"/>
+                            <p:selectOneMenu effect="fade"
+                                             style="width: 200px"
+                                             required="true"
+                                             requiredMessage="Topic required">  
+                                <f:selectItem itemLabel="-" itemValue="" />  
+                                <f:selectItem itemLabel="General" itemValue="General" />
+                                <f:selectItem itemLabel="Equipment Failure" itemValue="Equipment Failure" />
+                                <f:selectItem itemLabel="Connection Failure" itemValue="Connection Failure" />
+                                <f:selectItem itemLabel="Signal Source Failure" itemValue="Signal Source Failure" />
+                                <f:selectItem itemLabel="Informational" itemValue="Informational" />
+                                <f:selectItem itemLabel="Total System Failure" itemValue="Total System Failure" />
+                            </p:selectOneMenu>
+
+                            <h:outputText value="Severity*" styleClass="super-field-label"/>
+                            <p:selectOneMenu effect="fade"
+                                             style="width: 200px"
+                                             required="true"
+                                             requiredMessage="Severity required">  
+                                <f:selectItem itemLabel="-" itemValue="" />  
+                                <f:selectItem itemLabel="Sev 1" itemValue="Sev 1" />
+                                <f:selectItem itemLabel="Sev 2" itemValue="Sev 2" />
+                                <f:selectItem itemLabel="Sev 3" itemValue="Sev 3" />
+                            </p:selectOneMenu>
+
+                            <h:outputText value="Site" styleClass="super-field-label"/>
+                            <p:selectOneMenu effect="fade"
+                                             style="width: 200px"
+                                             required="true"
+                                             requiredMessage="Assignee required">  
+                                <f:selectItem itemLabel="-" itemValue="" />  
+                            </p:selectOneMenu>
+
+                        </h:panelGrid>
+
+                    </p:panel>
+
+                </pe:layoutPane>
+
+                <pe:layoutPane id="center" position="center" resizeWhileDragging="true">
+                    tickets + actions
+                </pe:layoutPane>
+
+                <pe:layoutPane id="east" position="east" resizeWhileDragging="true" initClosed="true" size="700">
+                    create new company
+                </pe:layoutPane>
+
+            </pe:layout>
+
+        </h:form>
+
+        <!-- JIRA -->
+        <script type="text/javascript" src="https://dastrax.atlassian.net/s/d41d8cd98f00b204e9800998ecf8427e/en_US-hgwqx7-1988229788/6132/31/1.4.0-m5/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?collectorId=5962a16e"></script>
+
+
+    </h:body>
+
+</html>
+

@@ -1,0 +1,340 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<faces-config version="2.2"
+              xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_2.xsd">
+
+    <facelet-taglib version="2.2"
+                    xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facelettaglibrary_2_2.xsd">
+    </facelet-taglib>
+    
+    <application>
+        <!-- AWS credentials to grant the application access to resources-->
+        <resource-bundle>
+            <base-name>AwsApi</base-name>
+            <var>awsApi</var>
+        </resource-bundle>
+        <!-- Application configuration file -->
+        <resource-bundle>
+            <base-name>Config</base-name>
+            <var>config</var>
+        </resource-bundle>
+        <!-- The resource bundle that contacins all the application strings -->
+        <resource-bundle>
+            <base-name>WebBundle</base-name>
+            <var>webBundle</var>
+        </resource-bundle> 
+        <!-- Supported Languages by the application -->
+        <locale-config>
+            <default-locale>en</default-locale>
+        </locale-config>
+    </application>
+    
+    <!-- -application navigation outcomes -->
+    <navigation-rule>
+        <from-view-id>*</from-view-id>
+        <navigation-case>
+            <from-outcome>access-home-page</from-outcome>
+            <to-view-id>/index.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>access-login-page</from-outcome>
+            <to-view-id>/login.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>logout</from-outcome>
+            <to-view-id>/index.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>access-forgot-pwd-page</from-outcome>
+            <to-view-id>/p/password.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>access-contact-page</from-outcome>
+            <to-view-id>/p/contact.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>access-legal-page</from-outcome>
+            <to-view-id>/p/legal.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+    </navigation-rule>
+    
+    <navigation-rule>
+        <from-view-id>/a/*</from-view-id>
+        
+        <!-- dashboard -->
+        <navigation-case>
+            <from-outcome>access-dashboard-page</from-outcome>
+            <to-view-id>/a/dashboard.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        
+        <!-- account -->
+        <navigation-case>
+            <from-outcome>access-account-settings-page</from-outcome>
+            <to-view-id>/a/account/settings.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        
+        <!-- accounts -->
+        <!-- list -->
+        <navigation-case>
+            <from-outcome>access-accounts-list-page</from-outcome>
+            <to-view-id>/a/accounts/list.jsf</to-view-id>
+            <redirect />
+        </navigation-case>     
+        <!-- new -->
+        <navigation-case>
+            <from-outcome>access-create-account-page</from-outcome>
+            <to-view-id>/a/accounts/create.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        
+        <!-- sites -->
+        <navigation-case>
+            <from-outcome>access-list-sites-page</from-outcome>
+            <to-view-id>/a/sites/list.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>access-create-site-page</from-outcome>
+            <to-view-id>/a/sites/create.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        
+        <!-- companies -->
+        <navigation-case>
+            <from-outcome>access-list-companies-page</from-outcome>
+            <to-view-id>/a/companies/list.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>access-create-company-page</from-outcome>
+            <to-view-id>/a/companies/create.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        
+        <!-- -tickets -->
+        <!-- -manual -->
+        <navigation-case>
+            <from-outcome>access-ticket-manual-list-page</from-outcome>
+            <to-view-id>/a/tickets/manual/list.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>access-ticket-create-page</from-outcome>
+            <to-view-id>/a/tickets/manual/create.jsf</to-view-id>
+            <redirect />
+        </navigation-case>      
+        <!-- -dms -->
+        <navigation-case>
+            <from-outcome>access-ticket-dms-manage-page</from-outcome>
+            <to-view-id>/a/tickets/dms/manage.jsf</to-view-id>
+            <redirect />
+        </navigation-case>    
+        <!-- -reporting -->
+        <navigation-case>
+            <from-outcome>access-reports-page</from-outcome>
+            <to-view-id>/a/reports/view.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+    </navigation-rule>
+    
+    <navigation-rule>
+        <from-view-id>/b/*</from-view-id>
+        
+        <!-- -dashboard -->
+        <navigation-case>
+            <from-outcome>access-dashboard-page</from-outcome>
+            <to-view-id>/b/dashboard.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        
+        <!-- -account -->
+        <navigation-case>
+            <from-outcome>access-account-options-page</from-outcome>
+            <to-view-id>/b/account/options.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>access-settings-page</from-outcome>
+            <to-view-id>/b/account/settings.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>access-profile-page</from-outcome>
+            <to-view-id>/b/account/profile.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        
+        <!-- -reports -->
+        <navigation-case>
+            <from-outcome>access-reports-options-page</from-outcome>
+            <to-view-id>/b/reports/options.jsf</to-view-id>
+            <redirect />
+        </navigation-case> 
+        
+        <!-- -accounts -->
+        <navigation-case>
+            <from-outcome>access-accounts-options-page</from-outcome>
+            <to-view-id>/b/accounts/options.jsf</to-view-id>
+            <redirect />
+        </navigation-case> 
+        <!-- manage -->
+        <navigation-case>
+            <from-outcome>access-manage-var-page</from-outcome>
+            <to-view-id>/b/accounts/manage/var-users.jsf</to-view-id>
+            <redirect />
+        </navigation-case> 
+        <navigation-case>
+            <from-outcome>access-manage-client-companies-page</from-outcome>
+            <to-view-id>/b/accounts/manage/customer-companies.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>access-manage-client-users-page</from-outcome>
+            <to-view-id>/b/accounts/manage/customer-users.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>access-manage-var-users-page</from-outcome>
+            <to-view-id>/b/accounts/manage/var-users.jsf</to-view-id>
+            <redirect />
+        </navigation-case> 
+        <!-- new -->
+        <navigation-case>
+            <from-outcome>access-new-var-users-page</from-outcome>
+            <to-view-id>/b/accounts/new/var-user.jsf</to-view-id>
+            <redirect />
+        </navigation-case> 
+        <navigation-case>
+            <from-outcome>access-new-client-companies-page</from-outcome>
+            <to-view-id>/b/accounts/new/customer-company.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>access-new-client-users-page</from-outcome>
+            <to-view-id>/b/accounts/new/customer-user.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <!-- edit -->
+        <navigation-case>
+            <from-outcome>access-edit-var-users-page</from-outcome>
+            <to-view-id>/b/accounts/edit/var-user.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>access-edit-client-companies-page</from-outcome>
+            <to-view-id>/b/accounts/edit/customer-company.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>access-edit-client-users-page</from-outcome>
+            <to-view-id>/b/accounts/edit/customer-user.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        
+        
+        <!-- -tickets -->
+        <navigation-case>
+            <from-outcome>access-ticket-options-page</from-outcome>
+            <to-view-id>/b/tickets/options.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <!-- -manual -->
+        <navigation-case>
+            <from-outcome>access-ticket-manual-manage-page</from-outcome>
+            <to-view-id>/b/tickets/manual/manage.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>access-ticket-new-page</from-outcome>
+            <to-view-id>/b/tickets/manual/new.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <!-- -auto -->
+        <navigation-case>
+            <from-outcome>access-ticket-auto-manage-page</from-outcome>
+            <to-view-id>/b/tickets/auto/manage.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        
+        <!-- -sites -->
+        <navigation-case>
+            <from-outcome>access-site-contacts-page</from-outcome>
+            <to-view-id>/b/sites/contacts.jsf</to-view-id>
+            <redirect />
+        </navigation-case> 
+ 
+    </navigation-rule>
+    
+    <navigation-rule>
+        <from-view-id>/c/*</from-view-id>
+        
+        <!-- -dashboard -->
+        <navigation-case>
+            <from-outcome>access-dashboard-page</from-outcome>
+            <to-view-id>/c/dashboard.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        
+        <!-- -account -->
+        <navigation-case>
+            <from-outcome>access-account-options-page</from-outcome>
+            <to-view-id>/c/account/options.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>access-settings-page</from-outcome>
+            <to-view-id>/c/account/settings.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>access-profile-page</from-outcome>
+            <to-view-id>/c/account/profile.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        
+        <!-- -reports -->
+        <navigation-case>
+            <from-outcome>access-reports-options-page</from-outcome>
+            <to-view-id>/c/reports/options.jsf</to-view-id>
+            <redirect />
+        </navigation-case> 
+
+        <!-- -tickets -->
+        <navigation-case>
+            <from-outcome>access-ticket-options-page</from-outcome>
+            <to-view-id>/c/tickets/options.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <!-- -manual -->
+        <navigation-case>
+            <from-outcome>access-ticket-manual-manage-page</from-outcome>
+            <to-view-id>/c/tickets/manual/manage.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>access-ticket-new-page</from-outcome>
+            <to-view-id>/c/tickets/manual/new.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        
+        <!-- -sites -->
+        <navigation-case>
+            <from-outcome>access-site-contacts-page</from-outcome>
+            <to-view-id>/c/sites/contacts.jsf</to-view-id>
+            <redirect />
+        </navigation-case> 
+ 
+    </navigation-rule>
+    
+</faces-config>

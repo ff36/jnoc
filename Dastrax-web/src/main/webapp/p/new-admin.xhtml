@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions">
+
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <link rel="shortcut icon" type="image/png" href="#{request.contextPath}/resources/graphics/favicon.ico" />
+        <title>#{webBundle['default.page.title']} | #{webBundle['login.page.title']}</title>
+    </h:head>
+    <h:body>
+
+        <pe:ajaxErrorHandler />
+        
+        <div id="messages">
+            <p:messages redisplay="false"
+                        showDetail="false" 
+                        autoUpdate="true"
+                        closable="true"/>
+        </div>
+
+        <h:form id="register">
+            
+            <h:panelGrid columns="2">
+                
+                <h:outputText value="email"/>
+                <p:inputText value="#{createAccount.subject.email}"/>
+                
+                <h:outputText value="legal"/>
+                <p:selectBooleanCheckbox value="#{createAccount.helper.legal}"/>
+                
+            </h:panelGrid>
+            
+            <p:commandButton action="#{createAccount.administrator()}"
+                             value="Register"/>
+            
+        </h:form>
+
+    </h:body>
+</html>
