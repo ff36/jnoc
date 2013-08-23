@@ -4,7 +4,7 @@
  */
 package com.dastrax.app.security;
 
-import com.dastrax.per.dao.SubjectDAO;
+import com.dastrax.per.dao.core.SubjectDAO;
 import com.dastrax.per.entity.core.Permission;
 import com.dastrax.per.entity.core.Subject;
 import java.util.HashSet;
@@ -29,7 +29,7 @@ import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.SimplePrincipalCollection;
 
 /**
- *
+ * SHIRO SQL Realm
  * @version Build 2.0.0
  * @since Jul 15, 2013
  * @author Tarka L'Herpiniere <info@tarka.tv>

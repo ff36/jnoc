@@ -1,0 +1,59 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:cc="http://xmlns.jcp.org/jsf/composite"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <!-- INTERFACE -->
+    <cc:interface>
+    </cc:interface>
+
+    <!-- IMPLEMENTATION -->
+    <cc:implementation>
+        <div class="header-background">
+            <table width="100%">
+                <tr>
+                    <td class="nav-1">
+                        <!-- LOGO -->
+                        <p:graphicImage id="header-logo" height="30px" value="#{pathUtil.companyLogo1P('dastrax_logo_v3.png')}"/>
+                    </td>
+                    <td class="nav-2">
+                        <!-- NAV BAR -->
+                        <p:menubar id="nav-bar" autoDisplay="false">  
+                            <p:menuitem value="Tickets" url="#{request.contextPath}/b/tickets/manual/list.jsf"/>  
+                            <p:menuitem value="Accounts" url="#{request.contextPath}/b/accounts/list.jsf"/>
+                            <p:menuitem value="Clients" url="#{request.contextPath}/b/companies/list.jsf"/>
+                        </p:menubar>
+                    </td>
+                    <td class="nav-3">
+                        <!-- TOOL BAR -->
+                        <p:toolbar id="toolbar">  
+                            <p:toolbarGroup align="right">
+                                <p:commandLink id="nav-settings-btn" type="button">
+                                    <h:panelGrid columns="2">
+                                        <p:graphicImage value="#{pathUtil.profileImage()}"
+                                                        height="30px"/>
+                                        <p:graphicImage value="#{pathUtil.s3Icon('white/br_down_icon_16.png')}"
+                                                        width="8px"/>
+                                    </h:panelGrid>
+
+                                </p:commandLink>
+                            </p:toolbarGroup>  
+                        </p:toolbar> 
+                    </td>
+                </tr>
+            </table>
+
+            <p:overlayPanel id="nav-settings-overlay" 
+                            for="nav-settings-btn" 
+                            hideEffect="fade"
+                            styleClass="nav-settings-overlay">  
+                <h:panelGrid columns="1">
+                    <p:commandLink value="Settings" action="access-account-settings-page" process="@this @(.nav-settings-overlay :input)"/>
+                    <p:commandLink value="Sign out" action="#{authenticate.logout()}" process="@this @(.nav-settings-overlay :input)"/>
+                </h:panelGrid>   
+            </p:overlayPanel>
+        </div>
+    </cc:implementation>
+</html>

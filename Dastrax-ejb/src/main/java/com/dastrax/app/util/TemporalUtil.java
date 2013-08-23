@@ -25,17 +25,27 @@ public class TemporalUtil {
     }
 
     // Methods------------------------------------------------------------------
+    /**
+     * 
+     * @param event
+     * @return date in "MM/dd/YYYY" format
+     */
     public String epochDateFmt(Long event) {
         if (event != null) {
             Calendar cal = Calendar.getInstance();
             cal.setTimeInMillis(event);
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/YYYY");
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/YYYY");
             return simpleDateFormat.format(cal.getTime());
         } else {
             return "Not Available";
         }
     }
 
+    /**
+     * 
+     * @param event
+     * @return time in "HH:mm" format
+     */
     public String epochTimeFmt(Long event) {
         if (event != null) {
             Calendar cal = Calendar.getInstance();
@@ -47,17 +57,27 @@ public class TemporalUtil {
         }
     }
 
+    /**
+     * 
+     * @param event
+     * @return date and time in "MM/dd/YYYY HH:mm" format
+     */
     public String epochDateTimeFmt(Long event) {
         if (event != null) {
             Calendar cal = Calendar.getInstance();
             cal.setTimeInMillis(event);
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/YYYY HH:mm");
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/YYYY HH:mm");
             return simpleDateFormat.format(cal.getTime());
         } else {
             return "Not Available";
         }
     }
 
+    /**
+     * Convert Long epoch to Date 
+     * @param event
+     * @return 
+     */
     public Date epochToDate(Long event) {
         if (event != null) {
             return new Date(event);
@@ -65,10 +85,20 @@ public class TemporalUtil {
         return null;
     }
 
+    /**
+     * Convert Date to Long epoch
+     * @param event
+     * @return 
+     */
     public Long dateToEpoch(Date event) {
         return event.getTime();
     }
     
+    /**
+     * Convert Long epoch to Calendar
+     * @param event
+     * @return 
+     */
     public Calendar epochToCal(Long event) {
         if (event != null) {
             Calendar cal = Calendar.getInstance();
@@ -78,6 +108,11 @@ public class TemporalUtil {
         return null;
     }
 
+    /**
+     * Convert Calendar to Long
+     * @param event
+     * @return 
+     */
     public Long calToEpoch(Calendar event) {
         return event.getTimeInMillis();
     }

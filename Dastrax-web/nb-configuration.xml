@@ -30,15 +30,19 @@ Any value defined here will override the pom.xml file value but is only applicab
         <word>app</word>
         <word>auth</word>
         <word>authc</word>
+        <word>bIxk</word>
         <word>builtInCacheManager</word>
         <word>cacheManager</word>
         <word>cipherKey</word>
         <word>credentialsMatcher</word>
         <word>dastrax</word>
         <word>DefaultPasswordService</word>
+        <word>deZiIxcaaaA</word>
+        <word>DMS</word>
         <word>drxRealm</word>
         <word>JDBC</word>
         <word>jsf</word>
+        <word>kPH</word>
         <word>loginUrl</word>
         <word>MemoryConstrainedCacheManager</word>
         <word>org</word>
@@ -53,6 +57,8 @@ Any value defined here will override the pom.xml file value but is only applicab
         <word>ShiroDrxRealm</word>
         <word>ShiroPswMatcher</word>
         <word>ShiroRoleFilter</word>
+        <word>SubdomainFilter</word>
+        <word>subdomainRedirect</word>
         <word>unauthorizedUrl</word>
         <word>urls</word>
         <word>versioned</word>

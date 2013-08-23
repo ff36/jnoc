@@ -51,24 +51,40 @@ public class Response {
     }
 
     // Methods------------------------------------------------------------------
+    /**
+     * Add a JSF success message to the response
+     * @param message 
+     */
     public void addJsfScsMsg(String message) {
         Map<String, String> map = new HashMap<>();
         map.put(DastraxCst.ResponseJsf.SUCCESS.toString(), message);
         jsfMessages.add(map);
     }
 
+    /**
+     * Add a JSF warning message to the response
+     * @param message 
+     */
     public void addJsfWrnMsg(String message) {
         Map<String, String> map = new HashMap<>();
         map.put(DastraxCst.ResponseJsf.WARNING.toString(), message);
         jsfMessages.add(map);
     }
 
+    /**
+     * Add a JSF error message to the response
+     * @param message 
+     */
     public void addJsfErrMsg(String message) {
         Map<String, String> map = new HashMap<>();
         map.put(DastraxCst.ResponseJsf.ERROR.toString(), message);
         jsfMessages.add(map);
     }
 
+    /**
+     * Convert the stored JSF messages into JSF messages and attach them to the
+     * presentations layer
+     */
     public void renderJsfMsgs() {
         for (Map<String, String> jsfMessage : jsfMessages) {
             if (jsfMessage.containsKey(DastraxCst.ResponseJsf.SUCCESS.toString())) {

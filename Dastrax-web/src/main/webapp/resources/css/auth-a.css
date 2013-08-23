@@ -70,6 +70,7 @@ A:link:hover, A:visited:hover
 {
 	background: transparent;
 	border: 0px none #000000;
+	z-index: 10;
 }
 .nav-2 .ui-menuitem-link
 {
@@ -102,6 +103,17 @@ A:link:hover, A:visited:hover
 	height: 43px;
 	border-bottom: 2px solid #C6D146;
 }
+.nav-settings-overlay
+{
+	/*+placement:float-right 0px 0px;*/
+	float: right !important;
+	position: relative !important;
+	left: 0px !important;
+	top: 0px !important;
+	margin-right: 15px;
+	margin-top: -10px;
+}
+
 /*LAYOUT*/
 .ui-layout-pane
 {
@@ -203,11 +215,10 @@ TABLE.side-menu TBODY TR.hover TD:hover
 /*DATA TABLE*/
 .main-table.ui-datatable .ui-datatable-header
 {
-	background: #003946 !important;
-}
-.main-table.ui-datatable .ui-datatable-header
-{
-	background: #003946 !important;
+	background: #F7F7F7 !important;
+	height: 32px;
+	border: 0px none #FFFFFF;
+	padding-top: 8px;
 }
 .main-table.ui-datatable .ui-datatable-even
 {
@@ -252,7 +263,7 @@ TABLE.side-menu TBODY TR.hover TD:hover
 {
 	background: #F7F7F7;
 	font-family: verdana;
-	font-size: 0.6em;
+	font-size: 0.7em;
 	border: 1px none #000000;
 	text-align: left;
 }
@@ -269,6 +280,28 @@ TABLE.side-menu TBODY TR.hover TD:hover
 	background: #FFFFFF !important;
 	border: 0px none #FFFFFF;
 	text-align: center;
+}
+/*SUB TABLE*/
+TABLE.dms-sub-table
+{
+	border: 0px none #F7F7F7 !important;
+	margin-bottom: 15px;
+	color: #858585;
+}
+.dms-sub-table THEAD
+{
+	font-weight: bold;
+	font-size: 8pt;
+	border-bottom: 1px dotted #E4E4E4 !important;
+}
+.main-table LI.ui-datalist-item
+{
+	display: none;
+}
+.row-exp
+{
+	border: 0px none #FFFFFF !important;
+	background-color: #F7F7F7 !important;
 }
 /*BUTTON*/
 .action-btn
@@ -309,7 +342,6 @@ TABLE.side-menu TBODY TR.hover TD:hover
 	color: #858585;
 	vertical-align: top;
 }
-
 .detail-divider
 {
 	border-bottom: 1px dotted #434343;
@@ -353,6 +385,14 @@ TABLE.side-menu TBODY TR.hover TD:hover
 	left: 0px;
 	top: 0px;
 }
+.align-left
+{
+	/*+placement:float-left 0px 0px;*/
+	float: left;
+	position: relative;
+	left: 0px;
+	top: 0px;
+}
 .field-label-3
 {
 	min-width: 150px !important;
@@ -360,6 +400,37 @@ TABLE.side-menu TBODY TR.hover TD:hover
 .tel-country
 {
 	margin-left: 5px;
+}
+.ticket-info-panel TABLE TR TD
+{
+	border: 0px none #000000;
+	width: 130px;
+}
+.ticket-info-panel
+{
+	width: 500px;
+}
+
+.audit-table
+{
+	font-size: 8.5pt;
+}
+TR.audit-table-seperator TD
+{
+	border-top: 1px dotted #E4E4E4;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	vertical-align: top;
+	padding-left: 5px;
+}
+.dsh-audit
+{
+	width: 30%;
+	/*+placement:float-right 0px 0px;*/
+	float: right;
+	position: relative;
+	left: 0px;
+	top: 0px;
 }
 /*CREATE NEW ACCOUNT*/
 TD.create-col-1
@@ -382,4 +453,46 @@ TD.create-col-3
 .site-options
 {
 	background: #FFFFFF;
+}
+/*EDIT TICKET*/
+TR.comment-table-seperator TD
+{
+	border-top: 1px dotted #E4E4E4;
+	padding-top: 20px;
+	padding-bottom: 20px;
+	vertical-align: top;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+.comment-date
+{
+	font-size: 8pt;
+	margin-left: 15px;
+	font-style: italic;
+	color: #858585;
+}
+.admin-comment
+{
+	padding: 10px;
+	background-color: #FAF6D9;
+	border: 1px solid #F4E48D;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+}
+
+.var-comment
+{
+	padding: 10px;
+	background-color: #F3FFF3;
+	border: 1px solid #C5E4F4;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+}
+.comment-acl-msg
+{
+	color: #858585;
+	font-style: italic;
+	font-size: 8pt;
 }

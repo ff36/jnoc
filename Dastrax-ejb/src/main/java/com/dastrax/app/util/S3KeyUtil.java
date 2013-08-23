@@ -5,8 +5,8 @@
 
 package com.dastrax.app.util;
 
-import com.dastrax.per.dao.CompanyDAO;
-import com.dastrax.per.dao.SubjectDAO;
+import com.dastrax.per.dao.core.CompanyDAO;
+import com.dastrax.per.dao.core.SubjectDAO;
 import com.dastrax.per.project.DastraxCst;
 import java.util.ResourceBundle;
 import javax.ejb.EJB;

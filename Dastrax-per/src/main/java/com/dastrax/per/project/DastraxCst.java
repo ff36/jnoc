@@ -40,15 +40,23 @@ public class DastraxCst {
     public final static String LOCALE_ENGLISH_UK = "en";
     
     // Enums--------------------------------------------------------------------
-    public static enum TicketStatus {PENDING, OPEN, SOLVED, ARCHIVED};
+    public static enum TicketStatus {OPEN, SOLVED, ARCHIVED};
     public static enum TicketAssignment {CREATOR, REQUESTER, CLOSER, ASSIGNEE};
     public static enum ProjectStage {DEV, UAT, PRO};
     public static enum S3ContentType {PDF, JPEG, PNG, GIF, BMP, TIFF, PLAIN, RTF, MSWORD, ZIP};
     public static enum Metier {ADMIN, VAR, CLIENT, SOLO, ADHOC};
     public static enum CompanyType {VAR, CLIENT};
-    public static enum EmailTemplate {NEW_ACCOUNT, CHANGE_EMAIL, CHANGE_PASSWORD, NEW_TICKET, TICKET_COMMENT, TICKET_CLOSED, EXCEPTION};
+    public static enum EmailTemplate {NEW_ACCOUNT, CHANGE_EMAIL, CHANGE_PASSWORD, NEW_TICKET, TICKET_MODIFIED, TICKET_SOLVED, EXCEPTION};
     public static enum L1Permissions {USER, SITE, VAR, CLIENT, TICKET, PAGE};
     public static enum L2Permissions {CREATE, UPDATE, DELETE, VIEW};
     public static enum ResponseJsf {SUCCESS, WARNING, ERROR, FATAL};
+    public static enum FilterType {TICKET, COMPANY, SUBJECT, SITE};
+    public static enum FilterDataset {ALL, ACTIVE, SOLVED, ARCHIVED};
 
+    // Nexus--------------------------------------------------------------------
+    public final static String ROOT_NEXUS_ADMIN = "1";
+    public final static String ROOT_NEXUS_VAR = "2";
+    public final static String ROOT_NEXUS_CLIENT = "3";
+    public final static String ROOT_NEXUS_ADMIN_VAR = "4";
+    
 }

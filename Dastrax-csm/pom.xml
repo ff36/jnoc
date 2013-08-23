@@ -21,12 +21,49 @@
 
     <dependencies>
        
+        <!-- START | DASTRAX EJB MODULES -->
+        <dependency>
+            <groupId>com.dastrax</groupId>
+            <artifactId>Dastrax-per</artifactId>
+            <version>2.0.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.dastrax</groupId>
+            <artifactId>Dastrax-ejb</artifactId>
+            <version>2.0.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- END | DASTRAX EJB MODULES --> 
+        
+        <!-- START | JAVAEE 7 -->
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.8</version>
+        </dependency>
         <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-api</artifactId>
             <version>7.0</version>
             <scope>provided</scope>
         </dependency>
+        <!-- END | JAVAEE 7 -->
+        
+        <!-- START | AWS -->
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk</artifactId>
+            <version>1.5.2</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>commons-codec</artifactId>
+                    <groupId>commons-codec</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- END | AWS -->
+        
     </dependencies>
 
     <build>

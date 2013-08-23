@@ -1,169 +1,116 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:p="http://primefaces.org/ui"
       xmlns:pe="http://primefaces.org/ui/extensions"
       xmlns:f="http://java.sun.com/jsf/core">
 
-    <body>
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <h:outputStylesheet name="css/login.css"/>
+        <h:outputStylesheet name="css/common.css"/>
+        <link rel="shortcut icon" type="image/png" href="#{request.contextPath}/resources/graphics/favicon.ico" />
+        <title>#{webBundle['default.page.title']} | #{webBundle['confirm.account.page.title']}</title>
+    </h:head>
+    <h:body>
 
-        <ui:composition template="./../resources/template/public.xhtml">
+        <f:metadata>
+            <f:viewParam name="token" value="#{createAccount.helper.token}"/>
+            <f:viewAction action="#{createAccount.init}" />
+        </f:metadata>
 
-            <ui:define name="title">
-                #{webBundle['default.page.title']} | #{webBundle['confirm.account.page.title']}
-            </ui:define>
+        <div id="messages">
+            <p:messages redisplay="false"
+                        showDetail="false" 
+                        autoUpdate="true"
+                        closable="true"/>
+        </div>
 
-            <ui:define name="content">
+        <!-- Logo -->
+        <p:graphicImage id="logo" 
+                        value="#{pathUtil.s3Logo('dastrax_logo_v1.png')}"/>
 
-                <pe:ajaxErrorHandler />
-                
-                <f:metadata>
-                    <f:viewParam name="token" 
-                                 value="#{createAccount.helper.token}"/>
-                </f:metadata>
+        <!-- Authentication -->
+        <h:form id="form" rendered="#{createAccount.helper.renderPublicForm}">
 
-                <h2>Confirm Account</h2>
+            <div id="confirm-account">
 
-                <p:spacer width="100%" height="20"/>
+                <p:focus/> 
 
-                <h:outputText value="You have almost completed the registration process. In your registration email was a 4 digit pin code that you will need to enter below along with your new account password. Passwords have a minimum required strength for security."/>
+                <h:panelGrid columns="2">
 
-                <p:spacer width="100%" height="10"/>
+                    <p:password id="pin"
+                                value="#{createAccount.helper.pinCode}"
+                                required="true"
+                                requiredMessage="Pin code required"/>
+                    <p:watermark for="pin" value="Pin Code"/>
 
-                <p:messages id="messages"
-                            redisplay="false"
-                            showDetail="false" 
-                            autoUpdate="true"
-                            closable="true"/>
+                    <p:password id="psw-a"
+                                value="#{createAccount.helper.tempPswA}"
+                                required="true"
+                                requiredMessage="#{webBundle['error.password.required']}"/>
+                    <p:watermark for="psw-a" value="New Password"/>
 
-                <!-- Main confirmation form -->
-                <h:form id="form1">
+                    <p:password id="psw-b"
+                                value="#{createAccount.helper.tempPswB}"
+                                required="true"
+                                requiredMessage="#{webBundle['error.password.required']}"/>
+                    <p:watermark for="psw-b" value="Confirm Password"/>
 
-                    <h:panelGrid columns="3">  
+                </h:panelGrid>
 
-                        <h:outputText value="Pin Code*:"
-                                      styleClass="field-label"/>  
-                        <p:inputText value="#{createAccount.helper.pinCode}"
-                                     required="true"
-                                     requiredMessage="Pin Code Required"/>
-
-                        <p:spacer width="10px" height="5px"/>
-
-                        <p:spacer width="10px" height="20px"/>
-                        <p:spacer width="10px" height="20px"/>
-                        <p:spacer width="10px" height="20px"/>
+                <p:selectBooleanButton id="legal" 
+                                       value="#{createAccount.helper.legal}"
+                                       onLabel="Accepted"
+                                       onIcon="ui-icon-check"
+                                       offLabel="Accept Legal">
+                    <p:ajax update=":form:save-btn"/>
+                </p:selectBooleanButton>
 
 
-                        <h:outputText value="Password*:"
-                                      styleClass="field-label"/>
-                        <p:password value="#{createAccount.helper.tempPswA}"
-                                    required="true"
-                                    requiredMessage="Password Required"
-                                    feedback="true"/>
-                        <h:outputText id="password-info"
-                                      value="(Password Information)"
-                                      styleClass="side-note"/>
+                <p:commandButton id="save-btn"
+                                 action="#{createAccount.confirm()}"
+                                 ajax="false" 
+                                 value="Confirm"
+                                 onclick="blockui1.block();"
+                                 oncomplete="blockui1.unblock();"
+                                 process="@this,psw-a,psw-b,legal"
+                                 update=":form :messages"
+                                 disabled="#{!createAccount.helper.legal}"/>
 
-                        <h:outputText value="Retype Password*:"
-                                      styleClass="field-label"/>
-                        <p:password value="#{createAccount.helper.tempPswB}"
-                                    required="true"
-                                    requiredMessage="Please retype your password"/>
-
-                        <p:spacer width="10px" height="5px"/>
-
-                    </h:panelGrid>
-
-                    <p:spacer width="100%" height="10px"/>
-                    I confirm that I have read and accept the <a class="pagelink" href="/p/legal.jsf" target="_blank">Terms of Use</a> and I also confirm that I understand and accept the <a class="pagelink" href="/p/legal.jsf" target="_blank">Privacy and Cookies Policy</a> and that I will abide by the <a class="pagelink" href="/p/legal.jsf" target="_blank">Acceptable Use Policy</a> and ensure that those under my authority and control will do so.
-                    <p:spacer width="10px" height="10px"/>
-
-                    <h:panelGrid columns="2">
-
-                        <h:outputText value="I Accept:"/>
-                        <p:selectBooleanCheckbox value="#{createAccount.helper.legal}"/>
-                    </h:panelGrid>            
-
-                    <p:spacer width="100%" height="20"/>
-
-                    <p:commandButton id="confirm-btn" 
-                                     value="Confirm"
-                                     action="#{createAccount.confirm()}"
-                                     onclick="blockui1.block();"
-                                     oncomplete="blockui1.unblock();"
-                                     update="@form :messages"/>
-
-                    <pe:blockUI target="confirm-btn" widgetVar="blockui1">  
-                        <div class="windows8-18-b">
-                            <div class="wBall" id="wBall_1">
-                                <div class="wInnerBall">
-                                </div>
+                <pe:blockUI target="save-btn" widgetVar="blockui1">  
+                    <div class="windows8-25-w">
+                        <div class="wBall" id="wBall_1">
+                            <div class="wInnerBall">
                             </div>
-                            <div class="wBall" id="wBall_2">
-                                <div class="wInnerBall">
-                                </div>
+                        </div>
+                        <div class="wBall" id="wBall_2">
+                            <div class="wInnerBall">
                             </div>
-                            <div class="wBall" id="wBall_3">
-                                <div class="wInnerBall">
-                                </div>
+                        </div>
+                        <div class="wBall" id="wBall_3">
+                            <div class="wInnerBall">
                             </div>
-                            <div class="wBall" id="wBall_4">
-                                <div class="wInnerBall">
-                                </div>
+                        </div>
+                        <div class="wBall" id="wBall_4">
+                            <div class="wInnerBall">
                             </div>
-                            <div class="wBall" id="wBall_5">
-                                <div class="wInnerBall">
-                                </div>
+                        </div>
+                        <div class="wBall" id="wBall_5">
+                            <div class="wInnerBall">
                             </div>
-                        </div> 
-                    </pe:blockUI>
-                    
+                        </div>
+                    </div> 
+                </pe:blockUI>
 
-                </h:form>
+            </div>
 
-                <!-- Password Strength info -->               
-                <p:overlayPanel id="password-panel" 
-                                for=":form1:password-info" 
-                                showEffect="fade"
-                                showEvent="mouseover" 
-                                hideEvent="mouseout">  
+            <div class="footer">
 
-                    <h:outputText value="Password Strength Requirement"
-                                  styleClass="h4"/>
+            </div>
 
-                    <p:spacer width="100%" height="10px"/>
+        </h:form>
 
-                    <h:panelGrid columns="2">
-
-                        <h:outputText value="Minimum Length:"
-                                      styleClass="field-label"/>
-                        <h:outputText value="5 characters"/>
-
-                        <h:outputText value="Lower Case Letter:"
-                                      styleClass="field-label"/>
-                        <h:outputText value="Minimum of 1"/>
-
-                        <h:outputText value="Upper Case Letter:"
-                                      styleClass="field-label"/>
-                        <h:outputText value="Minimum of 1"/>
-
-                        <h:outputText value="Number:"
-                                      styleClass="field-label"/>
-                        <h:outputText value="Minimum of 1"/>
-
-                        <h:outputText value="Other:"
-                                      styleClass="field-label"/>
-                        <h:outputText value="Can not be your email"/>
-
-                    </h:panelGrid>
-
-                </p:overlayPanel> 
-
-            </ui:define>
-
-        </ui:composition>
-
-    </body>
+    </h:body>
 </html>

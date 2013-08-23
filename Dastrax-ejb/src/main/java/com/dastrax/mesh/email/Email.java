@@ -72,7 +72,9 @@ public class Email {
      * String : pin;
      * String : date;
      * String : time;
-     * String : ticket;
+     * String : ticket_id;
+     * String : ticket_title;
+     * String : name;
      * String : exception;
      * 
      * @param variables 

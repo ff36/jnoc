@@ -1,0 +1,331 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:ez="http://xmlns.jcp.org/jsf/composite/ezcomp"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <h:outputStylesheet name="css/auth-c.css"/>
+        <h:outputStylesheet name="css/common.css"/>
+        <link rel="shortcut icon" type="image/png" href="#{request.contextPath}/resources/graphics/favicon.ico" />
+        <title>#{webBundle['default.page.title']} | #{webBundle['client.ticket.create.page.title']}</title>
+    </h:head>
+
+    <h:body>
+
+        <h:form id="form">
+
+            <pe:ajaxErrorHandler />
+
+            <p:growl id="growl" 
+                     redisplay="false"
+                     showDetail="false" 
+                     sticky="false" />
+
+            <ez:navigation-c/>
+
+            <pe:layout stateCookie="false" widgetVar="layoutWgt" >
+
+                <pe:layoutPane id="west" position="west" resizeWhileDragging="true" size="250">
+
+                    <p:panel id="option-panel-3" styleClass="ticket-options">
+
+                        <h:panelGrid id="option-grid-3" columns="1">
+
+                            <h:outputText value="Email CC" styleClass="super-field-label"/>
+                            <p:inputText id="cc" value="#{createTicket.helper.ccEmail}"/>
+                            <p:watermark for="cc" value="Comma seperated list"/>
+
+                            <h:outputText value="Type*" styleClass="super-field-label"/>
+                            <p:selectOneMenu value="#{createTicket.ticket.type}"
+                                             effect="fade"
+                                             style="width: 200px"
+                                             required="true"
+                                             requiredMessage="Type required">  
+                                <f:selectItem itemLabel="-" itemValue="" />  
+                                <f:selectItem itemLabel="General" itemValue="General" />
+                                <f:selectItem itemLabel="Equipment Failure" itemValue="Equipment Failure" />
+                                <f:selectItem itemLabel="Connection Failure" itemValue="Connection Failure" />
+                                <f:selectItem itemLabel="Signal Source Failure" itemValue="Signal Source Failure" />
+                                <f:selectItem itemLabel="Informational" itemValue="Informational" />
+                                <f:selectItem itemLabel="Total System Failure" itemValue="Total System Failure" />
+                            </p:selectOneMenu>
+
+                            <h:outputText value="Severity*" styleClass="super-field-label"/>
+                            <p:selectOneMenu value="#{createTicket.ticket.priority}" 
+                                             effect="fade"
+                                             style="width: 200px"
+                                             required="true"
+                                             requiredMessage="Severity required">  
+                                <f:selectItem itemLabel="-" itemValue="" />  
+                                <f:selectItem itemLabel="Sev 1 - (Service Down)" itemValue="Sev 1" />
+                                <f:selectItem itemLabel="Sev 2 - (Service Disruption)" itemValue="Sev 2" />
+                                <f:selectItem itemLabel="Sev 3 - (General Support)" itemValue="Sev 3" />
+                            </p:selectOneMenu>
+
+                            <h:outputText value="Site" styleClass="super-field-label"/>
+                            <p:selectOneMenu value="#{createTicket.helper.selectedSite}"
+                                             effect="fade"
+                                             style="width: 200px">  
+                                <f:selectItem itemLabel="-" itemValue="" /> 
+                                <f:selectItems value="#{createTicket.helper.sites}" var="site" itemLabel="#{site.name}" itemValue="#{site.name}"/>
+
+                            </p:selectOneMenu>
+
+                        </h:panelGrid>
+
+                    </p:panel>
+
+                </pe:layoutPane>
+
+                <pe:layoutPane id="center" position="center" resizeWhileDragging="true">
+
+                    <table width="100%">
+                        <tr>
+                            <td><h2>New Ticket</h2></td>
+                            <td width="250px">
+                                
+                            </td>
+                        </tr>
+                    </table>
+
+                    <p:spacer width="100%" height="20"/>
+
+                    <table width="100%">
+                        <tr>
+                            <td>
+                                <p:inputText id="title" value="#{createTicket.ticket.title}" style="width: 99%" required="true" requiredMessage="Subject required"/>
+                                <p:watermark for="title" value="Subject"/>
+                                <p:spacer width="100%" height="20"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p:inputTextarea id="comment" value="#{createTicket.helper.comment.comment}" style="width: 99%" rows="15" required="true" requiredMessage="Comment required"/>
+                                <p:watermark for="comment" value="Comment"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <h:panelGrid columns="2" columnClasses="field-label-3">
+                                    <h:outputText value="Create another ticket:"/>
+                                    <p:selectBooleanCheckbox value="#{createTicket.helper.createAnotherTicket}"/>
+                                </h:panelGrid>
+                                
+                                <p:splitButton id="create-btn" styleClass="align-right" value="Submit as OPEN" 
+                                               actionListener="#{createTicket.createOpen()}" process="@this,:form:west :form:center :form:create-btn" 
+                                               update=":form:growl"
+                                               onclick="blockui1.block();"
+                                               oncomplete="blockui1.unblock();">   
+                                    <p:menuitem value="Submit as SOLVED" actionListener="#{createTicket.createSolved()}" 
+                                                process="@this,:form:west :form:center :form:create-btn" update=":form:growl"
+                                                onclick="blockui1.block();"
+                                                oncomplete="blockui1.unblock();"/>  
+                                    <p:menuitem value="Submit as ARCHIVED" actionListener="#{createTicket.createArchived()}" 
+                                                process="@this,:form:west :form:center :form:create-btn" update=":form:growl"
+                                                onclick="blockui1.block();"
+                                                oncomplete="blockui1.unblock();"/>  
+                                </p:splitButton>  
+
+                                <pe:blockUI target="create-btn" widgetVar="blockui1">  
+                                    <div class="windows8-18-b">
+                                        <div class="wBall" id="wBall_1">
+                                            <div class="wInnerBall">
+                                            </div>
+                                        </div>
+                                        <div class="wBall" id="wBall_2">
+                                            <div class="wInnerBall">
+                                            </div>
+                                        </div>
+                                        <div class="wBall" id="wBall_3">
+                                            <div class="wInnerBall">
+                                            </div>
+                                        </div>
+                                        <div class="wBall" id="wBall_4">
+                                            <div class="wInnerBall">
+                                            </div>
+                                        </div>
+                                        <div class="wBall" id="wBall_5">
+                                            <div class="wInnerBall">
+                                            </div>
+                                        </div>
+                                    </div> 
+                                </pe:blockUI>
+                                
+                            </td>
+                        </tr>
+                    </table>               
+
+                </pe:layoutPane>
+
+                <pe:layoutPane id="east" position="east" resizeWhileDragging="true" initHidden="true" size="700">
+
+                    <table width="100%">
+                        <tr>
+                            <td><h2>New Account</h2></td>
+                            <td width="150px">
+                                <p:commandLink styleClass="align-right" value="Close" onclick="layoutWgt.close('east');"/>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <h:panelGrid columns="2" columnClasses="field-label-3">
+                        <h:outputText value="Account Type:" styleClass="field-label-3"/>  
+                        <p:selectOneMenu value="#{createAccount.helper.accountType}" style="width: 150px">  
+                            <f:selectItem itemLabel="" itemValue="" />
+                            <f:selectItem itemLabel="ADMIN" itemValue="QUICKVAR" />  
+                            <f:selectItem itemLabel="CLIENT" itemValue="QUICKCLIENT" /> 
+                            <p:ajax update=":form:switch-east-north" process="@this" />
+                        </p:selectOneMenu>  
+                    </h:panelGrid>
+
+                    <pe:switch id="switch-east-north" value="#{createAccount.helper.accountType}">
+
+                        <pe:defaultCase>  
+
+                        </pe:defaultCase> 
+
+                        <pe:case value="QUICKVAR">  
+
+                            <h:panelGrid columns="2" columnClasses="field-label-3">
+
+                                <h:outputText value="Email:*" styleClass="field-label-3"/>
+                                <p:inputText id="email" value="#{createAccount.subject.email}" rendered="true" requiredMessage="Email is required"/>
+
+                                <h:outputText value="First Name:*" styleClass="field-label-3"/>
+                                <p:inputText value="#{createAccount.subject.contact.firstName}" rendered="true" requiredMessage="Name is required"/>
+
+                                <h:outputText value="Last Name:*" styleClass="field-label-3"/>
+                                <p:inputText value="#{createAccount.subject.contact.lastName}" rendered="true" requiredMessage="Name is required"/>
+
+                            </h:panelGrid>
+
+                            <p:spacer width="100%" height="20px"/>
+
+                            <p:commandButton id="create-btn" 
+                                             value="Create Account"
+                                             actionListener="#{createAccount.var()}"
+                                             action="#{createTicket.reloadSubjects()}"
+                                             onclick="blockui1.block();"
+                                             oncomplete="blockui1.unblock(); layoutWgt.close('east');"
+                                             update=":form:growl :form:requester :form:assignee"
+                                             process="@this,:form:switch-east-north"/>
+
+                            <pe:blockUI target="create-btn" widgetVar="blockui1">  
+                                <div class="windows8-18-b">
+                                    <div class="wBall" id="wBall_1">
+                                        <div class="wInnerBall">
+                                        </div>
+                                    </div>
+                                    <div class="wBall" id="wBall_2">
+                                        <div class="wInnerBall">
+                                        </div>
+                                    </div>
+                                    <div class="wBall" id="wBall_3">
+                                        <div class="wInnerBall">
+                                        </div>
+                                    </div>
+                                    <div class="wBall" id="wBall_4">
+                                        <div class="wInnerBall">
+                                        </div>
+                                    </div>
+                                    <div class="wBall" id="wBall_5">
+                                        <div class="wInnerBall">
+                                        </div>
+                                    </div>
+                                </div> 
+                            </pe:blockUI>
+
+                        </pe:case>  
+
+                        <pe:case value="QUICKCLIENT">  
+
+                            <h:panelGrid columns="2" columnClasses="field-label-3">
+
+                                <h:outputText value="Email:*" styleClass="field-label-3"/>
+                                <p:inputText id="email" value="#{createAccount.subject.email}" rendered="true" requiredMessage="Email is required"/>
+
+                                <h:outputText value="First Name:*" styleClass="field-label-3"/>
+                                <p:inputText value="#{createAccount.subject.contact.firstName}" rendered="true" requiredMessage="Name is required"/>
+
+                                <h:outputText value="Last Name:*" styleClass="field-label-3"/>
+                                <p:inputText value="#{createAccount.subject.contact.lastName}" rendered="true" requiredMessage="Name is required"/>
+
+                            </h:panelGrid>                                      
+
+                            <p:spacer width="100%" height="20px"/>
+
+                            <h3>Relationship</h3>
+                            <p:spacer width="100%" height="7px"/>
+                            <h:panelGrid columns="2" columnClasses="field-label-3">
+
+                                <h:outputText value="Client Company:*" styleClass="field-label-3"/>
+                                <p:selectOneMenu value="#{createAccount.helper.selectedCompany}" 
+                                                 effect="fade"
+                                                 style="width: 180px"
+                                                 required="true"
+                                                 requiredMessage="Select a Client"> 
+                                    <f:selectItem itemLabel="-" itemValue="" />
+                                    <f:selectItems value="#{createAccount.helper.clients}" var="c" itemLabel="#{c.name}" itemValue="#{c.id}"/> 
+                                </p:selectOneMenu>
+
+                            </h:panelGrid>
+
+                            <p:spacer width="100%" height="20px"/>
+
+                            <p:commandButton id="create-btn" 
+                                             value="Create Account"
+                                             actionListener="#{createAccount.client()}"
+                                             action="#{createTicket.reloadSubjects()}"
+                                             onclick="blockui1.block();"
+                                             oncomplete="blockui1.unblock(); layoutWgt.close('east');"
+                                             update=":form:growl :form:requester :form:assignee"
+                                             process="@this,:form:switch-east-north"/>
+
+                            <pe:blockUI target="create-btn" widgetVar="blockui1">  
+                                <div class="windows8-18-b">
+                                    <div class="wBall" id="wBall_1">
+                                        <div class="wInnerBall">
+                                        </div>
+                                    </div>
+                                    <div class="wBall" id="wBall_2">
+                                        <div class="wInnerBall">
+                                        </div>
+                                    </div>
+                                    <div class="wBall" id="wBall_3">
+                                        <div class="wInnerBall">
+                                        </div>
+                                    </div>
+                                    <div class="wBall" id="wBall_4">
+                                        <div class="wInnerBall">
+                                        </div>
+                                    </div>
+                                    <div class="wBall" id="wBall_5">
+                                        <div class="wInnerBall">
+                                        </div>
+                                    </div>
+                                </div> 
+                            </pe:blockUI>
+
+                        </pe:case>
+
+                    </pe:switch>  
+
+                </pe:layoutPane>
+
+            </pe:layout>
+
+        </h:form>
+
+        <!-- JIRA -->
+        <script type="text/javascript" src="https://dastrax.atlassian.net/s/d41d8cd98f00b204e9800998ecf8427e/en_US-hgwqx7-1988229788/6132/31/1.4.0-m5/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?collectorId=5962a16e"></script>
+
+
+    </h:body>
+
+</html>
+

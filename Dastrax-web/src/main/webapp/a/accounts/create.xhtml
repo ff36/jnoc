@@ -116,11 +116,11 @@
                                         <p:spacer width="100%" height="7px"/>
                                         <h:panelGrid columns="2" columnClasses="field-label-3">
 
-                                            <h:outputText value="First Name:" styleClass="field-label-3"/>
-                                            <p:inputText value="#{createAccount.subject.contact.firstName}"/>
+                                            <h:outputText value="First Name:*" styleClass="field-label-3"/>
+                                            <p:inputText value="#{createAccount.subject.contact.firstName}" rendered="true" requiredMessage="Name is required"/>
 
-                                            <h:outputText value="Last Name:" styleClass="field-label-3"/>
-                                            <p:inputText value="#{createAccount.subject.contact.lastName}"/>
+                                            <h:outputText value="Last Name:*" styleClass="field-label-3"/>
+                                            <p:inputText value="#{createAccount.subject.contact.lastName}" rendered="true" requiredMessage="Name is required"/>
 
                                         </h:panelGrid>
 
@@ -252,11 +252,11 @@
                                         <p:spacer width="100%" height="7px"/>
                                         <h:panelGrid columns="2" columnClasses="field-label-3">
 
-                                            <h:outputText value="First Name:" styleClass="field-label-3"/>
-                                            <p:inputText value="#{createAccount.subject.contact.firstName}"/>
+                                            <h:outputText value="First Name:*" styleClass="field-label-3"/>
+                                            <p:inputText value="#{createAccount.subject.contact.firstName}" rendered="true" requiredMessage="Name is required"/>
 
-                                            <h:outputText value="Last Name:" styleClass="field-label-3"/>
-                                            <p:inputText value="#{createAccount.subject.contact.lastName}"/>
+                                            <h:outputText value="Last Name:*" styleClass="field-label-3"/>
+                                            <p:inputText value="#{createAccount.subject.contact.lastName}" rendered="true" requiredMessage="Name is required"/>
 
                                         </h:panelGrid>
 
@@ -388,11 +388,11 @@
                                         <p:spacer width="100%" height="7px"/>
                                         <h:panelGrid columns="2" columnClasses="field-label-3">
 
-                                            <h:outputText value="First Name:" styleClass="field-label-3"/>
-                                            <p:inputText value="#{createAccount.subject.contact.firstName}"/>
+                                            <h:outputText value="First Name:*" styleClass="field-label-3"/>
+                                            <p:inputText value="#{createAccount.subject.contact.firstName}" rendered="true" requiredMessage="Name is required"/>
 
-                                            <h:outputText value="Last Name:" styleClass="field-label-3"/>
-                                            <p:inputText value="#{createAccount.subject.contact.lastName}"/>
+                                            <h:outputText value="Last Name:*" styleClass="field-label-3"/>
+                                            <p:inputText value="#{createAccount.subject.contact.lastName}" rendered="true" requiredMessage="Name is required"/>
 
                                         </h:panelGrid>
 
@@ -498,6 +498,12 @@
                                             <h:outputText value="Email:*" styleClass="field-label-3"/>
                                             <p:inputText id="email" value="#{createAccount.subject.email}" rendered="true" requiredMessage="Email is required"/>
 
+                                            <h:outputText value="First Name:*" styleClass="field-label-3"/>
+                                            <p:inputText value="#{createAccount.subject.contact.firstName}" rendered="true" requiredMessage="Name is required"/>
+
+                                            <h:outputText value="Last Name:*" styleClass="field-label-3"/>
+                                            <p:inputText value="#{createAccount.subject.contact.lastName}" rendered="true" requiredMessage="Name is required"/>
+                                            
                                         </h:panelGrid>
 
                                         <p:spacer width="100%" height="20px"/>
@@ -544,6 +550,12 @@
                                             <h:outputText value="Email:*" styleClass="field-label-3"/>
                                             <p:inputText id="email" value="#{createAccount.subject.email}" rendered="true" requiredMessage="Email is required"/>
 
+                                            <h:outputText value="First Name:*" styleClass="field-label-3"/>
+                                            <p:inputText value="#{createAccount.subject.contact.firstName}" rendered="true" requiredMessage="Name is required"/>
+
+                                            <h:outputText value="Last Name:*" styleClass="field-label-3"/>
+                                            <p:inputText value="#{createAccount.subject.contact.lastName}" rendered="true" requiredMessage="Name is required"/>
+                                            
                                         </h:panelGrid>
 
                                         <p:spacer width="100%" height="20px"/>
@@ -608,7 +620,13 @@
                                             <h:outputText value="Email:*" styleClass="field-label-3"/>
                                             <p:inputText id="email" value="#{createAccount.subject.email}" rendered="true" requiredMessage="Email is required"/>
 
-                                        </h:panelGrid>
+                                            <h:outputText value="First Name:*" styleClass="field-label-3"/>
+                                            <p:inputText value="#{createAccount.subject.contact.firstName}" rendered="true" requiredMessage="Name is required"/>
+
+                                            <h:outputText value="Last Name:*" styleClass="field-label-3"/>
+                                            <p:inputText value="#{createAccount.subject.contact.lastName}" rendered="true" requiredMessage="Name is required"/>
+                                            
+                                        </h:panelGrid>                                      
 
                                         <p:spacer width="100%" height="20px"/>
 

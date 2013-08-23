@@ -2,22 +2,22 @@
  * Copyright 2013 Tarka L'Herpiniere <info@tarka.tv> ALL RIGHTS RESERVED.
  * Developed by: Tarka L'Herpiniere <info@tarka.tv>.
  */
-
 package com.dastrax.per.entity.csm;
 
+import com.dastrax.per.entity.core.Subject;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Basic;
-import javax.persistence.ElementCollection;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.Version;
+import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 import org.eclipse.persistence.nosql.annotations.DataFormatType;
-import org.eclipse.persistence.nosql.annotations.Field;
 import org.eclipse.persistence.nosql.annotations.NoSql;
 
 /**
@@ -29,80 +29,76 @@ import org.eclipse.persistence.nosql.annotations.NoSql;
 @NamedQueries({
     @NamedQuery(name = "DmsTicket.findAll", query = "SELECT e FROM DmsTicket e"),
     @NamedQuery(name = "DmsTicket.findByPK", query = "SELECT e FROM DmsTicket e WHERE e.id = :id"),
+    @NamedQuery(name = "DmsTicket.findReverse", query = "SELECT e FROM DmsTicket e ORDER BY e.openEpoch DESC"),
+    @NamedQuery(name = "DmsTicket.findByCause", query = "SELECT e FROM DmsTicket e WHERE e.cause = :cause"),
 })
 @Entity
 @NoSql(dataFormat = DataFormatType.MAPPED)
 public class DmsTicket implements Serializable {
-// Serial-------------------------------------------------------------------
+
+    // Serial-------------------------------------------------------------------
     private static final long serialVersionUID = 1L;
-    
+
     // Variables----------------------------------------------------------------
-    @Version
-    private long version;
     @Id
     @GeneratedValue
-    @Field(name="_id")
     private String id;
     @Basic
-    private String siteId;
+    private String cause;
     @Basic
-    private String ticketStatus;
+    private String status;
     @Basic
-    private String causeId;
+    private String priority;
     @Basic
-    private String alarmId;
+    private String title;
     @Basic
-    private String displayId;
+    private String assignee;
     @Basic
     private Long openEpoch;
     @Basic
     private Long closeEpoch;
     @Basic
-    private String assigneeId;
+    private String site;
     @Basic
-    private String closerId;
-    @Basic
-    private String alarmName;
-    @Basic
-    private String squealer;
-    @Basic
-    private Long alarmStartEpoch;
-    @Basic
-    private Long alarmStopEpoch;
-    @ElementCollection
+    private String closer;
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
+    private List<DmsAlarm> alarms = new ArrayList<>();
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     private List<DmsComment> comments = new ArrayList<>();
+    @Transient
+    private Subject assigneeTrans;
 
     // Constructors-------------------------------------------------------------
     public DmsTicket() {
     }
-    
+
     // Getters------------------------------------------------------------------
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
+
     public String getId() {
         return id;
     }
 
-    public long getVersion() {
-        return version;
+    public String getCause() {
+        return cause;
     }
 
-    public String getSiteId() {
-        return siteId;
+    public String getStatus() {
+        return status;
     }
 
-    public String getTicketStatus() {
-        return ticketStatus;
+    public String getPriority() {
+        return priority;
     }
 
-    public String getCauseId() {
-        return causeId;
+    public String getTitle() {
+        return title;
     }
 
-    public String getAlarmId() {
-        return alarmId;
-    }
-
-    public String getDisplayId() {
-        return displayId;
+    public String getAssignee() {
+        return assignee;
     }
 
     public Long getOpenEpoch() {
@@ -113,61 +109,49 @@ public class DmsTicket implements Serializable {
         return closeEpoch;
     }
 
-    public String getAssigneeId() {
-        return assigneeId;
+    public String getSite() {
+        return site;
     }
 
-    public String getCloserId() {
-        return closerId;
+    public String getCloser() {
+        return closer;
     }
 
-    public String getAlarmName() {
-        return alarmName;
-    }
-
-    public String getSquealer() {
-        return squealer;
-    }
-
-    public Long getAlarmStartEpoch() {
-        return alarmStartEpoch;
-    }
-
-    public Long getAlarmStopEpoch() {
-        return alarmStopEpoch;
+    public List<DmsAlarm> getAlarms() {
+        return alarms;
     }
 
     public List<DmsComment> getComments() {
         return comments;
     }
 
+    public Subject getAssigneeTrans() {
+        return assigneeTrans;
+    }
+    
     // Setters------------------------------------------------------------------
     public void setId(String id) {
         this.id = id;
     }
-    
-    public void setVersion(long version) {
-        this.version = version;
+
+    public void setCause(String cause) {
+        this.cause = cause;
     }
 
-    public void setSiteId(String siteId) {
-        this.siteId = siteId;
+    public void setStatus(String status) {
+        this.status = status;
     }
 
-    public void setTicketStatus(String ticketStatus) {
-        this.ticketStatus = ticketStatus;
+    public void setPriority(String priority) {
+        this.priority = priority;
     }
 
-    public void setCauseId(String causeId) {
-        this.causeId = causeId;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public void setAlarmId(String alarmId) {
-        this.alarmId = alarmId;
-    }
-
-    public void setDisplayId(String displayId) {
-        this.displayId = displayId;
+    public void setAssignee(String assignee) {
+        this.assignee = assignee;
     }
 
     public void setOpenEpoch(Long openEpoch) {
@@ -178,34 +162,26 @@ public class DmsTicket implements Serializable {
         this.closeEpoch = closeEpoch;
     }
 
-    public void setAssigneeId(String assigneeId) {
-        this.assigneeId = assigneeId;
+    public void setSite(String site) {
+        this.site = site;
     }
 
-    public void setCloserId(String closerId) {
-        this.closerId = closerId;
+    public void setCloser(String closer) {
+        this.closer = closer;
     }
 
-    public void setAlarmName(String alarmName) {
-        this.alarmName = alarmName;
-    }
-
-    public void setSquealer(String squealer) {
-        this.squealer = squealer;
-    }
-
-    public void setAlarmStartEpoch(Long alarmStartEpoch) {
-        this.alarmStartEpoch = alarmStartEpoch;
-    }
-
-    public void setAlarmStopEpoch(Long alarmStopEpoch) {
-        this.alarmStopEpoch = alarmStopEpoch;
+    public void setAlarms(List<DmsAlarm> alarms) {
+        this.alarms = alarms;
     }
 
     public void setComments(List<DmsComment> comments) {
         this.comments = comments;
     }
-    
+
+    public void setAssigneeTrans(Subject assigneeTrans) {
+        this.assigneeTrans = assigneeTrans;
+    }
+
     // Methods------------------------------------------------------------------
     @Override
     public int hashCode() {
@@ -226,7 +202,7 @@ public class DmsTicket implements Serializable {
 
     @Override
     public String toString() {
-        return "com.dastrax.app.entity.nosql.AlarmTicket[ id=" + id + " ]";
+        return "com.dastrax.per.entity.csm.DmsTicket[ id=" + id + " ]";
     }
 
 }

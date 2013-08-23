@@ -12,7 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.shiro.web.filter.authc.UserFilter;
 
 /**
- *
+ * SHIRO needs this extra filter to correctly handle AJAX responses.
+ * 
  * @version Build 2.0.0
  * @since Jul 15, 2013
  * @author Tarka L'Herpiniere <info@tarka.tv>

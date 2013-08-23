@@ -12,7 +12,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.TableGenerator;
 import javax.persistence.Version;
 
 /**
@@ -34,7 +33,6 @@ public class Address implements Serializable {
     // Variables----------------------------------------------------------------
     @Version
     private int version;
-    @TableGenerator(name = "Address_Gen", table = "ID_GEN", pkColumnName = "GEN_NAME", valueColumnName = "GEN_VAL")
     @GeneratedValue(strategy = GenerationType.TABLE)
     @Id
     private String id;

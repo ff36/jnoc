@@ -18,8 +18,8 @@
     <h:body>
 
         <f:metadata>
-            <f:viewParam name="filter" value="#{companies.filterCondition}"/>
-            <f:event type="preRenderView" listener="#{companies.init}" />
+            <f:viewParam name="filter" value="#{companies.filter}"/>
+            <f:viewAction action="#{companies.init}" />
         </f:metadata>
 
         <h:form id="form">
@@ -53,17 +53,17 @@
                         </tr>
                         <tr class="hover">
                             <td>
-                                <h:commandLink value="All VARs" action="#{companies.varFilter()}"/>
+                                <p:commandLink value="All Companies" action="#{companies.tempFilterApply(0)}" process="@this" type="button"/>
                             </td>
                         </tr>
                         <tr class="hover">
                             <td>
-                                <h:commandLink value="All Clients" action="#{companies.clientFilter()}"/>
+                                <p:commandLink value="All VARs" action="#{companies.tempFilterApply(12)}" process="@this" type="button"/>
                             </td>
                         </tr>
                         <tr class="hover">
                             <td>
-                                <h:commandLink value="Clear" action="#{companies.clearFilter()}"/>
+                                <p:commandLink value="All Clients" action="#{companies.tempFilterApply(13)}" process="@this" type="button"/>
                             </td>
                         </tr>
                     </table>
@@ -88,7 +88,18 @@
                                  selection="#{companies.selectedCompanies}"
                                  value="#{companies.companyModel}"
                                  filteredValue="#{companies.filtered}"
-                                 styleClass="main-table"> 
+                                 styleClass="main-table"
+                                 lazy="true"
+                                 paginator="true"
+                                 rows="20"
+                                 rowsPerPageTemplate="20,50"
+                                 paginatorAlwaysVisible="false"
+                                 paginatorPosition="bottom"> 
+                        
+                        <f:facet name="header">   
+                            <p:inputText id="globalFilter" styleClass="align-left" onkeyup="companiesTable.filter()" style="width:200px" />  
+                            <p:watermark for="globalFilter" value="Search"/>
+                        </f:facet> 
 
                         <p:ajax event="rowSelectCheckbox"  
                                 update=":form:details"/>  
@@ -102,20 +113,28 @@
                         <p:column selectionMode="multiple" style="width:18px" />
 
                         <p:column headerText="Name"
+                                  filterBy="#{company.name}"
+                                  filterStyle="display:none"
                                   sortBy="#{company.name}">
                             #{company.name}
                         </p:column>
 
                         <p:column headerText="Type"
+                                  filterBy="#{company.type}"
+                                  filterStyle="display:none"
                                   sortBy="#{company.type}">
                             #{company.type}
                         </p:column>
 
-                        <p:column headerText="# Members">
+                        <p:column headerText="# Members"
+                                  filterBy="#{company.members.size()}"
+                                  filterStyle="display:none">
                             #{company.members.size()}
                         </p:column>
 
                         <p:column headerText="Subdomain"
+                                  filterBy="#{company.subdomain}"
+                                  filterStyle="display:none"
                                   sortBy="#{company.subdomain}">
                             #{company.subdomain}
                         </p:column>
@@ -144,7 +163,7 @@
                                     <td>
                                         <H2>
                                             <p:inplace id="nameAIP" styleClass="inplace" editor="true" label="#{detail.name}">  
-                                                <p:ajax event="save" listener="#{companies.saveName()}" update=":form:companies-table :form:growl" />
+                                                <p:ajax event="save" listener="#{companies.saveName()}" update=":form:companies-table :form:growl" oncomplete="companiesTable.filter();"/>
                                                 <p:inputText id="editName" value="#{detail.name}"/> 
                                                 <p:watermark value="Name" for="editName"/>
                                             </p:inplace> 
@@ -257,7 +276,7 @@
                                         <td class="field-label-2">Name:</td>
                                         <td>
                                             <p:inplace id="nameAIP" styleClass="inplace" editor="true" label="#{contact.buildFullName()}">  
-                                                <p:ajax event="save" listener="#{companies.saveContacts()}" update=":form:companies-table :form:growl" />
+                                                <p:ajax event="save" listener="#{companies.saveContacts()}" update=":form:companies-table :form:growl" oncomplete="companiesTable.filter();"/>
                                                 <p:inputText id="editFirstName" value="#{contact.firstName}"/> 
                                                 <p:inputText id="editLastName" value="#{contact.lastName}"/>
                                                 <p:watermark value="First Name" for="editFirstName"/>
@@ -269,7 +288,7 @@
                                         <td class="field-label-2">Email:</td>
                                         <td>
                                             <p:inplace id="emailAIP" styleClass="inplace" editor="true" label="#{contact.email eq null or contact.email eq '' ? 'Not Available' : contact.email}">  
-                                                <p:ajax event="save" listener="#{companies.saveContacts()}" update=":form:companies-table :form:growl" />
+                                                <p:ajax event="save" listener="#{companies.saveContacts()}" update=":form:companies-table :form:growl" oncomplete="companiesTable.filter();"/>
                                                 <p:inputText id="editEmail" value="#{contact.email}"/> 
                                                 <p:watermark value="Email" for="editEmail"/>
                                             </p:inplace> 
@@ -284,7 +303,7 @@
                                                         var="address"
                                                         itemType="none">
                                                 <p:inplace id="addressAIP" styleClass="inplace" editor="true" label="#{address.buildCompleteAddress()}">  
-                                                    <p:ajax event="save" listener="#{companies.saveContacts()}" update=":form:companies-table :form:growl" />
+                                                    <p:ajax event="save" listener="#{companies.saveContacts()}" update=":form:companies-table :form:growl" oncomplete="companiesTable.filter();"/>
 
                                                     <p:inputText id="add-1" value="#{address.lineTwo}"/>
                                                     <p:watermark value="Street" for="add-1"/>
@@ -307,11 +326,11 @@
                                                 var="telephone"
                                                 itemType="none">
                                         <tr>
-                                            <td class="field-label-2">#{telephone.type}:</td>
+                                            <td class="field-label-2">#{telephone.type eq null ? 'Telephone' : telephone.type}:</td>
                                             <td>
 
                                                 <p:inplace id="telephoneAIP" styleClass="inplace" editor="true" label="#{telephone.internationalFormat() eq null ? 'Not Available' : telephone.internationalFormat()}">  
-                                                    <p:ajax event="save" listener="#{companies.saveContacts()}" update=":form:companies-table :form:growl"/>
+                                                    <p:ajax event="save" listener="#{companies.saveContacts()}" update=":form:companies-table :form:growl" oncomplete="companiesTable.filter();"/>
                                                     <ez:telephone type="#{telephone.type}"
                                                                   coutry="#{telephone.country}"                     
                                                                   number="#{telephone.localNumber}"/>  
@@ -342,7 +361,7 @@
                                                          process="@this,deletePassword" 
                                                          update=":form:companies-table :form:growl :form:details"
                                                          onclick="blockui1.block();"
-                                                         oncomplete="blockui1.unblock();"/>
+                                                         oncomplete="blockui1.unblock(); companiesTable.filter();"/>
 
                                         <pe:blockUI target="delete-btn" widgetVar="blockui1">  
                                             <div class="windows8-18-b">
@@ -379,7 +398,7 @@
 
                 </pe:layoutPane>
 
-                <pe:layoutPane id="south" position="south" resizeWhileDragging="true" size="300" initClosed="true">
+                <pe:layoutPane id="south" position="south" resizeWhileDragging="true" size="300" initHidden="true">
 
                     <table width="100%">
                         <tr>
@@ -415,7 +434,7 @@
                                  process="@this,var-sites" 
                                  update=":form:companies-table :form:growl :form:details"
                                  onclick="blockui2.block();"
-                                 oncomplete="blockui2.unblock(); varSitesDlg.hide();"/>
+                                 oncomplete="blockui2.unblock(); varSitesDlg.hide(); companiesTable.filter();"/>
 
                 <pe:blockUI target="save-var-sites-btn" widgetVar="blockui2">  
                     <div class="windows8-18-b">
@@ -465,7 +484,7 @@
                                  process="@this,client-sites" 
                                  update=":form:companies-table :form:growl :form:details"
                                  onclick="blockui3.block();"
-                                 oncomplete="blockui3.unblock(); clientSitesDlg.hide();"/>
+                                 oncomplete="blockui3.unblock(); clientSitesDlg.hide(); companiesTable.filter();"/>
 
                 <pe:blockUI target="save-client-sites-btn" widgetVar="blockui3">  
                     <div class="windows8-18-b">
@@ -515,7 +534,7 @@
                                  process="@this,var-clients" 
                                  update=":form:companies-table :form:growl :form:details"
                                  onclick="blockui4.block();"
-                                 oncomplete="blockui4.unblock(); varClientsDlg.hide();"/>
+                                 oncomplete="blockui4.unblock(); varClientsDlg.hide(); companiesTable.filter();"/>
 
                 <pe:blockUI target="save-var-clients-btn" widgetVar="blockui4">  
                     <div class="windows8-18-b">

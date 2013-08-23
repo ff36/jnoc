@@ -41,7 +41,7 @@ public class JsfUtil {
     }
 
     /**
-     *
+     * Add an error message to the JSF presentation layer
      * @param ex
      * @param defaultMsg
      */
@@ -55,7 +55,7 @@ public class JsfUtil {
     }
 
     /**
-     *
+     * Add an error message to the JSF presentation layer
      * @param messages
      */
     public static void addErrorMessages(List<String> messages) {
@@ -65,7 +65,7 @@ public class JsfUtil {
     }
 
     /**
-     *
+     * Add an error message to the JSF presentation layer
      * @param msg
      */
     public static void addErrorMessage(String msg) {
@@ -74,7 +74,7 @@ public class JsfUtil {
     }
 
     /**
-     *
+     * Add a success message to the JSF presentation layer
      * @param msg
      */
     public static void addSuccessMessage(String msg) {
@@ -83,7 +83,7 @@ public class JsfUtil {
     }
 
     /**
-     *
+     * Add a warning message to the JSF presentation layer
      * @param msg
      */
     public static void addWarningMessage(String msg) {
@@ -92,7 +92,7 @@ public class JsfUtil {
     }
 
     /**
-     *
+     * Add a fatal message to the JSF presentation layer
      * @param msg
      */
     public static void addFatalMessage(String msg) {
@@ -101,20 +101,22 @@ public class JsfUtil {
     }
 
     /**
-     *
-     * @param key
-     * @return
+     * Obtain any request parameters from the URL
+     * @param key (This is the identifier used to specify the parameter)
+     * @return The value of the specified parameter if one exists
      */
     public static String getRequestParameter(String key) {
         return FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get(key);
     }
 
     /**
-     *
+     * Instead of retrieving a string parameter and then retrieving the related
+     * object from the database it is possible to specify a converter and have
+     * the lookup automatically encompassed into this method.
      * @param requestParameterName
      * @param converter
      * @param component
-     * @return
+     * @return An object that is represented by the string value in the parameter
      */
     public static Object getObjectFromRequestParameter(String requestParameterName, Converter converter, UIComponent component) {
         String theId = JsfUtil.getRequestParameter(requestParameterName);

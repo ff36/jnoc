@@ -18,8 +18,8 @@
     <h:body>
 
         <f:metadata>
-            <f:viewParam name="filter" value="#{sites.filterCondition}"/>
-            <f:event type="preRenderView" listener="#{sites.init}" />
+            <f:viewParam name="filter" value="#{sites.filter}"/>
+            <f:viewAction action="#{sites.init}" />
         </f:metadata>
 
         <h:form id="form">
@@ -65,8 +65,19 @@
                                  selection="#{sites.selectedSites}"
                                  value="#{sites.siteModel}"
                                  filteredValue="#{sites.filtered}"
-                                 styleClass="main-table"> 
+                                 styleClass="main-table"
+                                 lazy="true"
+                                 paginator="true"
+                                 rows="20"
+                                 rowsPerPageTemplate="20,50"
+                                 paginatorAlwaysVisible="false"
+                                 paginatorPosition="bottom"> 
 
+                        <f:facet name="header">   
+                            <p:inputText id="globalFilter" styleClass="align-left" onkeyup="sitesTable.filter()" style="width:200px" />  
+                            <p:watermark for="globalFilter" value="Search"/>
+                        </f:facet> 
+                        
                         <p:ajax event="rowSelectCheckbox"  
                                 update=":form:details"/>  
                         <p:ajax event="rowUnselectCheckbox"
@@ -79,26 +90,36 @@
                         <p:column selectionMode="multiple" style="width:18px" />
 
                         <p:column headerText="Name"
+                                  filterBy="#{site.name}"
+                                  filterStyle="display:none"
                                   sortBy="#{site.name}">
                             #{site.name}
                         </p:column>
 
                         <p:column headerText="VAR"
+                                  filterBy="#{site.var.name}"
+                                  filterStyle="display:none"
                                   sortBy="#{site.var.name}">
                             #{site.var.name}
                         </p:column>
 
                         <p:column headerText="Client"
+                                  filterBy="#{site.client.name}"
+                                  filterStyle="display:none"
                                   sortBy="#{site.client.name}">
                             #{site.client.name}
                         </p:column>
 
                         <p:column headerText="Support"
+                                  filterBy="#{site.packageType}"
+                                  filterStyle="display:none"
                                   sortBy="#{site.packageType}">
                             #{site.packageType}
                         </p:column>
 
                         <p:column headerText="IP"
+                                  filterBy="#{site.dmsIP}"
+                                  filterStyle="display:none"
                                   sortBy="#{site.dmsIP}">
                             #{site.dmsIP}
                         </p:column>
@@ -121,7 +142,7 @@
                                     <td>
                                         <H2>
                                             <p:inplace id="nameAIP" styleClass="inplace" editor="true" label="#{detail.name}">  
-                                                <p:ajax event="save" listener="#{sites.saveName()}" update=":form:sites-table :form:growl" />
+                                                <p:ajax event="save" listener="#{sites.saveName()}" update=":form:sites-table :form:growl" oncomplete="sitesTable.filter();"/>
                                                 <p:inputText id="editName" value="#{detail.name}"/>
                                                 <p:watermark value="Name" for="editName"/>
                                             </p:inplace> 
@@ -156,7 +177,7 @@
                                     <td class="field-label-2">Address:</td>
                                     <td>
                                         <p:inplace id="addressAIP" styleClass="inplace" editor="true" label="#{detail.address.buildCompleteAddress()}">  
-                                            <p:ajax event="save" listener="#{sites.saveAddress()}" update=":form:sites-table :form:growl" />
+                                            <p:ajax event="save" listener="#{sites.saveAddress()}" update=":form:sites-table :form:growl" oncomplete="sitesTable.filter();"/>
 
                                             <p:inputText id="add-1" value="#{detail.address.lineTwo}"/>
                                             <p:watermark value="Street" for="add-1"/>
@@ -192,7 +213,7 @@
                                     <td class="field-label-2">Support:</td>
                                     <td>
                                         <p:inplace id="packageTypeAIP" styleClass="inplace" editor="true" label="#{detail.packageType eq null ? 'None' : detail.packageType}">  
-                                            <p:ajax event="save" listener="#{sites.savePackageType()}" update=":form:sites-table :form:growl" />
+                                            <p:ajax event="save" listener="#{sites.savePackageType()}" update=":form:sites-table :form:growl" oncomplete="sitesTable.filter();"/>
                                             <p:selectOneMenu value="#{detail.packageType}" 
                                                              effect="fade"
                                                              style="width: 180px">  
@@ -208,7 +229,7 @@
                                     <td class="field-label-2">Response:</td>
                                     <td>
                                         <p:inplace id="packageResponseAIP" styleClass="inplace" editor="true" label="#{detail.responseHrs} Hrs">  
-                                            <p:ajax event="save" listener="#{sites.savePackageResponse()}" update=":form:sites-table :form:growl" />
+                                            <p:ajax event="save" listener="#{sites.savePackageResponse()}" update=":form:sites-table :form:growl" oncomplete="sitesTable.filter();"/>
                                             <p:spinner value="#{detail.responseHrs}" min="0"/> 
                                         </p:inplace>
                                     </td>
@@ -234,7 +255,7 @@
                                                          process="@this,deletePassword" 
                                                          update=":form:sites-table :form:growl :form:details"
                                                          onclick="blockui1.block();"
-                                                         oncomplete="blockui1.unblock();"/>
+                                                         oncomplete="blockui1.unblock(); sitesTable.filter();"/>
 
                                         <pe:blockUI target="delete-btn" widgetVar="blockui1">  
                                             <div class="windows8-18-b">

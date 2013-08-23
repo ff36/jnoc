@@ -4,7 +4,7 @@
  */
 package com.dastrax.app.util;
 
-import com.dastrax.per.dao.EmailTemplateDAO;
+import com.dastrax.per.dao.core.EmailTemplateDAO;
 import com.dastrax.per.entity.core.EmailTemplate;
 import com.dastrax.per.project.DastraxCst;
 import com.dastrax.mesh.email.Email;
@@ -35,6 +35,11 @@ public class ExceptionUtil {
     EmailUtil emailUtil;
 
     // Methods------------------------------------------------------------------    
+    /**
+     * Sends the developer an email when an exception occurs. This just saves
+     * having to trawl the logs on the server.
+     * @param e 
+     */
     public void report(Exception e) {
         // Build an new email
         Email email = new Email();

@@ -4,9 +4,9 @@
  */
 package com.dastrax.service.company;
 
-import com.dastrax.per.dao.CompanyDAO;
-import com.dastrax.per.dao.SiteDAO;
-import com.dastrax.per.dao.SubjectDAO;
+import com.dastrax.per.dao.core.CompanyDAO;
+import com.dastrax.per.dao.core.SiteDAO;
+import com.dastrax.per.dao.core.SubjectDAO;
 import com.dastrax.per.entity.core.Address;
 import com.dastrax.per.entity.core.Company;
 import com.dastrax.per.entity.core.Contact;
@@ -29,6 +29,7 @@ import javax.ejb.EJB;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
+import org.apache.shiro.SecurityUtils;
 import org.primefaces.model.DualListModel;
 
 /**
@@ -79,7 +80,6 @@ public class CreateCompany implements Serializable {
 
     @PostConstruct
     private void init() {
-
         // Get all the clients without parent VARs
         List<Company> cs = companyDAO.findByNullParentVar(DastraxCst.CompanyType.CLIENT.toString());
         helper.clients = new DualListModel<>(cs, company.getClients());
@@ -107,6 +107,10 @@ public class CreateCompany implements Serializable {
     }
 
     // Methods------------------------------------------------------------------
+    /**
+     * Create a new VAR company
+     * @return navigation String
+     */
     public String var() {
 
         String result = null;
@@ -141,14 +145,28 @@ public class CreateCompany implements Serializable {
         return result;
     }
 
+    /**
+     * Create a new CLIENT company
+     * @return navigation String
+     */
     public String client() {
 
         String result;
 
-        company.setClientSites(helper.clientSites.getTarget());
-
         // Set the parent VAR
-        company.setParentVAR(companyDAO.findCompanyById(helper.selectedVar));
+        // ADMIN access
+        if (SecurityUtils.getSubject().hasRole(DastraxCst.Metier.ADMIN.toString())) {
+            company.setParentVAR(companyDAO.findCompanyById(helper.selectedVar));
+        }
+        // VAR access
+        if (SecurityUtils.getSubject().hasRole(DastraxCst.Metier.VAR.toString())) {
+            Subject s = subjectDAO.findSubjectByUid(
+                    SecurityUtils.getSubject().getPrincipals()
+                    .asList().get(1).toString());
+            company.setParentVAR(s.getCompany());
+        }
+
+        company.setClientSites(helper.clientSites.getTarget());
 
         // Persist the client
         Company c = companyDAO.createClient(company);
@@ -162,14 +180,15 @@ public class CreateCompany implements Serializable {
                 .getFlash()
                 .setKeepMessages(true);
 
-        // Create an audit log of the event
-        //audit.create("Admin Account Requested: (ID: " + s.getUid() + ")");
         // Set the navigation outcome
         result = "access-list-companies-page";
 
         return result;
     }
 
+    /**
+     * Add new contact to the company
+     */
     public void addContact() {
         Contact c = new Contact();
         c.setAddresses(new ArrayList<Address>());
@@ -179,6 +198,10 @@ public class CreateCompany implements Serializable {
         company.getContacts().add(c);
     }
 
+    /**
+     * Remove the specified contact from the company.
+     * @param contact 
+     */
     public void removeContact(Contact contact) {
         Iterator<Contact> i = company.getContacts().iterator();
         while (i.hasNext()) {
@@ -250,26 +273,53 @@ public class CreateCompany implements Serializable {
         }
 
         // Methods------------------------------------------------------------------
+        /**
+         * Filters the available sites based on the subjects metier and the type
+         * of company they are trying to access.
+         */
         public void filterSites() {
-            if (company.getType().equals(DastraxCst.CompanyType.VAR.toString())
-                    || company.getType().equals("QUICKVAR")) {
-                helper.varSites = new DualListModel<>();
-                varSites.setSource(siteDAO.findSitesByNullVar());
-                varSites.setTarget(company.getVarSites());
+            // ADMIN access
+            if (SecurityUtils.getSubject().hasRole(DastraxCst.Metier.ADMIN.toString())) {
+                if (company.getType().equals(DastraxCst.CompanyType.VAR.toString())
+                        || company.getType().equals("QUICKVAR")) {
+                    helper.varSites = new DualListModel<>();
+                    varSites.setSource(siteDAO.findSitesByNullVar());
+                    varSites.setTarget(company.getVarSites());
+                }
+                if (company.getType().equals(DastraxCst.CompanyType.CLIENT.toString())
+                        || company.getType().equals("QUICKCLIENT")) {
+                    helper.clientSites = new DualListModel<>();
+                    if (selectedVar != null && !"".equals(selectedVar)) {
+                        clientSites.setSource(siteDAO.findSitesByNullClient(selectedVar));
+                        clientSites.setTarget(company.getClientSites());
+                    } else {
+                        clientSites.setSource(new ArrayList<Site>());
+                        clientSites.setTarget(company.getClientSites());
+                    }
+                }
             }
-            if (company.getType().equals(DastraxCst.CompanyType.CLIENT.toString())
-                    || company.getType().equals("QUICKCLIENT")) {
-                helper.clientSites = new DualListModel<>();
-                if (selectedVar != null && !"".equals(selectedVar)) {
-                    clientSites.setSource(siteDAO.findSitesByNullClient(selectedVar));
-                    clientSites.setTarget(company.getClientSites());
-                } else {
-                    clientSites.setSource(new ArrayList<Site>());
-                    clientSites.setTarget(company.getClientSites());
+            // VAR access
+            if (SecurityUtils.getSubject().hasRole(DastraxCst.Metier.VAR.toString())) {
+                if (company.getType().equals(DastraxCst.CompanyType.CLIENT.toString())
+                        || company.getType().equals("QUICKCLIENT")) {
+
+                    Subject s = subjectDAO.findSubjectByUid(
+                            SecurityUtils.getSubject().getPrincipals()
+                            .asList().get(1).toString());
+                    
+                    helper.clientSites = new DualListModel<>();
+                    clientSites.setSource(siteDAO.findSitesByNullClient(s.getCompany().getId()));
+                    clientSites.setTarget(s.getCompany().getClientSites());
+
                 }
             }
         }
-        
+
+        /**
+         * Filters the available sites based on the subjects metier and the type
+         * of company they are trying to access.
+         * @param type of company
+         */
         public void quickFilterSites(String type) {
             company.setType(type);
             filterSites();

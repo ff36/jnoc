@@ -37,8 +37,8 @@ public class CountriesUtil {
     }
     
     // Comparator---------------------------------------------------------------
-    /*
-     * This is to organise the list with specific prioraty countries at the top
+    /**
+     * This is to organize the list with specific priority countries at the top
      */
     private static class SubjectLocale implements Comparable<CountriesUtil.SubjectLocale> {
         // Subjects Locale.

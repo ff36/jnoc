@@ -75,6 +75,7 @@
             <groupId>org.glassfish</groupId>
             <artifactId>javax.faces</artifactId>
             <version>2.2.1</version>
+            <scope>compile</scope>
         </dependency>
         <!-- END | MOJARRA -->
         
@@ -94,6 +95,11 @@
         <!-- END | JSF -->
         
         <!-- START | JAVAEE 7 -->
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>javax.persistence</artifactId>
+            <version>2.1.0</version>
+        </dependency>
         <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-api</artifactId>
@@ -115,6 +121,12 @@
             <artifactId>Dastrax-per</artifactId>
             <version>2.0.0</version>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>javax.persistence</artifactId>
+                    <groupId>org.eclipse.persistence</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!-- END | DASTRAX EJB MODULES -->
 
@@ -184,18 +196,26 @@
             <artifactId>shiro-web</artifactId>
             <version>1.2.2</version>
         </dependency>
-        
+ 
         <dependency>
             <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>1.5.6</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>slf4j-api</artifactId>
-                    <groupId>org.slf4j</groupId>
-                </exclusion>
-            </exclusions>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.7.5</version>
         </dependency>
+ 
+        <!--
+                <dependency>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                    <version>1.5.6</version>
+                    <exclusions>
+                        <exclusion>
+                            <artifactId>slf4j-api</artifactId>
+                            <groupId>org.slf4j</groupId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
+        -->
         <!-- END | SHIRO -->
 
     </dependencies>

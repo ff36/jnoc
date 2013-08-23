@@ -17,7 +17,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
 import javax.persistence.Version;
 
@@ -40,7 +39,6 @@ public class Telephone implements Serializable {
     // Variables----------------------------------------------------------------
     @Version
     private int version;
-    @TableGenerator(name = "Telephone_Gen", table = "ID_GEN", pkColumnName = "GEN_NAME", valueColumnName = "GEN_VAL")
     @GeneratedValue(strategy = GenerationType.TABLE)
     @Id
     private String id;

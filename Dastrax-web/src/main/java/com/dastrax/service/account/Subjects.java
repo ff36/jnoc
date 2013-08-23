@@ -4,21 +4,21 @@
  */
 package com.dastrax.service.account;
 
-import com.dastrax.per.dao.CompanyDAO;
-import com.dastrax.per.dao.SubjectDAO;
+import com.dastrax.per.dao.core.CompanyDAO;
+import com.dastrax.per.dao.core.SubjectDAO;
 import com.dastrax.per.entity.core.Company;
 import com.dastrax.per.entity.core.Subject;
-import com.dastrax.per.project.DastraxCst;
 import com.dastrax.app.security.PasswordSvcs;
+import com.dastrax.app.util.FilterUtil;
 import com.dastrax.app.util.S3KeyUtil;
 import com.dastrax.app.util.S3Util;
-import com.dastrax.service.model.SubjectModel;
+import com.dastrax.per.project.DastraxCst;
 import com.dastrax.service.util.JsfUtil;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.faces.context.ExternalContext;
@@ -46,7 +46,7 @@ public class Subjects implements Serializable {
     private SubjectModel subjectModel;
     private List<Subject> filtered;
     private String principalPassword;
-    private String filterCondition;
+    private String filter;
     private Helper helper = new Helper();
 
     // EJB----------------------------------------------------------------------
@@ -60,6 +60,31 @@ public class Subjects implements Serializable {
     S3Util s3Util;
     @EJB
     S3KeyUtil s3KeyUtil;
+    @EJB
+    FilterUtil filterUtil;
+
+    // Constructors-------------------------------------------------------------
+    public void init() {
+        Map<String, List<String>> metierFilter = filterUtil.authorizedCompanies();
+        Map<String, List<String>> optFilter = filterUtil.optionalFilter(filter);
+        subjectModel = new SubjectModel(subjectDAO, metierFilter, optFilter);
+
+        // Populate a list of available vars and clients based on role
+        // ADMIN access
+        if (SecurityUtils.getSubject().hasRole(DastraxCst.Metier.ADMIN.toString())) {
+            helper.vars = companyDAO.findCompaniesByType(DastraxCst.CompanyType.VAR.toString());
+            helper.clients = companyDAO.findCompaniesByType(DastraxCst.CompanyType.CLIENT.toString());
+        } 
+        // VAR access
+        else if (SecurityUtils.getSubject().hasRole(DastraxCst.Metier.VAR.toString())) {
+            Subject s = subjectDAO.findSubjectByUid(
+                    SecurityUtils.getSubject().getPrincipals()
+                    .asList().get(1).toString());
+            for (Company comp : s.getCompany().getClients()) {
+                helper.clients.add(comp);
+            }
+        }
+    }
 
     // Getters------------------------------------------------------------------
     public List<Subject> getSubjects() {
@@ -90,8 +115,8 @@ public class Subjects implements Serializable {
         }
     }
 
-    public String getFilterCondition() {
-        return filterCondition;
+    public String getFilter() {
+        return filter;
     }
 
     public Helper getHelper() {
@@ -119,8 +144,8 @@ public class Subjects implements Serializable {
         this.principalPassword = principalPassword;
     }
 
-    public void setFilterCondition(String filterCondition) {
-        this.filterCondition = filterCondition;
+    public void setFilter(String filter) {
+        this.filter = filter;
     }
 
     public void setHelper(Helper helper) {
@@ -128,41 +153,8 @@ public class Subjects implements Serializable {
     }
 
     // Methods------------------------------------------------------------------
-    public void init() {
-        populateData();
-    }
-
     /**
-     * Populate the data table based on role
-     */
-    public void populateData() {
-
-        if (subjects.size() > 0) {
-            subjects.clear();
-        }
-
-        subjects = subjectDAO.findAllSubjects();
-        if (filterCondition != null) {
-            Iterator<Subject> i = subjects.iterator();
-            while (i.hasNext()) {
-                Subject s = i.next();
-                if (!s.getMetier().getName().equals(filterCondition)) {
-                    i.remove();
-                }
-            }
-        }
-
-        subjectModel = new SubjectModel(subjects);
-
-        // Populate a list of available vars
-        helper.vars = companyDAO.findCompaniesByType(DastraxCst.CompanyType.VAR.toString());
-        // Populate a list of available clients
-        helper.clients = companyDAO.findCompaniesByType(DastraxCst.CompanyType.CLIENT.toString());
-
-    }
-
-    /**
-     * This method provides the the access point to delete accounts.
+     * This method provides the the access point to delete selected accounts.
      */
     public void deleteAccounts() {
 
@@ -186,10 +178,7 @@ public class Subjects implements Serializable {
                 } else {
                     JsfUtil.addWarningMessage("You cannot delete your own account. To close you account please go to your account settings");
                 }
-
             }
-
-            populateData();
 
             // In view scoped bean we just want to clear variables
             selectedSubjects = null;
@@ -203,7 +192,7 @@ public class Subjects implements Serializable {
     }
 
     /**
-     * Save account changes
+     * Save name changes
      */
     public void saveName() {
         subjectDAO.updateName(
@@ -228,7 +217,7 @@ public class Subjects implements Serializable {
     }
 
     /**
-     * Save account changes
+     * Save company changes
      */
     public void saveCompany() {
         // Set the selected company
@@ -250,6 +239,9 @@ public class Subjects implements Serializable {
         JsfUtil.addSuccessMessage("Address Updated");
     }
 
+    /**
+     * Save telephone numbers
+     */
     public void saveTelephone() {
         subjectDAO.updateTelephone(
                 selectedSubjects[0].getUid(),
@@ -258,28 +250,39 @@ public class Subjects implements Serializable {
         JsfUtil.addSuccessMessage("Telephone Updated");
     }
 
-    public void adminFilter() throws IOException {
+    /**
+     * This needs to be converted into a data list on the presentation layer.
+     *
+     * @param filterId
+     * @throws IOException
+     */
+    public void tempFilterApply(int filterId) throws IOException {
         ExternalContext ectx = FacesContext.getCurrentInstance().getExternalContext();
-        String url = ectx.getRequestContextPath() + "/a/accounts/list.jsf?filter=" + DastraxCst.Metier.ADMIN.toString();
-        FacesContext.getCurrentInstance().getExternalContext().redirect(url);
-    }
-
-    public void varFilter() throws IOException {
-        ExternalContext ectx = FacesContext.getCurrentInstance().getExternalContext();
-        String url = ectx.getRequestContextPath() + "/a/accounts/list.jsf?filter=" + DastraxCst.Metier.VAR.toString();
-        FacesContext.getCurrentInstance().getExternalContext().redirect(url);
-    }
-
-    public void clientFilter() throws IOException {
-        ExternalContext ectx = FacesContext.getCurrentInstance().getExternalContext();
-        String url = ectx.getRequestContextPath() + "/a/accounts/list.jsf?filter=" + DastraxCst.Metier.CLIENT.toString();
-        FacesContext.getCurrentInstance().getExternalContext().redirect(url);
-    }
-
-    public void clearFilter() throws IOException {
-        filterCondition = null;
-        ExternalContext ectx = FacesContext.getCurrentInstance().getExternalContext();
-        String url = ectx.getRequestContextPath() + "/a/accounts/list.jsf";
+        String url = null;
+        // ADMIN access
+        if (SecurityUtils.getSubject().hasRole(DastraxCst.Metier.ADMIN.toString())) {
+            if (filterId == 0) {
+                url = ectx.getRequestContextPath() + "/a/accounts/list.jsf";
+            } else {
+                url = ectx.getRequestContextPath() + "/a/accounts/list.jsf?filter=" + filterId;
+            }
+        }
+        // VAR access
+        if (SecurityUtils.getSubject().hasRole(DastraxCst.Metier.VAR.toString())) {
+            if (filterId == 0) {
+                url = ectx.getRequestContextPath() + "/b/accounts/list.jsf";
+            } else {
+                url = ectx.getRequestContextPath() + "/b/accounts/list.jsf?filter=" + filterId;
+            }
+        }
+        // CLIENT access
+        if (SecurityUtils.getSubject().hasRole(DastraxCst.Metier.CLIENT.toString())) {
+            if (filterId == 0) {
+                url = ectx.getRequestContextPath() + "/c/accounts/list.jsf";
+            } else {
+                url = ectx.getRequestContextPath() + "/c/accounts/list.jsf?filter=" + filterId;
+            }
+        }
         FacesContext.getCurrentInstance().getExternalContext().redirect(url);
     }
 

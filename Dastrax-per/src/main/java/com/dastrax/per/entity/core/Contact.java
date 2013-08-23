@@ -18,7 +18,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.TableGenerator;
 
 /**
  *
@@ -37,7 +36,6 @@ public class Contact implements Serializable {
     private static final long serialVersionUID = 1L;
 
     // Variables----------------------------------------------------------------
-    @TableGenerator(name = "Contact_Gen", table = "ID_GEN", pkColumnName = "GEN_NAME", valueColumnName = "GEN_VAL")
     @GeneratedValue(strategy = GenerationType.TABLE)
     @Id
     private String id;

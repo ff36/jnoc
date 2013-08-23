@@ -3,7 +3,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:pe="http://primefaces.org/ui/extensions">
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:f="http://java.sun.com/jsf/core">
 
     <h:head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -14,8 +15,10 @@
     </h:head>
     <h:body>
 
-        <!-- Login Not Available -->
-        <!-- TODO -->
+        <f:metadata>
+            <f:viewParam name="email" value="#{authenticate.email}"/>
+            <f:viewAction action="#{authenticate.init}" />
+        </f:metadata>
 
         <div id="messages">
             <p:messages redisplay="false"
@@ -27,14 +30,15 @@
         <!-- Logo -->
         <p:graphicImage id="logo" 
                         value="#{authenticate.logoPath}"
-                        rendered="#{authenticate.renderLogin}"/>
+                        rendered="#{authenticate.renderLogin or authenticate.renderUniversal}"
+                        width="275"/>
 
         <!-- Authentication -->
         <h:form id="form"
                 rendered="#{authenticate.renderLogin}">
 
             <div id="authenticate">
-                
+
                 <p:focus/> 
 
                 <h:panelGrid columns="2">
@@ -89,12 +93,84 @@
 
             </div>
 
-            <div id="footer">
+            <div class="footer">
 
                 <p:commandLink id="forgot-password"
                                action="access-forgot-pwd-page"
                                value="#{webBundle['login.forgot.password']}"
                                process="@this,form:forgot-password"/>
+            </div>
+
+        </h:form>
+
+        <!-- Universal -->
+        <h:form id="uni-form"
+                rendered="#{authenticate.renderUniversal}">
+
+            <div id="universal">
+
+                <p:focus/> 
+
+                <h:panelGrid columns="2">
+
+                    <p:inputText id="uni-email"
+                                 value="#{authenticate.email}"
+                                 required="true"
+                                 requiredMessage="#{webBundle['error.email.required']}"/>
+                    <p:watermark for="uni-email" value="#{webBundle['login.email']}"/>
+
+                </h:panelGrid>
+
+
+                <p:commandButton id="uni-login-btn"
+                                 action="#{authenticate.redirect()}"
+                                 ajax="false" 
+                                 value="#{webBundle['login.login.btn']}"
+                                 onclick="blockui1.block();"
+                                 oncomplete="blockui1.unblock();"
+                                 process="@this,uni-email"/>
+
+                <pe:blockUI target="uni-login-btn" widgetVar="blockui1">  
+                    <div class="windows8-25-w">
+                        <div class="wBall" id="wBall_1">
+                            <div class="wInnerBall">
+                            </div>
+                        </div>
+                        <div class="wBall" id="wBall_2">
+                            <div class="wInnerBall">
+                            </div>
+                        </div>
+                        <div class="wBall" id="wBall_3">
+                            <div class="wInnerBall">
+                            </div>
+                        </div>
+                        <div class="wBall" id="wBall_4">
+                            <div class="wInnerBall">
+                            </div>
+                        </div>
+                        <div class="wBall" id="wBall_5">
+                            <div class="wInnerBall">
+                            </div>
+                        </div>
+                    </div> 
+                </pe:blockUI>
+
+            </div>
+
+            <div class="footer">
+
+                <p:commandLink id="no-account"
+                               onclick="accountDlg.show();"
+                               type="button"
+                               value="Get an account"
+                               process="@this,uni-form:no-account"/>
+
+                <p:dialog header="Get an Account" widgetVar="accountDlg" modal="true" height="100">  
+                    <h:outputText value="Please contact SOLiD support on +(1) 888.409.9997"/>
+                    <h:outputText value="or"/>
+                    <p:spacer width="100%" height="1px"/>
+                    <a href="no-spam [at] example (dot) com" rel="nofollow" onclick="this.href='mailto:' + 'support' + '@' + 'solidtechusa.com'">send us an email</a>
+                </p:dialog> 
             </div>
 
         </h:form>

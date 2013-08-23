@@ -42,8 +42,8 @@ public class Company implements Serializable {
     // Variables----------------------------------------------------------------
     @Version
     private int version;
-    @TableGenerator(name = "Company_Gen", table = "ID_GEN", pkColumnName = "GEN_NAME", valueColumnName = "GEN_VAL")
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @TableGenerator(name = "Company_Gen", table = "SEQ_ID_GEN", pkColumnName = "GEN_NAME", valueColumnName = "GEN_VAL")
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "Company_Gen")
     @Id
     private String id;
     private String s3id;

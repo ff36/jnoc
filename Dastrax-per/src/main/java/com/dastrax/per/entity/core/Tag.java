@@ -32,8 +32,8 @@ public class Tag implements Serializable {
     private static final long serialVersionUID = 1L;
     
     // Variables----------------------------------------------------------------
-    @TableGenerator(name = "Tag_Gen", table = "ID_GEN", pkColumnName = "GEN_NAME", valueColumnName = "GEN_VAL")
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @TableGenerator(name = "Tag_Gen", table = "SEQ_ID_GEN", pkColumnName = "GEN_NAME", valueColumnName = "GEN_VAL")
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "Tag_Gen")
     @Id
     private String id;
     @Column(unique = true)

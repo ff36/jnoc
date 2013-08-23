@@ -1,0 +1,307 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:ez="http://xmlns.jcp.org/jsf/composite/ezcomp"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <h:outputStylesheet name="css/auth-c.css"/>
+        <h:outputStylesheet name="css/common.css"/>
+        <link rel="shortcut icon" type="image/png" href="#{request.contextPath}/resources/graphics/favicon.ico" />
+        <title>#{webBundle['default.page.title']} | #{webBundle['client.ticket.list.page.title']}</title>
+    </h:head>
+
+    <h:body>
+
+        <f:metadata>
+            <f:viewParam name="filter" value="#{tickets.filter}"/>
+            <f:viewAction action="#{tickets.init}" />
+        </f:metadata>
+
+        <h:form id="form">
+
+            <pe:ajaxErrorHandler />
+
+            <p:growl id="growl" 
+                     redisplay="false"
+                     showDetail="false" 
+                     sticky="false" />
+
+            <ez:navigation-c/>
+
+            <pe:layout stateCookie="false" widgetVar="layoutWgt" >
+
+                <pe:layoutPane id="west" position="west" resizeWhileDragging="true" size="220">
+
+                    <table class="side-menu">
+                        <tr>
+                            <td>
+                                <p:commandButton id="new-ticket-btn" value="Create New Ticket" action="access-create-ticket-page" process="@this,:form:new-ticket-btn"/>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <table class="side-menu">
+                        <tr>
+                            <td>
+                                <h3>Quick Filters</h3>
+                            </td>
+                        </tr>
+
+                        <tr class="hover">
+                            <td>
+                                <p:commandLink value="My unsolved tickets" action="#{tickets.tempFilterApply(15)}" process="@this" type="button"/>
+                            </td>
+                        </tr>
+                        <tr class="hover">
+                            <td>
+                                <p:commandLink value="All unsolved tickets" action="#{tickets.tempFilterApply(3)}" process="@this" type="button"/>
+                            </td>
+                        </tr>
+                        <tr class="hover">
+                            <td>
+                                <p:commandLink value="Unassigned tickets" action="#{tickets.tempFilterApply(14)}" process="@this" type="button"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p:spacer width="100%" height="20"/>
+                            </td>
+                        </tr>
+                        <tr class="hover">
+                            <td>
+                                <p:commandLink value="My solved tickets" action="#{tickets.tempFilterApply(16)}" process="@this" type="button"/>
+                            </td>
+                        </tr>
+                        <tr class="hover">
+                            <td>
+                                <p:commandLink value="My archived tickets" action="#{tickets.tempFilterApply(17)}" process="@this" type="button"/>
+                            </td>
+                        </tr>
+                        <tr class="hover">
+                            <td>
+                                <p:commandLink value="All solved tickets" action="#{tickets.tempFilterApply(6)}" process="@this" type="button"/>
+                            </td>
+                        </tr>
+                        <tr class="hover">
+                            <td>
+                                <p:commandLink value="All archived tickets" action="#{tickets.tempFilterApply(8)}" process="@this" type="button"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p:spacer width="100%" height="20"/>
+                            </td>
+                        </tr>
+                        <tr class="hover">
+                            <td>
+                                <p:commandLink value="All tickets" action="#{tickets.tempFilterApply(0)}" process="@this" type="button"/>
+                            </td>
+                        </tr>
+
+                    </table>
+
+                </pe:layoutPane>
+
+                <pe:layoutPane id="center" position="center" resizeWhileDragging="true">
+
+                    <table width="100%">
+                        <tr>
+                            <td><h2>Tickets</h2></td>
+                            <td width="150px">
+
+                            </td>
+                        </tr>
+                    </table>
+
+                    <p:dataTable id="tickets-table"
+                                 widgetVar="ticketsTable"
+                                 var="ticket"
+                                 emptyMessage="#{webBundle['empty.datatable']}"
+                                 selection="#{tickets.selectedTickets}"
+                                 value="#{tickets.ticketModel}"
+                                 filteredValue="#{tickets.filtered}"
+                                 styleClass="main-table"
+                                 lazy="true"
+                                 paginator="true"
+                                 rows="20"
+                                 rowsPerPageTemplate="20,50"
+                                 paginatorAlwaysVisible="false"
+                                 paginatorPosition="bottom"> 
+
+                        <f:facet name="header">   
+                            <p:inputText id="globalFilter" styleClass="align-left" onkeyup="ticketsTable.filter()" style="width:200px" />  
+                            <p:watermark for="globalFilter" value="Search"/>
+
+                            <p:splitButton id="action-btn" styleClass="align-right" value="Action">  
+                                <p:menuitem value="Change to SOLVED" onclick="layoutWgt.open('south');" update=":form:growl" process="@this,action-btn" disabled="#{tickets.selectedLength eq 0}"/>  
+                                <p:separator/>
+                                <p:menuitem value="Change to OPEN"  actionListener="#{tickets.saveStatus('OPEN')}" update=":form:tickets-table  :form:growl" process="@this,action-btn" oncomplete="ticketsTable.filter(); blockui1.unblock();" disabled="#{tickets.selectedLength eq 0}" onclick="blockui1.block();"/> 
+                                <p:menuitem value="Change to ARCHIVED" actionListener="#{tickets.saveStatus('ARCHIVED')}" update=":form:tickets-table  :form:growl" process="@this,action-btn" oncomplete="ticketsTable.filter(); blockui1.unblock();" disabled="#{tickets.selectedLength eq 0}" onclick="blockui1.block();"/> 
+                                <p:separator/>
+                                <p:menuitem value="Delete" actionListener="#{tickets.delete()}" update=":form:tickets-table  :form:growl" process="@this,action-btn" oncomplete="ticketsTable.filter(); blockui1.unblock();" disabled="#{tickets.selectedLength eq 0}" onclick="blockui1.block();"/>  
+                            </p:splitButton>
+
+                            <pe:blockUI target="action-btn" widgetVar="blockui1">  
+                                <div class="windows8-18-b">
+                                    <div class="wBall" id="wBall_1">
+                                        <div class="wInnerBall">
+                                        </div>
+                                    </div>
+                                    <div class="wBall" id="wBall_2">
+                                        <div class="wInnerBall">
+                                        </div>
+                                    </div>
+                                    <div class="wBall" id="wBall_3">
+                                        <div class="wInnerBall">
+                                        </div>
+                                    </div>
+                                    <div class="wBall" id="wBall_4">
+                                        <div class="wInnerBall">
+                                        </div>
+                                    </div>
+                                    <div class="wBall" id="wBall_5">
+                                        <div class="wInnerBall">
+                                        </div>
+                                    </div>
+                                </div> 
+                            </pe:blockUI>
+
+                        </f:facet> 
+
+                        <p:ajax event="rowSelectCheckbox"  
+                                update=":form:tickets-table:action-btn"/>  
+                        <p:ajax event="rowUnselectCheckbox"
+                                update=":form:tickets-table:action-btn"/>
+                        <p:ajax event="rowSelect"  
+                                update=":form:tickets-table:action-btn"/>  
+                        <p:ajax event="rowUnselect"
+                                update=":form:tickets-table:action-btn"/>
+
+                        <p:column selectionMode="multiple" style="width:18px" />
+
+                        <p:column headerText="ID"
+                                  filterBy="#{ticket.id}"
+                                  filterStyle="display:none"
+                                  sortBy="#{ticket.id}">
+                            DTX-#{ticket.id}
+                        </p:column>
+
+                        <p:column headerText="Status"
+                                  filterBy="#{ticket.status}"
+                                  filterStyle="display:none"
+                                  sortBy="#{ticket.status}">
+                            #{ticket.status}
+                        </p:column>
+
+                        <p:column headerText="Title"
+                                  filterBy="#{ticket.title}"
+                                  filterStyle="display:none"
+                                  sortBy="#{ticket.title}">
+                            <p:commandLink id="edit-ticket" value="#{ticket.title}" action="#{tickets.editTicket(ticket.id)}" type="button" process="@this,edit-ticket"/>
+
+                        </p:column>
+
+                        <p:column headerText="Assignee"
+                                  filterBy="#{ticket.assignee.contact.buildFullName()}"
+                                  filterStyle="display:none"
+                                  sortBy="#{ticket.assignee.contact.buildFullName()}">
+                            #{ticket.assignee.contact.buildFullName()}
+                        </p:column>
+                        
+                        <p:column headerText="Created"
+                                  filterBy="#{tickets.temporalUtil.epochDateTimeFmt(ticket.openEpoch)}"
+                                  filterStyle="display:none"
+                                  sortBy="#{tickets.temporalUtil.epochDateTimeFmt(ticket.openEpoch)}">
+                            #{tickets.temporalUtil.epochDateTimeFmt(ticket.openEpoch)}                        
+                        </p:column>
+
+                        <p:column headerText="Type"
+                                  filterBy="#{ticket.type}"
+                                  filterStyle="display:none"
+                                  sortBy="#{ticket.type}">
+                            #{ticket.type}
+                        </p:column>
+
+                        <p:column headerText="Priority"
+                                  filterBy="#{ticket.priority}"
+                                  filterStyle="display:none"
+                                  sortBy="#{ticket.priority}">
+                            #{ticket.priority}
+                        </p:column>
+
+                    </p:dataTable>
+
+                </pe:layoutPane>
+
+                <pe:layoutPane id="south" position="south" resizeWhileDragging="true" initHidden="true">
+
+                    <table width="100%">
+                        <tr>
+                            <td><h2>Comment</h2></td>
+                            <td width="150px">
+                                <p:commandLink styleClass="align-right" id="close-south-btn" onclick="layoutWgt.close('south');" type="button" value="Close"/>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div id="comment" class="solved-ticket">
+
+                        <p:inputTextarea id="comment" value="#{tickets.helper.closingComment.comment}" style="width: 99%" rows="15" required="true" requiredMessage="Comment required"/>
+                        <p:watermark for="comment" value="Comment"/>
+
+                        <p:spacer width="100%" height="10px"/>
+
+                        <p:commandButton id="solved-btn" 
+                                         value="Mark as SOLVED"
+                                         action="#{tickets.statusSolved()}"
+                                         onclick="blockui2.block();"
+                                         oncomplete="blockui2.unblock(); layoutWgt.close('south'); ticketsTable.filter();"
+                                         update=":form:growl :form:tickets-table"
+                                         process="@this @(.solved-ticket :input)"/>
+
+                        <pe:blockUI target="solved-btn" widgetVar="blockui2">  
+                            <div class="windows8-18-b">
+                                <div class="wBall" id="wBall_1">
+                                    <div class="wInnerBall">
+                                    </div>
+                                </div>
+                                <div class="wBall" id="wBall_2">
+                                    <div class="wInnerBall">
+                                    </div>
+                                </div>
+                                <div class="wBall" id="wBall_3">
+                                    <div class="wInnerBall">
+                                    </div>
+                                </div>
+                                <div class="wBall" id="wBall_4">
+                                    <div class="wInnerBall">
+                                    </div>
+                                </div>
+                                <div class="wBall" id="wBall_5">
+                                    <div class="wInnerBall">
+                                    </div>
+                                </div>
+                            </div> 
+                        </pe:blockUI>
+
+                    </div>
+
+                </pe:layoutPane>
+
+            </pe:layout>
+
+        </h:form>
+
+        <!-- JIRA -->
+        <script type="text/javascript" src="https://dastrax.atlassian.net/s/d41d8cd98f00b204e9800998ecf8427e/en_US-hgwqx7-1988229788/6132/31/1.4.0-m5/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?collectorId=5962a16e"></script>
+
+
+    </h:body>
+
+</html>
+

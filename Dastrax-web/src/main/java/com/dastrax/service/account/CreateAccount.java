@@ -5,10 +5,10 @@
 package com.dastrax.service.account;
 
 import com.amazonaws.AmazonClientException;
-import com.dastrax.per.dao.CompanyDAO;
-import com.dastrax.per.dao.EmailParamDAO;
-import com.dastrax.per.dao.EmailTemplateDAO;
-import com.dastrax.per.dao.SubjectDAO;
+import com.dastrax.per.dao.core.CompanyDAO;
+import com.dastrax.per.dao.core.EmailParamDAO;
+import com.dastrax.per.dao.core.EmailTemplateDAO;
+import com.dastrax.per.dao.core.SubjectDAO;
 import com.dastrax.per.entity.core.Account;
 import com.dastrax.per.entity.core.Address;
 import com.dastrax.per.entity.core.Company;
@@ -24,6 +24,7 @@ import com.dastrax.app.security.PasswordSvcs;
 import com.dastrax.app.util.ExceptionUtil;
 import com.dastrax.mesh.email.Email;
 import com.dastrax.mesh.email.EmailUtil;
+import com.dastrax.per.dao.core.AuditDAO;
 import com.dastrax.service.util.JsfUtil;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -36,10 +37,13 @@ import java.util.UUID;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.Pattern;
+import org.apache.shiro.SecurityUtils;
 
 /**
  *
@@ -73,6 +77,8 @@ public class CreateAccount implements Serializable {
     PasswordSvcs passwordSvcs;
     @EJB
     CompanyDAO companyDAO;
+    @EJB
+    AuditDAO auditDAO;
 
     // Constructors-------------------------------------------------------------
     public CreateAccount() {
@@ -83,11 +89,33 @@ public class CreateAccount implements Serializable {
     }
 
     @PostConstruct
-    private void init() {
-        helper.vars = companyDAO.findCompaniesByType(DastraxCst.CompanyType.VAR.toString());
-        helper.clients = companyDAO.findCompaniesByType(DastraxCst.CompanyType.CLIENT.toString());
+    private void postConstruct() {
+        // Set the companies that the subject has access to
+        if (SecurityUtils.getSubject().hasRole(DastraxCst.Metier.ADMIN.toString())) {
+            helper.vars = companyDAO.findCompaniesByType(DastraxCst.CompanyType.VAR.toString());
+            helper.clients = companyDAO.findCompaniesByType(DastraxCst.CompanyType.CLIENT.toString());
+        } else if (SecurityUtils.getSubject().hasRole(DastraxCst.Metier.VAR.toString())) {
+            Subject s = subjectDAO.findSubjectByUid(
+                    SecurityUtils.getSubject().getPrincipals()
+                    .asList().get(1).toString());
+            for (Company comp : s.getCompany().getClients()) {
+                helper.clients.add(comp);
+            }
+        }
     }
     
+    /**
+     * Called by the account confirmation page
+     */
+    public void init() {
+        EmailParam ep = emailParamDAO.findParamByToken(helper.getToken());
+        if (ep != null) {
+            helper.setRenderPublicForm(true);
+        } else {
+            JsfUtil.addWarningMessage("Please use the link in your email to confirm your account.");
+        }
+    }
+
     // Getters------------------------------------------------------------------
     public Subject getSubject() {
         return subject;
@@ -130,17 +158,21 @@ public class CreateAccount implements Serializable {
 
             // Add success message
             JsfUtil.addSuccessMessage("New administrator successfully created");
-            // Carry the message over to the page redirect
-            FacesContext
-                    .getCurrentInstance()
-                    .getExternalContext()
-                    .getFlash()
-                    .setKeepMessages(true);
 
-            // Create an audit log of the event
-            //audit.create("Admin Account Requested: (ID: " + s.getUid() + ")");
-            // Set the navigation outcome
-            result = "access-accounts-list-page";
+            if (helper.redirect()) {
+
+                // Carry the message over to the page redirect
+                FacesContext
+                        .getCurrentInstance()
+                        .getExternalContext()
+                        .getFlash()
+                        .setKeepMessages(true);
+
+                // Create an audit log of the event
+                //audit.create("Admin Account Requested: (ID: " + s.getUid() + ")");
+                // Set the navigation outcome
+                result = "access-accounts-list-page";
+            }
 
         } catch (DuplicateEmailException dee) {
             JsfUtil.addWarningMessage("This email address is already registered.");
@@ -152,10 +184,10 @@ public class CreateAccount implements Serializable {
     }
 
     /**
-     * When a subject requests a new VAR account this method performs
-     * the required checks before sending them an email with a confirmation link
-     * and a pin code. The account remains unconfirmed until it is either
-     * confirmed or the housekeeping protocols delete the unconfirmed account.
+     * When a subject requests a new VAR account this method performs the
+     * required checks before sending them an email with a confirmation link and
+     * a pin code. The account remains unconfirmed until it is either confirmed
+     * or the housekeeping protocols delete the unconfirmed account.
      *
      * @return if the request was successfully processed and the account was
      * created a navigation string is returned, otherwise null.
@@ -165,8 +197,19 @@ public class CreateAccount implements Serializable {
         String result = null;
 
         try {
-            // Set the selected company
-            subject.setCompany(companyDAO.findCompanyById(helper.selectedCompany));  
+            // Set the company
+            // ADMIN access
+            if (SecurityUtils.getSubject().hasRole(DastraxCst.Metier.ADMIN.toString())) {
+                subject.setCompany(companyDAO.findCompanyById(helper.selectedCompany));
+            }
+            // VAR access
+            if (SecurityUtils.getSubject().hasRole(DastraxCst.Metier.VAR.toString())) {
+                Subject s = subjectDAO.findSubjectByUid(
+                        SecurityUtils.getSubject().getPrincipals()
+                        .asList().get(1).toString());
+                subject.setCompany(s.getCompany());
+            }
+
             // Persist the var
             Subject s = subjectDAO.createVar(subject);
             // Send an email
@@ -176,17 +219,20 @@ public class CreateAccount implements Serializable {
 
             // Add success message
             JsfUtil.addSuccessMessage("New VAR successfully created");
-            // Carry the message over to the page redirect
-            FacesContext
-                    .getCurrentInstance()
-                    .getExternalContext()
-                    .getFlash()
-                    .setKeepMessages(true);
 
-            // Create an audit log of the event
-            //audit.create("Admin Account Requested: (ID: " + s.getUid() + ")");
-            // Set the navigation outcome
-            result = "access-accounts-list-page";
+            if (helper.redirect()) {
+                // Carry the message over to the page redirect
+                FacesContext
+                        .getCurrentInstance()
+                        .getExternalContext()
+                        .getFlash()
+                        .setKeepMessages(true);
+
+                // Create an audit log of the event
+                //audit.create("Admin Account Requested: (ID: " + s.getUid() + ")");
+                // Set the navigation outcome
+                result = "access-accounts-list-page";
+            }
 
         } catch (DuplicateEmailException dee) {
             JsfUtil.addWarningMessage("This email address is already registered.");
@@ -196,12 +242,12 @@ public class CreateAccount implements Serializable {
 
         return result;
     }
-    
+
     /**
-     * When a subject requests a new Client account this method performs
-     * the required checks before sending them an email with a confirmation link
-     * and a pin code. The account remains unconfirmed until it is either
-     * confirmed or the housekeeping protocols delete the unconfirmed account.
+     * When a subject requests a new Client account this method performs the
+     * required checks before sending them an email with a confirmation link and
+     * a pin code. The account remains unconfirmed until it is either confirmed
+     * or the housekeeping protocols delete the unconfirmed account.
      *
      * @return if the request was successfully processed and the account was
      * created a navigation string is returned, otherwise null.
@@ -211,8 +257,23 @@ public class CreateAccount implements Serializable {
         String result = null;
 
         try {
-            // Set the selected company
-            subject.setCompany(companyDAO.findCompanyById(helper.selectedCompany));
+            // Set the company
+            // ADMIN access
+            if (SecurityUtils.getSubject().hasRole(DastraxCst.Metier.ADMIN.toString())) {
+                subject.setCompany(companyDAO.findCompanyById(helper.selectedCompany));
+            }
+            // VAR access
+            if (SecurityUtils.getSubject().hasRole(DastraxCst.Metier.VAR.toString())) {
+                subject.setCompany(companyDAO.findCompanyById(helper.selectedCompany));
+            }
+            // CLIENT access
+            if (SecurityUtils.getSubject().hasRole(DastraxCst.Metier.CLIENT.toString())) {
+                Subject s = subjectDAO.findSubjectByUid(
+                        SecurityUtils.getSubject().getPrincipals()
+                        .asList().get(1).toString());
+                subject.setCompany(s.getCompany());
+            }
+
             // Persist the administrator
             Subject s = subjectDAO.createClient(subject);
             // Send an email
@@ -222,17 +283,20 @@ public class CreateAccount implements Serializable {
 
             // Add success message
             JsfUtil.addSuccessMessage("New Client successfully created");
-            // Carry the message over to the page redirect
-            FacesContext
-                    .getCurrentInstance()
-                    .getExternalContext()
-                    .getFlash()
-                    .setKeepMessages(true);
 
-            // Create an audit log of the event
-            //audit.create("Admin Account Requested: (ID: " + s.getUid() + ")");
-            // Set the navigation outcome
-            result = "access-accounts-list-page";
+            if (helper.redirect()) {
+                // Carry the message over to the page redirect
+                FacesContext
+                        .getCurrentInstance()
+                        .getExternalContext()
+                        .getFlash()
+                        .setKeepMessages(true);
+
+                // Create an audit log of the event
+                //audit.create("Admin Account Requested: (ID: " + s.getUid() + ")");
+                // Set the navigation outcome
+                result = "access-accounts-list-page";
+            }
 
         } catch (DuplicateEmailException dee) {
             JsfUtil.addWarningMessage("This email address is already registered.");
@@ -242,7 +306,7 @@ public class CreateAccount implements Serializable {
 
         return result;
     }
-    
+
     /**
      * Once the registration is successful of the new administrator an email
      * needs to be constructed and sent containing all the required info.
@@ -272,6 +336,7 @@ public class CreateAccount implements Serializable {
         // Set the variables
         Map<String, String> vars = new HashMap<>();
         vars.put("pin", pin.toString());
+        vars.put("name", subject.getContact().buildFullName());
         email.setVariables(vars);
 
         // Retreive the email template from the database.
@@ -357,7 +422,8 @@ public class CreateAccount implements Serializable {
                         JsfUtil.addSuccessMessage("Congratulations! You're account has been confirmed and you can now sign into your account");
 
                         // Create an audit log of the event
-                        //audit.create("Account confirmed: " + s.getUid());
+                        auditDAO.create("Account confirmed: " + s.getContact().buildFullName());
+                        helper = new Helper();
                     } else {
                         JsfUtil.addErrorMessage("We could not find any records of this account.");
                     }
@@ -391,11 +457,12 @@ public class CreateAccount implements Serializable {
         private String selectedCompany;
         private List<Company> vars = new ArrayList<>();
         private List<Company> clients = new ArrayList<>();
+        private boolean renderPublicForm;
 
         // Constructors-------------------------------------------------------------
         public Helper() {
         }
-        
+
         // Getters------------------------------------------------------------------
         public String getEmail() {
             return email;
@@ -441,6 +508,10 @@ public class CreateAccount implements Serializable {
             return selectedCompany;
         }
 
+        public boolean isRenderPublicForm() {
+            return renderPublicForm;
+        }
+
         // Setters------------------------------------------------------------------
         public void setEmail(String email) {
             this.email = email;
@@ -484,6 +555,31 @@ public class CreateAccount implements Serializable {
 
         public void setSelectedCompany(String selectedCompany) {
             this.selectedCompany = selectedCompany;
+        }
+
+        public void setRenderPublicForm(boolean renderPublicForm) {
+            this.renderPublicForm = renderPublicForm;
+        }
+
+        // Methods------------------------------------------------------------------
+        /**
+         * Accounts can be created from several places. This method is used to 
+         * verify that the request is coming from the main account creation page.
+         * @return true if the current URL matches the main account creation URL.
+         */
+        public boolean redirect() {
+            ExternalContext extc = FacesContext.getCurrentInstance().getExternalContext();
+            HttpServletRequest request = (HttpServletRequest) extc.getRequest();
+            String contextURL = request.getRequestURI();
+            // ADMIN access
+            if (SecurityUtils.getSubject().hasRole(DastraxCst.Metier.ADMIN.toString())) {
+                return "/a/accounts/create.jsf".equals(contextURL);
+            }
+            // VAR access
+            if (SecurityUtils.getSubject().hasRole(DastraxCst.Metier.VAR.toString())) {
+                return "/b/accounts/create.jsf".equals(contextURL);
+            }
+            return false;
         }
 
     }

@@ -9,7 +9,8 @@ import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.credential.PasswordMatcher;
 
 /**
- *
+ * Allows SHIRO to access and store encrypted passwords
+ * 
  * @version Build 2.0.0
  * @since Jul 15, 2013
  * @author Tarka L'Herpiniere <info@tarka.tv>

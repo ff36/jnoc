@@ -36,6 +36,7 @@ import javax.validation.constraints.Pattern;
     @NamedQuery(name = "Subject.findByMetier", query = "SELECT e FROM Subject e WHERE e.metier.name = :name"),
     @NamedQuery(name = "Subject.findPWByPK", query = "SELECT e.password FROM Subject e WHERE e.uid = :uid"),
     @NamedQuery(name = "Subject.findByNullCompany", query = "SELECT e FROM Subject e WHERE e.company IS NULL"),
+    @NamedQuery(name = "Subject.findByCompany", query = "SELECT e FROM Subject e JOIN e.company c WHERE c.id = :id"),
 })
 @Entity
 public class Subject implements Serializable {
@@ -46,9 +47,9 @@ public class Subject implements Serializable {
     // Variables----------------------------------------------------------------
     @Version
     private int version;
-    @TableGenerator(name = "Subject_Gen", table = "ID_GEN", pkColumnName = "GEN_NAME", valueColumnName = "GEN_VAL")
+    @TableGenerator(name = "Subject_Gen", table = "SEQ_ID_GEN", pkColumnName = "GEN_NAME", valueColumnName = "GEN_VAL")
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "Subject_Gen")
     private String uid;
     @Pattern(regexp = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message = "Invalid Email")
     @Column(unique = true)

@@ -34,8 +34,8 @@ public class Permission implements Serializable {
     // Variables----------------------------------------------------------------
     @Version
     private int version;
-    @TableGenerator(name = "Permission_Gen", table = "ID_GEN", pkColumnName = "GEN_NAME", valueColumnName = "GEN_VAL")
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @TableGenerator(name = "Permission_Gen", table = "SEQ_ID_GEN", pkColumnName = "GEN_NAME", valueColumnName = "GEN_VAL", initialValue = 50)
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "Permission_Gen")
     @Id
     private String id;
     private String name;

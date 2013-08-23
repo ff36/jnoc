@@ -4,17 +4,22 @@
  */
 package com.dastrax.service.site;
 
-import com.dastrax.per.dao.SiteDAO;
-import com.dastrax.per.dao.SubjectDAO;
+import com.dastrax.per.dao.core.SiteDAO;
+import com.dastrax.per.dao.core.SubjectDAO;
 import com.dastrax.per.entity.core.Site;
 import com.dastrax.app.security.PasswordSvcs;
-import com.dastrax.service.model.SiteModel;
+import com.dastrax.app.util.FilterUtil;
+import com.dastrax.per.project.DastraxCst;
 import com.dastrax.service.util.JsfUtil;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import org.apache.shiro.SecurityUtils;
@@ -38,7 +43,7 @@ public class Sites implements Serializable {
     private SiteModel siteModel;
     private List<Site> filtered;
     private String principalPassword;
-    private String filterCondition;
+    private String filter;
 
     // EJB----------------------------------------------------------------------
     @EJB
@@ -47,6 +52,15 @@ public class Sites implements Serializable {
     PasswordSvcs passwordSvcs;
     @EJB
     SubjectDAO subjectDAO;
+    @EJB
+    FilterUtil filterUtil;
+    
+    // Constructors-------------------------------------------------------------
+    public void init() {
+        Map<String, List<String>> metierFilter = filterUtil.authorizedCompanies();
+        Map<String, List<String>> optFilter = filterUtil.optionalFilter(filter);
+        siteModel = new SiteModel(siteDAO, metierFilter, optFilter);
+    }
 
     // Getters------------------------------------------------------------------
     public List<Site> getSites() {
@@ -77,8 +91,8 @@ public class Sites implements Serializable {
         }
     }
 
-    public String getFilterCondition() {
-        return filterCondition;
+    public String getFilter() {
+        return filter;
     }
 
     // Setters------------------------------------------------------------------
@@ -102,43 +116,15 @@ public class Sites implements Serializable {
         this.principalPassword = principalPassword;
     }
 
-    public void setFilterCondition(String filterCondition) {
-        this.filterCondition = filterCondition;
+    public void setFilter(String filter) {
+        this.filter = filter;
     }
 
     // Methods------------------------------------------------------------------
-    public void init() {
-        populateData();
-    }
-
     /**
-     * Populate the data table based on role
-     */
-    public void populateData() {
-
-        if (sites.size() > 0) {
-            sites.clear();
-        }
-
-        sites = siteDAO.findAllSites();
-//        if (filterCondition != null) {
-//            Iterator<Site> i = sites.iterator();
-//            while (i.hasNext()) {
-//                Site s = i.next();
-//                if (!s.getCompany().getName().equals(filterCondition)) {
-//                    i.remove();
-//                }
-//            }
-//        }
-
-        siteModel = new SiteModel(sites);
-    }
-
-    /**
-     * This method provides the the access point to delete accounts.
+     * This method provides the the access point to delete selected accounts.
      */
     public void deleteSites() {
-
         String dbPsw = subjectDAO.findSubjectPasswordByUid(
                 SecurityUtils.getSubject().getPrincipals()
                 .asList().get(1).toString());
@@ -150,9 +136,6 @@ public class Sites implements Serializable {
                 siteDAO.delete(s.getId());
                 JsfUtil.addSuccessMessage("Site " + s.getName() + " successfully deleted");
             }
-
-            populateData();
-
             // In view scoped bean we just want to clear variables
             selectedSites = null;
 
@@ -165,7 +148,7 @@ public class Sites implements Serializable {
     }
 
     /**
-     * Save account changes
+     * Save name changes
      */
     public void saveName() {
         siteDAO.updateName(
@@ -185,7 +168,7 @@ public class Sites implements Serializable {
     }
     
     /**
-     * Save address changes
+     * Save package changes
      */
     public void savePackageType() {
         siteDAO.updatePackageType(
@@ -195,13 +178,41 @@ public class Sites implements Serializable {
     }
     
     /**
-     * Save address changes
+     * Save response changes
      */
     public void savePackageResponse() {
         siteDAO.updatePackageResponse(
                 selectedSites[0].getId(),
                 selectedSites[0].getResponseHrs());
         JsfUtil.addSuccessMessage("Response time saved");
+    }
+
+    /**
+     * This needs to be converted into a data list on the presentation layer.
+     *
+     * @param filterId
+     * @throws IOException
+     */
+    public void tempFilterApply(int filterId) throws IOException {
+        ExternalContext ectx = FacesContext.getCurrentInstance().getExternalContext();
+        String url = null;
+        // ADMIN access
+        if (SecurityUtils.getSubject().hasRole(DastraxCst.Metier.ADMIN.toString())) {
+            if (filterId == 0) {
+                url = ectx.getRequestContextPath() + "/a/sites/list.jsf";
+            } else {
+                url = ectx.getRequestContextPath() + "/a/sites/list.jsf?filter=" + filterId;
+            }
+        }
+        // VAR access
+        if (SecurityUtils.getSubject().hasRole(DastraxCst.Metier.VAR.toString())) {
+            if (filterId == 0) {
+                url = ectx.getRequestContextPath() + "/b/sites/list.jsf";
+            } else {
+                url = ectx.getRequestContextPath() + "/b/sites/list.jsf?filter=" + filterId;
+            }
+        }
+        FacesContext.getCurrentInstance().getExternalContext().redirect(url);
     }
 
 }

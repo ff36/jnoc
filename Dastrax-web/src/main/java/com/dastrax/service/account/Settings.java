@@ -4,9 +4,9 @@
  */
 package com.dastrax.service.account;
 
-import com.dastrax.per.dao.EmailParamDAO;
-import com.dastrax.per.dao.EmailTemplateDAO;
-import com.dastrax.per.dao.SubjectDAO;
+import com.dastrax.per.dao.core.EmailParamDAO;
+import com.dastrax.per.dao.core.EmailTemplateDAO;
+import com.dastrax.per.dao.core.SubjectDAO;
 import com.dastrax.per.entity.core.EmailParam;
 import com.dastrax.per.entity.core.EmailTemplate;
 import com.dastrax.per.entity.core.Subject;
@@ -67,7 +67,7 @@ public class Settings implements Serializable {
 
     // Constructors-------------------------------------------------------------
     @PostConstruct
-    private void init() {
+    private void postConstruct() {
         if (SecurityUtils.getSubject().isAuthenticated()) {
             subject = subjectDAO.findSubjectByUid(
                     SecurityUtils.getSubject().getPrincipals()
@@ -75,6 +75,21 @@ public class Settings implements Serializable {
                     );
         }
 
+    }
+
+    /**
+     * Called by viewParam after attributes have been set but before the page is
+     * rendered. This should only be called from the public password reset page
+     * and the email change confirm page.
+     */
+    public void init() {
+        helper.emailParam = emailParamDAO.findParamByToken(helper.token);
+        if (helper.emailParam != null) {
+            helper.setRenderPublicForm(true);
+            helper.email = helper.emailParam.getEmail();
+        } else {
+            JsfUtil.addWarningMessage("Please use the link in the email.");
+        }
     }
 
     // Getters------------------------------------------------------------------
@@ -96,6 +111,9 @@ public class Settings implements Serializable {
     }
 
     // Methods------------------------------------------------------------------
+    /**
+     * Save profile details
+     */
     public void saveContact() {
         subjectDAO.updateContact(
                 subject.getUid(),
@@ -103,6 +121,9 @@ public class Settings implements Serializable {
         JsfUtil.addSuccessMessage("Profile Updated");
     }
 
+    /**
+     * Process change of password when it is accessed from the authenticated domain
+     */
     public void savePassword() {
 
         String[] psws = {helper.tempPswA, helper.tempPswB};
@@ -122,17 +143,64 @@ public class Settings implements Serializable {
         }
     }
 
+    /**
+     * Process change of email request
+     */
     public void changeEmailRequest() {
 
         // Check to make sure the email is available
         if (subjectDAO.findSubjectByEmail(helper.newEmail) == null) {
             // Persist the email params
-            EmailParam ep = sendEmail(subject);
+            EmailParam ep = sendEmail(subject, DastraxCst.EmailTemplate.CHANGE_EMAIL.toString());
             emailParamDAO.create(ep);
 
             JsfUtil.addSuccessMessage("An email containing instructions on how to complete the process has been sent to " + ep.getEmail());
         } else {
             JsfUtil.addWarningMessage(helper.newEmail + " is already registered to another account.");
+        }
+    }
+
+    /**
+     * Process change of password request
+     */
+    public void changePswRequest() {
+        // Check the account is registered
+        Subject s = subjectDAO.findSubjectByEmail(helper.email);
+        if (s != null) {
+            emailParamDAO.create(
+                    sendEmail(s, DastraxCst.EmailTemplate.CHANGE_PASSWORD.toString())
+                    );
+            JsfUtil.addSuccessMessage("An email containing instructions on how to complete the process has been sent to " + s.getEmail());
+        } else {
+            JsfUtil.addWarningMessage(helper.email + " is not a registered account.");
+        }
+    }
+
+    /**
+     * When a password is reset from the public domain
+     */
+    public void savePublicPsw() {
+        subject = subjectDAO.findSubjectByEmail(helper.emailParam.getParamA());
+        String[] psws = {helper.tempPswA, helper.tempPswB};
+        Response response = passwordSvcs.validate(psws, subject.getEmail());
+        if (response.getObject() != null) {
+            // If the account is not yet confirmed we can use this to confirm it
+            if (!subject.getAccount().isConfirmed()) {
+                subjectDAO.confirm(
+                        subject.getUid(),
+                        (String) response.getObject());
+            } else {
+                // Update the password
+                subjectDAO.updatePassword(
+                        subject.getUid(),
+                        (String) response.getObject());
+            }
+            emailParamDAO.delete(helper.token);
+            helper = new Helper();
+            JsfUtil.addSuccessMessage("Password Updated");
+        } else {
+            // Password failed
+            response.renderJsfMsgs();
         }
     }
 
@@ -145,7 +213,7 @@ public class Settings implements Serializable {
      * @throws Exception
      * @throws AmazonClientException
      */
-    private EmailParam sendEmail(Subject subject) {
+    private EmailParam sendEmail(Subject subject, String template) {
 
         // Build an new email
         Email email = new Email();
@@ -161,11 +229,11 @@ public class Settings implements Serializable {
 
         // Set the variables
         Map<String, String> vars = new HashMap<>();
+        vars.put("name", subject.getContact().buildFullName());
         email.setVariables(vars);
 
         // Retreive the email template from the database.
-        EmailTemplate et = emailTemplateDAO.findTemplateById(
-                DastraxCst.EmailTemplate.CHANGE_EMAIL.toString());
+        EmailTemplate et = emailTemplateDAO.findTemplateById(template);
         email.setTemplate(et);
 
         // Send the email
@@ -193,7 +261,7 @@ public class Settings implements Serializable {
                     emailParamDAO.delete(ep.getToken());
 
                     SecurityUtils.getSubject().logout();
-
+                    helper = new Helper();
                     JsfUtil.addSuccessMessage("New email updated. For security you have been signed out of your account and will need to sign back in using your new email.");
                 } else {
                     // Wrong password
@@ -255,6 +323,9 @@ public class Settings implements Serializable {
         private String principalPsw;
         private String tempPswA;
         private String tempPswB;
+        private String email;
+        private boolean renderPublicForm;
+        private EmailParam emailParam;
 
         // Constructors-------------------------------------------------------------
         public Helper() {
@@ -285,6 +356,14 @@ public class Settings implements Serializable {
             return tempPswB;
         }
 
+        public String getEmail() {
+            return email;
+        }
+
+        public boolean isRenderPublicForm() {
+            return renderPublicForm;
+        }
+
         // Setters------------------------------------------------------------------
         public void setNewEmail(String newEmail) {
             this.newEmail = newEmail;
@@ -308,6 +387,14 @@ public class Settings implements Serializable {
 
         public void setTempPswB(String tempPswB) {
             this.tempPswB = tempPswB;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
+        }
+
+        public void setRenderPublicForm(boolean renderPublicForm) {
+            this.renderPublicForm = renderPublicForm;
         }
 
     }

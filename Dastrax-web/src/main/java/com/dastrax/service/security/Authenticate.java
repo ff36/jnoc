@@ -4,19 +4,21 @@
  */
 package com.dastrax.service.security;
 
-import com.dastrax.per.dao.CompanyDAO;
-import com.dastrax.per.dao.SubjectDAO;
-import com.dastrax.per.entity.core.Company;
-import com.dastrax.per.entity.core.Subject;
-import com.dastrax.per.project.DastraxCst;
 import com.dastrax.app.util.DnsUtil;
 import com.dastrax.app.util.ExceptionUtil;
 import com.dastrax.app.util.UriUtil;
+import com.dastrax.per.dao.core.CompanyDAO;
+import com.dastrax.per.dao.core.SubjectDAO;
+import com.dastrax.per.entity.core.Company;
+import com.dastrax.per.entity.core.Subject;
+import com.dastrax.per.project.DastraxCst;
 import com.dastrax.service.util.JsfUtil;
 import com.dastrax.service.util.PathUtil;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
@@ -45,6 +47,9 @@ import org.apache.shiro.web.util.WebUtils;
 @Named
 @RequestScoped
 public class Authenticate implements Serializable {
+
+    // Logger-------------------------------------------------------------------
+    private static final Logger LOG = Logger.getLogger(Authenticate.class.getName());
 
     // Project Stage------------------------------------------------------------
     private final String stage = ResourceBundle.getBundle("Config").getString("ProjectStage");
@@ -107,44 +112,58 @@ public class Authenticate implements Serializable {
 
     // Post Construct-----------------------------------------------------------
     @PostConstruct
-    public void init() {
+    private void postConstruct() {
         /*
          * Obtain the current URL so we can populate the page based on the
          * sub-domain.
          */
         ExternalContext ectx = FacesContext.getCurrentInstance().getExternalContext();
         HttpServletRequest request = (HttpServletRequest) ectx.getRequest();
-        String contextURL = request.getRequestURL().toString().replace(
-                request.getRequestURI().substring(0), "") + request.getContextPath();
+        String contextURL = request.getRequestURL().toString();
 
         subdomain = dnsUtil.extract(contextURL);
 
         // Are we in DEV mode. If so bypass all this
         if (!stage.equals(DastraxCst.ProjectStage.DEV.toString())) {
-            // Is the subject trying to access the universal page
-            if (!subdomain.equals(ResourceBundle.getBundle("Config").getString("UniversalSubdomain"))) {
-                // Is the subject trying to access the admin page
-                if (!subdomain.equals(ResourceBundle.getBundle("Config").getString("AdminSubdomain"))) {
-                    // Is the subject trying to access the login page via /login.jsf
-                    if (subdomain != null) {
+            // Is the subject trying to access the login page via /login.jsf
+            if (subdomain != null) {
+                // Is the subject trying to access the universal page
+                if (!subdomain.equals(ResourceBundle.getBundle("Config").getString("UniversalSubdomain"))) {
+                    // Is the subject trying to access the admin page
+                    if (!subdomain.equals(ResourceBundle.getBundle("Config").getString("AdminSubdomain"))) {
+
                         var = companyDAO.findCompanyBySubdomain(subdomain);
                         if (var != null) {
                             logoPath = uriUtil.companyLogo(var);
                             renderLogin = true;
+                        } else {
+                            JsfUtil.addWarningMessage("Sorry, this subdomain is not registered.");
+                            renderLogin = false;
                         }
+
                     } else {
-                        // Subdomain login
-                        renderLogin = false;
+                        // Is accessing admin subdomain
+                        logoPath = pathUtil.s3Logo("dastrax_logo_v1.png");
+                        renderLogin = true;
                     }
                 } else {
-                    // Is accessing admin subdomain
+                    // This means the page is been accessed from the universal domain
                     logoPath = pathUtil.s3Logo("dastrax_logo_v1.png");
-                    renderLogin = true;
+                    renderLogin = false;
+                    renderUniversal = true;
                 }
             } else {
-                // This means the page is been accessed from the universal domain
+                // Subdomain is null
+                String url = ResourceBundle.getBundle("Config").getString("AccessProtocol")
+                        + ResourceBundle.getBundle("Config").getString("UniversalSubdomain")
+                        + "."
+                        + ResourceBundle.getBundle("Config").getString("BaseUrl");
+                try {
+                    FacesContext.getCurrentInstance().getExternalContext().redirect(url);
+                } catch (IOException ex) {
+                    LOG.log(Level.SEVERE, "Login redirect failed due to Faces External Context", ex);
+                }
                 renderLogin = false;
-                renderUniversal = true;
             }
         } else {
             // In development mode
@@ -153,7 +172,63 @@ public class Authenticate implements Serializable {
         }
     }
 
+    public void init() {
+    }
+
     // Methods------------------------------------------------------------------
+    /**
+     * The universal login page uses this method to redirect subjects to their
+     * specific sub-domain login based on their email.
+     * @throws IOException 
+     */
+    public void redirect() throws IOException {
+        Subject s = subjectDAO.findSubjectByEmail(email);
+        if (s != null) {
+            ExternalContext ectx = FacesContext.getCurrentInstance().getExternalContext();
+            String url = null;
+            // Email matches ADMIN
+            if (s.getMetier().getName().equals(DastraxCst.Metier.ADMIN.toString())) {
+                url = ResourceBundle.getBundle("Config").getString("AccessProtocol")
+                        + ResourceBundle.getBundle("Config").getString("AdminSubdomain")
+                        + "."
+                        + ResourceBundle.getBundle("Config").getString("BaseUrl")
+                        + "/login.jsf?email="
+                        + email;
+            }
+            // Email matches VAR
+            if (s.getMetier().getName().equals(DastraxCst.Metier.VAR.toString())) {
+                url = ResourceBundle.getBundle("Config").getString("AccessProtocol")
+                        + s.getCompany().getSubdomain()
+                        + "."
+                        + ResourceBundle.getBundle("Config").getString("BaseUrl")
+                        + "/login.jsf?email="
+                        + email;
+            }
+            // Email matches CLIENT
+            if (s.getMetier().getName().equals(DastraxCst.Metier.CLIENT.toString())) {
+                url = ResourceBundle.getBundle("Config").getString("AccessProtocol")
+                        + s.getCompany().getParentVAR().getSubdomain()
+                        + "."
+                        + ResourceBundle.getBundle("Config").getString("BaseUrl")
+                        + "/login.jsf?email="
+                        + email;
+            }
+            FacesContext.getCurrentInstance().getExternalContext().redirect(url);
+
+            // Add success message
+            JsfUtil.addSuccessMessage("In the futur you can access you login page directly by going to " + url);
+            // Carry the message over to the page redirect
+            FacesContext
+                    .getCurrentInstance()
+                    .getExternalContext()
+                    .getFlash()
+                    .setKeepMessages(true);
+        } else {
+            // Email not registered in the system
+            JsfUtil.addWarningMessage(ResourceBundle.getBundle("WebBundle").getString("error.login.noemail"));
+        }
+    }
+
     /**
      * Collects the login credentials from the view layer and passes the data to
      * the logic layer
@@ -168,14 +243,14 @@ public class Authenticate implements Serializable {
                 // Check subject has access to this subdomain
                 boolean isAuthorised = false;
 
-                if (SecurityUtils.getSubject().hasRole(
+                if (s.getMetier().getName().equals(
                         DastraxCst.Metier.VAR.toString())
                         && var != null
                         && s.getCompany().equals(var)) {
                     isAuthorised = true;
                 }
 
-                if (SecurityUtils.getSubject().hasRole(
+                if (s.getMetier().getName().equals(
                         DastraxCst.Metier.CLIENT.toString())
                         && var != null
                         && s.getCompany().getParentVAR().equals(var)) {

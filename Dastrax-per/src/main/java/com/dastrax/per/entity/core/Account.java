@@ -12,7 +12,6 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
-import javax.persistence.TableGenerator;
 import javax.persistence.Version;
 
 /**
@@ -36,7 +35,6 @@ public class Account implements Serializable {
     // Variables----------------------------------------------------------------
     @Version
     private int version;
-    @TableGenerator(name = "Account_Gen", table = "ID_GEN", pkColumnName = "GEN_NAME", valueColumnName = "GEN_VAL")
     @GeneratedValue(strategy = GenerationType.TABLE)
     @Id
     private String id;

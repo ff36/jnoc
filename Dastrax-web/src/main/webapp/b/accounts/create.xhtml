@@ -1,0 +1,492 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:ez="http://xmlns.jcp.org/jsf/composite/ezcomp"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <h:outputStylesheet name="css/auth-b.css"/>
+        <h:outputStylesheet name="css/common.css"/>
+        <link rel="shortcut icon" type="image/png" href="#{request.contextPath}/resources/graphics/favicon.ico" />
+        <title>#{webBundle['default.page.title']} | #{webBundle['var.account.create.page.title']}</title>
+    </h:head>
+
+    <h:body>
+
+        <h:form id="form">
+
+            <pe:ajaxErrorHandler />
+
+            <p:growl id="growl" 
+                     redisplay="false"
+                     showDetail="false" 
+                     sticky="false" />
+
+            <ez:navigation-b/>
+
+            <pe:layout stateCookie="false" widgetVar="layoutWgt" >
+
+                <pe:layoutPane id="west" position="west" resizeWhileDragging="true" size="220">
+
+                    <table class="side-menu">
+                        <tr>
+                            <td>
+                                <h3>Quick Accounts</h3>
+                            </td>
+                        </tr>
+                        <tr class="hover">
+                            <td>
+                                <p:commandLink id="min-admin" value="Minimal Admin" process="@this" update=":form:switch">
+                                    <f:setPropertyActionListener target="#{createAccount.helper.accountType}" value="QUICKVAR"/>
+                                </p:commandLink>
+                            </td>
+                        </tr>
+                        <tr class="hover">
+                            <td>
+                                <p:commandLink id="min-client" value="Minimal Client" process="@this" update=":form:switch">
+                                    <f:setPropertyActionListener target="#{createAccount.helper.accountType}" value="QUICKCLIENT"/>
+                                </p:commandLink>
+                            </td>
+                        </tr>
+                    </table>
+
+                </pe:layoutPane>
+
+                <pe:layoutPane id="center" position="center" resizeWhileDragging="true">
+
+                    <table>
+                        <tr>
+                            <td class="create-col-1">
+
+                                <table width="100%">
+                                    <tr>
+                                        <td><h2>New Account</h2></td>
+                                        <td width="150px"></td>
+                                    </tr>
+                                </table>
+
+                                <h:panelGrid columns="2" columnClasses="field-label-3">
+                                    <h:outputText value="Account Type:" styleClass="field-label-3"/>  
+                                    <p:selectOneMenu value="#{createAccount.helper.accountType}" style="width: 150px">  
+                                        <f:selectItem itemLabel="" itemValue="" /> 
+                                        <f:selectItem itemLabel="ADMIN" itemValue="VAR" />  
+                                        <f:selectItem itemLabel="CLIENT" itemValue="CLIENT" /> 
+                                        <p:ajax update="switch" process="@this" />
+                                    </p:selectOneMenu>  
+                                </h:panelGrid>
+
+                            </td>
+
+                            <td class="create-col-2">
+                                <p:graphicImage value="#{pathUtil.s3Icon('black/br_next_icon_24.png')}"/>                            
+                            </td>
+
+                            <td class="create-col-3">
+
+                                <pe:switch id="switch" value="#{createAccount.helper.accountType}">  
+
+                                    <pe:defaultCase>  
+
+                                    </pe:defaultCase> 
+
+                                    <pe:case value="VAR">  
+
+                                        <h:panelGrid columns="2" columnClasses="field-label-3">
+
+                                            <h:outputText value="Email:*" styleClass="field-label-3"/>
+                                            <p:inputText value="#{createAccount.subject.email}" rendered="true" requiredMessage="Email is required"/>
+
+                                        </h:panelGrid>
+
+                                        <p:spacer width="100%" height="20px"/>
+
+                                        <h3>Personal</h3>
+                                        <p:spacer width="100%" height="7px"/>
+                                        <h:panelGrid columns="2" columnClasses="field-label-3">
+
+                                            <h:outputText value="First Name:*" styleClass="field-label-3"/>
+                                            <p:inputText value="#{createAccount.subject.contact.firstName}" rendered="true" requiredMessage="Name is required"/>
+
+                                            <h:outputText value="Last Name:*" styleClass="field-label-3"/>
+                                            <p:inputText value="#{createAccount.subject.contact.lastName}" rendered="true" requiredMessage="Name is required"/>
+
+                                        </h:panelGrid>
+
+                                        <p:spacer width="100%" height="20px"/>
+
+                                        <h3>Address</h3>
+
+                                        <p:dataList id="address-list" 
+                                                    styleClass="clear-data-list" 
+                                                    value="#{createAccount.subject.contact.addresses}"
+                                                    var="address"
+                                                    itemType="none">
+
+                                            <h:panelGrid columns="2" columnClasses="field-label-3">
+
+                                                <h:outputText value=""/>
+                                                <p:commandLink id="remove-address" styleClass="align-right" value="Remove" action="#{createAccount.subject.contact.removeAddress(address)}" update="address-list" process="@this,remove-address,address-list"/>
+
+                                                <h:outputText value="Street:"/>
+                                                <p:inputText value="#{address.lineTwo}"/>
+
+                                                <h:outputText value="Town:"/>
+                                                <p:inputText value="#{address.lineThree}"/>
+
+                                                <h:outputText value="State:"/>
+                                                <p:inputText value="#{address.lineFour}"/>
+
+                                                <h:outputText value="Zip Code:"/>
+                                                <p:inputText value="#{address.lineFive}"/>
+
+                                            </h:panelGrid>
+
+                                        </p:dataList>
+
+                                        <p:commandLink id="new-address" value="Add +" action="#{createAccount.subject.contact.addAddress()}" update="address-list" process="@this,new-address,address-list"/>
+
+
+                                        <p:spacer width="100%" height="20px"/>
+
+                                        <h3>Telephone</h3>
+
+                                        <p:dataList id="telephone-list" 
+                                                    styleClass="clear-data-list" 
+                                                    value="#{createAccount.subject.contact.telephones}"
+                                                    var="telephone"
+                                                    itemType="none">
+
+                                            <h:panelGrid columns="1" columnClasses="field-label-3">
+
+                                                <p:commandLink id="remove-telephone" styleClass="align-right" value="Remove" action="#{createAccount.subject.contact.removeTelephone(telephone)}" update="telephone-list" process="@this,remove-telephone,telephone-list"/>
+
+                                                <ez:telephone type="#{telephone.type}"
+                                                              coutry="#{telephone.country}"                     
+                                                              number="#{telephone.localNumber}"/>
+
+                                            </h:panelGrid>
+
+                                        </p:dataList>
+
+                                        <p:commandLink id="new-telephone" value="Add +" action="#{createAccount.subject.contact.addTelephone()}" update="telephone-list" process="@this,new-telephone,telephone-list"/>
+
+                                        <p:spacer width="100%" height="20px"/>
+
+                                        <p:commandButton id="create-btn" 
+                                                         value="Create Account"
+                                                         action="#{createAccount.var()}"
+                                                         onclick="blockui1.block();"
+                                                         oncomplete="blockui1.unblock();"
+                                                         update=":form:growl"
+                                                         process="@this,:form:switch"/>
+
+                                        <pe:blockUI target="create-btn" widgetVar="blockui1">  
+                                            <div class="windows8-18-b">
+                                                <div class="wBall" id="wBall_1">
+                                                    <div class="wInnerBall">
+                                                    </div>
+                                                </div>
+                                                <div class="wBall" id="wBall_2">
+                                                    <div class="wInnerBall">
+                                                    </div>
+                                                </div>
+                                                <div class="wBall" id="wBall_3">
+                                                    <div class="wInnerBall">
+                                                    </div>
+                                                </div>
+                                                <div class="wBall" id="wBall_4">
+                                                    <div class="wInnerBall">
+                                                    </div>
+                                                </div>
+                                                <div class="wBall" id="wBall_5">
+                                                    <div class="wInnerBall">
+                                                    </div>
+                                                </div>
+                                            </div> 
+                                        </pe:blockUI>
+
+                                    </pe:case>  
+
+                                    <pe:case value="CLIENT">  
+
+                                        <h:panelGrid columns="2" columnClasses="field-label-3">
+
+                                            <h:outputText value="Email:*" styleClass="field-label-3"/>
+                                            <p:inputText value="#{createAccount.subject.email}" rendered="true" requiredMessage="Email is required"/>
+
+                                        </h:panelGrid>
+
+                                        <p:spacer width="100%" height="20px"/>
+
+                                        <h3>Relationship</h3>
+                                        <p:spacer width="100%" height="7px"/>
+                                        <h:panelGrid columns="2" columnClasses="field-label-3">
+
+                                            <h:outputText value="Client Company:*" styleClass="field-label-3"/>
+                                            <p:selectOneMenu value="#{createAccount.helper.selectedCompany}" 
+                                                             effect="fade"
+                                                             style="width: 180px"
+                                                             required="true"
+                                                             requiredMessage="Select a Client"> 
+                                                <f:selectItem itemLabel="-" itemValue="" />
+                                                <f:selectItems value="#{createAccount.helper.clients}" var="c" itemLabel="#{c.name}" itemValue="#{c.id}"/> 
+                                            </p:selectOneMenu>
+
+                                        </h:panelGrid>
+
+                                        <p:spacer width="100%" height="20px"/>
+
+                                        <h3>Personal</h3>
+                                        <p:spacer width="100%" height="7px"/>
+                                        <h:panelGrid columns="2" columnClasses="field-label-3">
+
+                                            <h:outputText value="First Name:*" styleClass="field-label-3"/>
+                                            <p:inputText value="#{createAccount.subject.contact.firstName}" rendered="true" requiredMessage="Name is required"/>
+
+                                            <h:outputText value="Last Name:*" styleClass="field-label-3"/>
+                                            <p:inputText value="#{createAccount.subject.contact.lastName}" rendered="true" requiredMessage="Name is required"/>
+
+                                        </h:panelGrid>
+
+                                        <p:spacer width="100%" height="20px"/>
+
+                                        <h3>Address</h3>
+
+                                        <p:dataList id="address-list" 
+                                                    styleClass="clear-data-list" 
+                                                    value="#{createAccount.subject.contact.addresses}"
+                                                    var="address"
+                                                    itemType="none">
+
+                                            <h:panelGrid columns="2" columnClasses="field-label-3">
+
+                                                <h:outputText value=""/>
+                                                <p:commandLink id="remove-address" styleClass="align-right" value="Remove" action="#{createAccount.subject.contact.removeAddress(address)}" update="address-list" process="@this,remove-address,address-list"/>
+
+                                                <h:outputText value="Street:"/>
+                                                <p:inputText value="#{address.lineTwo}"/>
+
+                                                <h:outputText value="Town:"/>
+                                                <p:inputText value="#{address.lineThree}"/>
+
+                                                <h:outputText value="State:"/>
+                                                <p:inputText value="#{address.lineFour}"/>
+
+                                                <h:outputText value="Zip Code:"/>
+                                                <p:inputText value="#{address.lineFive}"/>
+
+                                            </h:panelGrid>
+
+                                        </p:dataList>
+
+                                        <p:commandLink id="new-address" value="Add +" action="#{createAccount.subject.contact.addAddress()}" update="address-list" process="@this,new-address,address-list"/>
+
+
+                                        <p:spacer width="100%" height="20px"/>
+
+                                        <h3>Telephone</h3>
+
+                                        <p:dataList id="telephone-list" 
+                                                    styleClass="clear-data-list" 
+                                                    value="#{createAccount.subject.contact.telephones}"
+                                                    var="telephone"
+                                                    itemType="none">
+
+                                            <h:panelGrid columns="1" columnClasses="field-label-3">
+
+                                                <p:commandLink id="remove-telephone" styleClass="align-right" value="Remove" action="#{createAccount.subject.contact.removeTelephone(telephone)}" update="telephone-list" process="@this,remove-telephone,telephone-list"/>
+
+                                                <ez:telephone type="#{telephone.type}"
+                                                              coutry="#{telephone.country}"                     
+                                                              number="#{telephone.localNumber}"/>
+
+                                            </h:panelGrid>
+
+                                        </p:dataList>
+
+                                        <p:commandLink id="new-telephone" value="Add +" action="#{createAccount.subject.contact.addTelephone()}" update="telephone-list" process="@this,new-telephone,telephone-list"/>
+
+                                        <p:spacer width="100%" height="20px"/>
+
+                                        <p:commandButton id="create-btn" 
+                                                         value="Create Account"
+                                                         action="#{createAccount.client()}"
+                                                         onclick="blockui1.block();"
+                                                         oncomplete="blockui1.unblock();"
+                                                         update=":form:growl"
+                                                         process="@this,:form:switch"/>
+
+                                        <pe:blockUI target="create-btn" widgetVar="blockui1">  
+                                            <div class="windows8-18-b">
+                                                <div class="wBall" id="wBall_1">
+                                                    <div class="wInnerBall">
+                                                    </div>
+                                                </div>
+                                                <div class="wBall" id="wBall_2">
+                                                    <div class="wInnerBall">
+                                                    </div>
+                                                </div>
+                                                <div class="wBall" id="wBall_3">
+                                                    <div class="wInnerBall">
+                                                    </div>
+                                                </div>
+                                                <div class="wBall" id="wBall_4">
+                                                    <div class="wInnerBall">
+                                                    </div>
+                                                </div>
+                                                <div class="wBall" id="wBall_5">
+                                                    <div class="wInnerBall">
+                                                    </div>
+                                                </div>
+                                            </div> 
+                                        </pe:blockUI>
+
+                                    </pe:case>  
+
+                                    <pe:case value="QUICKVAR">  
+
+                                        <h:panelGrid columns="2" columnClasses="field-label-3">
+
+                                            <h:outputText value="Email:*" styleClass="field-label-3"/>
+                                            <p:inputText id="email" value="#{createAccount.subject.email}" rendered="true" requiredMessage="Email is required"/>
+
+                                            <h:outputText value="First Name:*" styleClass="field-label-3"/>
+                                            <p:inputText value="#{createAccount.subject.contact.firstName}" rendered="true" requiredMessage="Name is required"/>
+
+                                            <h:outputText value="Last Name:*" styleClass="field-label-3"/>
+                                            <p:inputText value="#{createAccount.subject.contact.lastName}" rendered="true" requiredMessage="Name is required"/>
+                                            
+                                        </h:panelGrid>
+
+                                        <p:spacer width="100%" height="20px"/>
+
+                                        <p:commandButton id="create-btn" 
+                                                         value="Create Account"
+                                                         action="#{createAccount.var()}"
+                                                         onclick="blockui1.block();"
+                                                         oncomplete="blockui1.unblock();"
+                                                         update=":form:growl"
+                                                         process="@this,:form:switch"/>
+
+                                        <pe:blockUI target="create-btn" widgetVar="blockui1">  
+                                            <div class="windows8-18-b">
+                                                <div class="wBall" id="wBall_1">
+                                                    <div class="wInnerBall">
+                                                    </div>
+                                                </div>
+                                                <div class="wBall" id="wBall_2">
+                                                    <div class="wInnerBall">
+                                                    </div>
+                                                </div>
+                                                <div class="wBall" id="wBall_3">
+                                                    <div class="wInnerBall">
+                                                    </div>
+                                                </div>
+                                                <div class="wBall" id="wBall_4">
+                                                    <div class="wInnerBall">
+                                                    </div>
+                                                </div>
+                                                <div class="wBall" id="wBall_5">
+                                                    <div class="wInnerBall">
+                                                    </div>
+                                                </div>
+                                            </div> 
+                                        </pe:blockUI>
+
+                                    </pe:case>  
+
+                                    <pe:case value="QUICKCLIENT">  
+
+                                        <h:panelGrid columns="2" columnClasses="field-label-3">
+
+                                            <h:outputText value="Email:*" styleClass="field-label-3"/>
+                                            <p:inputText id="email" value="#{createAccount.subject.email}" rendered="true" requiredMessage="Email is required"/>
+
+                                            <h:outputText value="First Name:*" styleClass="field-label-3"/>
+                                            <p:inputText value="#{createAccount.subject.contact.firstName}" rendered="true" requiredMessage="Name is required"/>
+
+                                            <h:outputText value="Last Name:*" styleClass="field-label-3"/>
+                                            <p:inputText value="#{createAccount.subject.contact.lastName}" rendered="true" requiredMessage="Name is required"/>
+                                            
+                                        </h:panelGrid>                                      
+
+                                        <p:spacer width="100%" height="20px"/>
+
+                                        <h3>Relationship</h3>
+                                        <p:spacer width="100%" height="7px"/>
+                                        <h:panelGrid columns="2" columnClasses="field-label-3">
+
+                                            <h:outputText value="Client Company:*" styleClass="field-label-3"/>
+                                            <p:selectOneMenu value="#{createAccount.helper.selectedCompany}" 
+                                                             effect="fade"
+                                                             style="width: 180px"
+                                                             required="true"
+                                                             requiredMessage="Select a Client"> 
+                                                <f:selectItem itemLabel="-" itemValue="" />
+                                                <f:selectItems value="#{createAccount.helper.clients}" var="c" itemLabel="#{c.name}" itemValue="#{c.id}"/> 
+                                            </p:selectOneMenu>
+
+                                        </h:panelGrid>
+
+                                        <p:spacer width="100%" height="20px"/>
+
+                                        <p:commandButton id="create-btn" 
+                                                         value="Create Account"
+                                                         action="#{createAccount.client()}"
+                                                         onclick="blockui1.block();"
+                                                         oncomplete="blockui1.unblock();"
+                                                         update=":form:growl"
+                                                         process="@this,:form:switch"/>
+
+                                        <pe:blockUI target="create-btn" widgetVar="blockui1">  
+                                            <div class="windows8-18-b">
+                                                <div class="wBall" id="wBall_1">
+                                                    <div class="wInnerBall">
+                                                    </div>
+                                                </div>
+                                                <div class="wBall" id="wBall_2">
+                                                    <div class="wInnerBall">
+                                                    </div>
+                                                </div>
+                                                <div class="wBall" id="wBall_3">
+                                                    <div class="wInnerBall">
+                                                    </div>
+                                                </div>
+                                                <div class="wBall" id="wBall_4">
+                                                    <div class="wInnerBall">
+                                                    </div>
+                                                </div>
+                                                <div class="wBall" id="wBall_5">
+                                                    <div class="wInnerBall">
+                                                    </div>
+                                                </div>
+                                            </div> 
+                                        </pe:blockUI>
+
+                                    </pe:case>
+                                </pe:switch>
+
+                            </td>
+                        </tr>
+                    </table>
+                    
+                    <p:spacer width="100%" height="50px"/>
+
+                </pe:layoutPane>
+
+            </pe:layout>
+
+        </h:form>
+
+        <!-- JIRA -->
+        <script type="text/javascript" src="https://dastrax.atlassian.net/s/d41d8cd98f00b204e9800998ecf8427e/en_US-hgwqx7-1988229788/6132/31/1.4.0-m5/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?collectorId=5962a16e"></script>
+
+
+    </h:body>
+
+</html>
+

@@ -4,9 +4,10 @@
  */
 package com.dastrax.app.util;
 
-import com.dastrax.per.dao.CompanyDAO;
-import com.dastrax.per.dao.SubjectDAO;
+import com.dastrax.per.dao.core.CompanyDAO;
+import com.dastrax.per.dao.core.SubjectDAO;
 import com.dastrax.per.entity.core.Company;
+import com.dastrax.per.entity.core.Subject;
 import com.dastrax.per.project.DastraxCst;
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -50,6 +51,13 @@ public class UriUtil {
      */
     public String profileImage(String uid) {
 
+        // handle unknown account
+        String s3id = "unknown";
+        Subject s = subjectDAO.findSubjectByUid(uid);
+        if (s != null) {
+            s3id = s.getAccount().getS3id();
+        }
+        
         // Generate the theoretical URL
         String url = protocol
                 + baseURL
@@ -58,7 +66,7 @@ public class UriUtil {
                 + "/"
                 + DastraxCst.S3_SUBJECTS_DIRECTORY
                 + "/"
-                + subjectDAO.findSubjectByUid(uid).getAccount().getS3id()
+                + s3id
                 + "/"
                 + DastraxCst.S3_SUBJECT_PROFILE_DIRECTORY
                 + "/"

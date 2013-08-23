@@ -183,8 +183,8 @@ public class DnsUtil {
          * to the first period. The URL value can must be able to recognise
          * one of the following varients:
          * http://example.com (No subdomain present)
-         * http://dax.uat.example.com (UAT 3 char prefixes no subdomain)
-         * http://subdomain.dax.uat.example.com (UAT 3 char prefixes with subdomain)
+         * http://uat.example.com (UAT 3 char prefixes no subdomain)
+         * http://subdomain.uat.example.com (UAT 3 char prefixes with subdomain)
          * http://subdomain.example.com (Live subdomain present)
          */
 
@@ -204,11 +204,9 @@ public class DnsUtil {
             }
 
             /*
-             * Check to make sure the subdomain string is longer than 2 chars.
-             * The reason being that less than 2 chars is attributed to dev
-             * systems.
+             * Check to make sure the subdomain string is not the uat subdomain
              */
-            if (subdomain == null || subdomain.length() < 2) {
+            if (subdomain == null || subdomain.equals("uat")) {
                 subdomain = null;
             }
         }

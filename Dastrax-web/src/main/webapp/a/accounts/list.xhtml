@@ -18,8 +18,8 @@
     <h:body>
 
         <f:metadata>
-            <f:viewParam name="filter" value="#{subjects.filterCondition}"/>
-            <f:event type="preRenderView" listener="#{subjects.init}" />
+            <f:viewParam name="filter" value="#{subjects.filter}"/>
+            <f:viewAction action="#{subjects.init}" />
         </f:metadata>
 
         <h:form id="form">
@@ -53,22 +53,22 @@
                         </tr>
                         <tr class="hover">
                             <td>
-                                <h:commandLink value="All Admins" action="#{subjects.adminFilter()}"/>
+                                <p:commandLink value="All Accounts" action="#{subjects.tempFilterApply(0)}" process="@this" type="button"/>
                             </td>
                         </tr>
                         <tr class="hover">
                             <td>
-                                <h:commandLink value="All VARs" action="#{subjects.varFilter()}"/>
+                                <p:commandLink value="All Admins" action="#{subjects.tempFilterApply(9)}" process="@this" type="button"/>
                             </td>
                         </tr>
                         <tr class="hover">
                             <td>
-                                <h:commandLink value="All Clients" action="#{subjects.clientFilter()}"/>
+                                <p:commandLink value="All VARs" action="#{subjects.tempFilterApply(10)}" process="@this" type="button"/>
                             </td>
                         </tr>
                         <tr class="hover">
                             <td>
-                                <h:commandLink value="Clear" action="#{subjects.clearFilter()}"/>
+                                <p:commandLink value="All Clients" action="#{subjects.tempFilterApply(11)}" process="@this" type="button"/>
                             </td>
                         </tr>
                     </table>
@@ -93,8 +93,19 @@
                                  selection="#{subjects.selectedSubjects}"
                                  value="#{subjects.subjectModel}"
                                  filteredValue="#{subjects.filtered}"
-                                 styleClass="main-table"> 
+                                 styleClass="main-table"
+                                 lazy="true"
+                                 paginator="true"
+                                 rows="20"
+                                 rowsPerPageTemplate="20,50"
+                                 paginatorAlwaysVisible="false"
+                                 paginatorPosition="bottom"> 
 
+                        <f:facet name="header">   
+                            <p:inputText id="globalFilter" styleClass="align-left" onkeyup="accountsTable.filter()" style="width:200px" />  
+                            <p:watermark for="globalFilter" value="Search"/>
+                        </f:facet> 
+                        
                         <p:ajax event="rowSelectCheckbox"  
                                 update=":form:details"/>  
                         <p:ajax event="rowUnselectCheckbox"
@@ -107,21 +118,29 @@
                         <p:column selectionMode="multiple" style="width:18px" />
 
                         <p:column headerText="Name"
+                                  filterBy="#{account.contact.buildFullName()}"
+                                  filterStyle="display:none"
                                   sortBy="#{account.contact.buildFullName()}">
                             #{account.contact.buildFullName()}
                         </p:column>
 
                         <p:column headerText="Email"
+                                  filterBy="#{account.email}"
+                                  filterStyle="display:none"
                                   sortBy="#{account.email}">
                             #{account.email}
                         </p:column>
 
                         <p:column headerText="Company"
+                                  filterBy="#{account.company.name}"
+                                  filterStyle="display:none"
                                   sortBy="#{account.company.name}">
                             #{account.company.name}
                         </p:column>
 
                         <p:column headerText="Type"
+                                  filterBy="#{account.metier.name}"
+                                  filterStyle="display:none"
                                   sortBy="#{account.metier.name}">
                             #{account.metier.name}
                         </p:column>
@@ -154,7 +173,7 @@
                                     <td>
                                         <H2>
                                             <p:inplace id="nameAIP" styleClass="inplace" editor="true" label="#{detail.contact.buildFullName()}">  
-                                                <p:ajax event="save" listener="#{subjects.saveName()}" update=":form:accounts-table :form:growl" />
+                                                <p:ajax event="save" listener="#{subjects.saveName()}" update=":form:accounts-table :form:growl" oncomplete="accountsTable.filter();"/>
                                                 <p:inputText id="editFirstName" value="#{detail.contact.firstName}"/> 
                                                 <p:inputText id="editLastName" value="#{detail.contact.lastName}"/>
                                                 <p:watermark value="First Name" for="editFirstName"/>
@@ -184,7 +203,7 @@
                                     <td class="field-label-2">ACL:</td>
                                     <td>
                                         <p:inplace id="aclAIP" styleClass="inplace" editor="true" label="#{detail.account.locked ? 'Locked' : 'Unlocked'}">  
-                                            <p:ajax event="save" listener="#{subjects.updateACL()}" update=":form:accounts-table :form:growl" />
+                                            <p:ajax event="save" listener="#{subjects.updateACL()}" update=":form:accounts-table :form:growl" oncomplete="accountsTable.filter();"/>
                                             <p:selectBooleanButton value="#{detail.account.locked}" onLabel="Locked" offLabel="Unlocked" />
                                         </p:inplace> 
                                     </td>
@@ -201,7 +220,7 @@
                                     <td class="field-label-2">Company:</td>
                                     <td>
                                         <p:inplace id="varCompanyAIP" styleClass="inplace" editor="true" label="#{detail.company.name}" rendered="#{detail.company.type eq 'VAR'}">  
-                                            <p:ajax event="save" listener="#{subjects.saveCompany()}" update=":form:accounts-table :form:growl" />
+                                            <p:ajax event="save" listener="#{subjects.saveCompany()}" update=":form:accounts-table :form:growl" oncomplete="accountsTable.filter();"/>
                                             <p:selectOneMenu value="#{subjects.helper.selectedCompany}" 
                                                              effect="fade"
                                                              style="width: 180px">
@@ -209,7 +228,7 @@
                                             </p:selectOneMenu>
                                         </p:inplace>
                                         <p:inplace id="clientCompanyAIP" styleClass="inplace" editor="true" label="#{detail.company.name}" rendered="#{detail.company.type eq 'CLIENT'}">  
-                                            <p:ajax event="save" listener="#{subjects.saveCompany()}" update=":form:accounts-table :form:growl" />
+                                            <p:ajax event="save" listener="#{subjects.saveCompany()}" update=":form:accounts-table :form:growl" oncomplete="accountsTable.filter();"/>
                                             <p:selectOneMenu value="#{subjects.helper.selectedCompany}" 
                                                              effect="fade"
                                                              style="width: 180px">
@@ -240,7 +259,7 @@
                                         <td>
 
                                             <p:inplace id="addressAIP" styleClass="inplace" editor="true" label="#{address.buildCompleteAddress()}">  
-                                                <p:ajax event="save" listener="#{subjects.saveAddress()}" update=":form:accounts-table :form:growl" />
+                                                <p:ajax event="save" listener="#{subjects.saveAddress()}" update=":form:accounts-table :form:growl" oncomplete="accountsTable.filter();"/>
 
                                                 <p:inputText id="add-1" value="#{address.lineTwo}"/>
                                                 <p:watermark value="Street" for="add-1"/>
@@ -265,11 +284,11 @@
                                             var="telephone"
                                             itemType="none">
                                     <tr>
-                                        <td class="field-label-2">#{telephone.type}:</td>
+                                        <td class="field-label-2">#{telephone.type eq null ? 'Telephone' : telephone.type}:</td>
                                         <td>
 
                                             <p:inplace id="telephoneAIP" styleClass="inplace" editor="true" label="#{telephone.internationalFormat() eq null ? 'Not Available' : telephone.internationalFormat()}">  
-                                                <p:ajax event="save" listener="#{subjects.saveTelephone()}" update=":form:accounts-table :form:growl"/>
+                                                <p:ajax event="save" listener="#{subjects.saveTelephone()}" update=":form:accounts-table :form:growl" oncomplete="accountsTable.filter();"/>
                                                 <ez:telephone type="#{telephone.type}"
                                                               coutry="#{telephone.country}"                     
                                                               number="#{telephone.localNumber}"/>  
@@ -300,7 +319,7 @@
                                                          process="@this,deletePassword" 
                                                          update=":form:accounts-table :form:growl :form:details"
                                                          onclick="blockui1.block();"
-                                                         oncomplete="blockui1.unblock();"/>
+                                                         oncomplete="blockui1.unblock(); accountsTable.filter();"/>
 
                                         <pe:blockUI target="delete-btn" widgetVar="blockui1">  
                                             <div class="windows8-18-b">

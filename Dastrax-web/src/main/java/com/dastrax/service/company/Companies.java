@@ -5,25 +5,25 @@
 package com.dastrax.service.company;
 
 import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.dastrax.per.dao.CompanyDAO;
-import com.dastrax.per.dao.SiteDAO;
-import com.dastrax.per.dao.SubjectDAO;
+import com.dastrax.per.dao.core.CompanyDAO;
+import com.dastrax.per.dao.core.SiteDAO;
+import com.dastrax.per.dao.core.SubjectDAO;
 import com.dastrax.per.entity.core.Company;
 import com.dastrax.per.entity.core.Site;
 import com.dastrax.per.project.DastraxCst;
 import com.dastrax.per.project.DastraxCst.S3ContentType;
 import com.dastrax.app.security.PasswordSvcs;
 import com.dastrax.app.util.DnsUtil;
+import com.dastrax.app.util.FilterUtil;
 import com.dastrax.app.util.S3KeyUtil;
 import com.dastrax.app.util.S3Util;
-import com.dastrax.service.model.CompanyModel;
 import com.dastrax.service.util.JsfUtil;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -59,7 +59,7 @@ public class Companies implements Serializable {
     private CompanyModel companyModel;
     private List<Company> filtered;
     private String principalPassword;
-    private String filterCondition;
+    private String filter;
     private Helper helper = new Helper();
 
     // EJB----------------------------------------------------------------------
@@ -77,6 +77,15 @@ public class Companies implements Serializable {
     S3KeyUtil s3KeyUtil;
     @EJB
     SiteDAO siteDAO;
+    @EJB
+    FilterUtil filterUtil;
+
+    // Constructors-------------------------------------------------------------
+    public void init() {
+        Map<String, List<String>> metierFilter = filterUtil.authorizedCompaniesNonInclusive();
+        Map<String, List<String>> optFilter = filterUtil.optionalFilter(filter);
+        companyModel = new CompanyModel(companyDAO, metierFilter, optFilter);
+    }
 
     // Getters------------------------------------------------------------------
     public List<Company> getCompanies() {
@@ -107,8 +116,8 @@ public class Companies implements Serializable {
         }
     }
 
-    public String getFilterCondition() {
-        return filterCondition;
+    public String getFilter() {
+        return filter;
     }
 
     public Helper getHelper() {
@@ -136,8 +145,8 @@ public class Companies implements Serializable {
         this.principalPassword = principalPassword;
     }
 
-    public void setFilterCondition(String filterCondition) {
-        this.filterCondition = filterCondition;
+    public void setFilter(String filter) {
+        this.filter = filter;
     }
 
     public void setHelper(Helper helper) {
@@ -145,35 +154,8 @@ public class Companies implements Serializable {
     }
 
     // Methods------------------------------------------------------------------
-    public void init() {
-        populateData();
-    }
-
     /**
-     * Populate the data table based on role
-     */
-    public void populateData() {
-
-        if (companies.size() > 0) {
-            companies.clear();
-        }
-
-        companies = companyDAO.findAllCompanies();
-        if (filterCondition != null) {
-            Iterator<Company> i = companies.iterator();
-            while (i.hasNext()) {
-                Company s = i.next();
-                if (!s.getType().equals(filterCondition)) {
-                    i.remove();
-                }
-            }
-        }
-
-        companyModel = new CompanyModel(companies);
-    }
-
-    /**
-     * This method provides the the access point to delete accounts.
+     * This method provides the the access point to delete selected accounts.
      */
     public void deleteCompanies() {
 
@@ -199,9 +181,6 @@ public class Companies implements Serializable {
 
                 JsfUtil.addSuccessMessage("Company " + s.getName() + " successfully deleted");
             }
-
-            populateData();
-
             // In view scoped bean we just want to clear variables
             selectedCompanies = null;
 
@@ -214,7 +193,7 @@ public class Companies implements Serializable {
     }
 
     /**
-     * Save account changes
+     * Save name changes
      */
     public void saveName() {
         companyDAO.updateName(
@@ -224,7 +203,7 @@ public class Companies implements Serializable {
     }
 
     /**
-     * Update address
+     * Save contact changes
      */
     public void saveContacts() {
         companyDAO.updateContacts(
@@ -235,7 +214,7 @@ public class Companies implements Serializable {
     }
 
     /**
-     * Update VAR sites
+     * Save VAR Site changes
      */
     public void saveVarSites() {
         selectedCompanies[0].setVarSites(helper.varSites.getTarget());
@@ -247,7 +226,7 @@ public class Companies implements Serializable {
     }
 
     /**
-     * Update Client sites
+     * Save CLIENT Site changes
      */
     public void saveClientSites() {
         selectedCompanies[0].setClientSites(helper.clientSites.getTarget());
@@ -271,7 +250,7 @@ public class Companies implements Serializable {
     }
 
     /**
-     * File upload
+     * TODO: File upload! this does not work yet! PF bug that needs to be fixed
      *
      * @param event
      */
@@ -306,22 +285,31 @@ public class Companies implements Serializable {
         }
     }
 
-    public void varFilter() throws IOException {
+    /**
+     * This needs to be converted into a data list on the presentation layer.
+     *
+     * @param filterId
+     * @throws IOException
+     */
+    public void tempFilterApply(int filterId) throws IOException {
         ExternalContext ectx = FacesContext.getCurrentInstance().getExternalContext();
-        String url = ectx.getRequestContextPath() + "/a/companies/list.jsf?filter=" + DastraxCst.CompanyType.VAR.toString();
-        FacesContext.getCurrentInstance().getExternalContext().redirect(url);
-    }
-
-    public void clientFilter() throws IOException {
-        ExternalContext ectx = FacesContext.getCurrentInstance().getExternalContext();
-        String url = ectx.getRequestContextPath() + "/a/companies/list.jsf?filter=" + DastraxCst.CompanyType.CLIENT.toString();
-        FacesContext.getCurrentInstance().getExternalContext().redirect(url);
-    }
-
-    public void clearFilter() throws IOException {
-        filterCondition = null;
-        ExternalContext ectx = FacesContext.getCurrentInstance().getExternalContext();
-        String url = ectx.getRequestContextPath() + "/a/companies/list.jsf";
+        String url = null;
+        // ADMIN access
+        if (SecurityUtils.getSubject().hasRole(DastraxCst.Metier.ADMIN.toString())) {
+            if (filterId == 0) {
+                url = ectx.getRequestContextPath() + "/a/companies/list.jsf";
+            } else {
+                url = ectx.getRequestContextPath() + "/a/companies/list.jsf?filter=" + filterId;
+            }
+        }
+        // VAR access
+        if (SecurityUtils.getSubject().hasRole(DastraxCst.Metier.VAR.toString())) {
+            if (filterId == 0) {
+                url = ectx.getRequestContextPath() + "/b/companies/list.jsf";
+            } else {
+                url = ectx.getRequestContextPath() + "/b/companies/list.jsf?filter=" + filterId;
+            }
+        }
         FacesContext.getCurrentInstance().getExternalContext().redirect(url);
     }
 
@@ -378,12 +366,18 @@ public class Companies implements Serializable {
         }
 
         // Methods------------------------------------------------------------------
+        /**
+         * Filters the available sites based on the subjects metier and the type
+         * of company they are trying to access.
+         */
         public void filterSites() {
+            // VAR access
             if (selectedCompanies[0].getType().equals(DastraxCst.CompanyType.VAR.toString())) {
                 helper.varSites = new DualListModel<>();
                 varSites.setSource(siteDAO.findSitesByNullVar());
                 varSites.setTarget(selectedCompanies[0].getVarSites());
             }
+            // CLIENT access
             if (selectedCompanies[0].getType().equals(DastraxCst.CompanyType.CLIENT.toString())) {
                 helper.clientSites = new DualListModel<>();
                 if (selectedCompanies[0].getParentVAR() != null) {
@@ -396,6 +390,9 @@ public class Companies implements Serializable {
             }
         }
 
+        /**
+         * Filters the available companies based on the subject.
+         */
         public void filterClients() {
             // Get all the clients without parent VARs
             List<Company> cs = companyDAO.findByNullParentVar(DastraxCst.CompanyType.CLIENT.toString());

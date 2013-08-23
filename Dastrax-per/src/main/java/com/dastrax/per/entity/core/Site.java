@@ -32,6 +32,7 @@ import javax.validation.constraints.Pattern;
     @NamedQuery(name = "Site.findByPK", query = "SELECT e FROM Site e WHERE e.id = :id"),
     @NamedQuery(name = "Site.findByNullVar", query = "SELECT e FROM Site e WHERE e.var IS NULL"),
     @NamedQuery(name = "Site.findByNullClient", query = "SELECT e FROM Site e WHERE e.client IS NULL AND e.var.id = :varId"),
+    @NamedQuery(name = "Site.findByIP", query = "SELECT e FROM Site e WHERE e.dmsIP = :dmsIP"),
 })
 @Entity
 public class Site implements Serializable {
@@ -42,8 +43,8 @@ public class Site implements Serializable {
     // Variables----------------------------------------------------------------
     @Version
     private int version;
-    @TableGenerator(name = "Site_Gen", table = "ID_GEN", pkColumnName = "GEN_NAME", valueColumnName = "GEN_VAL")
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @TableGenerator(name = "Site_Gen", table = "SEQ_ID_GEN", pkColumnName = "GEN_NAME", valueColumnName = "GEN_VAL")
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "Site_Gen")
     @Id
     private String id;
     private String name;

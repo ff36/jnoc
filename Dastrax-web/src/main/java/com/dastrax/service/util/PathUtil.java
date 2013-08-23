@@ -4,7 +4,7 @@
  */
 package com.dastrax.service.util;
 
-import com.dastrax.per.dao.SubjectDAO;
+import com.dastrax.per.dao.core.SubjectDAO;
 import com.dastrax.per.entity.core.Subject;
 import com.dastrax.per.project.DastraxCst;
 import com.dastrax.app.util.UriUtil;
@@ -15,7 +15,9 @@ import javax.inject.Named;
 import org.apache.shiro.SecurityUtils;
 
 /**
- *
+ * The application needs to dynamically generate links to media resources stored
+ * on AWS S3. This class provides methods to generate links to the requested 
+ * resources.
  * @version Build 2.0.0
  * @since Jul 17, 2013
  * @author Tarka L'Herpiniere <info@tarka.tv>

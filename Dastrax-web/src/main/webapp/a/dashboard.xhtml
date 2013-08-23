@@ -17,7 +17,7 @@
     <h:body>
 
         <h:form id="form">
-            
+
             <pe:ajaxErrorHandler />
 
             <p:growl id="growl" 
@@ -27,7 +27,7 @@
 
             <ez:navigation-a/>
 
-            <pe:layout stateCookie="false" widgetVar="layourWgt" >
+            <pe:layout stateCookie="false" widgetVar="layoutWgt" >
 
                 <pe:layoutPane id="west" position="west" resizeWhileDragging="true" size="220">
 
@@ -39,12 +39,12 @@
                         </tr>
                         <tr class="hover">
                             <td>
-                                <h:commandLink value="Create a new ticket"/>
+                                <p:commandLink value="Create a new ticket" action="access-create-ticket-page" process="@this" type="button"/>
                             </td>
                         </tr>
                         <tr class="hover">
                             <td>
-                                <h:commandLink value="Manage tickets"/>
+                                <p:commandLink value="Manage tickets" action="access-list-manual-tickets-page" process="@this" type="button"/>
                             </td>
                         </tr>
 
@@ -55,7 +55,7 @@
                         </tr>
                         <tr class="hover">
                             <td>
-                                <h:commandLink value="Manage DMS tickets"/>
+                                <p:commandLink value="Manage DMS tickets" action="access-list-dms-tickets-page" process="@this" type="button"/>
                             </td>
                         </tr>
 
@@ -66,15 +66,31 @@
                         </tr>
                         <tr class="hover">
                             <td>
-                                <h:commandLink value="Create a new ticket"/>
+                                <p:commandLink value="Create a new account" action="access-create-account-page" process="@this" type="button"/>
                             </td>
                         </tr>
                         <tr class="hover">
                             <td>
-                                <h:commandLink value="Manage accounts"/>
+                                <p:commandLink value="Manage accounts" action="access-accounts-list-page" process="@this" type="button"/>
                             </td>
                         </tr>
 
+                        <tr>
+                            <td>
+                                <h3>Companies</h3>
+                            </td>
+                        </tr>
+                        <tr class="hover">
+                            <td>
+                                <p:commandLink value="Create a new company" action="access-create-company-page" process="@this" type="button"/>
+                            </td>
+                        </tr>
+                        <tr class="hover">
+                            <td>
+                                <p:commandLink value="Manage companies" action="access-companies-list-page" process="@this" type="button"/>
+                            </td>
+                        </tr>
+                        
                         <tr>
                             <td>
                                 <h3>Sites</h3>
@@ -82,12 +98,12 @@
                         </tr>
                         <tr class="hover">
                             <td>
-                                <h:commandLink value="Create a new site"/>
+                                <p:commandLink value="Create a new site" action="access-create-site-page" process="@this" type="button"/>
                             </td>
                         </tr>
                         <tr class="hover">
                             <td>
-                                <h:commandLink value="Manage sites"/>
+                                <p:commandLink value="Manage sites" action="access-list-sites-page" process="@this" type="button"/>
                             </td>
                         </tr>
 
@@ -96,7 +112,36 @@
                 </pe:layoutPane>
 
                 <pe:layoutPane id="center" position="center" resizeWhileDragging="true">
-                    center
+
+                    <div class="dsh-audit">
+                        <h2>Audit</h2>
+                        <p:dataList value="#{auditUtil.audits}" 
+                                    var="audit"
+                                    itemType="none"
+                                    styleClass="clear-data-list">
+
+                            <table style="width:100%" class="audit-table">
+                                <tr class="audit-table-seperator">
+                                    <td style="width: 60px">
+                                        <p:graphicImage value="#{pathUtil.profileImage(audit.author eq null ? 'Anonymous' : audit.author)}"
+                                                        height="40px"
+                                                        styleClass="comment-image"/>
+
+                                    </td>
+                                    <td>
+                                        <b>#{audit.author eq null ? 'Anonymous' : auditUtil.author(audit.author).contact.buildFullName()}</b>
+                                        <h:outputText value="#{editTicket.temporalUtil.epochDateTimeFmt(audit.created)}" styleClass="comment-date"/>
+                                        <p:spacer width="100%" height="1"/>
+                                        #{audit.event}
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </p:dataList>
+                    </div>
+
+                    <p:spacer width="100%" height="50"/>
+
                 </pe:layoutPane>
 
             </pe:layout>

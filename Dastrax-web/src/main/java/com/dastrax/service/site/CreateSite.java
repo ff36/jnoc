@@ -4,8 +4,8 @@
  */
 package com.dastrax.service.site;
 
-import com.dastrax.per.dao.CompanyDAO;
-import com.dastrax.per.dao.SiteDAO;
+import com.dastrax.per.dao.core.CompanyDAO;
+import com.dastrax.per.dao.core.SiteDAO;
 import com.dastrax.per.entity.core.Address;
 import com.dastrax.per.entity.core.Company;
 import com.dastrax.per.entity.core.Contact;
@@ -64,7 +64,7 @@ public class CreateSite implements Serializable {
     }
     
     @PostConstruct
-    private void init() {
+    private void postConstruct() {
         helper.vars = companyDAO.findCompaniesByType(DastraxCst.CompanyType.VAR.toString());
     }
 
@@ -94,7 +94,10 @@ public class CreateSite implements Serializable {
         site.setInstallEpoch(temporalUtil.dateToEpoch(date));
     }
     // Methods------------------------------------------------------------------
-
+    /**
+     * Register a new site
+     * @return a navigation string
+     */
     public String register() {
         String result = null;
 
@@ -213,6 +216,9 @@ public class CreateSite implements Serializable {
         }
 
         // Methods------------------------------------------------------------------
+        /**
+         * Converts the input value to a 3 digit integer with 0 prefix
+         */
         public void formatA() {
             try {
                 int num = Integer.parseInt(ipa);
@@ -221,6 +227,9 @@ public class CreateSite implements Serializable {
             }
         }
 
+        /**
+         * Converts the input value to a 3 digit integer with 0 prefix
+         */
         public void formatB() {
             try {
                 int num = Integer.parseInt(ipb);
@@ -229,6 +238,9 @@ public class CreateSite implements Serializable {
             }
         }
 
+        /**
+         * Converts the input value to a 3 digit integer with 0 prefix
+         */
         public void formatC() {
             try {
                 int num = Integer.parseInt(ipc);
@@ -237,6 +249,9 @@ public class CreateSite implements Serializable {
             }
         }
 
+        /**
+         * Converts the input value to a 3 digit integer with 0 prefix
+         */
         public void formatD() {
             try {
                 int num = Integer.parseInt(ipd);
@@ -245,6 +260,10 @@ public class CreateSite implements Serializable {
             }
         }
 
+        /**
+         * Converts the 4 IP octet into a full 12 digit format IP address
+         * @return 
+         */
         public String concatIP() {
             if (ipa != null && ipb != null && ipc != null && ipd != null) {
                 return ipa + "." + ipb + "." + ipc + "." + ipd;
