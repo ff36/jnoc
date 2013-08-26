@@ -126,7 +126,7 @@
                                                      effect="fade"
                                                      style="width: 200px">  
                                         <f:selectItem itemLabel="-" itemValue="" /> 
-                                        <f:selectItems value="#{editTicket.helper.sites}" var="site" itemLabel="#{site.name}" itemValue="#{site.name}"/>
+                                        <f:selectItems value="#{editTicket.helper.sites}" var="site" itemLabel="#{site.name}" itemValue="#{site.id}"/>
 
                                     </p:selectOneMenu>
                                 </p:inplace> 
@@ -174,7 +174,7 @@
 
                         <p:spacer width="100%" height="10"/>
 
-                        <p:splitButton id="action-btn" styleClass="align-right" onclick="blockui1.block();" oncomplete="blockui1.unblock();" value="Submit as #{editTicket.ticket.status}" actionListener="#{editTicket.submit()}" process="@this @(.edit-ticket :input)">  
+                        <p:splitButton id="action-btn" styleClass="align-right" onclick="blockui1.block();" oncomplete="blockui1.unblock();" value="Submit as #{editTicket.ticket.status}"  update=":form:growl" actionListener="#{editTicket.submit()}" process="@this @(.edit-ticket :input)">  
                             <p:menuitem value="Submit as SOLVED" onclick="blockui1.block();" oncomplete="blockui1.unblock();" actionListener="#{editTicket.submitSolved()}" update=":form:growl" process="@this @(.edit-ticket :input)" rendered="#{editTicket.ticket.status ne 'SOLVED'}"/>  
                             <p:menuitem value="Submit as OPEN" onclick="blockui1.block();" oncomplete="blockui1.unblock();" actionListener="#{editTicket.submitOpen()}" update=":form:growl" process="@this @(.edit-ticket :input)" rendered="#{editTicket.ticket.status ne 'OPEN'}"/> 
                             <p:menuitem value="Submit as ARCHIVED" onclick="blockui1.block();" oncomplete="blockui1.unblock();" actionListener="#{editTicket.submitArchived()}" update=":form:growl" process="@this @(.edit-ticket :input)" rendered="#{editTicket.ticket.status eq 'CLOSED' and editTicket.ticket.status ne 'ARCHIVED'}"/> 

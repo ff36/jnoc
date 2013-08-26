@@ -46,7 +46,7 @@ public class AuditUtil implements Serializable {
 
     // Constructors-------------------------------------------------------------
     @PostConstruct
-    private void setAudits() {
+    private void postConstruct() {
         audits = auditDAO.findRecent(10);
         sortAudits();
     }
@@ -96,4 +96,5 @@ public class AuditUtil implements Serializable {
     public Subject author(String id) {
         return subjectDAO.findSubjectByUid(id);
     }
+
 }

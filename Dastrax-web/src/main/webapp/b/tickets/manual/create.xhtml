@@ -56,30 +56,6 @@
 
                     <p:spacer width="100%" height="10px"/>
 
-                    <p:panel id="option-panel-2" styleClass="ticket-options">
-
-                        <h:panelGrid id="option-grid-2" columns="1">
-
-                            <h:outputText value="Assignee" styleClass="super-field-label"/>
-                            <p:autoComplete id="assignee"
-                                            value="#{createTicket.helper.selectedAssignee}"
-                                            completeMethod="#{createTicket.helper.completeAssigneeSubject}"
-                                            var="req" itemLabel="#{req.contact.buildFullName()}" 
-                                            itemValue="#{req.uid}" forceSelection="true"
-                                            style="width: 250px"/>
-                        </h:panelGrid>
-
-                        <h:panelGrid id="option-grid-2-b" columns="2">
-                            <h:outputText value="Send email:"/>
-                            <p:selectBooleanCheckbox value="#{createTicket.helper.assigneeEmail}"/>
-                        </h:panelGrid>
-
-                        <p:commandLink value="New Account" process="@this" update=":form:switch-east-north" onclick="layoutWgt.open('east')"/>
-
-                    </p:panel>
-
-                    <p:spacer width="100%" height="10px"/>
-
                     <p:panel id="option-panel-3" styleClass="ticket-options">
 
                         <h:panelGrid id="option-grid-3" columns="1">
