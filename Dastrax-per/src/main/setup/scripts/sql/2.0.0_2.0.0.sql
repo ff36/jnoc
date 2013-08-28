@@ -85,24 +85,3 @@ VALUES ('TICKET_SOLVED', 'Template for a solved ticket', '<!DOCTYPE html PUBLIC 
 INSERT INTO dastrax_dev.EMAILTEMPLATE (ID, DESCRIPTION, HTML, LINKPATH, PLAINTEXT, SUBJECT, TITLE) 
 VALUES ('EXCEPTION', 'Template for application exception', '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> <html xmlns="http://www.w3.org/1999/xhtml"> <head> <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /> </head> <body> #foreach($variable in $variablesList) <br /> DATE: $variable.date <br /> TIME: $variable.time <br /> LINK: $variable.link <br /> PIN: $variable.pin <br /> EXCEPTION: $variable.exception <br /> #end </body> </html>', null, '#foreach($variable in $variablesList) DATE: $variable.date TIME: $variable.time LINK: $variable.link PIN: $variable.pin #end', 'Dastrax Exception', 'Dastrax Exception');
 
--- First Admin
-INSERT INTO dastrax_dev.TELEPHONE (ID, COUNTRY, LOCALNUMBER, `TYPE`, VERSION) 
-	VALUES ('4', 'United States', NULL, NULL, 1);
-
-INSERT INTO dastrax_dev.ADDRESS (ID, COUNTRY, LATITUDE, LINEFIVE, LINEFOUR, LINEONE, LINETHREE, LINETWO, LONGITUDE, VERSION) 
-	VALUES ('3', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1);
-
-INSERT INTO dastrax_dev.CONTACT (ID, DOB, EMAIL, FIRSTNAME, LASTNAME, `TYPE`, ACL_ID) 
-	VALUES ('2', NULL, NULL, NULL, NULL, NULL, NULL);
-
-INSERT INTO dastrax_dev.CONTACT_ADDRESS (Contact_ID, addresses_ID) 
-	VALUES ('2', '3');
-
-INSERT INTO dastrax_dev.CONTACT_TELEPHONE (Contact_ID, telephones_ID) 
-	VALUES ('2', '4');
-
-INSERT INTO dastrax_dev.ACCOUNT (ID, CONFIRMED, CREATIONEPOCH, CURRENTSESSIONEPOCH, LASTPSWRESETEPOCH, LASTSESSIONEPOCH, LOCKED, S3ID, VERSION) 
-	VALUES ('1', true, 1376665588645, NULL, 1376665623234, NULL, false, '9ca94fad-91ea-4dd7-b68d-bbf0f070c282', 2);
-
-INSERT INTO dastrax_dev.SUBJECT (UID, EMAIL, PASSWORD, VERSION, COMPANY_ID, METIER_ID, ACCOUNT_ID, CONTACT_ID) 
-	VALUES ('1', 'test1@dev.tarka.tv', '$shiro1$SHA-256$500000$kwiuSVRMXKwWhWIkBWSMGA==$39eRIS/5M0bk7rRBCkiqYlZcQLgMD3VIb25+1uLUa4U=', 2, NULL, '1', '1', '2');

@@ -150,7 +150,7 @@ public class CreateTicket implements Serializable {
         }
         // VAR access
         if (SecurityUtils.getSubject().hasRole(DastraxCst.Metier.VAR.toString())) {
-            ticket.setRequester(subjectDAO.findSubjectByUid(helper.selectedRequester));
+            ticket.setRequester(s);
         }
         // CLIENT access
         if (SecurityUtils.getSubject().hasRole(DastraxCst.Metier.CLIENT.toString())) {
