@@ -128,60 +128,88 @@
 
                                         <h3>Address</h3>
 
-                                        <p:dataList id="address-list" 
-                                                    styleClass="clear-data-list" 
-                                                    value="#{createAccount.subject.contact.addresses}"
-                                                    var="address"
-                                                    itemType="none">
+                                        <p:spacer width="100%" height="5px"/>
 
-                                            <h:panelGrid columns="2" columnClasses="field-label-3">
-
-                                                <h:outputText value=""/>
-                                                <p:commandLink id="remove-address" styleClass="align-right" value="Remove" action="#{createAccount.subject.contact.removeAddress(address)}" update="address-list" process="@this,remove-address,address-list"/>
+                                        <p:panel>
+                                            <h:panelGrid id="admin-add-grid" columns="2" columnClasses="field-label-3">
 
                                                 <h:outputText value="Street:"/>
-                                                <p:inputText value="#{address.lineTwo}"/>
+                                                <p:inputText value="#{createAccount.helper.address.lineTwo}"/>
 
                                                 <h:outputText value="Town:"/>
-                                                <p:inputText value="#{address.lineThree}"/>
+                                                <p:inputText value="#{createAccount.helper.address.lineThree}"/>
 
                                                 <h:outputText value="State:"/>
-                                                <p:inputText value="#{address.lineFour}"/>
+                                                <p:inputText value="#{createAccount.helper.address.lineFour}"/>
 
                                                 <h:outputText value="Zip Code:"/>
-                                                <p:inputText value="#{address.lineFive}"/>
+                                                <p:inputText value="#{createAccount.helper.address.lineFive}"/>
+
+                                                <p:commandButton id="btn_add" value="Add" 
+                                                                 update="admin-add-grid admin-add-table" 
+                                                                 process="@this,admin-add-grid"
+                                                                 action="#{createAccount.helper.addAddress()}"/>
 
                                             </h:panelGrid>
+                                        </p:panel>
 
-                                        </p:dataList>
+                                        <p:spacer width="100%" height="10px"/>
 
-                                        <p:commandLink id="new-address" value="Add +" action="#{createAccount.subject.contact.addAddress()}" update="address-list" process="@this,new-address,address-list"/>
+                                        <p:dataTable id="admin-add-table" value="#{createAccount.subject.contact.addresses}" var="address">  
 
+                                            <p:column>  
+                                                <f:facet name="header">  
+                                                    <h:outputText value="Address" />  
+                                                </f:facet>  
+                                                <h:outputText value="#{address.buildCompleteAddress()}" />  
+                                            </p:column>  
+
+                                            <p:column>  
+                                                <p:commandLink value="Remove" update="admin-add-table" process="@this,admin-add-table"
+                                                               action="#{createAccount.subject.contact.removeAddress(address)}"/>  
+                                            </p:column>  
+
+                                        </p:dataTable>
 
                                         <p:spacer width="100%" height="20px"/>
 
                                         <h3>Telephone</h3>
+                                        
+                                        <p:spacer width="100%" height="5px"/>
 
-                                        <p:dataList id="telephone-list" 
-                                                    styleClass="clear-data-list" 
-                                                    value="#{createAccount.subject.contact.telephones}"
-                                                    var="telephone"
-                                                    itemType="none">
+                                        <p:panel>
+                                            <h:panelGrid id="admin-tel-grid" columns="1" columnClasses="field-label-3">
 
-                                            <h:panelGrid columns="1" columnClasses="field-label-3">
+                                                <ez:telephone type="#{createAccount.helper.telephone.type}"
+                                                              coutry="#{createAccount.helper.telephone.country}"                     
+                                                              number="#{createAccount.helper.telephone.localNumber}"/>
 
-                                                <p:commandLink id="remove-telephone" styleClass="align-right" value="Remove" action="#{createAccount.subject.contact.removeTelephone(telephone)}" update="telephone-list" process="@this,remove-telephone,telephone-list"/>
-
-                                                <ez:telephone type="#{telephone.type}"
-                                                              coutry="#{telephone.country}"                     
-                                                              number="#{telephone.localNumber}"/>
+                                                <p:commandButton value="Add" 
+                                                                 update="admin-tel-grid admin-tel-table" 
+                                                                 process="@this,admin-tel-grid"
+                                                                 action="#{createAccount.helper.addTelephone()}"/>
 
                                             </h:panelGrid>
+                                        </p:panel>
+                                        
+                                        <p:spacer width="100%" height="10px"/>
 
-                                        </p:dataList>
+                                        <p:dataTable id="admin-tel-table" value="#{createAccount.subject.contact.telephones}" var="telephone">  
 
-                                        <p:commandLink id="new-telephone" value="Add +" action="#{createAccount.subject.contact.addTelephone()}" update="telephone-list" process="@this,new-telephone,telephone-list"/>
+                                            <p:column>  
+                                                <f:facet name="header">  
+                                                    <h:outputText value="Number" />  
+                                                </f:facet>  
+                                                <h:outputText value="#{telephone.type}: #{telephone.internationalFormat()}" />  
+                                            </p:column>  
 
+                                            <p:column>  
+                                                <p:commandLink value="Remove" update="admin-tel-table" process="@this,admin-tel-table"
+                                                               action="#{createAccount.subject.contact.removeTelephone(telephone)}"/>  
+                                            </p:column>  
+
+                                        </p:dataTable>
+                                        
                                         <p:spacer width="100%" height="20px"/>
 
                                         <p:commandButton id="create-btn" 
@@ -264,60 +292,88 @@
 
                                         <h3>Address</h3>
 
-                                        <p:dataList id="address-list" 
-                                                    styleClass="clear-data-list" 
-                                                    value="#{createAccount.subject.contact.addresses}"
-                                                    var="address"
-                                                    itemType="none">
+                                        <p:spacer width="100%" height="5px"/>
 
-                                            <h:panelGrid columns="2" columnClasses="field-label-3">
-
-                                                <h:outputText value=""/>
-                                                <p:commandLink id="remove-address" styleClass="align-right" value="Remove" action="#{createAccount.subject.contact.removeAddress(address)}" update="address-list" process="@this,remove-address,address-list"/>
+                                        <p:panel>
+                                            <h:panelGrid id="var-add-grid" columns="2" columnClasses="field-label-3">
 
                                                 <h:outputText value="Street:"/>
-                                                <p:inputText value="#{address.lineTwo}"/>
+                                                <p:inputText value="#{createAccount.helper.address.lineTwo}"/>
 
                                                 <h:outputText value="Town:"/>
-                                                <p:inputText value="#{address.lineThree}"/>
+                                                <p:inputText value="#{createAccount.helper.address.lineThree}"/>
 
                                                 <h:outputText value="State:"/>
-                                                <p:inputText value="#{address.lineFour}"/>
+                                                <p:inputText value="#{createAccount.helper.address.lineFour}"/>
 
                                                 <h:outputText value="Zip Code:"/>
-                                                <p:inputText value="#{address.lineFive}"/>
+                                                <p:inputText value="#{createAccount.helper.address.lineFive}"/>
+
+                                                <p:commandButton value="Add" 
+                                                                 update="var-add-grid var-add-table" 
+                                                                 process="@this,var-add-grid"
+                                                                 action="#{createAccount.helper.addAddress()}"/>
 
                                             </h:panelGrid>
+                                        </p:panel>
 
-                                        </p:dataList>
+                                        <p:spacer width="100%" height="10px"/>
 
-                                        <p:commandLink id="new-address" value="Add +" action="#{createAccount.subject.contact.addAddress()}" update="address-list" process="@this,new-address,address-list"/>
+                                        <p:dataTable id="var-add-table" value="#{createAccount.subject.contact.addresses}" var="address">  
 
+                                            <p:column>  
+                                                <f:facet name="header">  
+                                                    <h:outputText value="Address" />  
+                                                </f:facet>  
+                                                <h:outputText value="#{address.buildCompleteAddress()}" />  
+                                            </p:column>  
+
+                                            <p:column>  
+                                                <p:commandLink value="Remove" update="var-add-table" process="@this,var-add-table"
+                                                               action="#{createAccount.subject.contact.removeAddress(address)}"/>  
+                                            </p:column>  
+
+                                        </p:dataTable>
 
                                         <p:spacer width="100%" height="20px"/>
 
                                         <h3>Telephone</h3>
+                                        
+                                        <p:spacer width="100%" height="5px"/>
 
-                                        <p:dataList id="telephone-list" 
-                                                    styleClass="clear-data-list" 
-                                                    value="#{createAccount.subject.contact.telephones}"
-                                                    var="telephone"
-                                                    itemType="none">
+                                        <p:panel>
+                                            <h:panelGrid id="var-tel-grid" columns="1" columnClasses="field-label-3">
 
-                                            <h:panelGrid columns="1" columnClasses="field-label-3">
+                                                <ez:telephone type="#{createAccount.helper.telephone.type}"
+                                                              coutry="#{createAccount.helper.telephone.country}"                     
+                                                              number="#{createAccount.helper.telephone.localNumber}"/>
 
-                                                <p:commandLink id="remove-telephone" styleClass="align-right" value="Remove" action="#{createAccount.subject.contact.removeTelephone(telephone)}" update="telephone-list" process="@this,remove-telephone,telephone-list"/>
-
-                                                <ez:telephone type="#{telephone.type}"
-                                                              coutry="#{telephone.country}"                     
-                                                              number="#{telephone.localNumber}"/>
+                                                <p:commandButton value="Add" 
+                                                                 update="var-tel-grid var-tel-table" 
+                                                                 process="@this,var-tel-grid"
+                                                                 action="#{createAccount.helper.addTelephone()}"/>
 
                                             </h:panelGrid>
+                                        </p:panel>
+                                        
+                                        <p:spacer width="100%" height="10px"/>
 
-                                        </p:dataList>
+                                        <p:dataTable id="var-tel-table" value="#{createAccount.subject.contact.telephones}" var="telephone">  
 
-                                        <p:commandLink id="new-telephone" value="Add +" action="#{createAccount.subject.contact.addTelephone()}" update="telephone-list" process="@this,new-telephone,telephone-list"/>
+                                            <p:column>  
+                                                <f:facet name="header">  
+                                                    <h:outputText value="Number" />  
+                                                </f:facet>  
+                                                <h:outputText value="#{telephone.type}: #{telephone.internationalFormat()}" />  
+                                            </p:column>  
 
+                                            <p:column>  
+                                                <p:commandLink value="Remove" update="var-tel-table" process="@this,var-tel-table"
+                                                               action="#{createAccount.subject.contact.removeTelephone(telephone)}"/>  
+                                            </p:column>  
+
+                                        </p:dataTable>
+                                        
                                         <p:spacer width="100%" height="20px"/>
 
                                         <p:commandButton id="create-btn" 
@@ -400,60 +456,88 @@
 
                                         <h3>Address</h3>
 
-                                        <p:dataList id="address-list" 
-                                                    styleClass="clear-data-list" 
-                                                    value="#{createAccount.subject.contact.addresses}"
-                                                    var="address"
-                                                    itemType="none">
+                                        <p:spacer width="100%" height="5px"/>
 
-                                            <h:panelGrid columns="2" columnClasses="field-label-3">
-
-                                                <h:outputText value=""/>
-                                                <p:commandLink id="remove-address" styleClass="align-right" value="Remove" action="#{createAccount.subject.contact.removeAddress(address)}" update="address-list" process="@this,remove-address,address-list"/>
+                                        <p:panel>
+                                            <h:panelGrid id="client-add-grid" columns="2" columnClasses="field-label-3">
 
                                                 <h:outputText value="Street:"/>
-                                                <p:inputText value="#{address.lineTwo}"/>
+                                                <p:inputText value="#{createAccount.helper.address.lineTwo}"/>
 
                                                 <h:outputText value="Town:"/>
-                                                <p:inputText value="#{address.lineThree}"/>
+                                                <p:inputText value="#{createAccount.helper.address.lineThree}"/>
 
                                                 <h:outputText value="State:"/>
-                                                <p:inputText value="#{address.lineFour}"/>
+                                                <p:inputText value="#{createAccount.helper.address.lineFour}"/>
 
                                                 <h:outputText value="Zip Code:"/>
-                                                <p:inputText value="#{address.lineFive}"/>
+                                                <p:inputText value="#{createAccount.helper.address.lineFive}"/>
+
+                                                <p:commandButton value="Add" 
+                                                                 update="client-add-grid client-add-table" 
+                                                                 process="@this,client-add-grid"
+                                                                 action="#{createAccount.helper.addAddress()}"/>
 
                                             </h:panelGrid>
+                                        </p:panel>
 
-                                        </p:dataList>
+                                        <p:spacer width="100%" height="10px"/>
 
-                                        <p:commandLink id="new-address" value="Add +" action="#{createAccount.subject.contact.addAddress()}" update="address-list" process="@this,new-address,address-list"/>
+                                        <p:dataTable id="client-add-table" value="#{createAccount.subject.contact.addresses}" var="address">  
 
+                                            <p:column>  
+                                                <f:facet name="header">  
+                                                    <h:outputText value="Address" />  
+                                                </f:facet>  
+                                                <h:outputText value="#{address.buildCompleteAddress()}" />  
+                                            </p:column>  
+
+                                            <p:column>  
+                                                <p:commandLink value="Remove" update="client-add-table" process="@this,client-add-table"
+                                                               action="#{createAccount.subject.contact.removeAddress(address)}"/>  
+                                            </p:column>  
+
+                                        </p:dataTable>
 
                                         <p:spacer width="100%" height="20px"/>
 
                                         <h3>Telephone</h3>
+                                        
+                                        <p:spacer width="100%" height="5px"/>
 
-                                        <p:dataList id="telephone-list" 
-                                                    styleClass="clear-data-list" 
-                                                    value="#{createAccount.subject.contact.telephones}"
-                                                    var="telephone"
-                                                    itemType="none">
+                                        <p:panel>
+                                            <h:panelGrid id="client-tel-grid" columns="1" columnClasses="field-label-3">
 
-                                            <h:panelGrid columns="1" columnClasses="field-label-3">
+                                                <ez:telephone type="#{createAccount.helper.telephone.type}"
+                                                              coutry="#{createAccount.helper.telephone.country}"                     
+                                                              number="#{createAccount.helper.telephone.localNumber}"/>
 
-                                                <p:commandLink id="remove-telephone" styleClass="align-right" value="Remove" action="#{createAccount.subject.contact.removeTelephone(telephone)}" update="telephone-list" process="@this,remove-telephone,telephone-list"/>
-
-                                                <ez:telephone type="#{telephone.type}"
-                                                              coutry="#{telephone.country}"                     
-                                                              number="#{telephone.localNumber}"/>
+                                                <p:commandButton id="btn_tel" value="Add" 
+                                                                 update="client-tel-grid client-tel-table" 
+                                                                 process="@this,client-tel-grid"
+                                                                 action="#{createAccount.helper.addTelephone()}"/>
 
                                             </h:panelGrid>
+                                        </p:panel>
+                                        
+                                        <p:spacer width="100%" height="10px"/>
 
-                                        </p:dataList>
+                                        <p:dataTable id="client-tel-table" value="#{createAccount.subject.contact.telephones}" var="telephone">  
 
-                                        <p:commandLink id="new-telephone" value="Add +" action="#{createAccount.subject.contact.addTelephone()}" update="telephone-list" process="@this,new-telephone,telephone-list"/>
+                                            <p:column>  
+                                                <f:facet name="header">  
+                                                    <h:outputText value="Number" />  
+                                                </f:facet>  
+                                                <h:outputText value="#{telephone.type}: #{telephone.internationalFormat()}" />  
+                                            </p:column>  
 
+                                            <p:column>  
+                                                <p:commandLink value="Remove" update="client-tel-table" process="@this,client-tel-table"
+                                                               action="#{createAccount.subject.contact.removeTelephone(telephone)}"/>  
+                                            </p:column>  
+
+                                        </p:dataTable>
+                                        
                                         <p:spacer width="100%" height="20px"/>
 
                                         <p:commandButton id="create-btn" 
@@ -503,7 +587,7 @@
 
                                             <h:outputText value="Last Name:*" styleClass="field-label-3"/>
                                             <p:inputText value="#{createAccount.subject.contact.lastName}" rendered="true" requiredMessage="Name is required"/>
-                                            
+
                                         </h:panelGrid>
 
                                         <p:spacer width="100%" height="20px"/>
@@ -555,7 +639,7 @@
 
                                             <h:outputText value="Last Name:*" styleClass="field-label-3"/>
                                             <p:inputText value="#{createAccount.subject.contact.lastName}" rendered="true" requiredMessage="Name is required"/>
-                                            
+
                                         </h:panelGrid>
 
                                         <p:spacer width="100%" height="20px"/>
@@ -625,7 +709,7 @@
 
                                             <h:outputText value="Last Name:*" styleClass="field-label-3"/>
                                             <p:inputText value="#{createAccount.subject.contact.lastName}" rendered="true" requiredMessage="Name is required"/>
-                                            
+
                                         </h:panelGrid>                                      
 
                                         <p:spacer width="100%" height="20px"/>
@@ -687,7 +771,7 @@
                             </td>
                         </tr>
                     </table>
-                    
+
                     <p:spacer width="100%" height="50px"/>
 
                 </pe:layoutPane>

@@ -10,19 +10,19 @@ Copyright 2013 SOLiD Inc ALL RIGHTS RESERVED with classpath exception. For speci
 ### Technology Stack
 ###### Language
 1. Java EE
-⋅⋅* Version 7
-⋅⋅* Build 25
+  * Version 7
+  * Build 25
 
 ###### Build Tool
 1. Maven
-⋅⋅* Version 3
+  * Version 3
 
 ###### Container
 1. Glassfish
-⋅⋅* Version 4
-⋅⋅* Build 89
+  * Version 4
+  * Build 89
 2. Mojarra
-⋅⋅* Version 2.2
+  * Version 2.2
 
 ###### External Dependencies
 1. Amazon Web Services
@@ -32,10 +32,10 @@ Copyright 2013 SOLiD Inc ALL RIGHTS RESERVED with classpath exception. For speci
 
 ###### IDE
 1. Netbeans
-⋅⋅* Version 7.2 *(non-compatible)*
-⋅⋅* Version 7.3 *(non-compatible)*
-⋅⋅* Version 7.3.1
-⋅⋅* Version 7.4-beta
+  * Version 7.2 *(non-compatible)*
+  * Version 7.3 *(non-compatible)*
+  * Version 7.3.1
+  * Version 7.4-beta
 
 ### Build Information
 *TODO*
@@ -47,7 +47,6 @@ Copyright 2013 SOLiD Inc ALL RIGHTS RESERVED with classpath exception. For speci
 The application uses [**Semantic Versioning**](http://semver.org/) to version its releases. The following is an extract explanation of the versioning system used;
 
 #####Semantic Versioning Specification (SemVer)
-
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119](http://tools.ietf.org/html/rfc2119).
 
 1. Software using Semantic Versioning MUST declare a public API. This API could be declared in the code itself or exist strictly in documentation. However it is done, it should be precise and comprehensive.
@@ -73,15 +72,8 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 11. Precedence refers to how versions are compared to each other when ordered. Precedence MUST be calculated by separating the version into major, minor, patch and pre-release identifiers in that order (Build metadata does not figure into precedence). Precedence is determined by the first difference when comparing each of these identifiers from left to right as follows: Major, minor, and patch versions are always compared numerically. Example: 1.0.0 < 2.0.0 < 2.1.0 < 2.1.1. When major, minor, and patch are equal, a pre-release version has lower precedence than a normal version. Example: 1.0.0-alpha < 1.0.0. Precedence for two pre-release versions with the same major, minor, and patch version MUST be determined by comparing each dot separated identifier from left to right until a difference is found as follows: identifiers consisting of only digits are compared numerically and identifiers with letters or hyphens are compared lexically in ASCII sort order. Numeric identifiers always have lower precedence than non-numeric identifiers. A larger set of pre-release fields has a higher precedence than a smaller set, if all of the preceding identifiers are equal. Example: 1.0.0-alpha < 1.0.0-alpha.1 < 1.0.0-alpha.beta < 1.0.0-beta < 1.0.0-beta.2 < 1.0.0-beta.11 < 1.0.0-rc.1 < 1.0.0.
 
 ### Contact
-###### General
-Mike Wing, NOC/Support Manager
-T 408.639.0426
-E mike.wing@solid.com
-HQ:   617 N MARY AVE | SUNNYVALE CA 94085
-SUPPORT:  888.409.9997 x2  |  support@solid.com
+| Type      | Name               | Role                | Telephone    | Email               | Address                              |
+|---------- | ------------------ | ------------------- | ------------ | ------------------- | ------------------------------------ |
+| General   | Mike Wing          | NOC/Support Manager | 408-639-0426 | mike.wing@solid.com | 617 N MARY AVE, SUNNYVALE, CA, 94085 |
+| Technical | Tarka L'Herpiniere | Lead Developer      | 408-400-3802 | tarka@solid.com     | 617 N MARY AVE, SUNNYVALE, CA, 94085 |
 
-###### Technical
-Tarka L'Herpiniere, Lead Developer
-T 
-E tarka@solid.com
-HQ:   617 N MARY AVE | SUNNYVALE CA 94085

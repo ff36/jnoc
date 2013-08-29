@@ -114,7 +114,7 @@
     <class>com.dastrax.per.entity.csm.Ticket</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
-      <property name="javax.persistence.schema-generation.database.action" value="create"/>
+      <property name="javax.persistence.schema-generation.database.action" value="none"/>
       <property name="eclipselink.logging.level" value="SEVERE"/>
     </properties>
   </persistence-unit>

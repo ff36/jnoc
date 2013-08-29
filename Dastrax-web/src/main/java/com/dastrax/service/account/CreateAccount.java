@@ -84,8 +84,6 @@ public class CreateAccount implements Serializable {
     public CreateAccount() {
         subject.setAccount(new Account());
         subject.setContact(new Contact());
-        subject.getContact().getAddresses().add(new Address());
-        subject.getContact().getTelephones().add(new Telephone());
     }
 
     @PostConstruct
@@ -351,48 +349,6 @@ public class CreateAccount implements Serializable {
     }
 
     /**
-     * Accessed when a subject needs their account confirmation email resent.
-     */
-    public void resendRegEmail() {
-
-        Subject s = subjectDAO.findSubjectByEmail(helper.email);
-
-        if (s != null) {
-            if (!s.getAccount().isConfirmed()) {
-                Email email = new Email();
-                // Set the recipient
-                email.setRecipientEmail(helper.email);
-                // Retrieve the params and set them for the email
-                email.setParam(emailParamDAO.findParamByEmail(helper.email));
-
-                Map<String, String> vars = new HashMap<>();
-                vars.put("pin", email.getParam().getParamA());
-                email.setVariables(vars);
-
-                // Retreive the email template from the database.
-                EmailTemplate et = emailTemplateDAO.findTemplateById(
-                        DastraxCst.EmailTemplate.NEW_ACCOUNT.toString());
-                email.setTemplate(et);
-
-                // Send the email
-                emailUtil.build(email);
-
-                // Add success message
-                JsfUtil.addSuccessMessage("We have sent an email containing instructions on how to complete the process.");
-
-                // Create an audit log of the event
-                //audit.create("Resent registration email to: " + s.getUid() + "(" + helper.email + ")");
-            } else {
-                // Account already confirmed
-                JsfUtil.addWarningMessage("Account already confirmed");
-            }
-        } else {
-            // The database search did not find the email
-            JsfUtil.addWarningMessage("Could not find an account linked to that address.");
-        }
-    }
-
-    /**
      * Confirmation response from the account request email. This method must be
      * executed in order to activate an account.
      */
@@ -458,6 +414,8 @@ public class CreateAccount implements Serializable {
         private List<Company> vars = new ArrayList<>();
         private List<Company> clients = new ArrayList<>();
         private boolean renderPublicForm;
+        private Address address = new Address();
+        private Telephone telephone = new Telephone();
 
         // Constructors-------------------------------------------------------------
         public Helper() {
@@ -512,6 +470,14 @@ public class CreateAccount implements Serializable {
             return renderPublicForm;
         }
 
+        public Address getAddress() {
+            return address;
+        }
+
+        public Telephone getTelephone() {
+            return telephone;
+        }
+
         // Setters------------------------------------------------------------------
         public void setEmail(String email) {
             this.email = email;
@@ -561,6 +527,14 @@ public class CreateAccount implements Serializable {
             this.renderPublicForm = renderPublicForm;
         }
 
+        public void setAddress(Address address) {
+            this.address = address;
+        }
+
+        public void setTelephone(Telephone telephone) {
+            this.telephone = telephone;
+        }
+
         // Methods------------------------------------------------------------------
         /**
          * Accounts can be created from several places. This method is used to 
@@ -580,6 +554,24 @@ public class CreateAccount implements Serializable {
                 return "/b/accounts/create.jsf".equals(contextURL);
             }
             return false;
+        }
+        
+        /**
+         * The address list component used to manage collections requires this 
+         * method to reset the address object each time a new one is created.
+         */
+        public void addAddress() {
+            subject.getContact().getAddresses().add(address);
+            address = new Address();
+        }
+        
+        /**
+         * The telephone list component used to manage collections requires this 
+         * method to reset the telephone object each time a new one is created.
+         */
+        public void addTelephone() {
+            subject.getContact().getTelephones().add(telephone);
+            telephone = new Telephone();
         }
 
     }
