@@ -77,16 +77,14 @@ public interface SubjectDAO {
     public void updateCompany(String uid, Company company);
     /**
      * 
-     * @param uid
-     * @param addresses 
+     * @param subject
      */
-    public void updateAddress(String uid, List<Address> addresses);
+    public void updateAddress(Subject subject);
     /**
      * 
-     * @param uid
-     * @param telephones 
+     * @param subject 
      */
-    public void updateTelephone(String uid, List<Telephone> telephones);
+    public void updateTelephone(Subject subject);
     /**
      * 
      * @param uid
@@ -105,6 +103,11 @@ public interface SubjectDAO {
      * @param password (Shiro encrypted password)
      */
     public void updatePassword(String uid, String password);
+    /**
+     * 
+     * @param subject
+     */
+    public void updatePermissions(Subject subject);
     /**
      * 
      * @param uid 

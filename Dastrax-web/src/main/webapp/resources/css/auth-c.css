@@ -116,11 +116,15 @@ A:link:hover, A:visited:hover
 /*LAYOUT*/
 .ui-layout-pane
 {
-	margin-top: 45px !important;
 	-webkit-border-radius: 0px;
 	-moz-border-radius: 0px;
 	border-radius: 0px;
 	background: #F7F7F7;
+	z-index: -1 !important;
+}
+.ui-layout-container
+{
+	z-index: -2 !important;
 }
 .ui-layout-center
 {

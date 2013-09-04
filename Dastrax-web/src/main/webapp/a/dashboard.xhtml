@@ -4,7 +4,8 @@
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:p="http://primefaces.org/ui"
       xmlns:pe="http://primefaces.org/ui/extensions"
-      xmlns:ez="http://xmlns.jcp.org/jsf/composite/ezcomp">
+      xmlns:ez="http://xmlns.jcp.org/jsf/composite/ezcomp"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
     <h:head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -30,88 +31,95 @@
             <pe:layout stateCookie="false" widgetVar="layoutWgt" >
 
                 <pe:layoutPane id="west" position="west" resizeWhileDragging="true" size="220">
+                    <p:spacer width="100%" height="45"/>
 
                     <table class="side-menu">
-                        <tr>
-                            <td>
-                                <h3>Tickets</h3>
-                            </td>
-                        </tr>
-                        <tr class="hover">
-                            <td>
-                                <p:commandLink value="Create a new ticket" action="access-create-ticket-page" process="@this" type="button"/>
-                            </td>
-                        </tr>
-                        <tr class="hover">
-                            <td>
-                                <p:commandLink value="Manage tickets" action="access-list-manual-tickets-page" process="@this" type="button"/>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td>
-                                <h3>DMS Tickets</h3>
-                            </td>
-                        </tr>
-                        <tr class="hover">
-                            <td>
-                                <p:commandLink value="Manage DMS tickets" action="access-list-dms-tickets-page" process="@this" type="button"/>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td>
-                                <h3>Accounts</h3>
-                            </td>
-                        </tr>
-                        <tr class="hover">
-                            <td>
-                                <p:commandLink value="Create a new account" action="access-create-account-page" process="@this" type="button"/>
-                            </td>
-                        </tr>
-                        <tr class="hover">
-                            <td>
-                                <p:commandLink value="Manage accounts" action="access-accounts-list-page" process="@this" type="button"/>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td>
-                                <h3>Companies</h3>
-                            </td>
-                        </tr>
-                        <tr class="hover">
-                            <td>
-                                <p:commandLink value="Create a new company" action="access-create-company-page" process="@this" type="button"/>
-                            </td>
-                        </tr>
-                        <tr class="hover">
-                            <td>
-                                <p:commandLink value="Manage companies" action="access-companies-list-page" process="@this" type="button"/>
-                            </td>
-                        </tr>
-                        
-                        <tr>
-                            <td>
-                                <h3>Sites</h3>
-                            </td>
-                        </tr>
-                        <tr class="hover">
-                            <td>
-                                <p:commandLink value="Create a new site" action="access-create-site-page" process="@this" type="button"/>
-                            </td>
-                        </tr>
-                        <tr class="hover">
-                            <td>
-                                <p:commandLink value="Manage sites" action="access-list-sites-page" process="@this" type="button"/>
-                            </td>
-                        </tr>
-
+                        <ui:fragment rendered="#{permissionUtil.hasPermission('ticket:access')}">
+                            <tr>
+                                <td>
+                                    <h3>Tickets</h3>
+                                </td>
+                            </tr>
+                            <tr class="hover">
+                                <td>
+                                    <p:commandLink value="Create a new ticket" action="access-create-ticket-page" process="@this" type="button"/>
+                                </td>
+                            </tr>
+                            <tr class="hover">
+                                <td>
+                                    <p:commandLink value="Manage tickets" action="access-list-manual-tickets-page" process="@this" type="button"/>
+                                </td>
+                            </tr>
+                        </ui:fragment>
+                        <ui:fragment rendered="#{permissionUtil.hasPermission('dmsticket:access')}">
+                            <tr>
+                                <td>
+                                    <h3>DMS Tickets</h3>
+                                </td>
+                            </tr>
+                            <tr class="hover">
+                                <td>
+                                    <p:commandLink value="Manage DMS tickets" action="access-list-dms-tickets-page" process="@this" type="button"/>
+                                </td>
+                            </tr>
+                        </ui:fragment>
+                        <ui:fragment rendered="#{permissionUtil.hasPermission('account:access')}">
+                            <tr>
+                                <td>
+                                    <h3>Accounts</h3>
+                                </td>
+                            </tr>
+                            <tr class="hover">
+                                <td>
+                                    <p:commandLink value="Create a new account" action="access-create-account-page" process="@this" type="button"/>
+                                </td>
+                            </tr>
+                            <tr class="hover">
+                                <td>
+                                    <p:commandLink value="Manage accounts" action="access-accounts-list-page" process="@this" type="button"/>
+                                </td>
+                            </tr>
+                        </ui:fragment>
+                        <ui:fragment rendered="#{permissionUtil.hasPermission('company:access')}">
+                            <tr>
+                                <td>
+                                    <h3>Companies</h3>
+                                </td>
+                            </tr>
+                            <tr class="hover">
+                                <td>
+                                    <p:commandLink value="Create a new company" action="access-create-company-page" process="@this" type="button"/>
+                                </td>
+                            </tr>
+                            <tr class="hover">
+                                <td>
+                                    <p:commandLink value="Manage companies" action="access-companies-list-page" process="@this" type="button"/>
+                                </td>
+                            </tr>
+                        </ui:fragment>
+                        <ui:fragment rendered="#{permissionUtil.hasPermission('site:access')}">
+                            <tr>
+                                <td>
+                                    <h3>Sites</h3>
+                                </td>
+                            </tr>
+                            <tr class="hover">
+                                <td>
+                                    <p:commandLink value="Create a new site" action="access-create-site-page" process="@this" type="button"/>
+                                </td>
+                            </tr>
+                            <tr class="hover">
+                                <td>
+                                    <p:commandLink value="Manage sites" action="access-list-sites-page" process="@this" type="button"/>
+                                </td>
+                            </tr>
+                        </ui:fragment>
                     </table>
 
                 </pe:layoutPane>
 
                 <pe:layoutPane id="center" position="center" resizeWhileDragging="true">
+                    <p:spacer width="100%" height="45"/>
 
                     <div class="dsh-audit">
                         <h2>Audit</h2>

@@ -70,12 +70,7 @@ public class CreateCompany implements Serializable {
         company.setClientSites(new ArrayList<Site>());
         company.setClients(new ArrayList<Company>());
         company.setContacts(new ArrayList<Contact>());
-        Contact c = new Contact();
-        c.setAddresses(new ArrayList<Address>());
-        c.addAddress();
-        c.setTelephones(new ArrayList<Telephone>());
-        c.addTelephone();
-        company.getContacts().add(c);
+        company.getContacts().add(new Contact());
     }
 
     @PostConstruct
@@ -190,12 +185,7 @@ public class CreateCompany implements Serializable {
      * Add new contact to the company
      */
     public void addContact() {
-        Contact c = new Contact();
-        c.setAddresses(new ArrayList<Address>());
-        c.addAddress();
-        c.setTelephones(new ArrayList<Telephone>());
-        c.addTelephone();
-        company.getContacts().add(c);
+        company.getContacts().add(new Contact());
     }
 
     /**
@@ -280,14 +270,12 @@ public class CreateCompany implements Serializable {
         public void filterSites() {
             // ADMIN access
             if (SecurityUtils.getSubject().hasRole(DastraxCst.Metier.ADMIN.toString())) {
-                if (company.getType().equals(DastraxCst.CompanyType.VAR.toString())
-                        || company.getType().equals("QUICKVAR")) {
+                if (company.getType().equals(DastraxCst.CompanyType.VAR.toString())) {
                     helper.varSites = new DualListModel<>();
                     varSites.setSource(siteDAO.findSitesByNullVar());
                     varSites.setTarget(company.getVarSites());
                 }
-                if (company.getType().equals(DastraxCst.CompanyType.CLIENT.toString())
-                        || company.getType().equals("QUICKCLIENT")) {
+                if (company.getType().equals(DastraxCst.CompanyType.CLIENT.toString())) {
                     helper.clientSites = new DualListModel<>();
                     if (selectedVar != null && !"".equals(selectedVar)) {
                         clientSites.setSource(siteDAO.findSitesByNullClient(selectedVar));
@@ -300,8 +288,7 @@ public class CreateCompany implements Serializable {
             }
             // VAR access
             if (SecurityUtils.getSubject().hasRole(DastraxCst.Metier.VAR.toString())) {
-                if (company.getType().equals(DastraxCst.CompanyType.CLIENT.toString())
-                        || company.getType().equals("QUICKCLIENT")) {
+                if (company.getType().equals(DastraxCst.CompanyType.CLIENT.toString())) {
 
                     Subject s = subjectDAO.findSubjectByUid(
                             SecurityUtils.getSubject().getPrincipals()

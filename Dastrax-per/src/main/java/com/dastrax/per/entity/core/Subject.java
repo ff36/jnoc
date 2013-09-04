@@ -7,6 +7,7 @@ package com.dastrax.per.entity.core;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -59,7 +60,7 @@ public class Subject implements Serializable {
     private Contact contact;
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private Account account;
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     private List<Permission> permissions = new ArrayList<>();
     @OneToMany(mappedBy = "creator")
     private List<Nexus> nexus = new ArrayList<>();
@@ -173,4 +174,14 @@ public class Subject implements Serializable {
         return "com.iconsult.application.entity.Subject[ uid=" + uid + " ]";
     }
 
+    public void removePermission(Permission permission) {
+        Iterator<Permission> i = permissions.iterator();
+        while (i.hasNext()) {
+            Permission p = i.next();
+            if (p == permission) {
+                i.remove();
+            }
+        }
+    }
+    
 }

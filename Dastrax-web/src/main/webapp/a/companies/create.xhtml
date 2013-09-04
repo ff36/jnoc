@@ -17,6 +17,8 @@
 
     <h:body>
 
+        #{permissionUtil.hasPagePermission('company:create')}
+
         <h:form id="form">
 
             <pe:ajaxErrorHandler />
@@ -31,6 +33,7 @@
             <pe:layout stateCookie="false" widgetVar="layourWgt" >
 
                 <pe:layoutPane id="west" position="west" resizeWhileDragging="true" size="220">
+                    <p:spacer width="100%" height="45"/>
 
                     <table class="side-menu">
                         <tr>
@@ -40,12 +43,12 @@
                         </tr>
                         <tr class="hover">
                             <td>
-                                <p:commandLink id="min-admin" value="Minimal VAR" process="@this" update=":form:switch :form:switch-east" actionListener="#{createCompany.helper.quickFilterSites('QUICKVAR')}" />
+                                <p:commandLink id="min-admin" value="VAR" process="@this" update=":form:switch :form:switch-east" actionListener="#{createCompany.helper.quickFilterSites('VAR')}" />
                             </td>
                         </tr>
                         <tr class="hover">
                             <td>
-                                <p:commandLink id="min-var" value="Minimal Client" process="@this" update=":form:switch :form:switch-east" actionListener="#{createCompany.helper.quickFilterSites('QUICKCLIENT')}"/>
+                                <p:commandLink id="min-var" value="Client" process="@this" update=":form:switch :form:switch-east" actionListener="#{createCompany.helper.quickFilterSites('CLIENT')}"/>
                             </td>
                         </tr>
                     </table>
@@ -53,33 +56,10 @@
                 </pe:layoutPane>
 
                 <pe:layoutPane id="center" position="center" resizeWhileDragging="true">
+                    <p:spacer width="100%" height="45"/>
 
                     <table>
                         <tr>
-                            <td class="create-col-1">
-
-                                <table width="100%">
-                                    <tr>
-                                        <td><h2>New Company</h2></td>
-                                        <td width="150px"></td>
-                                    </tr>
-                                </table>
-
-                                <h:panelGrid columns="2" columnClasses="field-label-3">
-                                    <h:outputText value="Company Type:" styleClass="field-label-3"/>  
-                                    <p:selectOneMenu value="#{createCompany.company.type}" style="width: 150px">  
-                                        <f:selectItem itemLabel="" itemValue="" />  
-                                        <f:selectItem itemLabel="VAR" itemValue="VAR" />  
-                                        <f:selectItem itemLabel="CLIENT" itemValue="CLIENT" /> 
-                                        <p:ajax event="change" update="switch :form:switch-east" process="@this" listener="#{createCompany.helper.filterSites}"/>
-                                    </p:selectOneMenu>  
-                                </h:panelGrid>
-
-                            </td>
-
-                            <td class="create-col-2">
-                                <p:graphicImage value="#{pathUtil.s3Icon('black/br_next_icon_24.png')}"/>                            
-                            </td>
 
                             <td class="create-col-3">
 
@@ -87,10 +67,20 @@
 
                                     <pe:defaultCase>  
 
+                                        <p:spacer width="100%" height="20px"/>
+
+                                        <h:panelGrid columns="2">
+                                            <p:graphicImage value="#{pathUtil.s3Icon('black/br_prev_icon_24.png')}"/>
+                                            <h:outputText value="Select an company type"/>
+                                        </h:panelGrid>
+
                                     </pe:defaultCase> 
 
                                     <pe:case value="VAR">  
 
+                                        <h2>New VAR Company</h2>
+                                        <p:spacer width="100%" height="20px"/>
+
                                         <h:panelGrid columns="2" columnClasses="field-label-3">
 
                                             <h:outputText value="Name:*" styleClass="field-label-3"/>
@@ -103,9 +93,11 @@
 
                                         <p:spacer width="100%" height="20px"/>
 
-                                        <h3>Contacts </h3>
+                                        <h3>Contacts ( <p:commandLink id="new-contact" action="#{createCompany.addContact()}" update="contact-list" process="@this,new-contact,contact-list">
+                                                <p:graphicImage value="#{pathUtil.s3Icon('black/contact_icon_16.png')}"/>
+                                            </p:commandLink> )</h3>
 
-                                        <p:spacer width="100%" height="20px"/>
+                                        <p:spacer width="100%" height="10px"/>
 
                                         <p:dataList id="contact-list" 
                                                     styleClass="clear-data-list" 
@@ -113,11 +105,11 @@
                                                     var="contact"
                                                     itemType="none">
 
-                                            <p:commandLink id="remove-contact" styleClass="align-right" value="Remove Contact" action="#{createCompany.removeContact(contact)}" update="contact-list" process="@this,remove-contact,contact-list"/>
-
-                                            <p:spacer width="100%" height="1px"/>
-
                                             <p:panel>
+
+                                                <p:commandLink id="remove-contact" styleClass="align-right" action="#{createCompany.removeContact(contact)}" update="contact-list" process="@this,remove-contact,contact-list">
+                                                    <p:graphicImage value="#{pathUtil.s3Icon('black/trash_icon_16.png')}"/>
+                                                </p:commandLink>
 
                                                 <h:panelGrid columns="2" columnClasses="field-label-3">
 
@@ -134,39 +126,47 @@
 
                                                 <p:spacer width="100%" height="20px"/>
 
-                                                <h4>Address</h4>
+                                                <h4>Addresses ( <p:commandLink id="new-address" action="#{contact.addAddress()}" update="address-list" process="@this,new-address,address-list">
+                                                        <p:graphicImage value="#{pathUtil.s3Icon('black/contact_card_icon_16.png')}"/>
+                                                    </p:commandLink> )</h4>
+
                                                 <p:dataList id="address-list" 
                                                             styleClass="clear-data-list" 
                                                             value="#{contact.addresses}"
                                                             var="address"
                                                             itemType="none">
 
-                                                    <h:panelGrid columns="2" columnClasses="field-label-3">
-
-                                                        <p:commandLink id="remove-address" value="Remove Address" action="#{contact.removeAddress(address)}" update="address-list" process="@this,remove-address,address-list"/>
-                                                        <h:outputText value=""/>
+                                                    <h:panelGrid columns="3" columnClasses="field-label-3">
 
                                                         <h:outputText value="Street:"/>
                                                         <p:inputText value="#{address.lineTwo}"/>
+                                                        <p:commandLink id="remove-address" action="#{contact.removeAddress(address)}" update="address-list" process="@this,remove-address,address-list">
+                                                            <p:graphicImage value="#{pathUtil.s3Icon('black/trash_icon_16.png')}"/>
+                                                        </p:commandLink>
 
                                                         <h:outputText value="Town:"/>
                                                         <p:inputText value="#{address.lineThree}"/>
+                                                        <h:outputText value=""/>
 
                                                         <h:outputText value="State:"/>
                                                         <p:inputText value="#{address.lineFour}"/>
+                                                        <h:outputText value=""/>
 
                                                         <h:outputText value="Zip Code:"/>
                                                         <p:inputText value="#{address.lineFive}"/>
+                                                        <h:outputText value=""/>
 
                                                     </h:panelGrid>
 
+                                                    <p:spacer width="100%" height="10px"/>
+                                                    
                                                 </p:dataList>
 
-                                                <p:commandLink id="new-address" value="Add Address" action="#{contact.addAddress()}" update="address-list" process="@this,new-address,address-list"/>
+                                                <p:spacer width="100%" height="10px"/>
 
-                                                <p:spacer width="100%" height="20px"/>
-
-                                                <h4>Telephone</h4>
+                                                <h4>Telephones ( <p:commandLink id="new-telephone" action="#{contact.addTelephone()}" update="telephone-list" process="@this,new-telephone,telephone-list">
+                                                        <p:graphicImage value="#{pathUtil.s3Icon('black/phone_1_icon_16.png')}"/>
+                                                    </p:commandLink> )</h4>
 
                                                 <p:dataList id="telephone-list" 
                                                             styleClass="clear-data-list" 
@@ -176,25 +176,27 @@
 
                                                     <h:panelGrid columns="1" columnClasses="field-label-3">
 
-                                                        <p:commandLink id="remove-telephone" value="Remove Telephone" action="#{contact.removeTelephone(telephone)}" update="telephone-list" process="@this,remove-telephone,telephone-list"/>
+                                                        <h:panelGrid columns="2">
 
-                                                        <ez:telephone type="#{telephone.type}"
-                                                                      coutry="#{telephone.country}"                     
-                                                                      number="#{telephone.localNumber}"/>
+                                                            <ez:telephone type="#{telephone.type}"
+                                                                          coutry="#{telephone.country}"                     
+                                                                          number="#{telephone.localNumber}"/>
+
+                                                            <p:commandLink id="remove-telephone" action="#{contact.removeTelephone(telephone)}" update="telephone-list" process="@this,remove-telephone,telephone-list">
+                                                                <p:graphicImage value="#{pathUtil.s3Icon('black/trash_icon_16.png')}"/>
+                                                            </p:commandLink>
+
+                                                        </h:panelGrid>
 
                                                     </h:panelGrid>
 
                                                 </p:dataList>
 
-                                                <p:commandLink id="new-telephone" value="Add Telephone" action="#{contact.addTelephone()}" update="telephone-list" process="@this,new-telephone,telephone-list"/>
-
                                             </p:panel>
-
+                                            
                                             <p:spacer width="100%" height="10px"/>
 
                                         </p:dataList>
-
-                                        <p:commandLink id="new-contact" value="Add Contact" action="#{createCompany.addContact()}" update="contact-list" process="@this,new-contact,contact-list"/>
 
                                         <p:spacer width="100%" height="20px"/>
 
@@ -233,7 +235,10 @@
 
                                     </pe:case>  
 
-                                    <pe:case value="CLIENT">  
+                                    <pe:case value="CLIENT"> 
+
+                                        <h2>New Client Company</h2>
+                                        <p:spacer width="100%" height="20px"/>
 
                                         <h:panelGrid columns="2" columnClasses="field-label-3">
 
@@ -259,9 +264,11 @@
 
                                         <p:spacer width="100%" height="20px"/>
 
-                                        <h3>Contacts</h3>
+                                        <h3>Contacts ( <p:commandLink id="new-contact" action="#{createCompany.addContact()}" update="contact-list" process="@this,new-contact,contact-list">
+                                                <p:graphicImage value="#{pathUtil.s3Icon('black/contact_icon_16.png')}"/>
+                                            </p:commandLink> )</h3>
 
-                                        <p:spacer width="100%" height="20px"/>
+                                        <p:spacer width="100%" height="10px"/>
 
                                         <p:dataList id="contact-list" 
                                                     styleClass="clear-data-list" 
@@ -269,11 +276,11 @@
                                                     var="contact"
                                                     itemType="none">
 
-                                            <p:commandLink id="remove-contact" styleClass="align-right" value="Remove Contact" action="#{createCompany.removeContact(contact)}" update="contact-list" process="@this,remove-contact,contact-list"/>
-
-                                            <p:spacer width="100%" height="1px"/>
-
                                             <p:panel>
+
+                                                <p:commandLink id="remove-contact" styleClass="align-right" action="#{createCompany.removeContact(contact)}" update="contact-list" process="@this,remove-contact,contact-list">
+                                                    <p:graphicImage value="#{pathUtil.s3Icon('black/trash_icon_16.png')}"/>
+                                                </p:commandLink>
 
                                                 <h:panelGrid columns="2" columnClasses="field-label-3">
 
@@ -290,39 +297,47 @@
 
                                                 <p:spacer width="100%" height="20px"/>
 
-                                                <h4>Address</h4>
+                                                <h4>Addresses ( <p:commandLink id="new-address" action="#{contact.addAddress()}" update="address-list" process="@this,new-address,address-list">
+                                                        <p:graphicImage value="#{pathUtil.s3Icon('black/contact_card_icon_16.png')}"/>
+                                                    </p:commandLink> )</h4>
+
                                                 <p:dataList id="address-list" 
                                                             styleClass="clear-data-list" 
                                                             value="#{contact.addresses}"
                                                             var="address"
                                                             itemType="none">
 
-                                                    <h:panelGrid columns="2" columnClasses="field-label-3">
-
-                                                        <p:commandLink id="remove-address" value="Remove Address" action="#{contact.removeAddress(address)}" update="address-list" process="@this,remove-address,address-list"/>
-                                                        <h:outputText value=""/>
+                                                    <h:panelGrid columns="3" columnClasses="field-label-3">
 
                                                         <h:outputText value="Street:"/>
                                                         <p:inputText value="#{address.lineTwo}"/>
+                                                        <p:commandLink id="remove-address" action="#{contact.removeAddress(address)}" update="address-list" process="@this,remove-address,address-list">
+                                                            <p:graphicImage value="#{pathUtil.s3Icon('black/trash_icon_16.png')}"/>
+                                                        </p:commandLink>
 
                                                         <h:outputText value="Town:"/>
                                                         <p:inputText value="#{address.lineThree}"/>
+                                                        <h:outputText value=""/>
 
                                                         <h:outputText value="State:"/>
                                                         <p:inputText value="#{address.lineFour}"/>
+                                                        <h:outputText value=""/>
 
                                                         <h:outputText value="Zip Code:"/>
                                                         <p:inputText value="#{address.lineFive}"/>
+                                                        <h:outputText value=""/>
 
                                                     </h:panelGrid>
 
+                                                    <p:spacer width="100%" height="10px"/>
+                                                    
                                                 </p:dataList>
 
-                                                <p:commandLink id="new-address" value="Add Address" action="#{contact.addAddress()}" update="address-list" process="@this,new-address,address-list"/>
+                                                <p:spacer width="100%" height="10px"/>
 
-                                                <p:spacer width="100%" height="20px"/>
-
-                                                <h4>Telephone</h4>
+                                                <h4>Telephones ( <p:commandLink id="new-telephone" action="#{contact.addTelephone()}" update="telephone-list" process="@this,new-telephone,telephone-list">
+                                                        <p:graphicImage value="#{pathUtil.s3Icon('black/phone_1_icon_16.png')}"/>
+                                                    </p:commandLink> )</h4>
 
                                                 <p:dataList id="telephone-list" 
                                                             styleClass="clear-data-list" 
@@ -332,136 +347,28 @@
 
                                                     <h:panelGrid columns="1" columnClasses="field-label-3">
 
-                                                        <p:commandLink id="remove-telephone" value="Remove Telephone" action="#{contact.removeTelephone(telephone)}" update="telephone-list" process="@this,remove-telephone,telephone-list"/>
+                                                        <h:panelGrid columns="2">
 
-                                                        <ez:telephone type="#{telephone.type}"
-                                                                      coutry="#{telephone.country}"                     
-                                                                      number="#{telephone.localNumber}"/>
+                                                            <ez:telephone type="#{telephone.type}"
+                                                                          coutry="#{telephone.country}"                     
+                                                                          number="#{telephone.localNumber}"/>
+
+                                                            <p:commandLink id="remove-telephone" action="#{contact.removeTelephone(telephone)}" update="telephone-list" process="@this,remove-telephone,telephone-list">
+                                                                <p:graphicImage value="#{pathUtil.s3Icon('black/trash_icon_16.png')}"/>
+                                                            </p:commandLink>
+
+                                                        </h:panelGrid>
 
                                                     </h:panelGrid>
 
                                                 </p:dataList>
 
-                                                <p:commandLink id="new-telephone" value="Add Telephone" action="#{contact.addTelephone()}" update="telephone-list" process="@this,new-telephone,telephone-list"/>
-
                                             </p:panel>
-
+                                            
                                             <p:spacer width="100%" height="10px"/>
 
                                         </p:dataList>
 
-                                        <p:commandLink id="new-contact" value="Add Contact" action="#{createCompany.addContact()}" update="contact-list" process="@this,new-contact,contact-list"/>
-
-                                        <p:spacer width="100%" height="20px"/>
-
-                                        <p:commandButton id="create-btn" 
-                                                         value="Create Account"
-                                                         action="#{createCompany.client()}"
-                                                         onclick="blockui1.block();"
-                                                         oncomplete="blockui1.unblock();"
-                                                         update=":form:growl"
-                                                         process="@this,:form:switch :form:switch-east"/>
-
-                                        <pe:blockUI target="create-btn" widgetVar="blockui1">  
-                                            <div class="windows8-18-b">
-                                                <div class="wBall" id="wBall_1">
-                                                    <div class="wInnerBall">
-                                                    </div>
-                                                </div>
-                                                <div class="wBall" id="wBall_2">
-                                                    <div class="wInnerBall">
-                                                    </div>
-                                                </div>
-                                                <div class="wBall" id="wBall_3">
-                                                    <div class="wInnerBall">
-                                                    </div>
-                                                </div>
-                                                <div class="wBall" id="wBall_4">
-                                                    <div class="wInnerBall">
-                                                    </div>
-                                                </div>
-                                                <div class="wBall" id="wBall_5">
-                                                    <div class="wInnerBall">
-                                                    </div>
-                                                </div>
-                                            </div> 
-                                        </pe:blockUI>
-                                        
-                                    </pe:case>  
-
-                                    <pe:case value="QUICKVAR">  
-
-                                        <h:panelGrid columns="2" columnClasses="field-label-3">
-
-                                            <h:outputText value="Name:*" styleClass="field-label-3"/>
-                                            <p:inputText value="#{createCompany.company.name}" rendered="true" requiredMessage="Name is required"/>
-
-                                            <h:outputText value="Sub-domain:*" styleClass="field-label-3"/>
-                                            <p:inputText value="#{createCompany.company.subdomain}" rendered="true" requiredMessage="Subdomain is required"/>
-
-                                        </h:panelGrid>
-
-                                        <p:spacer width="100%" height="20px"/>
-
-                                        <p:commandButton id="create-btn" 
-                                                         value="Create Account"
-                                                         action="#{createCompany.var()}"
-                                                         onclick="blockui1.block();"
-                                                         oncomplete="blockui1.unblock();"
-                                                         update=":form:growl"
-                                                         process="@this,:form:switch :form:switch-east"/>
-
-                                        <pe:blockUI target="create-btn" widgetVar="blockui1">  
-                                            <div class="windows8-18-b">
-                                                <div class="wBall" id="wBall_1">
-                                                    <div class="wInnerBall">
-                                                    </div>
-                                                </div>
-                                                <div class="wBall" id="wBall_2">
-                                                    <div class="wInnerBall">
-                                                    </div>
-                                                </div>
-                                                <div class="wBall" id="wBall_3">
-                                                    <div class="wInnerBall">
-                                                    </div>
-                                                </div>
-                                                <div class="wBall" id="wBall_4">
-                                                    <div class="wInnerBall">
-                                                    </div>
-                                                </div>
-                                                <div class="wBall" id="wBall_5">
-                                                    <div class="wInnerBall">
-                                                    </div>
-                                                </div>
-                                            </div> 
-                                        </pe:blockUI>
-
-                                    </pe:case>  
-
-                                    <pe:case value="QUICKCLIENT">  
-
-                                        <h:panelGrid columns="2" columnClasses="field-label-3">
-
-                                            <h:outputText value="Name:*" styleClass="field-label-3"/>
-                                            <p:inputText value="#{createCompany.company.name}" rendered="true" requiredMessage="Name is required"/>
-
-                                        </h:panelGrid>
-
-                                        <p:spacer width="100%" height="20px"/>
-
-                                        <h3>Relationship</h3>
-                                        <h:panelGrid columns="2" columnClasses="field-label-3">
-
-                                            <h:outputText value="Parent VAR:*" styleClass="field-label-3"/>
-                                            <p:selectOneMenu value="#{createCompany.helper.selectedVar}"
-                                                             style="width: 180px"> 
-                                                <f:selectItem itemLabel="-" itemValue=""/> 
-                                                <f:selectItems value="#{createCompany.helper.vars}" var="company" itemLabel="#{company.name}" itemValue="#{company.id}"/>
-                                                <p:ajax event="change" update=":form:switch-east" process="@this" listener="#{createCompany.helper.filterSites}"/>
-                                            </p:selectOneMenu>
-
-                                        </h:panelGrid>
-
                                         <p:spacer width="100%" height="20px"/>
 
                                         <p:commandButton id="create-btn" 
@@ -497,19 +404,19 @@
                                             </div> 
                                         </pe:blockUI>
 
-                                    </pe:case>
+                                    </pe:case>  
+
                                 </pe:switch>
 
                             </td>
                         </tr>
                     </table>
-                    
-                    <p:spacer width="100%" height="50px"/>
 
                 </pe:layoutPane>
 
 
                 <pe:layoutPane id="east" position="east" resizeWhileDragging="true" size="455">
+                    <p:spacer width="100%" height="45"/>
 
                     <pe:switch id="switch-east" value="#{createCompany.company.type}">
 

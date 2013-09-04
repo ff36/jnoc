@@ -68,12 +68,12 @@ public class ShiroRoleFilter implements Filter {
         }
 
         if (currentUser.hasRole(DastraxCst.Metier.VAR.toString())) {            
-            httpResponse.sendRedirect("b/tickets/manual/list.jsf");
+            httpResponse.sendRedirect("b/welcome.jsf");
             return;
         }
         
         if (currentUser.hasRole(DastraxCst.Metier.CLIENT.toString())) {            
-            httpResponse.sendRedirect("c/tickets/manual/list.jsf");
+            httpResponse.sendRedirect("c/welcome.jsf");
             return;
         }
 

@@ -17,6 +17,8 @@ import com.dastrax.app.util.S3KeyUtil;
 import com.dastrax.app.util.S3Util;
 import com.dastrax.mesh.email.Email;
 import com.dastrax.mesh.email.EmailUtil;
+import com.dastrax.per.entity.core.Address;
+import com.dastrax.per.entity.core.Telephone;
 import com.dastrax.service.util.JsfUtil;
 import java.io.Serializable;
 import java.util.Calendar;
@@ -326,6 +328,9 @@ public class Settings implements Serializable {
         private String email;
         private boolean renderPublicForm;
         private EmailParam emailParam;
+        private Address address = new Address();
+        private Telephone telephone = new Telephone();
+        
 
         // Constructors-------------------------------------------------------------
         public Helper() {
@@ -364,6 +369,14 @@ public class Settings implements Serializable {
             return renderPublicForm;
         }
 
+        public Address getAddress() {
+            return address;
+        }
+
+        public Telephone getTelephone() {
+            return telephone;
+        }
+
         // Setters------------------------------------------------------------------
         public void setNewEmail(String newEmail) {
             this.newEmail = newEmail;
@@ -397,5 +410,32 @@ public class Settings implements Serializable {
             this.renderPublicForm = renderPublicForm;
         }
 
+        public void setAddress(Address address) {
+            this.address = address;
+        }
+
+        public void setTelephone(Telephone telephone) {
+            this.telephone = telephone;
+        }
+
+        // Methods------------------------------------------------------------------
+        /**
+         * The address list component used to manage collections requires this 
+         * method to reset the address object each time a new one is created.
+         */
+        public void addAddress() {
+            subject.getContact().getAddresses().add(address);
+            address = new Address();
+        }
+        
+        /**
+         * The telephone list component used to manage collections requires this 
+         * method to reset the telephone object each time a new one is created.
+         */
+        public void addTelephone() {
+            subject.getContact().getTelephones().add(telephone);
+            telephone = new Telephone();
+        }
+        
     }
 }

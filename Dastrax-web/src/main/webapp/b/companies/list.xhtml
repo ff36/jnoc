@@ -5,7 +5,8 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:pe="http://primefaces.org/ui/extensions"
       xmlns:ez="http://xmlns.jcp.org/jsf/composite/ezcomp"
-      xmlns:f="http://java.sun.com/jsf/core">
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
     <h:head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -16,6 +17,8 @@
     </h:head>
 
     <h:body>
+
+        #{permissionUtil.hasPagePermission('company:access')}
 
         <f:metadata>
             <f:viewParam name="filter" value="#{companies.filter}"/>
@@ -36,11 +39,12 @@
             <pe:layout stateCookie="false" widgetVar="layoutWgt" >
 
                 <pe:layoutPane id="west" position="west" resizeWhileDragging="true" size="220">
+                    <p:spacer width="100%" height="45"/>
 
                     <table class="side-menu">
                         <tr>
                             <td>
-                                <p:commandButton id="new-company-btn" value="Create New Client" action="access-create-company-page" process="@this,:form:new-company-btn"/>
+                                <p:commandButton id="new-company-btn" value="Create New Client" action="access-create-company-page" process="@this,:form:new-company-btn" rendered="#{permissionUtil.hasPermission('account:create')}"/>
                             </td>
                         </tr>
                     </table>
@@ -48,6 +52,7 @@
                 </pe:layoutPane>
 
                 <pe:layoutPane id="center" position="center" resizeWhileDragging="true">
+                    <p:spacer width="100%" height="45"/>
 
                     <table width="100%">
                         <tr>
@@ -72,7 +77,7 @@
                                  rowsPerPageTemplate="20,50"
                                  paginatorAlwaysVisible="false"
                                  paginatorPosition="bottom"> 
-                        
+
                         <f:facet name="header">   
                             <p:inputText id="globalFilter" styleClass="align-left" onkeyup="companiesTable.filter()" style="width:200px" />  
                             <p:watermark for="globalFilter" value="Search"/>
@@ -119,6 +124,7 @@
                 </pe:layoutPane>
 
                 <pe:layoutPane id="east" position="east" resizeWhileDragging="true" size="300">
+                    <p:spacer width="100%" height="45"/>
 
                     <p:panel id="details" styleClass="empty-panel">
 
@@ -132,7 +138,7 @@
                                 <tr>
                                     <td>
                                         <H2>
-                                            <p:inplace id="nameAIP" styleClass="inplace" editor="true" label="#{detail.name}">  
+                                            <p:inplace id="nameAIP" styleClass="inplace" editor="true" label="#{detail.name}" disabled="#{!permissionUtil.hasPermission('company:edit')}">  
                                                 <p:ajax event="save" listener="#{companies.saveName()}" update=":form:companies-table :form:growl" oncomplete="companiesTable.filter();"/>
                                                 <p:inputText id="editName" value="#{detail.name}"/> 
                                                 <p:watermark value="Name" for="editName"/>
@@ -140,7 +146,7 @@
                                         </H2>
                                     </td>
                                     <td>
-                                        <p:commandLink id="upload-btn" onclick="layoutWgt.open('south');" type="button">
+                                        <p:commandLink id="upload-btn" onclick="layoutWgt.open('south');" type="button" disabled="#{!permissionUtil.hasPermission('company:edit')}">
                                             <p:graphicImage id="logo" value="#{pathUtil.companyLogo3P(detail.id)}"
                                                             height="60px"
                                                             styleClass="details-image"/>
@@ -175,7 +181,7 @@
                                 </tr>
                                 <h:panelGroup rendered="#{detail.type eq 'CLIENT'}">
                                     <tr>
-                                        <td class="field-label-2"><p:commandLink value="Sites:" type="button" oncomplete="clientSitesDlg.show()" actionListener="#{companies.helper.filterSites()}"/></td>
+                                        <td class="field-label-2"><p:commandLink value="Sites:" type="button" oncomplete="clientSitesDlg.show()" actionListener="#{companies.helper.filterSites()}" disabled="#{!permissionUtil.hasPermission('company:edit')}"/></td>
                                         <td>
                                             <p:dataList id="client-sites-list" 
                                                         styleClass="clear-data-list" 
@@ -205,7 +211,7 @@
                                     <tr>
                                         <td class="field-label-2">Name:</td>
                                         <td>
-                                            <p:inplace id="nameAIP" styleClass="inplace" editor="true" label="#{contact.buildFullName()}">  
+                                            <p:inplace id="nameAIP" styleClass="inplace" editor="true" label="#{contact.buildFullName()}" disabled="#{!permissionUtil.hasPermission('company:edit')}">  
                                                 <p:ajax event="save" listener="#{companies.saveContacts()}" update=":form:companies-table :form:growl" oncomplete="companiesTable.filter();"/>
                                                 <p:inputText id="editFirstName" value="#{contact.firstName}"/> 
                                                 <p:inputText id="editLastName" value="#{contact.lastName}"/>
@@ -217,7 +223,7 @@
                                     <tr>
                                         <td class="field-label-2">Email:</td>
                                         <td>
-                                            <p:inplace id="emailAIP" styleClass="inplace" editor="true" label="#{contact.email eq null or contact.email eq '' ? 'Not Available' : contact.email}">  
+                                            <p:inplace id="emailAIP" styleClass="inplace" editor="true" label="#{contact.email eq null or contact.email eq '' ? 'Not Available' : contact.email}" disabled="#{!permissionUtil.hasPermission('company:edit')}">  
                                                 <p:ajax event="save" listener="#{companies.saveContacts()}" update=":form:companies-table :form:growl" oncomplete="companiesTable.filter();"/>
                                                 <p:inputText id="editEmail" value="#{contact.email}"/> 
                                                 <p:watermark value="Email" for="editEmail"/>
@@ -232,7 +238,7 @@
                                                         value="#{contact.addresses}"
                                                         var="address"
                                                         itemType="none">
-                                                <p:inplace id="addressAIP" styleClass="inplace" editor="true" label="#{address.buildCompleteAddress()}">  
+                                                <p:inplace id="addressAIP" styleClass="inplace" editor="true" label="#{address.buildCompleteAddress()}" disabled="#{!permissionUtil.hasPermission('company:edit')}">  
                                                     <p:ajax event="save" listener="#{companies.saveContacts()}" update=":form:companies-table :form:growl" oncomplete="companiesTable.filter();"/>
 
                                                     <p:inputText id="add-1" value="#{address.lineTwo}"/>
@@ -259,7 +265,7 @@
                                             <td class="field-label-2">#{telephone.type eq null ? 'Telephone' : telephone.type}:</td>
                                             <td>
 
-                                                <p:inplace id="telephoneAIP" styleClass="inplace" editor="true" label="#{telephone.internationalFormat() eq null ? 'Not Available' : telephone.internationalFormat()}">  
+                                                <p:inplace id="telephoneAIP" styleClass="inplace" editor="true" label="#{telephone.internationalFormat() eq null ? 'Not Available' : telephone.internationalFormat()}" disabled="#{!permissionUtil.hasPermission('company:edit')}">  
                                                     <p:ajax event="save" listener="#{companies.saveContacts()}" update=":form:companies-table :form:growl" oncomplete="companiesTable.filter();"/>
                                                     <ez:telephone type="#{telephone.type}"
                                                                   coutry="#{telephone.country}"                     
@@ -270,56 +276,58 @@
                                         </tr>
                                     </p:dataList>
                                 </p:dataList>
-                                <tr class="detail-divider">
-                                    <td>Delete</td>
-                                    <td></td>
-                                </tr>
-                                <tr class="table-spacer">
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td>Password:</td>
-                                    <td><p:password id="deletePassword" value="#{companies.principalPassword}" styleClass="align-right"/></td>
-                                </tr>
-                                <tr>
-                                    <td></td>
-                                    <td><p:commandButton id="delete-btn" 
-                                                         action="#{companies.deleteCompanies()}" 
-                                                         value="Delete" 
-                                                         styleClass="align-right"
-                                                         process="@this,deletePassword" 
-                                                         update=":form:companies-table :form:growl :form:details"
-                                                         onclick="blockui1.block();"
-                                                         oncomplete="blockui1.unblock(); companiesTable.filter();"/>
+                                <ui:fragment rendered="#{permissionUtil.hasPermission('company:delete')}">
+                                    <tr class="detail-divider">
+                                        <td>Delete</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr class="table-spacer">
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Password:</td>
+                                        <td><p:password id="deletePassword" value="#{companies.principalPassword}" styleClass="align-right"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td><p:commandButton id="delete-btn" 
+                                                             action="#{companies.deleteCompanies()}" 
+                                                             value="Delete" 
+                                                             styleClass="align-right"
+                                                             process="@this,deletePassword" 
+                                                             update=":form:companies-table :form:growl :form:details"
+                                                             onclick="blockui1.block();"
+                                                             oncomplete="blockui1.unblock(); companiesTable.filter();"/>
 
-                                        <pe:blockUI target="delete-btn" widgetVar="blockui1">  
-                                            <div class="windows8-18-b">
-                                                <div class="wBall" id="wBall_1">
-                                                    <div class="wInnerBall">
+                                            <pe:blockUI target="delete-btn" widgetVar="blockui1">  
+                                                <div class="windows8-18-b">
+                                                    <div class="wBall" id="wBall_1">
+                                                        <div class="wInnerBall">
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div class="wBall" id="wBall_2">
-                                                    <div class="wInnerBall">
+                                                    <div class="wBall" id="wBall_2">
+                                                        <div class="wInnerBall">
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div class="wBall" id="wBall_3">
-                                                    <div class="wInnerBall">
+                                                    <div class="wBall" id="wBall_3">
+                                                        <div class="wInnerBall">
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div class="wBall" id="wBall_4">
-                                                    <div class="wInnerBall">
+                                                    <div class="wBall" id="wBall_4">
+                                                        <div class="wInnerBall">
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div class="wBall" id="wBall_5">
-                                                    <div class="wInnerBall">
+                                                    <div class="wBall" id="wBall_5">
+                                                        <div class="wInnerBall">
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </div> 
-                                        </pe:blockUI>
+                                                </div> 
+                                            </pe:blockUI>
 
-                                    </td>
-                                </tr>
+                                        </td>
+                                    </tr>
+                                </ui:fragment>
                             </table>
 
                         </p:dataList>

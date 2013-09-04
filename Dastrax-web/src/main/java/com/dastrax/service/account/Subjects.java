@@ -12,6 +12,9 @@ import com.dastrax.app.security.PasswordSvcs;
 import com.dastrax.app.util.FilterUtil;
 import com.dastrax.app.util.S3KeyUtil;
 import com.dastrax.app.util.S3Util;
+import com.dastrax.per.entity.core.Address;
+import com.dastrax.per.entity.core.Permission;
+import com.dastrax.per.entity.core.Telephone;
 import com.dastrax.per.project.DastraxCst;
 import com.dastrax.service.util.JsfUtil;
 import java.io.IOException;
@@ -232,24 +235,56 @@ public class Subjects implements Serializable {
      * Update address
      */
     public void saveAddress() {
-        subjectDAO.updateAddress(
-                selectedSubjects[0].getUid(),
-                selectedSubjects[0].getContact().getAddresses());
-
+        subjectDAO.updateAddress(selectedSubjects[0]);
         JsfUtil.addSuccessMessage("Address Updated");
+    }
+    
+    /**
+     * Update permissions
+     */
+    public void savePermissions() {
+        subjectDAO.updatePermissions(selectedSubjects[0]);
+        JsfUtil.addSuccessMessage("Permissions Updated");
     }
 
     /**
      * Save telephone numbers
      */
     public void saveTelephone() {
-        subjectDAO.updateTelephone(
-                selectedSubjects[0].getUid(),
-                selectedSubjects[0].getContact().getTelephones());
-
+        subjectDAO.updateTelephone(selectedSubjects[0]);
         JsfUtil.addSuccessMessage("Telephone Updated");
     }
 
+    /**
+     * add a new permission
+     */
+    public void addPermission() {
+        selectedSubjects[0].getPermissions().add(new Permission());
+    }
+    
+    /**
+     * add a new address
+     */
+    public void addAddress() {
+        selectedSubjects[0].getContact().getAddresses().add(new Address());
+    }
+    
+    /**
+     * add a new telephone
+     */
+    public void addTelephone() {
+        selectedSubjects[0].getContact().getTelephones().add(new Telephone());
+    }
+    
+    /**
+     * add a new permission
+     * @param permission
+     */
+//    public void removePermission(Permission permission) {
+//        selectedSubjects[0].removePermission(permission);
+//        savePermissions();
+//    }
+    
     /**
      * This needs to be converted into a data list on the presentation layer.
      *

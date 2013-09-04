@@ -208,24 +208,20 @@ public class SubjectDAOImpl implements SubjectDAO {
     }
 
     @Override
-    public void updateAddress(String uid, List<Address> addresses) {
-        Subject s = findSubjectByUid(uid);
-        if (s != null) {
-            s.getContact().setAddresses(addresses);
-            em.merge(s);
+    public void updateAddress(Subject subject) {
+        if (subject != null) {
+            em.merge(subject);
             // Create Audit
-            auditDAO.create(s.getContact().buildFullName() + "'s address was changed.");
+            auditDAO.create(subject.getContact().buildFullName() + "'s address was changed.");
         }
     }
 
     @Override
-    public void updateTelephone(String uid, List<Telephone> telephones) {
-        Subject s = findSubjectByUid(uid);
-        if (s != null) {
-            s.getContact().setTelephones(telephones);
-            em.merge(s);
+    public void updateTelephone(Subject subject) {
+        if (subject != null) {
+            em.merge(subject);
             // Create Audit
-            auditDAO.create(s.getContact().buildFullName() + "'s telephone was changed.");
+            auditDAO.create(subject.getContact().buildFullName() + "'s telephone was changed.");
         }
     }
 
@@ -261,6 +257,15 @@ public class SubjectDAOImpl implements SubjectDAO {
             em.merge(s);
             // Create Audit
             auditDAO.create(s.getContact().buildFullName() + "'s password was changed.");
+        }
+    }
+    
+    @Override
+    public void updatePermissions(Subject subject) {
+        if (subject != null) {
+            em.merge(subject);
+            // Create Audit
+            auditDAO.create(subject.getContact().buildFullName() + "'s permissions were changed.");
         }
     }
 

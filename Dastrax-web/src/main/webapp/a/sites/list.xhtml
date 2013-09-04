@@ -5,7 +5,8 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:pe="http://primefaces.org/ui/extensions"
       xmlns:ez="http://xmlns.jcp.org/jsf/composite/ezcomp"
-      xmlns:f="http://java.sun.com/jsf/core">
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
     <h:head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -16,6 +17,8 @@
     </h:head>
 
     <h:body>
+
+        #{permissionUtil.hasPagePermission('site:access')}
 
         <f:metadata>
             <f:viewParam name="filter" value="#{sites.filter}"/>
@@ -36,11 +39,12 @@
             <pe:layout stateCookie="false" widgetVar="layourWgt" >
 
                 <pe:layoutPane id="west" position="west" resizeWhileDragging="true" size="220">
+                    <p:spacer width="100%" height="45"/>
 
                     <table class="side-menu">
                         <tr>
                             <td>
-                                <p:commandButton id="new-site-btn" value="Create New Site" action="access-create-site-page" process="@this,:form:new-site-btn"/>
+                                <p:commandButton id="new-site-btn" value="Create New Site" action="access-create-site-page" process="@this,:form:new-site-btn" rendered="#{permissionUtil.hasPermission('site:create')}"/>
                             </td>
                         </tr>
                     </table>
@@ -48,6 +52,7 @@
                 </pe:layoutPane>
 
                 <pe:layoutPane id="center" position="center" resizeWhileDragging="true">
+                    <p:spacer width="100%" height="45"/>
 
                     <table width="100%">
                         <tr>
@@ -77,7 +82,7 @@
                             <p:inputText id="globalFilter" styleClass="align-left" onkeyup="sitesTable.filter()" style="width:200px" />  
                             <p:watermark for="globalFilter" value="Search"/>
                         </f:facet> 
-                        
+
                         <p:ajax event="rowSelectCheckbox"  
                                 update=":form:details"/>  
                         <p:ajax event="rowUnselectCheckbox"
@@ -129,6 +134,7 @@
                 </pe:layoutPane>
 
                 <pe:layoutPane id="east" position="east" resizeWhileDragging="true" size="300">
+                    <p:spacer width="100%" height="45"/>
 
                     <p:panel id="details" styleClass="empty-panel">
 
@@ -141,7 +147,7 @@
                                 <tr>
                                     <td>
                                         <H2>
-                                            <p:inplace id="nameAIP" styleClass="inplace" editor="true" label="#{detail.name}">  
+                                            <p:inplace id="nameAIP" styleClass="inplace" editor="true" label="#{detail.name}" disabled="#{!permissionUtil.hasPermission('site:edit')}">  
                                                 <p:ajax event="save" listener="#{sites.saveName()}" update=":form:sites-table :form:growl" oncomplete="sitesTable.filter();"/>
                                                 <p:inputText id="editName" value="#{detail.name}"/>
                                                 <p:watermark value="Name" for="editName"/>
@@ -176,7 +182,7 @@
                                 <tr>
                                     <td class="field-label-2">Address:</td>
                                     <td>
-                                        <p:inplace id="addressAIP" styleClass="inplace" editor="true" label="#{detail.address.buildCompleteAddress()}">  
+                                        <p:inplace id="addressAIP" styleClass="inplace" editor="true" label="#{detail.address.buildCompleteAddress()}" disabled="#{!permissionUtil.hasPermission('site:edit')}">  
                                             <p:ajax event="save" listener="#{sites.saveAddress()}" update=":form:sites-table :form:growl" oncomplete="sitesTable.filter();"/>
 
                                             <p:inputText id="add-1" value="#{detail.address.lineTwo}"/>
@@ -212,7 +218,7 @@
                                 <tr>
                                     <td class="field-label-2">Support:</td>
                                     <td>
-                                        <p:inplace id="packageTypeAIP" styleClass="inplace" editor="true" label="#{detail.packageType eq null ? 'None' : detail.packageType}">  
+                                        <p:inplace id="packageTypeAIP" styleClass="inplace" editor="true" label="#{detail.packageType eq null ? 'None' : detail.packageType}" disabled="#{!permissionUtil.hasPermission('site:edit')}">  
                                             <p:ajax event="save" listener="#{sites.savePackageType()}" update=":form:sites-table :form:growl" oncomplete="sitesTable.filter();"/>
                                             <p:selectOneMenu value="#{detail.packageType}" 
                                                              effect="fade"
@@ -228,62 +234,64 @@
                                 <tr>
                                     <td class="field-label-2">Response:</td>
                                     <td>
-                                        <p:inplace id="packageResponseAIP" styleClass="inplace" editor="true" label="#{detail.responseHrs} Hrs">  
+                                        <p:inplace id="packageResponseAIP" styleClass="inplace" editor="true" label="#{detail.responseHrs} Hrs" disabled="#{!permissionUtil.hasPermission('site:edit')}">  
                                             <p:ajax event="save" listener="#{sites.savePackageResponse()}" update=":form:sites-table :form:growl" oncomplete="sitesTable.filter();"/>
                                             <p:spinner value="#{detail.responseHrs}" min="0"/> 
                                         </p:inplace>
                                     </td>
                                 </tr>
-                                <tr class="detail-divider">
-                                    <td>Delete</td>
-                                    <td></td>
-                                </tr>
-                                <tr class="table-spacer">
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td>Password:</td>
-                                    <td><p:password id="deletePassword" value="#{sites.principalPassword}" styleClass="align-right"/></td>
-                                </tr>
-                                <tr>
-                                    <td></td>
-                                    <td><p:commandButton id="delete-btn" 
-                                                         action="#{sites.deleteSites()}" 
-                                                         value="Delete" 
-                                                         styleClass="align-right"
-                                                         process="@this,deletePassword" 
-                                                         update=":form:sites-table :form:growl :form:details"
-                                                         onclick="blockui1.block();"
-                                                         oncomplete="blockui1.unblock(); sitesTable.filter();"/>
+                                <ui:fragment rendered="#{permissionUtil.hasPermission('site:delete')}">
+                                    <tr class="detail-divider">
+                                        <td>Delete</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr class="table-spacer">
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Password:</td>
+                                        <td><p:password id="deletePassword" value="#{sites.principalPassword}" styleClass="align-right"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td><p:commandButton id="delete-btn" 
+                                                             action="#{sites.deleteSites()}" 
+                                                             value="Delete" 
+                                                             styleClass="align-right"
+                                                             process="@this,deletePassword" 
+                                                             update=":form:sites-table :form:growl :form:details"
+                                                             onclick="blockui1.block();"
+                                                             oncomplete="blockui1.unblock(); sitesTable.filter();"/>
 
-                                        <pe:blockUI target="delete-btn" widgetVar="blockui1">  
-                                            <div class="windows8-18-b">
-                                                <div class="wBall" id="wBall_1">
-                                                    <div class="wInnerBall">
+                                            <pe:blockUI target="delete-btn" widgetVar="blockui1">  
+                                                <div class="windows8-18-b">
+                                                    <div class="wBall" id="wBall_1">
+                                                        <div class="wInnerBall">
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div class="wBall" id="wBall_2">
-                                                    <div class="wInnerBall">
+                                                    <div class="wBall" id="wBall_2">
+                                                        <div class="wInnerBall">
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div class="wBall" id="wBall_3">
-                                                    <div class="wInnerBall">
+                                                    <div class="wBall" id="wBall_3">
+                                                        <div class="wInnerBall">
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div class="wBall" id="wBall_4">
-                                                    <div class="wInnerBall">
+                                                    <div class="wBall" id="wBall_4">
+                                                        <div class="wInnerBall">
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div class="wBall" id="wBall_5">
-                                                    <div class="wInnerBall">
+                                                    <div class="wBall" id="wBall_5">
+                                                        <div class="wInnerBall">
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </div> 
-                                        </pe:blockUI>
+                                                </div> 
+                                            </pe:blockUI>
 
-                                    </td>
-                                </tr>
+                                        </td>
+                                    </tr>
+                                </ui:fragment>
                             </table>
 
                         </p:dataList>

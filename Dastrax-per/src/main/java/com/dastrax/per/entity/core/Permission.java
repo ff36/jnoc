@@ -57,6 +57,11 @@ public class Permission implements Serializable {
         return version;
     }
 
+    /**
+     * The value of the permission as described by the APACHE SHIRO permissions 
+     * interface. <http://shiro.apache.org/permissions.html>
+     * @return 
+     */
     public String getName() {
         return name;
     }

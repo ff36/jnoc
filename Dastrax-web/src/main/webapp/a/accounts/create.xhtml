@@ -5,7 +5,8 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:pe="http://primefaces.org/ui/extensions"
       xmlns:ez="http://xmlns.jcp.org/jsf/composite/ezcomp"
-      xmlns:f="http://java.sun.com/jsf/core">
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
     <h:head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -16,6 +17,8 @@
     </h:head>
 
     <h:body>
+
+        #{permissionUtil.hasPagePermission('account:create')}
 
         <h:form id="form">
 
@@ -31,31 +34,32 @@
             <pe:layout stateCookie="false" widgetVar="layourWgt" >
 
                 <pe:layoutPane id="west" position="west" resizeWhileDragging="true" size="220">
+                    <p:spacer width="100%" height="45"/>
 
                     <table class="side-menu">
                         <tr>
                             <td>
-                                <h3>Quick Accounts</h3>
+                                <h3>Accounts</h3>
                             </td>
                         </tr>
                         <tr class="hover">
                             <td>
-                                <p:commandLink id="min-admin" value="Minimal Admin" process="@this" update=":form:switch">
-                                    <f:setPropertyActionListener target="#{createAccount.helper.accountType}" value="QUICKADMIN"/>
+                                <p:commandLink id="admin" value="Dastrax Administrator" process="@this" update=":form:switch">
+                                    <f:setPropertyActionListener target="#{createAccount.helper.accountType}" value="ADMIN"/>
                                 </p:commandLink>
                             </td>
                         </tr>
                         <tr class="hover">
                             <td>
-                                <p:commandLink id="min-var" value="Minimal VAR" process="@this" update=":form:switch">
-                                    <f:setPropertyActionListener target="#{createAccount.helper.accountType}" value="QUICKVAR"/>
+                                <p:commandLink id="var" value="VAR" process="@this" update=":form:switch">
+                                    <f:setPropertyActionListener target="#{createAccount.helper.accountType}" value="VAR"/>
                                 </p:commandLink>
                             </td>
                         </tr>
                         <tr class="hover">
                             <td>
-                                <p:commandLink id="min-client" value="Minimal Client" process="@this" update=":form:switch">
-                                    <f:setPropertyActionListener target="#{createAccount.helper.accountType}" value="QUICKCLIENT"/>
+                                <p:commandLink id="client" value="Client" process="@this" update=":form:switch">
+                                    <f:setPropertyActionListener target="#{createAccount.helper.accountType}" value="CLIENT"/>
                                 </p:commandLink>
                             </td>
                         </tr>
@@ -64,57 +68,37 @@
                 </pe:layoutPane>
 
                 <pe:layoutPane id="center" position="center" resizeWhileDragging="true">
+                    <p:spacer width="100%" height="45"/>
 
                     <table>
                         <tr>
+
                             <td class="create-col-1">
-
-                                <table width="100%">
-                                    <tr>
-                                        <td><h2>New Account</h2></td>
-                                        <td width="150px"></td>
-                                    </tr>
-                                </table>
-
-                                <h:panelGrid columns="2" columnClasses="field-label-3">
-                                    <h:outputText value="Account Type:" styleClass="field-label-3"/>  
-                                    <p:selectOneMenu value="#{createAccount.helper.accountType}" style="width: 150px">  
-                                        <f:selectItem itemLabel="" itemValue="" />
-                                        <f:selectItem itemLabel="ADMIN" itemValue="ADMIN" />  
-                                        <f:selectItem itemLabel="VAR" itemValue="VAR" />  
-                                        <f:selectItem itemLabel="CLIENT" itemValue="CLIENT" /> 
-                                        <p:ajax update="switch" process="@this" />
-                                    </p:selectOneMenu>  
-                                </h:panelGrid>
-
-                            </td>
-
-                            <td class="create-col-2">
-                                <p:graphicImage value="#{pathUtil.s3Icon('black/br_next_icon_24.png')}"/>                            
-                            </td>
-
-                            <td class="create-col-3">
 
                                 <pe:switch id="switch" value="#{createAccount.helper.accountType}">  
 
                                     <pe:defaultCase>  
 
+                                        <p:spacer width="100%" height="20px"/>
+
+                                        <h:panelGrid columns="2">
+                                            <p:graphicImage value="#{pathUtil.s3Icon('black/br_prev_icon_24.png')}"/>
+                                            <h:outputText value="Select an account type"/>
+                                        </h:panelGrid>
+
                                     </pe:defaultCase> 
 
                                     <pe:case value="ADMIN">
+
+                                        <h2>Dastrax Administrator</h2>
+                                        <p:spacer width="100%" height="20px"/>
+
+                                        <h3>Account</h3>
 
                                         <h:panelGrid columns="2" columnClasses="field-label-3">
 
                                             <h:outputText value="Email:*" styleClass="field-label-3"/>
                                             <p:inputText value="#{createAccount.subject.email}" rendered="true" requiredMessage="Email is required"/>
-
-                                        </h:panelGrid>
-
-                                        <p:spacer width="100%" height="20px"/>
-
-                                        <h3>Personal</h3>
-                                        <p:spacer width="100%" height="7px"/>
-                                        <h:panelGrid columns="2" columnClasses="field-label-3">
 
                                             <h:outputText value="First Name:*" styleClass="field-label-3"/>
                                             <p:inputText value="#{createAccount.subject.contact.firstName}" rendered="true" requiredMessage="Name is required"/>
@@ -126,36 +110,33 @@
 
                                         <p:spacer width="100%" height="20px"/>
 
+                                        <ui:fragment rendered="#{permissionUtil.hasPermission('permission:create')}">
+
+                                            <h3>Permissions</h3>
+
+                                            <p:dataTable id="perm-table" styleClass="perm-table" value="#{createAccount.subject.permissions}" var="permission">  
+
+                                                <p:column>  
+                                                    <f:facet name="header">  
+                                                        <h:outputText value="Permission" />  
+                                                    </f:facet>  
+                                                    <h:outputText value="#{permission.name}" />  
+                                                </p:column>  
+
+                                                <p:column>  
+                                                    <p:commandLink value="Remove" update="perm-table" process="@this,perm-table"
+                                                                   action="#{createAccount.subject.removePermission(permission)}"/>  
+                                                </p:column>  
+
+                                            </p:dataTable>
+
+                                            <p:spacer width="100%" height="20px"/>
+
+                                        </ui:fragment>
+
                                         <h3>Address</h3>
 
-                                        <p:spacer width="100%" height="5px"/>
-
-                                        <p:panel>
-                                            <h:panelGrid id="admin-add-grid" columns="2" columnClasses="field-label-3">
-
-                                                <h:outputText value="Street:"/>
-                                                <p:inputText value="#{createAccount.helper.address.lineTwo}"/>
-
-                                                <h:outputText value="Town:"/>
-                                                <p:inputText value="#{createAccount.helper.address.lineThree}"/>
-
-                                                <h:outputText value="State:"/>
-                                                <p:inputText value="#{createAccount.helper.address.lineFour}"/>
-
-                                                <h:outputText value="Zip Code:"/>
-                                                <p:inputText value="#{createAccount.helper.address.lineFive}"/>
-
-                                                <p:commandButton id="btn_add" value="Add" 
-                                                                 update="admin-add-grid admin-add-table" 
-                                                                 process="@this,admin-add-grid"
-                                                                 action="#{createAccount.helper.addAddress()}"/>
-
-                                            </h:panelGrid>
-                                        </p:panel>
-
-                                        <p:spacer width="100%" height="10px"/>
-
-                                        <p:dataTable id="admin-add-table" value="#{createAccount.subject.contact.addresses}" var="address">  
+                                        <p:dataTable id="add-table" styleClass="add-table" value="#{createAccount.subject.contact.addresses}" var="address">  
 
                                             <p:column>  
                                                 <f:facet name="header">  
@@ -165,7 +146,7 @@
                                             </p:column>  
 
                                             <p:column>  
-                                                <p:commandLink value="Remove" update="admin-add-table" process="@this,admin-add-table"
+                                                <p:commandLink value="Remove" update="add-table" process="@this,add-table"
                                                                action="#{createAccount.subject.contact.removeAddress(address)}"/>  
                                             </p:column>  
 
@@ -174,27 +155,8 @@
                                         <p:spacer width="100%" height="20px"/>
 
                                         <h3>Telephone</h3>
-                                        
-                                        <p:spacer width="100%" height="5px"/>
 
-                                        <p:panel>
-                                            <h:panelGrid id="admin-tel-grid" columns="1" columnClasses="field-label-3">
-
-                                                <ez:telephone type="#{createAccount.helper.telephone.type}"
-                                                              coutry="#{createAccount.helper.telephone.country}"                     
-                                                              number="#{createAccount.helper.telephone.localNumber}"/>
-
-                                                <p:commandButton value="Add" 
-                                                                 update="admin-tel-grid admin-tel-table" 
-                                                                 process="@this,admin-tel-grid"
-                                                                 action="#{createAccount.helper.addTelephone()}"/>
-
-                                            </h:panelGrid>
-                                        </p:panel>
-                                        
-                                        <p:spacer width="100%" height="10px"/>
-
-                                        <p:dataTable id="admin-tel-table" value="#{createAccount.subject.contact.telephones}" var="telephone">  
+                                        <p:dataTable id="tel-table" styleClass="tel-table" value="#{createAccount.subject.contact.telephones}" var="telephone">  
 
                                             <p:column>  
                                                 <f:facet name="header">  
@@ -204,12 +166,12 @@
                                             </p:column>  
 
                                             <p:column>  
-                                                <p:commandLink value="Remove" update="admin-tel-table" process="@this,admin-tel-table"
+                                                <p:commandLink value="Remove" update="tel-table" process="@this,tel-table"
                                                                action="#{createAccount.subject.contact.removeTelephone(telephone)}"/>  
                                             </p:column>  
 
                                         </p:dataTable>
-                                        
+
                                         <p:spacer width="100%" height="20px"/>
 
                                         <p:commandButton id="create-btn" 
@@ -249,17 +211,26 @@
 
                                     <pe:case value="VAR">  
 
+                                        <h2>VAR</h2>
+                                        <p:spacer width="100%" height="20px"/>
+
+                                        <h3>Account</h3>
                                         <h:panelGrid columns="2" columnClasses="field-label-3">
 
                                             <h:outputText value="Email:*" styleClass="field-label-3"/>
                                             <p:inputText value="#{createAccount.subject.email}" rendered="true" requiredMessage="Email is required"/>
+
+                                            <h:outputText value="First Name:*" styleClass="field-label-3"/>
+                                            <p:inputText value="#{createAccount.subject.contact.firstName}" rendered="true" requiredMessage="Name is required"/>
+
+                                            <h:outputText value="Last Name:*" styleClass="field-label-3"/>
+                                            <p:inputText value="#{createAccount.subject.contact.lastName}" rendered="true" requiredMessage="Name is required"/>
 
                                         </h:panelGrid>
 
                                         <p:spacer width="100%" height="20px"/>
 
                                         <h3>Relationship</h3>
-                                        <p:spacer width="100%" height="7px"/>
                                         <h:panelGrid columns="2" columnClasses="field-label-3">
 
                                             <h:outputText value="VAR Company:*" styleClass="field-label-3"/>
@@ -276,50 +247,33 @@
 
                                         <p:spacer width="100%" height="20px"/>
 
-                                        <h3>Personal</h3>
-                                        <p:spacer width="100%" height="7px"/>
-                                        <h:panelGrid columns="2" columnClasses="field-label-3">
+                                        <ui:fragment rendered="#{permissionUtil.hasPermission('permission:create')}">
 
-                                            <h:outputText value="First Name:*" styleClass="field-label-3"/>
-                                            <p:inputText value="#{createAccount.subject.contact.firstName}" rendered="true" requiredMessage="Name is required"/>
+                                            <h3>Permissions</h3>
 
-                                            <h:outputText value="Last Name:*" styleClass="field-label-3"/>
-                                            <p:inputText value="#{createAccount.subject.contact.lastName}" rendered="true" requiredMessage="Name is required"/>
+                                            <p:dataTable id="perm-table" styleClass="perm-table" value="#{createAccount.subject.permissions}" var="permission" rendered="#{permissionUtil.hasPermission('permission:create')}">  
 
-                                        </h:panelGrid>
+                                                <p:column>  
+                                                    <f:facet name="header">  
+                                                        <h:outputText value="Permission" />  
+                                                    </f:facet>  
+                                                    <h:outputText value="#{permission.name}" />  
+                                                </p:column>  
 
-                                        <p:spacer width="100%" height="20px"/>
+                                                <p:column>  
+                                                    <p:commandLink value="Remove" update="perm-table" process="@this,perm-table"
+                                                                   action="#{createAccount.subject.removePermission(permission)}"/>  
+                                                </p:column>  
+
+                                            </p:dataTable>
+
+                                            <p:spacer width="100%" height="20px"/>
+
+                                        </ui:fragment>
 
                                         <h3>Address</h3>
 
-                                        <p:spacer width="100%" height="5px"/>
-
-                                        <p:panel>
-                                            <h:panelGrid id="var-add-grid" columns="2" columnClasses="field-label-3">
-
-                                                <h:outputText value="Street:"/>
-                                                <p:inputText value="#{createAccount.helper.address.lineTwo}"/>
-
-                                                <h:outputText value="Town:"/>
-                                                <p:inputText value="#{createAccount.helper.address.lineThree}"/>
-
-                                                <h:outputText value="State:"/>
-                                                <p:inputText value="#{createAccount.helper.address.lineFour}"/>
-
-                                                <h:outputText value="Zip Code:"/>
-                                                <p:inputText value="#{createAccount.helper.address.lineFive}"/>
-
-                                                <p:commandButton value="Add" 
-                                                                 update="var-add-grid var-add-table" 
-                                                                 process="@this,var-add-grid"
-                                                                 action="#{createAccount.helper.addAddress()}"/>
-
-                                            </h:panelGrid>
-                                        </p:panel>
-
-                                        <p:spacer width="100%" height="10px"/>
-
-                                        <p:dataTable id="var-add-table" value="#{createAccount.subject.contact.addresses}" var="address">  
+                                        <p:dataTable id="add-table" styleClass="add-table" value="#{createAccount.subject.contact.addresses}" var="address">  
 
                                             <p:column>  
                                                 <f:facet name="header">  
@@ -329,7 +283,7 @@
                                             </p:column>  
 
                                             <p:column>  
-                                                <p:commandLink value="Remove" update="var-add-table" process="@this,var-add-table"
+                                                <p:commandLink value="Remove" update="add-table" process="@this,add-table"
                                                                action="#{createAccount.subject.contact.removeAddress(address)}"/>  
                                             </p:column>  
 
@@ -338,27 +292,8 @@
                                         <p:spacer width="100%" height="20px"/>
 
                                         <h3>Telephone</h3>
-                                        
-                                        <p:spacer width="100%" height="5px"/>
 
-                                        <p:panel>
-                                            <h:panelGrid id="var-tel-grid" columns="1" columnClasses="field-label-3">
-
-                                                <ez:telephone type="#{createAccount.helper.telephone.type}"
-                                                              coutry="#{createAccount.helper.telephone.country}"                     
-                                                              number="#{createAccount.helper.telephone.localNumber}"/>
-
-                                                <p:commandButton value="Add" 
-                                                                 update="var-tel-grid var-tel-table" 
-                                                                 process="@this,var-tel-grid"
-                                                                 action="#{createAccount.helper.addTelephone()}"/>
-
-                                            </h:panelGrid>
-                                        </p:panel>
-                                        
-                                        <p:spacer width="100%" height="10px"/>
-
-                                        <p:dataTable id="var-tel-table" value="#{createAccount.subject.contact.telephones}" var="telephone">  
+                                        <p:dataTable id="tel-table" styleClass="tel-table" value="#{createAccount.subject.contact.telephones}" var="telephone">  
 
                                             <p:column>  
                                                 <f:facet name="header">  
@@ -368,12 +303,12 @@
                                             </p:column>  
 
                                             <p:column>  
-                                                <p:commandLink value="Remove" update="var-tel-table" process="@this,var-tel-table"
+                                                <p:commandLink value="Remove" update="tel-table" process="@this,tel-table"
                                                                action="#{createAccount.subject.contact.removeTelephone(telephone)}"/>  
                                             </p:column>  
 
                                         </p:dataTable>
-                                        
+
                                         <p:spacer width="100%" height="20px"/>
 
                                         <p:commandButton id="create-btn" 
@@ -413,17 +348,26 @@
 
                                     <pe:case value="CLIENT">  
 
+                                        <h2>Client</h2>
+                                        <p:spacer width="100%" height="20px"/>
+
+                                        <h3>Account</h3>
                                         <h:panelGrid columns="2" columnClasses="field-label-3">
 
                                             <h:outputText value="Email:*" styleClass="field-label-3"/>
                                             <p:inputText value="#{createAccount.subject.email}" rendered="true" requiredMessage="Email is required"/>
+
+                                            <h:outputText value="First Name:*" styleClass="field-label-3"/>
+                                            <p:inputText value="#{createAccount.subject.contact.firstName}" rendered="true" requiredMessage="Name is required"/>
+
+                                            <h:outputText value="Last Name:*" styleClass="field-label-3"/>
+                                            <p:inputText value="#{createAccount.subject.contact.lastName}" rendered="true" requiredMessage="Name is required"/>
 
                                         </h:panelGrid>
 
                                         <p:spacer width="100%" height="20px"/>
 
                                         <h3>Relationship</h3>
-                                        <p:spacer width="100%" height="7px"/>
                                         <h:panelGrid columns="2" columnClasses="field-label-3">
 
                                             <h:outputText value="Client Company:*" styleClass="field-label-3"/>
@@ -440,50 +384,33 @@
 
                                         <p:spacer width="100%" height="20px"/>
 
-                                        <h3>Personal</h3>
-                                        <p:spacer width="100%" height="7px"/>
-                                        <h:panelGrid columns="2" columnClasses="field-label-3">
+                                        <ui:fragment rendered="#{permissionUtil.hasPermission('permission:create')}">
 
-                                            <h:outputText value="First Name:*" styleClass="field-label-3"/>
-                                            <p:inputText value="#{createAccount.subject.contact.firstName}" rendered="true" requiredMessage="Name is required"/>
+                                            <h3>Permissions</h3>
 
-                                            <h:outputText value="Last Name:*" styleClass="field-label-3"/>
-                                            <p:inputText value="#{createAccount.subject.contact.lastName}" rendered="true" requiredMessage="Name is required"/>
+                                            <p:dataTable id="perm-table" styleClass="perm-table" value="#{createAccount.subject.permissions}" var="permission" rendered="#{permissionUtil.hasPermission('permission:create')}">  
 
-                                        </h:panelGrid>
+                                                <p:column>  
+                                                    <f:facet name="header">  
+                                                        <h:outputText value="Permission" />  
+                                                    </f:facet>  
+                                                    <h:outputText value="#{permission.name}" />  
+                                                </p:column>  
 
-                                        <p:spacer width="100%" height="20px"/>
+                                                <p:column>  
+                                                    <p:commandLink value="Remove" update="perm-table" process="@this,perm-table"
+                                                                   action="#{createAccount.subject.removePermission(permission)}"/>  
+                                                </p:column>  
+
+                                            </p:dataTable>
+
+                                            <p:spacer width="100%" height="20px"/>
+
+                                        </ui:fragment>
 
                                         <h3>Address</h3>
 
-                                        <p:spacer width="100%" height="5px"/>
-
-                                        <p:panel>
-                                            <h:panelGrid id="client-add-grid" columns="2" columnClasses="field-label-3">
-
-                                                <h:outputText value="Street:"/>
-                                                <p:inputText value="#{createAccount.helper.address.lineTwo}"/>
-
-                                                <h:outputText value="Town:"/>
-                                                <p:inputText value="#{createAccount.helper.address.lineThree}"/>
-
-                                                <h:outputText value="State:"/>
-                                                <p:inputText value="#{createAccount.helper.address.lineFour}"/>
-
-                                                <h:outputText value="Zip Code:"/>
-                                                <p:inputText value="#{createAccount.helper.address.lineFive}"/>
-
-                                                <p:commandButton value="Add" 
-                                                                 update="client-add-grid client-add-table" 
-                                                                 process="@this,client-add-grid"
-                                                                 action="#{createAccount.helper.addAddress()}"/>
-
-                                            </h:panelGrid>
-                                        </p:panel>
-
-                                        <p:spacer width="100%" height="10px"/>
-
-                                        <p:dataTable id="client-add-table" value="#{createAccount.subject.contact.addresses}" var="address">  
+                                        <p:dataTable id="add-table" styleClass="add-table" value="#{createAccount.subject.contact.addresses}" var="address">  
 
                                             <p:column>  
                                                 <f:facet name="header">  
@@ -493,7 +420,7 @@
                                             </p:column>  
 
                                             <p:column>  
-                                                <p:commandLink value="Remove" update="client-add-table" process="@this,client-add-table"
+                                                <p:commandLink value="Remove" update="add-table" process="@this,add-table"
                                                                action="#{createAccount.subject.contact.removeAddress(address)}"/>  
                                             </p:column>  
 
@@ -502,27 +429,8 @@
                                         <p:spacer width="100%" height="20px"/>
 
                                         <h3>Telephone</h3>
-                                        
-                                        <p:spacer width="100%" height="5px"/>
 
-                                        <p:panel>
-                                            <h:panelGrid id="client-tel-grid" columns="1" columnClasses="field-label-3">
-
-                                                <ez:telephone type="#{createAccount.helper.telephone.type}"
-                                                              coutry="#{createAccount.helper.telephone.country}"                     
-                                                              number="#{createAccount.helper.telephone.localNumber}"/>
-
-                                                <p:commandButton id="btn_tel" value="Add" 
-                                                                 update="client-tel-grid client-tel-table" 
-                                                                 process="@this,client-tel-grid"
-                                                                 action="#{createAccount.helper.addTelephone()}"/>
-
-                                            </h:panelGrid>
-                                        </p:panel>
-                                        
-                                        <p:spacer width="100%" height="10px"/>
-
-                                        <p:dataTable id="client-tel-table" value="#{createAccount.subject.contact.telephones}" var="telephone">  
+                                        <p:dataTable id="tel-table" styleClass="tel-table" value="#{createAccount.subject.contact.telephones}" var="telephone">  
 
                                             <p:column>  
                                                 <f:facet name="header">  
@@ -532,203 +440,11 @@
                                             </p:column>  
 
                                             <p:column>  
-                                                <p:commandLink value="Remove" update="client-tel-table" process="@this,client-tel-table"
+                                                <p:commandLink value="Remove" update="tel-table" process="@this,tel-table"
                                                                action="#{createAccount.subject.contact.removeTelephone(telephone)}"/>  
                                             </p:column>  
 
                                         </p:dataTable>
-                                        
-                                        <p:spacer width="100%" height="20px"/>
-
-                                        <p:commandButton id="create-btn" 
-                                                         value="Create Account"
-                                                         action="#{createAccount.client()}"
-                                                         onclick="blockui1.block();"
-                                                         oncomplete="blockui1.unblock();"
-                                                         update=":form:growl"
-                                                         process="@this,:form:switch"/>
-
-                                        <pe:blockUI target="create-btn" widgetVar="blockui1">  
-                                            <div class="windows8-18-b">
-                                                <div class="wBall" id="wBall_1">
-                                                    <div class="wInnerBall">
-                                                    </div>
-                                                </div>
-                                                <div class="wBall" id="wBall_2">
-                                                    <div class="wInnerBall">
-                                                    </div>
-                                                </div>
-                                                <div class="wBall" id="wBall_3">
-                                                    <div class="wInnerBall">
-                                                    </div>
-                                                </div>
-                                                <div class="wBall" id="wBall_4">
-                                                    <div class="wInnerBall">
-                                                    </div>
-                                                </div>
-                                                <div class="wBall" id="wBall_5">
-                                                    <div class="wInnerBall">
-                                                    </div>
-                                                </div>
-                                            </div> 
-                                        </pe:blockUI>
-
-                                    </pe:case>  
-
-                                    <pe:case value="QUICKADMIN"> 
-
-                                        <h:panelGrid columns="2" columnClasses="field-label-3">
-
-                                            <h:outputText value="Email:*" styleClass="field-label-3"/>
-                                            <p:inputText id="email" value="#{createAccount.subject.email}" rendered="true" requiredMessage="Email is required"/>
-
-                                            <h:outputText value="First Name:*" styleClass="field-label-3"/>
-                                            <p:inputText value="#{createAccount.subject.contact.firstName}" rendered="true" requiredMessage="Name is required"/>
-
-                                            <h:outputText value="Last Name:*" styleClass="field-label-3"/>
-                                            <p:inputText value="#{createAccount.subject.contact.lastName}" rendered="true" requiredMessage="Name is required"/>
-
-                                        </h:panelGrid>
-
-                                        <p:spacer width="100%" height="20px"/>
-
-                                        <p:commandButton id="create-btn" 
-                                                         value="Create Account"
-                                                         action="#{createAccount.administrator()}"
-                                                         onclick="blockui1.block();"
-                                                         oncomplete="blockui1.unblock();"
-                                                         update=":form:growl"
-                                                         process="@this,:form:switch"/>
-
-                                        <pe:blockUI target="create-btn" widgetVar="blockui1">  
-                                            <div class="windows8-18-b">
-                                                <div class="wBall" id="wBall_1">
-                                                    <div class="wInnerBall">
-                                                    </div>
-                                                </div>
-                                                <div class="wBall" id="wBall_2">
-                                                    <div class="wInnerBall">
-                                                    </div>
-                                                </div>
-                                                <div class="wBall" id="wBall_3">
-                                                    <div class="wInnerBall">
-                                                    </div>
-                                                </div>
-                                                <div class="wBall" id="wBall_4">
-                                                    <div class="wInnerBall">
-                                                    </div>
-                                                </div>
-                                                <div class="wBall" id="wBall_5">
-                                                    <div class="wInnerBall">
-                                                    </div>
-                                                </div>
-                                            </div> 
-                                        </pe:blockUI>
-
-                                    </pe:case>  
-
-                                    <pe:case value="QUICKVAR">  
-
-                                        <h:panelGrid columns="2" columnClasses="field-label-3">
-
-                                            <h:outputText value="Email:*" styleClass="field-label-3"/>
-                                            <p:inputText id="email" value="#{createAccount.subject.email}" rendered="true" requiredMessage="Email is required"/>
-
-                                            <h:outputText value="First Name:*" styleClass="field-label-3"/>
-                                            <p:inputText value="#{createAccount.subject.contact.firstName}" rendered="true" requiredMessage="Name is required"/>
-
-                                            <h:outputText value="Last Name:*" styleClass="field-label-3"/>
-                                            <p:inputText value="#{createAccount.subject.contact.lastName}" rendered="true" requiredMessage="Name is required"/>
-
-                                        </h:panelGrid>
-
-                                        <p:spacer width="100%" height="20px"/>
-
-                                        <h3>Relationship</h3>
-                                        <p:spacer width="100%" height="7px"/>
-                                        <h:panelGrid columns="2" columnClasses="field-label-3">
-
-                                            <h:outputText value="VAR Company:*" styleClass="field-label-3"/>
-                                            <p:selectOneMenu value="#{createAccount.helper.selectedCompany}" 
-                                                             effect="fade"
-                                                             style="width: 180px"
-                                                             required="true"
-                                                             requiredMessage="Select a VAR"> 
-                                                <f:selectItem itemLabel="-" itemValue="" />
-                                                <f:selectItems value="#{createAccount.helper.vars}" var="v" itemLabel="#{v.name}" itemValue="#{v.id}"/> 
-                                            </p:selectOneMenu>
-
-                                        </h:panelGrid>
-
-                                        <p:spacer width="100%" height="20px"/>
-
-                                        <p:commandButton id="create-btn" 
-                                                         value="Create Account"
-                                                         action="#{createAccount.var()}"
-                                                         onclick="blockui1.block();"
-                                                         oncomplete="blockui1.unblock();"
-                                                         update=":form:growl"
-                                                         process="@this,:form:switch"/>
-
-                                        <pe:blockUI target="create-btn" widgetVar="blockui1">  
-                                            <div class="windows8-18-b">
-                                                <div class="wBall" id="wBall_1">
-                                                    <div class="wInnerBall">
-                                                    </div>
-                                                </div>
-                                                <div class="wBall" id="wBall_2">
-                                                    <div class="wInnerBall">
-                                                    </div>
-                                                </div>
-                                                <div class="wBall" id="wBall_3">
-                                                    <div class="wInnerBall">
-                                                    </div>
-                                                </div>
-                                                <div class="wBall" id="wBall_4">
-                                                    <div class="wInnerBall">
-                                                    </div>
-                                                </div>
-                                                <div class="wBall" id="wBall_5">
-                                                    <div class="wInnerBall">
-                                                    </div>
-                                                </div>
-                                            </div> 
-                                        </pe:blockUI>
-
-                                    </pe:case>  
-
-                                    <pe:case value="QUICKCLIENT">  
-
-                                        <h:panelGrid columns="2" columnClasses="field-label-3">
-
-                                            <h:outputText value="Email:*" styleClass="field-label-3"/>
-                                            <p:inputText id="email" value="#{createAccount.subject.email}" rendered="true" requiredMessage="Email is required"/>
-
-                                            <h:outputText value="First Name:*" styleClass="field-label-3"/>
-                                            <p:inputText value="#{createAccount.subject.contact.firstName}" rendered="true" requiredMessage="Name is required"/>
-
-                                            <h:outputText value="Last Name:*" styleClass="field-label-3"/>
-                                            <p:inputText value="#{createAccount.subject.contact.lastName}" rendered="true" requiredMessage="Name is required"/>
-
-                                        </h:panelGrid>                                      
-
-                                        <p:spacer width="100%" height="20px"/>
-
-                                        <h3>Relationship</h3>
-                                        <p:spacer width="100%" height="7px"/>
-                                        <h:panelGrid columns="2" columnClasses="field-label-3">
-
-                                            <h:outputText value="Client Company:*" styleClass="field-label-3"/>
-                                            <p:selectOneMenu value="#{createAccount.helper.selectedCompany}" 
-                                                             effect="fade"
-                                                             style="width: 180px"
-                                                             required="true"
-                                                             requiredMessage="Select a Client"> 
-                                                <f:selectItem itemLabel="-" itemValue="" />
-                                                <f:selectItems value="#{createAccount.helper.clients}" var="c" itemLabel="#{c.name}" itemValue="#{c.id}"/> 
-                                            </p:selectOneMenu>
-
-                                        </h:panelGrid>
 
                                         <p:spacer width="100%" height="20px"/>
 
@@ -765,14 +481,75 @@
                                             </div> 
                                         </pe:blockUI>
 
-                                    </pe:case>
+                                    </pe:case>  
+
                                 </pe:switch>
 
                             </td>
                         </tr>
                     </table>
+                </pe:layoutPane>
 
-                    <p:spacer width="100%" height="50px"/>
+                <pe:layoutPane id="east" position="east" resizeWhileDragging="true" size="370">
+                    <p:spacer width="100%" height="45"/>
+
+                    <p:panel rendered="#{permissionUtil.hasPermission('permission:create')}">
+                        <h:panelGrid id="perm-grid" columns="2" columnClasses="field-label-3">
+
+                            <h:outputText value="Permission:"/>
+                            <p:inputText value="#{createAccount.helper.permission.name}"/>
+
+                            <p:commandButton id="btn_perm" value="Add" 
+                                             update="perm-grid @(.perm-table)" 
+                                             process="@this,perm-grid"
+                                             action="#{createAccount.helper.addPermission()}"/>
+
+                        </h:panelGrid>
+                    </p:panel>
+
+                    <p:spacer width="100%" height="10px"/>
+
+                    <p:panel>
+                        <h:panelGrid id="add-grid" columns="2" columnClasses="field-label-3">
+
+                            <h:outputText value="Street:"/>
+                            <p:inputText value="#{createAccount.helper.address.lineTwo}"/>
+
+                            <h:outputText value="Town:"/>
+                            <p:inputText value="#{createAccount.helper.address.lineThree}"/>
+
+                            <h:outputText value="State:"/>
+                            <p:inputText value="#{createAccount.helper.address.lineFour}"/>
+
+                            <h:outputText value="Zip Code:"/>
+                            <p:inputText value="#{createAccount.helper.address.lineFive}"/>
+
+                            <p:commandButton id="btn_add" value="Add" 
+                                             update="add-grid @(.add-table)" 
+                                             process="@this,add-grid"
+                                             action="#{createAccount.helper.addAddress()}"/>
+
+                        </h:panelGrid>
+                    </p:panel>
+
+                    <p:spacer width="100%" height="10px"/>
+
+                    <p:panel>
+                        <h:panelGrid id="tel-grid" columns="1" columnClasses="field-label-3">
+
+                            <ez:telephone type="#{createAccount.helper.telephone.type}"
+                                          coutry="#{createAccount.helper.telephone.country}"                     
+                                          number="#{createAccount.helper.telephone.localNumber}"/>
+
+                            <p:commandButton value="Add" 
+                                             update="tel-grid @(.tel-table)" 
+                                             process="@this,tel-grid"
+                                             action="#{createAccount.helper.addTelephone()}"/>
+
+                        </h:panelGrid>
+                    </p:panel>
+
+                    <p:spacer width="100%" height="10px"/>
 
                 </pe:layoutPane>
 

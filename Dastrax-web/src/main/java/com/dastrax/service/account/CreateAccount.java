@@ -25,6 +25,7 @@ import com.dastrax.app.util.ExceptionUtil;
 import com.dastrax.mesh.email.Email;
 import com.dastrax.mesh.email.EmailUtil;
 import com.dastrax.per.dao.core.AuditDAO;
+import com.dastrax.per.entity.core.Permission;
 import com.dastrax.service.util.JsfUtil;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -416,6 +417,7 @@ public class CreateAccount implements Serializable {
         private boolean renderPublicForm;
         private Address address = new Address();
         private Telephone telephone = new Telephone();
+        private Permission permission = new Permission();
 
         // Constructors-------------------------------------------------------------
         public Helper() {
@@ -478,6 +480,10 @@ public class CreateAccount implements Serializable {
             return telephone;
         }
 
+        public Permission getPermission() {
+            return permission;
+        }
+
         // Setters------------------------------------------------------------------
         public void setEmail(String email) {
             this.email = email;
@@ -535,6 +541,10 @@ public class CreateAccount implements Serializable {
             this.telephone = telephone;
         }
 
+        public void setPermission(Permission permission) {
+            this.permission = permission;
+        }
+
         // Methods------------------------------------------------------------------
         /**
          * Accounts can be created from several places. This method is used to 
@@ -572,6 +582,15 @@ public class CreateAccount implements Serializable {
         public void addTelephone() {
             subject.getContact().getTelephones().add(telephone);
             telephone = new Telephone();
+        }
+        
+        /**
+         * The permission list component used to manage collections requires this 
+         * method to reset the permission object each time a new one is created.
+         */
+        public void addPermission() {
+            subject.getPermissions().add(permission);
+            permission = new Permission();
         }
 
     }

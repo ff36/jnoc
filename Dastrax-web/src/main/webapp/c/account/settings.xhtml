@@ -31,6 +31,7 @@
             <pe:layout stateCookie="false" widgetVar="layourWgt" >
 
                 <pe:layoutPane id="west" position="west" resizeWhileDragging="true" size="220">
+                    <p:spacer width="100%" height="45"/>
 
                     <table class="side-menu">
                         <tr>
@@ -72,6 +73,7 @@
                 </pe:layoutPane>
 
                 <pe:layoutPane id="center" position="center" resizeWhileDragging="true">
+                    <p:spacer width="100%" height="45"/>
 
                     <pe:switch id="switch" value="#{settings.helper.view}">  
 
@@ -102,59 +104,87 @@
 
                             <h3>Address</h3>
 
-                            <p:dataList id="address-list" 
-                                        styleClass="clear-data-list" 
-                                        value="#{settings.subject.contact.addresses}"
-                                        var="address"
-                                        itemType="none">
+                            <p:spacer width="100%" height="5px"/>
 
-                                <h:panelGrid columns="2" columnClasses="field-label-3">
-
-                                    <h:outputText value=""/>
-                                    <p:commandLink id="remove-address" styleClass="align-right" value="Remove" action="#{settings.subject.contact.removeAddress(address)}" update="address-list" process="@this,remove-address,address-list"/>
+                            <p:panel>
+                                <h:panelGrid id="address-grid" columns="2" columnClasses="field-label-3">
 
                                     <h:outputText value="Street:"/>
-                                    <p:inputText value="#{address.lineTwo}"/>
+                                    <p:inputText value="#{settings.helper.address.lineTwo}"/>
 
                                     <h:outputText value="Town:"/>
-                                    <p:inputText value="#{address.lineThree}"/>
+                                    <p:inputText value="#{settings.helper.address.lineThree}"/>
 
                                     <h:outputText value="State:"/>
-                                    <p:inputText value="#{address.lineFour}"/>
+                                    <p:inputText value="#{settings.helper.address.lineFour}"/>
 
                                     <h:outputText value="Zip Code:"/>
-                                    <p:inputText value="#{address.lineFive}"/>
+                                    <p:inputText value="#{settings.helper.address.lineFive}"/>
+
+                                    <p:commandButton id="btn_add" value="Add" 
+                                                     update="address-grid address-table" 
+                                                     process="@this,address-grid"
+                                                     action="#{settings.helper.addAddress()}"/>
 
                                 </h:panelGrid>
+                            </p:panel>
 
-                            </p:dataList>
+                            <p:spacer width="100%" height="10px"/>
 
-                            <p:commandLink id="new-address" value="Add +" action="#{settings.subject.contact.addAddress()}" update="address-list" process="@this,new-address,address-list"/>
+                            <p:dataTable id="address-table" value="#{settings.subject.contact.addresses}" var="address">  
 
+                                <p:column>  
+                                    <f:facet name="header">  
+                                        <h:outputText value="Address" />  
+                                    </f:facet>  
+                                    <h:outputText value="#{address.buildCompleteAddress()}" />  
+                                </p:column>  
+
+                                <p:column>  
+                                    <p:commandLink value="Remove" update="address-table" process="@this,address-table"
+                                                   action="#{settings.subject.contact.removeAddress(address)}"/>  
+                                </p:column>  
+
+                            </p:dataTable>
 
                             <p:spacer width="100%" height="20px"/>
 
                             <h3>Telephone</h3>
 
-                            <p:dataList id="telephone-list" 
-                                        styleClass="clear-data-list" 
-                                        value="#{settings.subject.contact.telephones}"
-                                        var="telephone"
-                                        itemType="none">
+                            <p:spacer width="100%" height="5px"/>
 
-                                <h:panelGrid columns="1" columnClasses="field-label-3">
+                            <p:panel>
+                                <h:panelGrid id="tel-grid" columns="1" columnClasses="field-label-3">
 
-                                    <p:commandLink id="remove-telephone" styleClass="align-right" value="Remove" action="#{settings.subject.contact.removeTelephone(telephone)}" update="telephone-list" process="@this,remove-telephone,telephone-list"/>
+                                    <ez:telephone type="#{settings.helper.telephone.type}"
+                                                  coutry="#{settings.helper.telephone.country}"                     
+                                                  number="#{settings.helper.telephone.localNumber}"/>
 
-                                    <ez:telephone type="#{telephone.type}"
-                                                  coutry="#{telephone.country}"                     
-                                                  number="#{telephone.localNumber}"/>
+                                    <p:commandButton value="Add" 
+                                                     update="tel-grid tel-table" 
+                                                     process="@this,tel-grid"
+                                                     action="#{settings.helper.addTelephone()}"/>
 
                                 </h:panelGrid>
+                            </p:panel>
 
-                            </p:dataList>
+                            <p:spacer width="100%" height="10px"/>
 
-                            <p:commandLink id="new-telephone" value="Add +" action="#{settings.subject.contact.addTelephone()}" update="telephone-list" process="@this,new-telephone,telephone-list"/>
+                            <p:dataTable id="tel-table" value="#{settings.subject.contact.telephones}" var="telephone">  
+
+                                <p:column>  
+                                    <f:facet name="header">  
+                                        <h:outputText value="Number" />  
+                                    </f:facet>  
+                                    <h:outputText value="#{telephone.type}: #{telephone.internationalFormat()}" />  
+                                </p:column>  
+
+                                <p:column>  
+                                    <p:commandLink value="Remove" update="tel-table" process="@this,tel-table"
+                                                   action="#{settings.subject.contact.removeTelephone(telephone)}"/>  
+                                </p:column>  
+
+                            </p:dataTable>
 
                             <p:spacer width="100%" height="20px"/>
 
