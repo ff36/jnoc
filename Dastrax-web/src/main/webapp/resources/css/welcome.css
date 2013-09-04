@@ -1,10 +1,10 @@
 /*
 Copyright 2013 SOLiD Inc ALL RIGHTS RESERVED.
 Developed by: Tarka L'Herpiniere <info@tarka.tv>.
-*/
-/* 
-    Created on : Sep 4, 2013, 12:45:28 PM
-    Author     : Tarka L'Herpiniere <info@tarka.tv>
+
+ 
+Created on : Sep 4, 2013, 12:45:28 PM
+Author     : Tarka L'Herpiniere <info@tarka.tv>
 */
 *
 {
@@ -50,10 +50,19 @@ A:link:hover, A:visited:hover
 	position: fixed;
 	top: 50%;
 	left: 50%;
-	margin-top: -89px;
-	margin-left: -162px;
-	width: 312px;
-	height: 180px;
+	margin-top: -175px;
+	margin-left: -375px;
+	width: 750px;
+	height: 350px;
+}
+#tiles TABLE
+{
+	width: 100%;
+	text-align: center;
+}
+#tiles TR TD
+{
+	padding-bottom: 20px;
 }
 .footer
 {
@@ -117,11 +126,43 @@ A:link:hover, A:visited:hover
 	font-size: 14pt;
 	color: #606060;
 }
-#logo
+.logo
 {
-	position: fixed;
-	left: 50%;
-	top: 20%;
-	margin-left: -142px;
+	/*+placement:displace 80px -47px;*/
+	position: absolute;
+	margin-left: 80px;
+	margin-top: -47px;
 }
-
+#nav-bar
+{
+	width: 960px;
+	/*+placement:margin-auto 0px 0px;*/
+	margin-left: auto;
+	margin-right: auto;
+	position: relative;
+	left: 0px;
+	top: 0px;
+	overflow: hidden;
+	background-color: #000000;
+	padding-top: 48px;
+	height: 80px;
+}
+.page-label
+{
+	text-transform: uppercase;
+	font-size: 18pt;
+	font-weight: bold;
+	color: #264CA1;
+	/*+placement:anchor-bottom-right 14px 24px;*/
+	position: absolute;
+	right: 14px;
+	bottom: 24px;
+}
+#nav-bar .sign-out
+{
+	/*+placement:anchor-top-right 18px 14px;*/
+	position: absolute;
+	right: 18px;
+	top: 14px;
+	color: #FFFFFF;
+}

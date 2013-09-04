@@ -16,7 +16,9 @@
                 <tr>
                     <td class="nav-1">
                         <!-- LOGO -->
-                        <p:graphicImage id="header-logo" height="30px" value="#{pathUtil.companyLogo1P('dastrax_logo_v3.png')}"/>
+                        <h:outputLink id="header-logo" value="#{request.contextPath}/c/welcome.jsf">
+                            <p:graphicImage height="30px" value="#{pathUtil.companyLogo1P('dastrax_logo_v3.png')}"/>
+                        </h:outputLink>
                     </td>
                     <td class="nav-2">
                         <!-- NAV BAR -->

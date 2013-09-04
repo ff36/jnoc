@@ -2,24 +2,47 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:p="http://primefaces.org/ui"
-      xmlns:pe="http://primefaces.org/ui/extensions"
-      xmlns:f="http://java.sun.com/jsf/core">
+      xmlns:p="http://primefaces.org/ui">
 
     <h:head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <h:outputStylesheet name="css/welcome.css"/>
         <h:outputStylesheet name="css/common.css"/>
         <link rel="shortcut icon" type="image/png" href="#{request.contextPath}/resources/graphics/favicon.ico" />
-        <title>#{webBundle['default.page.title']} | #{webBundle['admin.welcome.page.title']}</title>
+        <title>#{webBundle['default.page.title']} | #{webBundle['var.welcome.page.title']}</title>
     </h:head>
     <h:body>
 
         <h:form id="form">
 
+            <div id="nav-bar">
+                <p:graphicImage styleClass="logo" value="#{pathUtil.s3Logo('solid_logo_v1.jpg')}"/>
+                <h:outputText value="Customer Portal" styleClass="page-label"/>
+                <p:commandLink styleClass="sign-out" value="Sign out" action="#{authenticate.logout()}" process="@this"/>
+                
+                <p:graphicImage value="#{pathUtil.s3Image('solid_header_v1.jpg')}"/>
+            </div>
+            
             <div id="tiles">
 
+                <h:panelGrid columns="4">
+                    <p:graphicImage value="#{pathUtil.s3Image('tile_university_inactive.svg')}"/>
+                    
+                    <p:graphicImage value="#{pathUtil.s3Image('tile_knowledge_inactive.svg')}"/>
+                    
+                    <p:commandLink action="access-list-manual-tickets-page" type="button" ajax="false" rendered="#{permissionUtil.hasPermission('ticket:access')}">
+                        <p:graphicImage value="#{pathUtil.s3Image('tile_ticket_active.svg')}"/>
+                    </p:commandLink> 
+                    <p:graphicImage value="#{pathUtil.s3Image('tile_ticket_inactive.svg')}" rendered="#{!permissionUtil.hasPermission('ticket:access')}"/>
+                    
+                    <p:graphicImage value="#{pathUtil.s3Image('tile_rma_inactive.svg')}"/>
+                </h:panelGrid>
 
+                <h:panelGrid columns="3">
+                    <p:graphicImage value="#{pathUtil.s3Image('tile_noc_inactive.svg')}"/>
+                    <p:graphicImage value="#{pathUtil.s3Image('tile_feedback_inactive.svg')}"/>
+                    <p:graphicImage value="#{pathUtil.s3Image('tile_contact_inactive.svg')}"/>
+                </h:panelGrid>
 
             </div>
 

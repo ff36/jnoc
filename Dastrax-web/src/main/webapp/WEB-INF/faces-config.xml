@@ -146,6 +146,13 @@
     <navigation-rule>
         <from-view-id>/b/*</from-view-id>
         
+        <!-- welcome -->
+        <navigation-case>
+            <from-outcome>access-welcome-page</from-outcome>
+            <to-view-id>/b/welcome.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        
         <!-- dashboard -->
         <navigation-case>
             <from-outcome>access-dashboard-page</from-outcome>
@@ -203,6 +210,13 @@
     
     <navigation-rule>
         <from-view-id>/c/*</from-view-id>
+        
+        <!-- welcome -->
+        <navigation-case>
+            <from-outcome>access-welcome-page</from-outcome>
+            <to-view-id>/c/welcome.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
         
         <!-- dashboard -->
         <navigation-case>
