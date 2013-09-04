@@ -28,7 +28,7 @@
 
             <ez:navigation-a/>
 
-            <pe:layout stateCookie="false" widgetVar="layoutWgt" >
+            <pe:layout stateCookie="#{config.ProjectStage ne 'DEV'}" widgetVar="layoutWgt" >
 
                 <pe:layoutPane id="west" position="west" resizeWhileDragging="true" size="220">
                     <p:spacer width="100%" height="45"/>
@@ -120,7 +120,7 @@
 
                 <pe:layoutPane id="center" position="center" resizeWhileDragging="true">
                     <p:spacer width="100%" height="45"/>
-
+                    
                     <div class="dsh-audit">
                         <h2>Audit</h2>
                         <p:dataList value="#{auditUtil.audits}" 

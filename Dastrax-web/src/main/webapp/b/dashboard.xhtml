@@ -27,7 +27,7 @@
 
             <ez:navigation-b/>
 
-            <pe:layout stateCookie="false" widgetVar="layoutWgt" >
+            <pe:layout stateCookie="#{config.ProjectStage ne 'DEV'}" widgetVar="layoutWgt" >
 
                 <pe:layoutPane id="west" position="west" resizeWhileDragging="true" size="220">
                     <p:spacer width="100%" height="45"/>
