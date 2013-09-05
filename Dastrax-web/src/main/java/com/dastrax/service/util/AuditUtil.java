@@ -97,8 +97,4 @@ public class AuditUtil implements Serializable {
         return subjectDAO.findSubjectByUid(id);
     }
 
-    public String actionThrowNullPointer() {  
-        throw new NullPointerException("This is my null pointer exception!");  
-    } 
-    
 }

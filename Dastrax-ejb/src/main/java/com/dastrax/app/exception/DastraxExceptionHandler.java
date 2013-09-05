@@ -77,7 +77,7 @@ public class DastraxExceptionHandler extends ExceptionHandlerWrapper {
                 
                 // Add a message to the presentation layer
                 FacesMessage facesMsg = new FacesMessage(FacesMessage.SEVERITY_FATAL, 
-                        "This is embarrassing! We seem to have run into an unexpected error. The development team has been notified and we will endeavour to fix this as soon as possible. In the mean time you can try refreshing the page and trying again. If you have a moment please help us improve the system by clicking on the feedback tab in the bottom right corner and telling use what you where doing that caused this message to be displayed.",
+                        "We seem to have run into an unexpected error! We will endeavour to fix this as soon as possible. In the mean time you can try refreshing the page and trying again. If you have a moment please help us improve the system by clicking on the feedback tab in the bottom right corner and telling use what you where doing that caused this message to be displayed.",
                         "");
                 FacesContext.getCurrentInstance().addMessage(null, facesMsg);
                 FacesContext.getCurrentInstance().getPartialViewContext().getRenderIds().add("form:growl");
