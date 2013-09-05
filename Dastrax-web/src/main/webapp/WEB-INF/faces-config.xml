@@ -10,6 +10,12 @@
                     xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facelettaglibrary_2_2.xsd">
     </facelet-taglib>
     
+    <factory>
+        <exception-handler-factory>
+            com.dastrax.app.exception.DastraxExceptionFactory
+        </exception-handler-factory>
+    </factory>
+    
     <application>
         <!-- AWS credentials to grant the application access to resources-->
         <resource-bundle>

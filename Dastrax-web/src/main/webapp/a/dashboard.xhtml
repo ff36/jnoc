@@ -121,6 +121,8 @@
                 <pe:layoutPane id="center" position="center" resizeWhileDragging="true">
                     <p:spacer width="100%" height="45"/>
                     
+                    <p:commandButton action="#{auditUtil.actionThrowNullPointer()}" value="null pointer"/>
+                    
                     <div class="dsh-audit">
                         <h2>Audit</h2>
                         <p:dataList value="#{auditUtil.audits}" 

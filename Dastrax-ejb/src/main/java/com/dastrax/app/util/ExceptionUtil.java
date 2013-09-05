@@ -53,7 +53,9 @@ public class ExceptionUtil {
 
         // Set the variables
         Map<String, String> vars = new HashMap<>();
-        vars.put("exception", e.getMessage());
+        vars.put("exception_name", e.getClass().getName());
+        vars.put("exception_message", e.getMessage());
+        vars.put("exception_stack", org.apache.commons.lang.exception.ExceptionUtils.getStackTrace(e));
         email.setVariables(vars);
 
         // Retreive the email template from the database.
