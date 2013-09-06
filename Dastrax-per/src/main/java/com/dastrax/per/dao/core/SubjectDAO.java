@@ -4,11 +4,9 @@
  */
 package com.dastrax.per.dao.core;
 
-import com.dastrax.per.entity.core.Address;
 import com.dastrax.per.entity.core.Company;
 import com.dastrax.per.entity.core.Contact;
 import com.dastrax.per.entity.core.Subject;
-import com.dastrax.per.entity.core.Telephone;
 import com.dastrax.per.exception.DuplicateEmailException;
 import java.util.List;
 import javax.ejb.Local;
@@ -154,6 +152,11 @@ public interface SubjectDAO {
      * @return all subjects that belong to the specified company
      */
     public List<Subject> findAllSubjectsByCompany(String id);
+    /**
+     * 
+     * @return all existing subject emails
+     */
+    public List<String> findAllSubjectEmails();
     /**
      * 
      * @param companies

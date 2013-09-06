@@ -207,7 +207,7 @@
                                   filterStyle="display:none"
                                   sortBy="#{ticket.title}">
                             <p:commandLink id="edit-ticket" value="#{ticket.title}" action="#{tickets.editTicket(ticket.id)}" type="button" process="@this,edit-ticket" rendered="#{permissionUtil.hasPermission('ticket:edit')}"/>
-                            <h:outputText id="edit-ticket" value="#{ticket.title}" rendered="#{!permissionUtil.hasPermission('ticket:edit')}"/>
+                            <h:outputText id="ticket-title" value="#{ticket.title}" rendered="#{!permissionUtil.hasPermission('ticket:edit')}"/>
                         </p:column>
 
                         <p:column headerText="Assignee"

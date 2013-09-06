@@ -21,6 +21,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.TableGenerator;
+import javax.persistence.Transient;
 import javax.persistence.Version;
 import javax.validation.constraints.Pattern;
 
@@ -38,6 +39,7 @@ import javax.validation.constraints.Pattern;
     @NamedQuery(name = "Subject.findPWByPK", query = "SELECT e.password FROM Subject e WHERE e.uid = :uid"),
     @NamedQuery(name = "Subject.findByNullCompany", query = "SELECT e FROM Subject e WHERE e.company IS NULL"),
     @NamedQuery(name = "Subject.findByCompany", query = "SELECT e FROM Subject e JOIN e.company c WHERE c.id = :id"),
+    @NamedQuery(name = "Subject.findAllEmail", query = "SELECT e.email FROM Subject e"),
 })
 @Entity
 public class Subject implements Serializable {
@@ -68,6 +70,8 @@ public class Subject implements Serializable {
     private Metier metier;
     @ManyToOne(cascade = {CascadeType.MERGE})
     private Company company;
+    @Transient
+    private String transEmail;
 
     // Getters------------------------------------------------------------------
     public int getVersion() {
@@ -110,6 +114,10 @@ public class Subject implements Serializable {
         return company;
     }
 
+    public String getTransEmail() {
+        return transEmail;
+    }
+
     // Setters------------------------------------------------------------------
     public void setUid(String uid) {
         this.uid = uid;
@@ -149,6 +157,10 @@ public class Subject implements Serializable {
 
     public void setCompany(Company company) {
         this.company = company;
+    }
+
+    public void setTransEmail(String transEmail) {
+        this.transEmail = transEmail;
     }
 
     // Methods------------------------------------------------------------------

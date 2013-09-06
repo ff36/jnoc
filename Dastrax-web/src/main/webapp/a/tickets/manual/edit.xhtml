@@ -159,7 +159,7 @@
                         <table width="100%">
                             <tr>
                                 <td width="210px">
-                                    <p:selectOneButton value="#{editTicket.helper.commentACL}">  
+                                    <p:selectOneButton value="#{editTicket.helper.commentACL}" styleClass="comment-type-selector">  
                                         <f:selectItem itemLabel="Public reply" itemValue="public" />  
                                         <f:selectItem itemLabel="Internal reply" itemValue="internal" />
                                         <p:ajax event="change" process="@this" listener="#{editTicket.helper.aclListener()}" update="form:cmt-msg"/>

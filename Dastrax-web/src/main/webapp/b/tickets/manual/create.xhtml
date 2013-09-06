@@ -18,7 +18,7 @@
     <h:body>
 
         #{permissionUtil.hasPagePermission('ticket:create')}
-        
+
         <h:form id="form">
 
             <pe:ajaxErrorHandler />
@@ -220,18 +220,25 @@
 
                         <pe:case value="QUICKVAR">  
 
-                            <h:panelGrid columns="2" columnClasses="field-label-3">
-
-                                <h:outputText value="Email:*" styleClass="field-label-3"/>
-                                <p:inputText id="email" value="#{createAccount.subject.email}" rendered="true" requiredMessage="Email is required"/>
-
-                                <h:outputText value="First Name:*" styleClass="field-label-3"/>
-                                <p:inputText value="#{createAccount.subject.contact.firstName}" rendered="true" requiredMessage="Name is required"/>
-
-                                <h:outputText value="Last Name:*" styleClass="field-label-3"/>
-                                <p:inputText value="#{createAccount.subject.contact.lastName}" rendered="true" requiredMessage="Name is required"/>
-
-                            </h:panelGrid>
+                            <table>
+                                <tr>
+                                    <td><h:outputText value="Email:*" styleClass="field-label-3"/></td>
+                                    <td style="position: relative">
+                                        <p:inputText id="email" styleClass="ajax-val" value="#{createAccount.subject.transEmail}" required="true" requiredMessage="Email is required">
+                                            <p:ajax process="@this,email" event="keyup" listener="#{ajaxValidUtil.emailAvailable(component)}" update="email-val create-btn"/>
+                                        </p:inputText>
+                                        <h:outputText id="email-val" value="#{ajaxValidUtil.emailFree ? 'Available' : 'Not Available'}" styleClass="#{ajaxValidUtil.emailFree ? 'positive-field' : 'negative-field'}"/>                                                       
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><h:outputText value="First Name:*" styleClass="field-label-3"/></td>
+                                    <td><p:inputText value="#{createAccount.subject.contact.firstName}" required="true" requiredMessage="Name is required"/></td>
+                                </tr>
+                                <tr>
+                                    <td><h:outputText value="Last Name:*" styleClass="field-label-3"/></td>
+                                    <td><p:inputText value="#{createAccount.subject.contact.lastName}" required="true" requiredMessage="Name is required"/></td>
+                                </tr>
+                            </table>
 
                             <p:spacer width="100%" height="20px"/>
 
@@ -241,8 +248,9 @@
                                              action="#{createTicket.reloadSubjects()}"
                                              onclick="blockui1.block();"
                                              oncomplete="blockui1.unblock(); layoutWgt.close('east');"
-                                             update=":form:growl :form:requester :form:assignee"
-                                             process="@this,:form:switch-east-north"/>
+                                             update=":form:growl :form:requester"
+                                             process="@this,:form:switch-east-north"
+                                             disabled="#{!ajaxValidUtil.emailFree}"/>
 
                             <pe:blockUI target="create-btn" widgetVar="blockui1">  
                                 <div class="windows8-18-b">
@@ -273,18 +281,25 @@
 
                         <pe:case value="QUICKCLIENT">  
 
-                            <h:panelGrid columns="2" columnClasses="field-label-3">
-
-                                <h:outputText value="Email:*" styleClass="field-label-3"/>
-                                <p:inputText id="email" value="#{createAccount.subject.email}" rendered="true" requiredMessage="Email is required"/>
-
-                                <h:outputText value="First Name:*" styleClass="field-label-3"/>
-                                <p:inputText value="#{createAccount.subject.contact.firstName}" rendered="true" requiredMessage="Name is required"/>
-
-                                <h:outputText value="Last Name:*" styleClass="field-label-3"/>
-                                <p:inputText value="#{createAccount.subject.contact.lastName}" rendered="true" requiredMessage="Name is required"/>
-
-                            </h:panelGrid>                                      
+                            <table>
+                                <tr>
+                                    <td><h:outputText value="Email:*" styleClass="field-label-3"/></td>
+                                    <td style="position: relative">
+                                        <p:inputText id="email" styleClass="ajax-val" value="#{createAccount.subject.transEmail}" required="true" requiredMessage="Email is required">
+                                            <p:ajax process="@this,email" event="keyup" listener="#{ajaxValidUtil.emailAvailable(component)}" update="email-val create-btn"/>
+                                        </p:inputText>
+                                        <h:outputText id="email-val" value="#{ajaxValidUtil.emailFree ? 'Available' : 'Not Available'}" styleClass="#{ajaxValidUtil.emailFree ? 'positive-field' : 'negative-field'}"/>                                                       
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><h:outputText value="First Name:*" styleClass="field-label-3"/></td>
+                                    <td><p:inputText value="#{createAccount.subject.contact.firstName}" required="true" requiredMessage="Name is required"/></td>
+                                </tr>
+                                <tr>
+                                    <td><h:outputText value="Last Name:*" styleClass="field-label-3"/></td>
+                                    <td><p:inputText value="#{createAccount.subject.contact.lastName}" required="true" requiredMessage="Name is required"/></td>
+                                </tr>
+                            </table>                                     
 
                             <p:spacer width="100%" height="20px"/>
 
@@ -312,8 +327,9 @@
                                              action="#{createTicket.reloadSubjects()}"
                                              onclick="blockui1.block();"
                                              oncomplete="blockui1.unblock(); layoutWgt.close('east');"
-                                             update=":form:growl :form:requester :form:assignee"
-                                             process="@this,:form:switch-east-north"/>
+                                             update=":form:growl :form:requester"
+                                             process="@this,:form:switch-east-north"
+                                             disabled="#{!ajaxValidUtil.emailFree}"/>
 
                             <pe:blockUI target="create-btn" widgetVar="blockui1">  
                                 <div class="windows8-18-b">

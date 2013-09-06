@@ -453,6 +453,39 @@ TD.create-col-3
 	vertical-align: top;
 	padding-left: 20px;
 }
+.positive-field
+{
+	/*+placement:anchor-top-left 0px 0px;*/
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	font-size: 6.2pt;
+	background-color: #C6D146;
+	padding: 1px 0px;
+	width: 166px;
+	text-align: center;
+	margin-left: 2px;
+	margin-top: 2px;
+}
+.negative-field
+{
+	/*+placement:anchor-top-left 0px 0px;*/
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	font-size: 6.2pt;
+	background-color: #D18B46;
+	padding: 1px 0px;
+	width: 166px;
+	text-align: center;
+	margin-left: 2px;
+	margin-top: 2px;
+}
+.ui-inputfield.ajax-val
+{
+	height: 30px;
+	line-height: 3.2;
+}
 /*CREATE NEW SITE*/
 .site-options
 {

@@ -331,14 +331,17 @@
 
                             <p:spacer width="100%" height="10"/>
 
-                            <h:panelGrid columns="2" columnClasses="field-label-3">
-
-                                <h:outputText value="New Email:"/>
-                                <p:inputText value="#{settings.helper.newEmail}" 
-                                             required="true"
-                                             requiredMessage="Email required"/>
-
-                            </h:panelGrid>
+                            <table>
+                                <tr>
+                                    <td><h:outputText value="New Email:*" styleClass="field-label-3"/></td>
+                                    <td style="position: relative">
+                                        <p:inputText id="email" styleClass="ajax-val" value="#{settings.helper.newEmail}" required="true" requiredMessage="Email is required">
+                                            <p:ajax process="@this,email" event="keyup" listener="#{ajaxValidUtil.emailAvailable(component)}" update="email-val change-email-btn"/>
+                                        </p:inputText>
+                                        <h:outputText id="email-val" value="#{ajaxValidUtil.emailFree ? 'Available' : 'Not Available'}" styleClass="#{ajaxValidUtil.emailFree ? 'positive-field' : 'negative-field'}"/>                                                       
+                                    </td>
+                                </tr>
+                            </table>
 
                             <p:spacer width="100%" height="20"/>
 
@@ -348,7 +351,8 @@
                                              onclick="blockui3.block();"
                                              oncomplete="blockui3.unblock();"
                                              update=":form:growl"
-                                             process="@this,:form:switch"/>
+                                             process="@this,:form:switch"
+                                             disabled="#{!ajaxValidUtil.emailFree}"/>
 
                             <pe:blockUI target="change-email-btn" widgetVar="blockui3">  
                                 <div class="windows8-18-b">

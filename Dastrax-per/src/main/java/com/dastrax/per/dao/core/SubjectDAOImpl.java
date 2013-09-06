@@ -4,13 +4,11 @@
  */
 package com.dastrax.per.dao.core;
 
-import com.dastrax.per.entity.core.Address;
 import com.dastrax.per.entity.core.Company;
 import com.dastrax.per.entity.core.Company_;
 import com.dastrax.per.entity.core.Contact;
 import com.dastrax.per.entity.core.Subject;
 import com.dastrax.per.entity.core.Subject_;
-import com.dastrax.per.entity.core.Telephone;
 import com.dastrax.per.exception.DuplicateEmailException;
 import com.dastrax.per.project.DastraxCst;
 import java.util.ArrayList;
@@ -348,6 +346,12 @@ public class SubjectDAOImpl implements SubjectDAO {
     public List<Subject> findAllSubjectsByCompany(String id) {
         return em.createNamedQuery("Subject.findByCompany")
                 .setParameter("id", id)
+                .getResultList();
+    }
+    
+    @Override
+    public List<String> findAllSubjectEmails() {
+        return em.createNamedQuery("Subject.findAllEmail")
                 .getResultList();
     }
 

@@ -318,7 +318,6 @@ public class Settings implements Serializable {
     public class Helper {
 
         // Variables----------------------------------------------------------------
-        @Pattern(regexp = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message = "Invalid Email")
         private String newEmail;
         private String token;
         private String view = "PROFILE";

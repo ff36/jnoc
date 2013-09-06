@@ -148,6 +148,8 @@ public class CreateAccount implements Serializable {
         String result = null;
 
         try {
+            // Move the email from transient field to persistent
+            subject.setEmail(subject.getTransEmail());
             // Persist the administrator
             Subject s = subjectDAO.createAdmin(subject);
             // Send an email
@@ -167,8 +169,6 @@ public class CreateAccount implements Serializable {
                         .getFlash()
                         .setKeepMessages(true);
 
-                // Create an audit log of the event
-                //audit.create("Admin Account Requested: (ID: " + s.getUid() + ")");
                 // Set the navigation outcome
                 result = "access-accounts-list-page";
             }
@@ -209,6 +209,8 @@ public class CreateAccount implements Serializable {
                 subject.setCompany(s.getCompany());
             }
 
+            // Move the email from transient field to persistent
+            subject.setEmail(subject.getTransEmail());
             // Persist the var
             Subject s = subjectDAO.createVar(subject);
             // Send an email
@@ -273,6 +275,8 @@ public class CreateAccount implements Serializable {
                 subject.setCompany(s.getCompany());
             }
 
+            // Move the email from transient field to persistent
+            subject.setEmail(subject.getTransEmail());
             // Persist the administrator
             Subject s = subjectDAO.createClient(subject);
             // Send an email

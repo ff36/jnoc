@@ -244,6 +244,24 @@ public class DnsUtil {
 
         return result;
     }
+    
+    public List<String> allSubdomains() {
+        List<String> result = new ArrayList<>();
+        ListResourceRecordSetsRequest lrrsr = new ListResourceRecordSetsRequest();
+        lrrsr.setHostedZoneId(zoneId);
+        
+        try {
+            ListResourceRecordSetsResult lrrsr1 = route53.listResourceRecordSets(lrrsr);
+
+            for (ResourceRecordSet rrs : lrrsr1.getResourceRecordSets()) {
+                result.add(rrs.getName());
+            }
+
+        } catch (AmazonServiceException ase) {
+            LOG.log(Level.INFO, "DNS Service exception on route 53", ase);
+        }
+        return result;
+    }
 
     /**
      * Used to create a Route53 client to access AWS route 53 resources.
