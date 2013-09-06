@@ -80,16 +80,22 @@
 
                                         <h2>New VAR Company</h2>
                                         <p:spacer width="100%" height="20px"/>
-
-                                        <h:panelGrid columns="2" columnClasses="field-label-3">
-
-                                            <h:outputText value="Name:*" styleClass="field-label-3"/>
-                                            <p:inputText value="#{createCompany.company.name}" rendered="true" requiredMessage="Name is required"/>
-
-                                            <h:outputText value="Sub-domain:*" styleClass="field-label-3"/>
-                                            <p:inputText value="#{createCompany.company.subdomain}" rendered="true" requiredMessage="Subdomain is required"/>
-
-                                        </h:panelGrid>
+                                        
+                                        <table>
+                                            <tr>
+                                                <td><h:outputText value="Name:*" styleClass="field-label-3"/></td>
+                                                <td><p:inputText value="#{createCompany.company.name}" rendered="true" requiredMessage="Name is required"/></td>
+                                            </tr>
+                                            <tr>
+                                                <td><h:outputText value="Sub-domain:*" styleClass="field-label-3"/></td>
+                                                <td style="position: relative">
+                                                    <p:inputText id="subdomain" styleClass="ajax-val" value="#{createCompany.company.subdomain}" required="true" requiredMessage="Subdomain is required">
+                                                        <p:ajax process="@this,subdomain" event="keyup" listener="#{ajaxValidUtil.subdomainAvailable(component)}" update="subdomain-val create-btn"/>
+                                                    </p:inputText>
+                                                    <h:outputText id="subdomain-val" value="#{ajaxValidUtil.subdomainFree ? 'Available' : 'Not Available'}" styleClass="#{ajaxValidUtil.subdomainFree ? 'positive-field' : 'negative-field'}"/>                                                       
+                                                </td>
+                                            </tr>
+                                        </table>
 
                                         <p:spacer width="100%" height="20px"/>
 
@@ -206,7 +212,8 @@
                                                          onclick="blockui1.block();"
                                                          oncomplete="blockui1.unblock();"
                                                          update=":form:growl"
-                                                         process="@this,:form:switch :form:switch-east"/>
+                                                         process="@this,:form:switch :form:switch-east"
+                                                         disabled="#{!ajaxValidUtil.subdomainFree}"/>
 
                                         <pe:blockUI target="create-btn" widgetVar="blockui1">  
                                             <div class="windows8-18-b">

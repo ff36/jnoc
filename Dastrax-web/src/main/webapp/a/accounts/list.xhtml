@@ -164,7 +164,7 @@
 
                 </pe:layoutPane>
 
-                <pe:layoutPane id="east" position="east" resizeWhileDragging="true" size="300">
+                <pe:layoutPane id="east" position="east" resizeWhileDragging="true" size="350">
                     <p:spacer width="100%" height="45"/>
 
                     <p:contextMenu for=":form:east" rendered="#{permissionUtil.hasPermission('account:edit')}">
@@ -240,7 +240,7 @@
                                                 <tr>
                                                     <td>
                                                         <p:inplace id="permsAIP" styleClass="inplace" editor="true" label="#{perm ne null ? perm.name ne null ? perm.name : 'New Empty Permission' : 'No Permissions'}" disabled="#{!permissionUtil.hasPermission('permission:edit')}">  
-                                                            <p:ajax event="save" listener="#{subjects.savePermissions()}" update=":form:accounts-table :form:growl" oncomplete="accountsTable.filter();"/>
+                                                            <p:ajax event="save" listener="#{subjects.savePermissions()}" update=":form:accounts-table :form:growl perms-list" oncomplete="accountsTable.filter();"/>
                                                             <h:inputText value="#{perm.name}"/>
                                                         </p:inplace> 
                                                     </td>
@@ -302,7 +302,7 @@
                                                 <tr>
                                                     <td>
                                                         <p:inplace id="addressAIP" styleClass="inplace" editor="true" label="#{address.buildCompleteAddress() ne '' ? address.buildCompleteAddress() : 'Not Available'}" disabled="#{!permissionUtil.hasPermission('account:edit')}">  
-                                                            <p:ajax event="save" listener="#{subjects.saveAddress()}" update=":form:accounts-table :form:growl" oncomplete="accountsTable.filter();"/>
+                                                            <p:ajax event="save" listener="#{subjects.saveAddress()}" update=":form:accounts-table :form:growl address-list" oncomplete="accountsTable.filter();"/>
 
                                                             <p:inputText id="add-1" value="#{address.lineTwo}"/>
                                                             <p:watermark value="Street" for="add-1"/>
@@ -334,7 +334,7 @@
                                                     <td class="field-label-2">#{telephone.type eq null ? 'Telephone' : telephone.type}:</td>
                                                     <td>
                                                         <p:inplace id="telephoneAIP" styleClass="inplace" editor="true" label="#{telephone.internationalFormat() eq null ? 'Not Available' : telephone.internationalFormat()}" disabled="#{!permissionUtil.hasPermission('account:edit')}">  
-                                                            <p:ajax event="save" listener="#{subjects.saveTelephone()}" update=":form:accounts-table :form:growl" oncomplete="accountsTable.filter();"/>
+                                                            <p:ajax event="save" listener="#{subjects.saveTelephone()}" update=":form:accounts-table :form:growl telephone-list" oncomplete="accountsTable.filter();"/>
                                                             <ez:telephone type="#{telephone.type}"
                                                                           coutry="#{telephone.country}"                     
                                                                           number="#{telephone.localNumber}"/>  

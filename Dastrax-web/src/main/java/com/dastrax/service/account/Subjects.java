@@ -20,6 +20,7 @@ import com.dastrax.service.util.JsfUtil;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -235,6 +236,13 @@ public class Subjects implements Serializable {
      * Update address
      */
     public void saveAddress() {
+        Iterator<Address> i = selectedSubjects[0].getContact().getAddresses().iterator();
+        while (i.hasNext()) {
+            Address a = i.next();
+            if (a.buildCompleteAddress().isEmpty() | a.buildCompleteAddress().equals("Not Available")) {
+                i.remove();
+            }
+        }
         subjectDAO.updateAddress(selectedSubjects[0]);
         JsfUtil.addSuccessMessage("Address Updated");
     }
@@ -243,6 +251,13 @@ public class Subjects implements Serializable {
      * Update permissions
      */
     public void savePermissions() {
+        Iterator<Permission> i = selectedSubjects[0].getPermissions().iterator();
+        while (i.hasNext()) {
+            Permission p = i.next();
+            if (p.getName().isEmpty()) {
+                i.remove();
+            }
+        }
         subjectDAO.updatePermissions(selectedSubjects[0]);
         JsfUtil.addSuccessMessage("Permissions Updated");
     }
@@ -251,6 +266,13 @@ public class Subjects implements Serializable {
      * Save telephone numbers
      */
     public void saveTelephone() {
+        Iterator<Telephone> i = selectedSubjects[0].getContact().getTelephones().iterator();
+        while (i.hasNext()) {
+            Telephone t = i.next();
+            if (t.getLocalNumber().isEmpty()) {
+                i.remove();
+            }
+        }
         subjectDAO.updateTelephone(selectedSubjects[0]);
         JsfUtil.addSuccessMessage("Telephone Updated");
     }

@@ -8,6 +8,7 @@ import com.dastrax.app.util.DnsUtil;
 import com.dastrax.per.dao.core.SubjectDAO;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.component.UIInput;
@@ -26,10 +27,14 @@ public class AjaxValidUtil {
 
     // Variables----------------------------------------------------------------
     private List<String> emails;
-    private boolean emailFree = false;
     private List<String> subdomains;
+    private boolean emailFree = false;
+    private boolean subdomainFree = false;
     private final String emailRegex = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?";
+    private final String subdomainRegex = "[a-z0-9]{2,20}";
+    private final String context = ResourceBundle.getBundle("Config").getString("BaseUrl");
 
+    
     // EJB----------------------------------------------------------------------
     @EJB
     DnsUtil dnsUtil;
@@ -39,6 +44,10 @@ public class AjaxValidUtil {
     // Getters------------------------------------------------------------------
     public boolean isEmailFree() {
         return emailFree;
+    }
+
+    public boolean isSubdomainFree() {
+        return subdomainFree;
     }
 
     // Methods------------------------------------------------------------------
@@ -73,6 +82,35 @@ public class AjaxValidUtil {
             emailFree = collection.isEmpty();
         } else {
             emailFree = false;
+        }
+    }
+    
+    /**
+     * Determines whether the query string is both a valid sub-domain and if
+     * the sub-domain is already registered of if its still available. 
+     * @param event
+     */
+    public void subdomainAvailable(UIInput event) {
+
+        String query = (String)event.getValue();
+        subdomainFree = false;
+        List<String> collection = new ArrayList<>();
+        // Make sure its a valid email
+        if (query != null & query.matches(subdomainRegex)) {
+            // Check query against existing list
+            for (String subdomain : subdomains) {
+                String q = query + "." + context;
+                if (subdomain.toLowerCase().equals(q.toLowerCase())) {
+                    collection.add(subdomain);
+                }
+                // Exit the loop if we have a match
+                if (!collection.isEmpty()) {
+                    break;
+                }
+            }
+            subdomainFree = collection.isEmpty();
+        } else {
+            subdomainFree = false;
         }
     }
 }
