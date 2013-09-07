@@ -36,6 +36,10 @@ public class Email {
     public Email() {
     }
 
+    public Email(String recipientEmail) {
+        this.recipientEmail = recipientEmail;
+    }
+
     // Getters------------------------------------------------------------------
     public String getRecipientEmail() {
         return recipientEmail;

@@ -21,7 +21,7 @@
                     <td class="nav-2">
                         <!-- NAV BAR -->
                         <p:menubar id="nav-bar" autoDisplay="false">  
-                            <p:menuitem value="Dasboard" url="#{request.contextPath}/a/dashboard.jsf"/>
+                            <p:menuitem value="Dashboard" url="#{request.contextPath}/a/dashboard.jsf"/>
                             <p:menuitem value="Tickets" url="#{request.contextPath}/a/tickets/manual/list.jsf?filter=14" rendered="#{permissionUtil.hasPermission('ticket:access')}"/>  
                             <p:menuitem value="Accounts" url="#{request.contextPath}/a/accounts/list.jsf" rendered="#{permissionUtil.hasPermission('account:access')}"/>
                             <p:menuitem value="Companies" url="#{request.contextPath}/a/companies/list.jsf" rendered="#{permissionUtil.hasPermission('company:access')}"/>

@@ -31,7 +31,6 @@ import javax.ejb.EJB;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
-import javax.validation.constraints.Pattern;
 import org.apache.shiro.SecurityUtils;
 
 /**
@@ -124,7 +123,8 @@ public class Settings implements Serializable {
     }
 
     /**
-     * Process change of password when it is accessed from the authenticated domain
+     * Process change of password when it is accessed from the authenticated
+     * domain
      */
     public void savePassword() {
 
@@ -153,7 +153,7 @@ public class Settings implements Serializable {
         // Check to make sure the email is available
         if (subjectDAO.findSubjectByEmail(helper.newEmail) == null) {
             // Persist the email params
-            EmailParam ep = sendEmail(subject, DastraxCst.EmailTemplate.CHANGE_EMAIL.toString());
+            EmailParam ep = sendEmail(subject, DastraxCst.EmailTemplate.CHANGE_EMAIL.toString(), new Email(helper.newEmail));
             emailParamDAO.create(ep);
 
             JsfUtil.addSuccessMessage("An email containing instructions on how to complete the process has been sent to " + ep.getEmail());
@@ -169,9 +169,9 @@ public class Settings implements Serializable {
         // Check the account is registered
         Subject s = subjectDAO.findSubjectByEmail(helper.email);
         if (s != null) {
-            emailParamDAO.create(
-                    sendEmail(s, DastraxCst.EmailTemplate.CHANGE_PASSWORD.toString())
-                    );
+            EmailParam ep = sendEmail(s, DastraxCst.EmailTemplate.CHANGE_PASSWORD.toString(), new Email());
+            emailParamDAO.create(ep);
+            
             JsfUtil.addSuccessMessage("An email containing instructions on how to complete the process has been sent to " + s.getEmail());
         } else {
             JsfUtil.addWarningMessage(helper.email + " is not a registered account.");
@@ -215,13 +215,13 @@ public class Settings implements Serializable {
      * @throws Exception
      * @throws AmazonClientException
      */
-    private EmailParam sendEmail(Subject subject, String template) {
-
-        // Build an new email
-        Email email = new Email();
+    private EmailParam sendEmail(Subject subject, String template, Email email) {
 
         // Set the recipient
-        email.setRecipientEmail(subject.getEmail().toLowerCase());
+        if (email.getRecipientEmail() == null) {
+            email.setRecipientEmail(subject.getEmail().toLowerCase());
+        }
+
         // Set the persistable params
         email.getParam().setEmail(helper.newEmail);
         email.getParam().setUid(subject.getUid());
@@ -329,7 +329,6 @@ public class Settings implements Serializable {
         private EmailParam emailParam;
         private Address address = new Address();
         private Telephone telephone = new Telephone();
-        
 
         // Constructors-------------------------------------------------------------
         public Helper() {
@@ -419,22 +418,22 @@ public class Settings implements Serializable {
 
         // Methods------------------------------------------------------------------
         /**
-         * The address list component used to manage collections requires this 
+         * The address list component used to manage collections requires this
          * method to reset the address object each time a new one is created.
          */
         public void addAddress() {
             subject.getContact().getAddresses().add(address);
             address = new Address();
         }
-        
+
         /**
-         * The telephone list component used to manage collections requires this 
+         * The telephone list component used to manage collections requires this
          * method to reset the telephone object each time a new one is created.
          */
         public void addTelephone() {
             subject.getContact().getTelephones().add(telephone);
             telephone = new Telephone();
         }
-        
+
     }
 }

@@ -92,6 +92,7 @@ public class AjaxValidUtil {
      */
     public void subdomainAvailable(UIInput event) {
 
+
         String query = (String)event.getValue();
         subdomainFree = false;
         List<String> collection = new ArrayList<>();
@@ -99,7 +100,7 @@ public class AjaxValidUtil {
         if (query != null & query.matches(subdomainRegex)) {
             // Check query against existing list
             for (String subdomain : subdomains) {
-                String q = query + "." + context;
+                String q = query + "." + context + ".";
                 if (subdomain.toLowerCase().equals(q.toLowerCase())) {
                     collection.add(subdomain);
                 }
