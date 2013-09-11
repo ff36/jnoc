@@ -145,7 +145,19 @@
             <from-outcome>access-list-dms-tickets-page</from-outcome>
             <to-view-id>/a/tickets/dms/list.jsf</to-view-id>
             <redirect />
-        </navigation-case>    
+        </navigation-case>  
+        
+        <!-- monitor -->
+        <navigation-case>
+            <from-outcome>access-basic-monitor-page</from-outcome>
+            <to-view-id>/a/monitor/basic.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>access-advanced-monitor-page</from-outcome>
+            <to-view-id>/a/monitor/advanced.jsf</to-view-id>
+            <redirect />
+        </navigation-case>  
 
     </navigation-rule>
     

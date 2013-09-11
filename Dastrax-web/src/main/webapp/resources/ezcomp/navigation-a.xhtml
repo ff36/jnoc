@@ -26,6 +26,7 @@
                             <p:menuitem value="Accounts" url="#{request.contextPath}/a/accounts/list.jsf" rendered="#{permissionUtil.hasPermission('account:access')}"/>
                             <p:menuitem value="Companies" url="#{request.contextPath}/a/companies/list.jsf" rendered="#{permissionUtil.hasPermission('company:access')}"/>
                             <p:menuitem value="Sites" url="#{request.contextPath}/a/sites/list.jsf" rendered="#{permissionUtil.hasPermission('site:access')}"/>
+                            <p:menuitem value="Monitor" url="#{request.contextPath}/a/monitor/basic.jsf" rendered="#{permissionUtil.hasPermission('monitor:access')}"/>
                         </p:menubar>
                     </td>
                     <td class="nav-3">
