@@ -114,6 +114,30 @@
                                 </td>
                             </tr>
                         </ui:fragment>
+                        <ui:fragment rendered="#{permissionUtil.hasPermission('monitor-basic:access')}">
+                            <tr>
+                                <td>
+                                    <h3>Monitor</h3>
+                                </td>
+                            </tr>
+                            <tr class="hover">
+                                <td>
+                                    <p:commandLink value="View monitor" action="access-basic-monitor-page" process="@this" type="button"/>
+                                </td>
+                            </tr>
+                        </ui:fragment>
+                        <ui:fragment rendered="#{permissionUtil.hasPermission('report-basic:access')}">
+                            <tr>
+                                <td>
+                                    <h3>Report</h3>
+                                </td>
+                            </tr>
+                            <tr class="hover">
+                                <td>
+                                    <p:commandLink value="View reporting" action="access-basic-report-page" process="@this" type="button"/>
+                                </td>
+                            </tr>
+                        </ui:fragment>
                     </table>
 
                 </pe:layoutPane>

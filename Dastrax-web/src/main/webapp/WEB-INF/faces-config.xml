@@ -158,6 +158,13 @@
             <to-view-id>/a/monitor/advanced.jsf</to-view-id>
             <redirect />
         </navigation-case>  
+        
+        <!-- report -->
+        <navigation-case>
+            <from-outcome>access-basic-report-page</from-outcome>
+            <to-view-id>/a/report/basic.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
 
     </navigation-rule>
     
@@ -222,7 +229,26 @@
             <from-outcome>access-create-ticket-page</from-outcome>
             <to-view-id>/b/tickets/manual/create.jsf</to-view-id>
             <redirect />
-        </navigation-case>        
+        </navigation-case>   
+        
+        <!-- monitor -->
+        <navigation-case>
+            <from-outcome>access-basic-monitor-page</from-outcome>
+            <to-view-id>/b/monitor/basic.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>access-advanced-monitor-page</from-outcome>
+            <to-view-id>/b/monitor/advanced.jsf</to-view-id>
+            <redirect />
+        </navigation-case>  
+        
+        <!-- report -->
+        <navigation-case>
+            <from-outcome>access-basic-report-page</from-outcome>
+            <to-view-id>/b/report/basic.jsf</to-view-id>
+            <redirect />
+        </navigation-case>     
 
     </navigation-rule>
     
@@ -276,6 +302,25 @@
             <to-view-id>/c/tickets/manual/create.jsf</to-view-id>
             <redirect />
         </navigation-case>        
+
+        <!-- monitor -->
+        <navigation-case>
+            <from-outcome>access-basic-monitor-page</from-outcome>
+            <to-view-id>/c/monitor/basic.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>access-advanced-monitor-page</from-outcome>
+            <to-view-id>/c/monitor/advanced.jsf</to-view-id>
+            <redirect />
+        </navigation-case>  
+        
+        <!-- report -->
+        <navigation-case>
+            <from-outcome>access-basic-report-page</from-outcome>
+            <to-view-id>/c/report/basic.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
 
     </navigation-rule>
     

@@ -344,7 +344,7 @@ TABLE.side-menu TBODY TR.hover TD:hover
 }
 .ui-treetable-data .ui-state-highlight TD
 {
-	background-color:rgba(197, 228, 244, 0.3);
+	background-color: rgba(197, 228, 244, 0.3);
 	border: 1px solid rgba(197, 228, 244, 0.3);
 }
 /*SUB TABLE*/
@@ -731,7 +731,21 @@ TR.comment-table-seperator TD
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#c9de96', endColorstr='#398235',GradientType=0 );
 	/*IE6-9*/
 	padding-right: 10px;
+	padding-left: 10px;
+	padding-top: 2px;
+	padding-bottom: 2px;
 	font-size: 7.4pt;
 	font-weight: bold;
-	padding-top: 2px;
+}
+/*REPORT*/
+.select-report-metrics
+{
+	text-align: center;
+	color: #858585;
+	font-size: 17pt;
+}
+.report-title
+{
+	font-size: 12pt;
+	font-weight: bold;
 }
