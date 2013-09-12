@@ -190,6 +190,18 @@ public class FilterUtil {
             }
             filters.put("site", sites);
         }
+        // client access
+        if (SecurityUtils.getSubject().hasRole(DastraxCst.Metier.CLIENT.toString())) {
+            Subject s = subjectDAO.findSubjectByUid(
+                    SecurityUtils.getSubject().getPrincipals()
+                    .asList().get(1).toString());
+            List<String> sites = new ArrayList<>();
+            // Add the Client sites
+            for (Site site: s.getCompany().getClientSites()) {
+                sites.add(site.getId());
+            }
+            filters.put("site", sites);
+        }
         return filters;
     }
 
