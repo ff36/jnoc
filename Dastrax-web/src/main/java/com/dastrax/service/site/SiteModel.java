@@ -102,6 +102,7 @@ public class SiteModel extends LazyDataModel<Site> {
                     switch (key) {
                         case "company":                         
                             rootPredicate.add(builder.equal(site.join(Site_.var, JoinType.LEFT).get(Company_.id), literal));
+                            rootPredicate.add(builder.equal(site.join(Site_.client, JoinType.LEFT).get(Company_.id), literal));
                             break;
                         default:
                             // Don't add any predicate by default

@@ -23,9 +23,12 @@
                     <td class="nav-2">
                         <!-- NAV BAR -->
                         <p:menubar id="nav-bar" autoDisplay="false">  
-                            <p:menuitem value="Tickets" url="#{request.contextPath}/b/tickets/manual/list.jsf" rendered="#{permissionUtil.hasPermission('ticket:access')}"/>  
+                            <p:menuitem value="Tickets" url="#{request.contextPath}/b/tickets/manual/list.jsf" rendered="#{permissionUtil.hasPermission('ticket:access')}"/>
+                            <p:menuitem value="DMST" url="#{request.contextPath}/b/tickets/dms/list.jsf" rendered="#{permissionUtil.hasPermission('dmsticket:access')}"/>
                             <p:menuitem value="Accounts" url="#{request.contextPath}/b/accounts/list.jsf" rendered="#{permissionUtil.hasPermission('account:access')}"/>
                             <p:menuitem value="Clients" url="#{request.contextPath}/b/companies/list.jsf" rendered="#{permissionUtil.hasPermission('company:access')}"/>
+                            <p:menuitem value="Monitor" url="#{request.contextPath}/b/monitor/basic.jsf" rendered="#{permissionUtil.hasPermission('monitor-basic:access')}"/>
+                            <p:menuitem value="Report" url="#{request.contextPath}/b/report/basic.jsf" rendered="#{permissionUtil.hasPermission('report-basic:access')}"/>
                         </p:menubar>
                     </td>
                     <td class="nav-3">

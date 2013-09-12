@@ -1,0 +1,330 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:ez="http://xmlns.jcp.org/jsf/composite/ezcomp"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <h:outputStylesheet name="css/auth-b.css"/>
+        <h:outputStylesheet name="css/common.css"/>
+        <h:outputScript library="js" name="jqplot.canvasAxisTickRenderer.min.js" />
+        <h:outputScript library="js" name="jqplot.dateAxisRenderer.min.js" />
+        <script src="http://maps.google.com/maps/api/js?sensor=true" type="text/javascript"></script>
+        <link rel="shortcut icon" type="image/png" href="#{request.contextPath}/resources/graphics/favicon.ico" />
+        <title>#{webBundle['default.page.title']} | #{webBundle['var.monitor.advanced.page.title']}</title>
+    </h:head>
+
+    <h:body>
+
+        #{permissionUtil.hasPagePermission('monitor-adv:access')}
+
+        <h:form id="form">
+
+            <pe:ajaxErrorHandler />
+
+            <p:growl id="growl" 
+                     redisplay="false"
+                     showDetail="false" 
+                     sticky="false" />
+
+            <ez:navigation-b/>
+
+            <pe:layout stateCookie="#{config.ProjectStage ne 'DEV'}" widgetVar="layourWgt" >
+
+                <pe:layoutPane id="west" position="west" resizeWhileDragging="true" size="250">
+                    <p:spacer width="100%" height="45"/>
+
+                    <p:spacer width="100%" height="20"/>
+
+                    <p:commandButton id="basic-monitor-btn" value="Return to Basic Monitor" action="access-basic-monitor-page" process="@this,:form:basic-monitor-btn"/>
+
+                    <p:spacer width="100%" height="10"/>
+
+                    <p:panel id="option-panel-3" styleClass="ticket-options">
+
+                        <h:panelGrid id="option-grid-3" columns="1">
+
+                            <h:outputText value="Site" styleClass="super-field-label"/>
+                            <p:selectOneMenu value="#{advMonitor.selectedSite}"
+                                             effect="fade"
+                                             style="width: 200px"
+                                             converter="siteCvt">
+                                <f:selectItems value="#{advMonitor.sites}" var="site" itemLabel="#{site.name}" itemValue="#{site}"/>
+                                <p:ajax listener="#{advMonitor.selectSite()}" update=":form:tree-panel :form:details :form:charts :form:devices"/>
+                            </p:selectOneMenu>
+
+                        </h:panelGrid>
+
+                    </p:panel>
+
+                    <p:spacer width="100%" height="10"/>
+
+                    <ui:fragment id="master-site-status">
+
+                        <div class="site-status-bar">
+                            <table width="100%">
+                                <tr>
+                                    <td>
+                                        <p:graphicImage value="#{pathUtil.s3Icon('white/air_signal_icon_24.png')}"/>
+                                    </td>
+                                    <td>
+                                        <h:outputText value="Fully operational"/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                    </ui:fragment>
+
+                    <p:spacer width="100%" height="10"/>
+
+                    <p:panel id="tree-panel" styleClass="ticket-options">
+
+                        <h:panelGrid id="tree-grid" columns="1">
+
+                            <h:outputText value="Devices" styleClass="super-field-label"/>
+
+                            <p:treeTable value="#{advMonitor.rootNode}" var="tree" id="tree" selectionMode="single" selection="#{advMonitor.selectedNode}" styleClass="main-tree">
+
+                                <p:ajax event="select" listener="#{advMonitor.onNodeSelect}" update=":form:charts :form:devices" />
+                                <p:ajax event="unselect" listener="#{advMonitor.onNodeSelect}" update=":form:charts :form:devices" />
+
+                                <p:column>  
+                                    <h:outputText value="#{tree.device}" />  
+                                </p:column>
+
+                                <p:column style="width: 30px">  
+                                    <div class="monitor-device-status">
+                                        <p:graphicImage value="#{pathUtil.s3Icon('white/checkmark_icon_16.png')}"/>
+                                    </div>
+                                </p:column>
+
+                            </p:treeTable>
+
+                        </h:panelGrid>
+
+                    </p:panel>
+
+                </pe:layoutPane>
+
+                <pe:layoutPane id="center" position="center" resizeWhileDragging="true">
+                    <pe:layoutPane id="center-north" resizeWhileDragging="true" position="north" size="250">  
+
+                        <p:spacer width="100%" height="45"/>
+
+                        <p:panel id="devices" styleClass="empty-panel">
+
+                            <h2><h:outputText value="Please select a device to monitor" rendered="#{advMonitor.selectedNode eq null}"/></h2>
+
+                            <ui:fragment rendered="#{advMonitor.selectedNode ne null}">
+
+                                <p:toolbar>  
+                                    <p:toolbarGroup align="left">  
+
+                                        <p:menuButton value="Actions">  
+                                            <p:menuitem value="Connect (SSH)" disabled="true"/>  
+                                            <p:menuitem value="Get System Log" disabled="true"/>
+                                            <p:separator /> 
+                                            <p:menuitem value="Reboot" disabled="true"/>
+                                            <p:menuitem value="Stop" disabled="true"/>
+                                            <p:menuitem value="Start" disabled="true"/>  
+                                        </p:menuButton> 
+
+                                        <p:separator /> 
+
+                                        <p:menuButton value="Schedule">  
+                                            <p:menuitem value="Maintanance" disabled="true"/>   
+                                        </p:menuButton> 
+
+                                    </p:toolbarGroup>  
+
+                                </p:toolbar>
+
+                                <p:spacer width="100%" height="10"/>
+
+                                <h:panelGrid columns="2">
+
+                                    <h:outputText value="Device:" styleClass="field-label-3"/>
+                                    <h:outputText value="#{advMonitor.selectedNode.data.device}"/>
+
+                                    <h:outputText value="Band:" styleClass="field-label-3"/>
+                                    <h:outputText value="#{advMonitor.selectedNode.data.band}"/>
+
+                                    <h:outputText value="Firmware:" styleClass="field-label-3"/>
+                                    <h:outputText value="#{advMonitor.selectedNode.data.firmware}"/>
+
+                                    <h:outputText value="Serial:" styleClass="field-label-3"/>
+                                    <h:outputText value="#{advMonitor.selectedNode.data.serial}"/>
+
+                                    <h:outputText value="Note:" styleClass="field-label-3"/>
+
+                                </h:panelGrid>
+
+                            </ui:fragment>
+
+                        </p:panel>
+
+                    </pe:layoutPane>
+
+                    <pe:layoutPane id="center-center" resizeWhileDragging="true"  position="center">  
+
+                        <p:panel id="charts" styleClass="empty-panel">
+
+                            <h2><h:outputText value="Please select a device to monitor" rendered="#{advMonitor.selectedNode eq null}"/></h2>
+
+                            <ui:fragment rendered="#{advMonitor.selectedNode ne null}">
+
+                                <div class="device-status-bar align-right">
+                                    <h:outputText value="#{advMonitor.selectedNode.data.device} Operational"/>
+                                </div>
+
+                                <p:spacer width="100%" height="10"/>
+
+                                <table width="100%">
+                                    <tr>
+                                        <td>
+                                            <p:lineChart value="#{advMonitor.cpuUtil}" zoom="true" animate="true"  
+                                                         title="CPU Utilization (%)" minY="0" style="height:200px" 
+                                                         showMarkers="false" extender="chartExtender"/>
+                                        </td>
+                                        <td>
+                                            <p:lineChart value="#{advMonitor.diskSpace}" zoom="true" animate="true"  
+                                                         title="Disk Space (GB)" minY="0" maxY="500" style="height:200px" 
+                                                         showMarkers="false" extender="chartExtender"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <p:lineChart value="#{advMonitor.memory}" zoom="true" animate="true"  
+                                                         title="Memory (%)" minY="0" style="height:200px" 
+                                                         showMarkers="false" extender="chartExtender"/>
+                                        </td>
+                                        <td>
+                                            <p:lineChart value="#{advMonitor.networkIn}" zoom="true" animate="true"  
+                                                         title="Network In (Bytes)" minY="0" style="height:200px" 
+                                                         showMarkers="false" extender="chartExtender"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <p:lineChart value="#{advMonitor.networkOut}" zoom="true" animate="true"  
+                                                         title="Network Out (Bytes)" minY="0" style="height:200px" 
+                                                         showMarkers="false" extender="chartExtender"/>
+                                        </td>
+                                        <td>
+                                            <p:lineChart value="#{advMonitor.cpuTemp}" zoom="true" animate="true"  
+                                                         title="CPU Temp (F)" style="height:200px" 
+                                                         showMarkers="false" extender="chartExtender"/>
+                                        </td>
+                                    </tr>
+                                </table>
+
+                            </ui:fragment>
+
+                            <script type="text/javascript">
+                                function chartExtender() {
+                                    this.cfg.axes = {
+                                        xaxis: {
+                                            renderer: $.jqplot.DateAxisRenderer,
+                                            rendererOptions: {
+                                                tickRenderer: $.jqplot.CanvasAxisTickRenderer
+                                            },
+                                            tickOptions: {
+                                                fontSize: '10pt',
+                                                fontFamily: 'Tahoma',
+                                                angle: -40
+                                            }
+                                        },
+                                        yaxis: {
+                                            min: 0
+                                        }
+                                    };
+                                    this.cfg.axes.xaxis.ticks = this.cfg.categories;
+                                }
+                            </script>
+
+                        </p:panel>
+
+                    </pe:layoutPane>
+
+                </pe:layoutPane>
+
+                <pe:layoutPane id="east" position="east" resizeWhileDragging="true" size="300">
+                    <p:spacer width="100%" height="45"/>
+
+                    <p:panel id="details" styleClass="empty-panel">
+
+                        <table width="100%">
+                            <tr>
+                                <td colspan="2">
+                                    <H2>
+                                        <h:outputText value="#{advMonitor.selectedSite.name}"/>
+                                    </H2>
+                                </td>
+                            </tr>
+                            <tr class="detail-divider">
+                                <td>Location</td>
+                                <td></td>
+                            </tr>
+                            <tr class="table-spacer">
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <H2>
+                                        <p:gmap center="39.0, -102.0" zoom="2" type="HYBRID" style="width:280px;height:200px" />
+                                    </H2>
+                                </td>
+                            </tr>
+                            <tr class="detail-divider">
+                                <td>Relationship</td>
+                                <td></td>
+                            </tr>
+                            <tr class="table-spacer">
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td class="field-label-2">VAR:</td>
+                                <td>#{advMonitor.selectedSite.var.name}</td>
+                            </tr>
+                            <tr>
+                                <td class="field-label-2">Client:</td>
+                                <td>#{advMonitor.selectedSite.client.name}</td>
+                            </tr>                               
+                            <tr class="detail-divider">
+                                <td>Details</td>
+                                <td></td>
+                            </tr>
+                            <tr class="table-spacer">
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td class="field-label-2">DMS IP:</td>
+                                <td>#{advMonitor.selectedSite.dmsIP}</td>
+                            </tr>                                                              
+                        </table>
+
+                    </p:panel>
+
+                </pe:layoutPane>
+
+            </pe:layout>
+
+        </h:form>
+
+        <!-- JIRA -->
+        <script type="text/javascript" src="https://dastrax.atlassian.net/s/d41d8cd98f00b204e9800998ecf8427e/en_US-hgwqx7-1988229788/6132/31/1.4.0-m5/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?collectorId=5962a16e"></script>
+
+
+    </h:body>
+
+</html>
+

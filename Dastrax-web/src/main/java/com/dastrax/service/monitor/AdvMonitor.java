@@ -137,8 +137,10 @@ public class AdvMonitor implements Serializable {
             sites = s.getCompany().getClientSites();
         }
         // set the selected site as the first in the list
-        selectedSite = sites.get(0);
-        selectSite();
+        if (!sites.isEmpty()) {
+          selectedSite = sites.get(0);
+          selectSite();
+        }
     }
     
     public void selectSite() {

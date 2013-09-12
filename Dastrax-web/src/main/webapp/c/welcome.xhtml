@@ -40,7 +40,7 @@
 
                 <h:panelGrid columns="3">
                     <p:commandLink action="access-basic-monitor-page" type="button" ajax="false" rendered="#{permissionUtil.hasPermission('monitor-basic:access')}">
-                        <p:graphicImage value="#{pathUtil.s3Image('')}"/>
+                        <p:graphicImage value="#{pathUtil.s3Image('tile_noc_active.svg')}"/>
                     </p:commandLink>
                     <p:graphicImage value="#{pathUtil.s3Image('tile_noc_inactive.svg')}" rendered="#{!permissionUtil.hasPermission('monitor-basic:access')}"/>
                     

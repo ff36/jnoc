@@ -225,8 +225,8 @@ public class DmsTicketUtil {
             dmsT.setOpenEpoch(Calendar.getInstance().getTimeInMillis());
             dmsT.setPriority("Sev 1");
             dmsT.setStatus(DastraxCst.TicketStatus.OPEN.toString());
-            dmsT.setSite(jm.getIp());
-            dmsT.setTitle(site.getName() + " DMS-" + site.getDmsType() + " (" + jm.getIp() + ") detected a new \'" + jm.getName() + "\' alarm.");
+            dmsT.setSite(site.getId());
+            dmsT.setTitle(site.getName() + " (" + jm.getIp() + ") detected a new \'" + jm.getName() + "\' alarm.");
 
             // Persist the ticket and alarm in seperate trx
             dmsT = persistTicket(dmsT);

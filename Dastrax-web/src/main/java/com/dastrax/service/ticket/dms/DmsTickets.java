@@ -31,7 +31,7 @@ import org.apache.shiro.SecurityUtils;
 import org.primefaces.event.RowEditEvent;
 
 /**
- * 
+ *
  * @version Build 2.0.0
  * @since Aug 10, 2013
  * @author Tarka L'Herpiniere <info@tarka.tv>
@@ -233,12 +233,32 @@ public class DmsTickets implements Serializable {
      */
     public void tempFilterApply(int filterId) throws IOException {
         ExternalContext ectx = FacesContext.getCurrentInstance().getExternalContext();
-        String url;
-        if (filterId == 0) {
-            url = ectx.getRequestContextPath() + "/a/tickets/dms/list.jsf";
-        } else {
-            url = ectx.getRequestContextPath() + "/a/tickets/dms/list.jsf?filter=" + filterId;
+        String url = null;
+        // Admin
+        if (SecurityUtils.getSubject().hasRole(DastraxCst.Metier.ADMIN.toString())) {
+            if (filterId == 0) {
+                url = ectx.getRequestContextPath() + "/a/tickets/dms/list.jsf";
+            } else {
+                url = ectx.getRequestContextPath() + "/a/tickets/dms/list.jsf?filter=" + filterId;
+            }
         }
+        // VAR
+        if (SecurityUtils.getSubject().hasRole(DastraxCst.Metier.VAR.toString())) {
+            if (filterId == 0) {
+                url = ectx.getRequestContextPath() + "/b/tickets/dms/list.jsf";
+            } else {
+                url = ectx.getRequestContextPath() + "/b/tickets/dms/list.jsf?filter=" + filterId;
+            }
+        }
+        // Client
+        if (SecurityUtils.getSubject().hasRole(DastraxCst.Metier.CLIENT.toString())) {
+            if (filterId == 0) {
+                url = ectx.getRequestContextPath() + "/c/tickets/dms/list.jsf";
+            } else {
+                url = ectx.getRequestContextPath() + "/c/tickets/dms/list.jsf?filter=" + filterId;
+            }
+        }
+
         FacesContext.getCurrentInstance().getExternalContext().redirect(url);
     }
 
