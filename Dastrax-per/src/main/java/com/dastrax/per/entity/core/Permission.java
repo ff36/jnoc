@@ -14,6 +14,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.TableGenerator;
 import javax.persistence.Version;
+import javax.validation.constraints.Pattern;
 
 /**
  *
@@ -38,6 +39,7 @@ public class Permission implements Serializable {
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "Permission_Gen")
     @Id
     private String id;
+    @Pattern(regexp = "(([a-z]+([,-][a-z]+)*|\\*)(:([a-z]+)([,-][a-z]+)*|\\*)*)", message = "Invalid Permission")
     private String name;
 
     // Constructors-------------------------------------------------------------
