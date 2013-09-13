@@ -39,7 +39,7 @@ public class Permission implements Serializable {
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "Permission_Gen")
     @Id
     private String id;
-    @Pattern(regexp = "(([a-z]+([,-][a-z]+)*|\\*)(:([a-z]+)([,-][a-z]+)*|\\*)*)", message = "Invalid Permission")
+    @Pattern(regexp = "([a-z]+([,-][a-z]+)*|\\*)(:([a-z]+([,-][a-z]+))*|\\*)*", message = "Invalid Permission")
     private String name;
 
     // Constructors-------------------------------------------------------------
