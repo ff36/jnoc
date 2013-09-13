@@ -156,8 +156,9 @@ public class AdvMonitor implements Serializable {
         biu1.setExpanded(true);
           
         //MDBU  
-        TreeNode mdbu1 = new DefaultTreeNode(new Inventory("MDBU1", "700 Public Safety / LAPD", "5.7", "03165M01657509020007", true), biu1);
-        TreeNode mdbu3 = new DefaultTreeNode(new Inventory("MDBU3", "800 Public Safety / 800PS", "5.7", "03165M01657509030004", true), biu1);
+        TreeNode mdbu1 = new DefaultTreeNode(new Inventory("MDBU1", "700 Public Safety  / LAPD, 700 Public Safety / LAFD, 850 Cellular / ATT, 850 Cellular / Verizon", "5.7", "03165M01657509020007", true), biu1);
+        TreeNode mdbu2 = new DefaultTreeNode(new Inventory("MDBU2", "800 Public Safety / 800PS, 800 Public Safety / iDEN 800, Paging / iDEN 900, 900I / Paging", "5.7", "03165M01657509030004", true), biu1);
+        TreeNode mdbu3 = new DefaultTreeNode(new Inventory("MDBU3", "1900 PCS", "5.7", "03165M01657509030004", true), biu1);
         TreeNode mdbu4 = new DefaultTreeNode(new Inventory("MDBU4", "AWS-1", "5.7", "02913M01657709020006", true), biu1);
           
         //ODU  

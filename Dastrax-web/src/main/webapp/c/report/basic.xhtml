@@ -79,7 +79,8 @@
                                          emptyMessage="#{webBundle['empty.datatable']}"
                                          selection="#{basicReport.selectedReports}"
                                          value="#{basicReport.reportModel}"
-                                         styleClass="main-table"> 
+                                         styleClass="main-table"
+                                         filteredValue="#{basicReport.filteredReports}"> 
 
                                 <p:ajax event="rowSelectCheckbox"
                                         listener="#{basicReport.selectEvent}"
@@ -90,11 +91,18 @@
 
                                 <p:column selectionMode="multiple" style="width:18px" />
 
-                                <p:column headerText="Site">  
+                                <p:column headerText="Site"
+                                          filterBy="#{metrics.site.name}"
+                                          filterMatchMode="contains"
+                                          sortBy="#{metrics.site.name}"
+                                          styleClass="filter-align-left">  
                                     #{metrics.site.name}  
                                 </p:column>
 
-                                <p:column headerText="Report Metrics">  
+                                <p:column headerText="Report Metrics"
+                                          filterBy="#{metrics.metrics}"
+                                          filterMatchMode="contains"
+                                          sortBy="#{metrics.metrics}">  
                                     #{metrics.metrics}  
                                 </p:column>
 

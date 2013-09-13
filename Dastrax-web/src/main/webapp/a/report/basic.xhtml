@@ -38,34 +38,34 @@
                 <pe:layoutPane id="west" position="west" resizeWhileDragging="true" size="250">
                     <p:spacer width="100%" height="45"/>
 
-                        <table class="side-menu">
-                            <ui:fragment rendered="#{permissionUtil.hasPermission('monitor-basic:access')}">
-                                <tr>
-                                    <td>
-                                        <h3>Monitor</h3>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                    </td>
-                                </tr>
-                                <tr class="hover">
-                                    <td>
-                                        <p:commandLink value="View basic monitor" action="access-basic-monitor-page" process="@this" type="button"/>
-                                    </td>
-                                </tr>
-                                <tr class="hover">
-                                    <td>
-                                        <p:commandLink value="View advanced monitor" action="access-advanced-monitor-page" process="@this" type="button" rendered="#{permissionUtil.hasPermission('monitor-adv:access')}"/>
-                                    </td>
-                                </tr>
-                            </ui:fragment>
-                        </table>
+                    <table class="side-menu">
+                        <ui:fragment rendered="#{permissionUtil.hasPermission('monitor-basic:access')}">
+                            <tr>
+                                <td>
+                                    <h3>Monitor</h3>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                </td>
+                            </tr>
+                            <tr class="hover">
+                                <td>
+                                    <p:commandLink value="View basic monitor" action="access-basic-monitor-page" process="@this" type="button"/>
+                                </td>
+                            </tr>
+                            <tr class="hover">
+                                <td>
+                                    <p:commandLink value="View advanced monitor" action="access-advanced-monitor-page" process="@this" type="button" rendered="#{permissionUtil.hasPermission('monitor-adv:access')}"/>
+                                </td>
+                            </tr>
+                        </ui:fragment>
+                    </table>
 
                 </pe:layoutPane>
 
                 <pe:layoutPane id="center" position="center" resizeWhileDragging="true">
-                    <pe:layoutPane id="center-north" resizeWhileDragging="true" position="north" size="40%">  
+                    <pe:layoutPane id="center-north" resizeWhileDragging="true" position="north" size="320">  
 
                         <p:spacer width="100%" height="45"/>
 
@@ -79,7 +79,8 @@
                                          emptyMessage="#{webBundle['empty.datatable']}"
                                          selection="#{basicReport.selectedReports}"
                                          value="#{basicReport.reportModel}"
-                                         styleClass="main-table"> 
+                                         styleClass="main-table"
+                                         filteredValue="#{basicReport.filteredReports}"> 
 
                                 <p:ajax event="rowSelectCheckbox"
                                         listener="#{basicReport.selectEvent}"
@@ -90,11 +91,17 @@
 
                                 <p:column selectionMode="multiple" style="width:18px" />
 
-                                <p:column headerText="Site">  
+                                <p:column headerText="Site"
+                                          filterBy="#{metrics.site.name}"
+                                          filterMatchMode="contains"
+                                          sortBy="#{metrics.site.name}">  
                                     #{metrics.site.name}  
                                 </p:column>
 
-                                <p:column headerText="Report Metrics">  
+                                <p:column headerText="Report Metrics"
+                                          filterBy="#{metrics.metrics}"
+                                          filterMatchMode="contains"
+                                          sortBy="#{metrics.metrics}">  
                                     #{metrics.metrics}  
                                 </p:column>
 
@@ -126,12 +133,10 @@
                                     <h:outputText value="#{title.metrics} (%), " styleClass="report-title"/>
                                 </p:dataList>
 
-                                <p:spacer width="100%" height="10"/>
-
                                 <table style="width: 100%;">
                                     <tr>
                                         <td>
-                                            <p:lineChart id="line-chart" value="#{basicReport.reportChart}" zoom="true" animate="true"  
+                                            <p:lineChart id="line-chart" widgetVar="lineChart" value="#{basicReport.reportChart}" zoom="true" animate="true"  
                                                          style="height:500px;width:100%" showMarkers="false" extender="chartExtender"
                                                          minX="#{basicReport.fromAsLong()}" maxX="#{basicReport.toAsLong()}"
                                                          legendPosition="s" legendRows="1"/> 

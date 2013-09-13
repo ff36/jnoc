@@ -41,6 +41,7 @@ public class BasicReport implements Serializable {
 
     // Variables----------------------------------------------------------------
     private List<Report> reports = new ArrayList<>();
+    private List<Report> filteredReports = new ArrayList<>();
     private Report[] selectedReports;
     private ReportModel reportModel;
     private CartesianChartModel reportChart;
@@ -78,6 +79,10 @@ public class BasicReport implements Serializable {
         return to;
     }
 
+    public List<Report> getFilteredReports() {
+        return filteredReports;
+    }
+
     // Setters------------------------------------------------------------------
     public void setReports(List<Report> reports) {
         this.reports = reports;
@@ -111,6 +116,10 @@ public class BasicReport implements Serializable {
         this.to = to;
     }
 
+    public void setFilteredReports(List<Report> filteredReports) {
+        this.filteredReports = filteredReports;
+    }
+
     // Methods------------------------------------------------------------------
     @PostConstruct
     private void postConstruct() {
@@ -136,15 +145,57 @@ public class BasicReport implements Serializable {
             sites = s.getCompany().getClientSites();
         }
 
+        // Setup a list of frequencies and carriers
+        List<String> freq = new ArrayList<>();
+        freq.add("700 LTE");
+        freq.add("700 PS");
+        freq.add("800 PS/iDEN");
+        freq.add("850 Cellular");
+        freq.add("900 SMR");
+        freq.add("900 Paging");
+        freq.add("1900 PSC");
+        freq.add("2100 AWS");
+
+        List<String> carr = new ArrayList<>();
+        carr.add("AT&T");
+        carr.add("Verizon");
+
         // Setup the reporting objects
         for (Site site : sites) {
-            reports.add(new Report(UUID.randomUUID().toString(), site, "Overall System Uptime"));
-            reports.add(new Report(UUID.randomUUID().toString(), site, "Frequency Uptime"));
-            reports.add(new Report(UUID.randomUUID().toString(), site, "Carrier Uptime"));
+            // Overall System
+            reports.add(new Report(UUID.randomUUID().toString(), site, "Overall System"));
+            
+            // DAS Overall
             reports.add(new Report(UUID.randomUUID().toString(), site, "DAS Uptime"));
+
+            // Frequency Overall
+            for (String f : freq) {
+                reports.add(new Report(UUID.randomUUID().toString(), site, f + " Overall"));
+            }
+
+            // Frequency by Carrier
+            for (String c : carr) {
+                for (String f : freq) {
+                    reports.add(new Report(UUID.randomUUID().toString(), site, f + " / " + c));
+                }
+            }
+            
+            // Carrier Overall
+            for (String c : carr) {
+                reports.add(new Report(UUID.randomUUID().toString(), site, c + " Overall"));
+            }
+
+            // Carrier by Frequency
+            for (String f : freq) {
+                for (String c : carr) {
+                    reports.add(new Report(UUID.randomUUID().toString(), site, c + " / " + f));
+                }
+            }
+
         }
         reportModel = new ReportModel(reports);
-        
+        filteredReports = reports;
+
         // Set the dates
         if (from == null) {
             Calendar cal = Calendar.getInstance();
@@ -176,15 +227,15 @@ public class BasicReport implements Serializable {
             reportChart.addSeries(series1);
         }
     }
-    
+
     public long fromAsLong() {
         return from.getTime();
     }
-    
+
     public long toAsLong() {
         return to.getTime();
     }
-    
+
     public Date today() {
         return new Date();
     }
