@@ -8,6 +8,7 @@ import com.dastrax.per.dao.csm.TicketDAO;
 import com.dastrax.per.entity.core.Company_;
 import com.dastrax.per.entity.core.Contact_;
 import com.dastrax.per.entity.core.Subject_;
+import com.dastrax.per.entity.core.Tag_;
 import com.dastrax.per.entity.csm.Ticket;
 import com.dastrax.per.entity.csm.Ticket_;
 import java.util.ArrayList;
@@ -167,6 +168,7 @@ public class TicketModel extends LazyDataModel<Ticket> {
                 globalPredicate.add(builder.like(ticket.join(Ticket_.requester, JoinType.LEFT).join(Subject_.contact, JoinType.LEFT).get(Contact_.lastName), literal));
                 globalPredicate.add(builder.like(ticket.join(Ticket_.assignee, JoinType.LEFT).join(Subject_.contact, JoinType.LEFT).get(Contact_.firstName), literal));
                 globalPredicate.add(builder.like(ticket.join(Ticket_.assignee, JoinType.LEFT).join(Subject_.contact, JoinType.LEFT).get(Contact_.lastName), literal));
+                globalPredicate.add(builder.like(ticket.join(Ticket_.tags, JoinType.LEFT).get(Tag_.name), literal));
 
                 predicates.add(builder.or(globalPredicate.toArray(new Predicate[globalPredicate.size()])));
             }

@@ -53,7 +53,7 @@
                             <p:selectBooleanCheckbox value="#{createTicket.helper.requesterEmail}"/>
                         </h:panelGrid>
 
-                        <p:commandLink value="New Account" process="@this" update=":form:switch-east-north" onclick="layoutWgt.open('east')"/>
+                        <p:commandLink value="New Account" process="@this" update=":form:switch-east-north" onclick="layoutWgt.open('east');"/>
 
                     </p:panel>
 
@@ -77,7 +77,7 @@
                             <p:selectBooleanCheckbox value="#{createTicket.helper.assigneeEmail}"/>
                         </h:panelGrid>
 
-                        <p:commandLink value="New Account" process="@this" update=":form:switch-east-north" onclick="layoutWgt.open('east')"/>
+                        <p:commandLink value="New Account" process="@this" update=":form:switch-east-north" onclick="layoutWgt.open('east');"/>
 
                     </p:panel>
 
@@ -159,6 +159,18 @@
                             <td>
                                 <p:inputTextarea id="comment" value="#{createTicket.helper.comment.comment}" style="width: 99%" rows="15" required="true" requiredMessage="Comment required"/>
                                 <p:watermark for="comment" value="Comment"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p:autoComplete id="tags"
+                                                value="#{createTicket.ticket.tags}"
+                                                completeMethod="#{createTicket.helper.completeTags}"
+                                                var="tag" itemLabel="#{tag.name}" 
+                                                itemValue="#{tag}"
+                                                converter="tagCvt"
+                                                multiple="true"/>
+                                <p:watermark for="tags" value="Tags"/>
                             </td>
                         </tr>
                         <tr>

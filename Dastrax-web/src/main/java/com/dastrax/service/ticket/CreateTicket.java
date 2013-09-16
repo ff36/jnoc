@@ -10,11 +10,13 @@ import com.dastrax.mesh.email.EmailUtil;
 import com.dastrax.per.dao.core.EmailTemplateDAO;
 import com.dastrax.per.dao.core.SiteDAO;
 import com.dastrax.per.dao.core.SubjectDAO;
+import com.dastrax.per.dao.core.TagDAO;
 import com.dastrax.per.dao.csm.TicketDAO;
 import com.dastrax.per.entity.core.EmailParam;
 import com.dastrax.per.entity.core.EmailTemplate;
 import com.dastrax.per.entity.core.Site;
 import com.dastrax.per.entity.core.Subject;
+import com.dastrax.per.entity.core.Tag;
 import com.dastrax.per.entity.csm.Comment;
 import com.dastrax.per.entity.csm.Ticket;
 import com.dastrax.per.project.DastraxCst;
@@ -66,6 +68,8 @@ public class CreateTicket implements Serializable {
     EmailTemplateDAO emailTemplateDAO;
     @EJB
     FilterUtil filterUtil;
+    @EJB
+    TagDAO tagDAO;
 
     // Constructors-------------------------------------------------------------
     public CreateTicket() {
@@ -95,6 +99,8 @@ public class CreateTicket implements Serializable {
                     .asList().get(1).toString());
             helper.sites = s.getCompany().getClientSites();
         }
+        // Set Tags
+        helper.setAvailableTags(tagDAO.findAllTags());
     }
 
     // Getters------------------------------------------------------------------
@@ -117,7 +123,7 @@ public class CreateTicket implements Serializable {
 
     // Methods------------------------------------------------------------------
     /**
-     * Some roles have the ability to add subjects of the fly. In those 
+     * Some roles have the ability to add subjects of the fly. In those
      * circumstances they can call this method to reload the list of subjects.
      */
     public void reloadSubjects() {
@@ -136,7 +142,8 @@ public class CreateTicket implements Serializable {
 
     /**
      * Create a new ticket
-     * @throws IOException 
+     *
+     * @throws IOException
      */
     private void create() throws IOException {
         // Set the ticket variables
@@ -144,6 +151,7 @@ public class CreateTicket implements Serializable {
                 SecurityUtils.getSubject().getPrincipals()
                 .asList().get(1).toString());
         ticket.setCreator(s);
+
         // ADMIN access
         if (SecurityUtils.getSubject().hasRole(DastraxCst.Metier.ADMIN.toString())) {
             ticket.setRequester(subjectDAO.findSubjectByUid(helper.selectedRequester));
@@ -156,6 +164,7 @@ public class CreateTicket implements Serializable {
         if (SecurityUtils.getSubject().hasRole(DastraxCst.Metier.CLIENT.toString())) {
             ticket.setRequester(s);
         }
+
         ticket.setAssignee(subjectDAO.findSubjectByUid(helper.selectedAssignee));
         ticket.setSite(siteDAO.findSiteById(helper.selectedSite));
 
@@ -229,7 +238,8 @@ public class CreateTicket implements Serializable {
 
     /**
      * Set the ticket to OPEN and create it
-     * @throws IOException 
+     *
+     * @throws IOException
      */
     public void createOpen() throws IOException {
         ticket.setStatus(DastraxCst.TicketStatus.OPEN.toString());
@@ -238,7 +248,8 @@ public class CreateTicket implements Serializable {
 
     /**
      * Set the ticket to SOLVED and create it
-     * @throws IOException 
+     *
+     * @throws IOException
      */
     public void createSolved() throws IOException {
         ticket.setStatus(DastraxCst.TicketStatus.SOLVED.toString());
@@ -247,7 +258,8 @@ public class CreateTicket implements Serializable {
 
     /**
      * Set the ticket to ARCHIVED and create it
-     * @throws IOException 
+     *
+     * @throws IOException
      */
     public void createArchived() throws IOException {
         ticket.setStatus(DastraxCst.TicketStatus.ARCHIVED.toString());
@@ -256,6 +268,7 @@ public class CreateTicket implements Serializable {
 
     /**
      * Sends asynchronous email to the specified recipient
+     *
      * @param ticket
      * @param recipient
      * @return the email parameter object to be stored in the database
@@ -304,6 +317,7 @@ public class CreateTicket implements Serializable {
         private boolean requesterEmail = true;
         private boolean assigneeEmail = true;
         private String ccEmail;
+        private List<Tag> availableTags = new ArrayList<>();
 
         // Constructors-------------------------------------------------------------
         public Helper() {
@@ -354,6 +368,10 @@ public class CreateTicket implements Serializable {
             return ccEmail;
         }
 
+        public List<Tag> getAvailableTags() {
+            return availableTags;
+        }
+
         // Setters------------------------------------------------------------------
         public void setSites(List<Site> sites) {
             this.sites = sites;
@@ -397,6 +415,10 @@ public class CreateTicket implements Serializable {
 
         public void setCcEmail(String ccEmail) {
             this.ccEmail = ccEmail;
+        }
+
+        public void setAvailableTags(List<Tag> availableTags) {
+            this.availableTags = availableTags;
         }
 
         // Methods------------------------------------------------------------------
@@ -444,6 +466,37 @@ public class CreateTicket implements Serializable {
                 String name = s.getContact().buildFullName();
                 if (name.toLowerCase().startsWith(query.toLowerCase())) {
                     suggestions.add(s);
+                }
+            }
+
+            return suggestions;
+        }
+
+        /**
+         * The auto complete function allows the input field to dynamically
+         * filter down options based on currently entered values. This method is
+         * called whenever a 'keyup' event is detected in the field and passes
+         * in the current value of the field to filter down the possible correct
+         * matches from the list of subjects. Values are converted to lower case
+         * to make sure that case sensitivity is not required for a match.
+         *
+         * @param query
+         * @return The filtered list of tags that match the current value of the
+         * field.
+         */
+        public List<Tag> completeTags(String query) {
+            List<Tag> suggestions = new ArrayList<>();
+            // Add the query suggestion
+            Tag tag = new Tag();
+            tag.setId("tempID(" + query + ")");
+            tag.setName(query);
+            suggestions.add(tag);
+
+            // Add suggestions from the existing list
+            for (Tag t : availableTags) {
+                String name = t.getName();
+                if (name.toLowerCase().startsWith(query.toLowerCase())) {
+                    suggestions.add(t);
                 }
             }
 

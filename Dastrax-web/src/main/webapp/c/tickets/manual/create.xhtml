@@ -115,6 +115,18 @@
                         </tr>
                         <tr>
                             <td>
+                                <p:autoComplete id="tags"
+                                                value="#{createTicket.ticket.tags}"
+                                                completeMethod="#{createTicket.helper.completeTags}"
+                                                var="tag" itemLabel="#{tag.name}" 
+                                                itemValue="#{tag}"
+                                                converter="tagCvt"
+                                                multiple="true"/>
+                                <p:watermark for="tags" value="Tags"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
                                 <h:panelGrid columns="2" columnClasses="field-label-3">
                                     <h:outputText value="Create another ticket:"/>
                                     <p:selectBooleanCheckbox value="#{createTicket.helper.createAnotherTicket}"/>

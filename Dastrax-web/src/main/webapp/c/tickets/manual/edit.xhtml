@@ -147,6 +147,15 @@
 
                         <p:spacer width="100%" height="10"/>
                         
+                        <p:autoComplete id="tags"
+                                        value="#{editTicket.ticket.tags}"
+                                        completeMethod="#{editTicket.helper.completeTags}"
+                                        var="tag" itemLabel="#{tag.name}" 
+                                        itemValue="#{tag}"
+                                        converter="tagCvt"
+                                        multiple="true"/>
+                        <p:watermark for="tags" value="Tags"/>
+                        
                         <p:commandButton id="action-btn-var" styleClass="align-right" onclick="blockui2.block();" oncomplete="blockui2.unblock();" value="Submit" update=":form:growl" actionListener="#{editTicket.submit()}" process="@this @(.edit-ticket :input)"/>
 
                         <pe:blockUI target="action-btn-var" widgetVar="blockui2">  

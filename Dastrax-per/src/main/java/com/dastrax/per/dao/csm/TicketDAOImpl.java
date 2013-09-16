@@ -5,9 +5,12 @@
 package com.dastrax.per.dao.csm;
 
 import com.dastrax.per.dao.core.AuditDAO;
+import com.dastrax.per.dao.core.TagDAO;
 import com.dastrax.per.entity.core.Subject;
+import com.dastrax.per.entity.core.Tag;
 import com.dastrax.per.entity.csm.Comment;
 import com.dastrax.per.entity.csm.Ticket;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Logger;
@@ -36,16 +39,31 @@ public class TicketDAOImpl implements TicketDAO {
     // EJB----------------------------------------------------------------------
     @EJB
     AuditDAO auditDAO;
-    
+    @EJB
+    TagDAO tagDAO;
+
     // Methods------------------------------------------------------------------
     ////////////////////////////////////////////////////////////////////////////
     // CREATE
     ////////////////////////////////////////////////////////////////////////////
     @Override
     public Ticket create(Ticket ticket) {
+        // If the tags exist we need to make them managed
+        List<Tag> tags = null;
+        if (!ticket.getTags().isEmpty()) {
+            tags = ticket.getTags();
+            ticket.setTags(null);
+        }
+        // Persist the ticket
         ticket.setOpenEpoch(Calendar.getInstance().getTimeInMillis());
         ticket.setSatisfied("0");
         em.persist(ticket);
+
+        // Merge the tags
+        if (tags != null) {
+            ticket.setTags(tags);
+            em.merge(ticket);
+        }
         // Create Audit
         auditDAO.create("Created ticket DTX-" + ticket.getId() + ".");
         return ticket;
@@ -57,13 +75,25 @@ public class TicketDAOImpl implements TicketDAO {
     @Override
     public Ticket update(Ticket ticket) {
         if (ticket != null) {
+            // If the tags exist we need to make them managed
+            List<Tag> tags = null;
+            if (!ticket.getTags().isEmpty()) {
+                tags = ticket.getTags();
+                ticket.setTags(null);
+            }
+            // Merge the ticket
             em.merge(ticket);
+            // Merge the tags
+            if (tags != null) {
+                ticket.setTags(tags);
+                em.merge(ticket);
+            }
             // Create Audit
             auditDAO.create("Updated ticket DTX-" + ticket.getId() + ".");
         }
         return ticket;
     }
-    
+
     @Override
     public Ticket updateStatus(String id, String status) {
         Ticket t = findTicketById(id);
@@ -75,7 +105,7 @@ public class TicketDAOImpl implements TicketDAO {
         }
         return t;
     }
-    
+
     @Override
     public Ticket updateComment(String id, Comment comment) {
         Ticket t = findTicketById(id);
@@ -87,7 +117,7 @@ public class TicketDAOImpl implements TicketDAO {
         }
         return t;
     }
-    
+
     @Override
     public Ticket updateSatisfaction(String id, String satisfied, String feedback) {
         Ticket t = findTicketById(id);
@@ -100,7 +130,7 @@ public class TicketDAOImpl implements TicketDAO {
         }
         return t;
     }
-    
+
     @Override
     public Ticket updateCloser(String id, Subject closer) {
         Ticket t = findTicketById(id);
@@ -112,7 +142,7 @@ public class TicketDAOImpl implements TicketDAO {
         }
         return t;
     }
-    
+
     ////////////////////////////////////////////////////////////////////////////
     // DELETE
     ////////////////////////////////////////////////////////////////////////////
@@ -125,7 +155,7 @@ public class TicketDAOImpl implements TicketDAO {
             auditDAO.create("Deleted ticket DTX-" + id + ".");
         }
     }
-    
+
     ////////////////////////////////////////////////////////////////////////////
     // QUERY
     ////////////////////////////////////////////////////////////////////////////
@@ -146,7 +176,7 @@ public class TicketDAOImpl implements TicketDAO {
             return null;
         }
     }
-    
+
     @Override
     public List<Ticket> findAllTicketsByStatus(String status) {
         return em.createNamedQuery("Ticket.findAllByStatus")
@@ -160,7 +190,7 @@ public class TicketDAOImpl implements TicketDAO {
                 .setParameter("status", status)
                 .getResultList();
     }
-    
+
     @Override
     public List<Ticket> findAllTicketsExcluding(String statusOne, String statusTwo) {
         return em.createNamedQuery("Ticket.findAllExceptMultiStatus")
@@ -186,5 +216,5 @@ public class TicketDAOImpl implements TicketDAO {
     public int lazyLoadRowCount(CriteriaQuery countQuery) {
         return em.createQuery(countQuery).getResultList().size();
     }
-    
+
 }

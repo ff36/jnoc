@@ -13,6 +13,7 @@ import com.dastrax.per.dao.core.EmailTemplateDAO;
 import com.dastrax.per.dao.core.NexusDAO;
 import com.dastrax.per.dao.core.SiteDAO;
 import com.dastrax.per.dao.core.SubjectDAO;
+import com.dastrax.per.dao.core.TagDAO;
 import com.dastrax.per.dao.csm.TicketDAO;
 import com.dastrax.per.entity.core.Company;
 import com.dastrax.per.entity.core.EmailParam;
@@ -20,6 +21,7 @@ import com.dastrax.per.entity.core.EmailTemplate;
 import com.dastrax.per.entity.core.Nexus;
 import com.dastrax.per.entity.core.Site;
 import com.dastrax.per.entity.core.Subject;
+import com.dastrax.per.entity.core.Tag;
 import com.dastrax.per.entity.csm.Comment;
 import com.dastrax.per.entity.csm.Ticket;
 import com.dastrax.per.project.DastraxCst;
@@ -78,6 +80,8 @@ public class EditTicket implements Serializable {
     NexusUtil nexusUtil;
     @EJB
     EmailParamDAO emailParamDAO;
+    @EJB
+    TagDAO tagDAO;
 
     // Constructors-------------------------------------------------------------
     public EditTicket() {
@@ -125,7 +129,8 @@ public class EditTicket implements Serializable {
     /**
      * Initialize the page by loading the specified ticket from the database and
      * populating all the helper attributes.
-     * @throws IOException 
+     *
+     * @throws IOException
      */
     public void init() throws IOException {
         // Set the ticket
@@ -191,6 +196,9 @@ public class EditTicket implements Serializable {
             if (SecurityUtils.getSubject().hasRole(DastraxCst.Metier.CLIENT.toString())) {
                 helper.sites = helper.getCurrentSubject().getCompany().getClientSites();
             }
+            // Set Tags
+            helper.setAvailableTags(tagDAO.findAllTags());
+
         } else {
             // Redirect if the user is not allowed access to the ticket
             ExternalContext ectx = FacesContext.getCurrentInstance().getExternalContext();
@@ -213,7 +221,8 @@ public class EditTicket implements Serializable {
 
     /**
      * Submits the edited ticket to be processed and stored back into the db.
-     * @throws IOException 
+     *
+     * @throws IOException
      */
     public void submit() throws IOException {
         // Set the ticket variables
@@ -269,10 +278,11 @@ public class EditTicket implements Serializable {
         FacesContext.getCurrentInstance().getExternalContext().redirect(url);
 
     }
-    
+
     /**
      * Modify the tickets status to OPEN and submit it for processing
-     * @throws IOException 
+     *
+     * @throws IOException
      */
     public void submitOpen() throws IOException {
         ticket.setStatus(DastraxCst.TicketStatus.OPEN.toString());
@@ -281,7 +291,8 @@ public class EditTicket implements Serializable {
 
     /**
      * Modify the tickets status to SOLVED and submit it for processing
-     * @throws IOException 
+     *
+     * @throws IOException
      */
     public void submitSolved() throws IOException {
         ticket.setStatus(DastraxCst.TicketStatus.SOLVED.toString());
@@ -294,7 +305,8 @@ public class EditTicket implements Serializable {
 
     /**
      * Modify the tickets status to ARCHIVED and submit it for processing
-     * @throws IOException 
+     *
+     * @throws IOException
      */
     public void submitArchived() throws IOException {
         ticket.setStatus(DastraxCst.TicketStatus.ARCHIVED.toString());
@@ -311,16 +323,17 @@ public class EditTicket implements Serializable {
      * TODO: Currently the site JSF converter is not working so we are having to
      * use a simple String and set the site afterwards using this method by
      * retrieving the set site from the DB using the set ID. This needs to be
-     * fixed so it works like the assignee and the JSF converter means this 
+     * fixed so it works like the assignee and the JSF converter means this
      * extra call to the DB can be removed.
      */
     public void changeSite() {
         // TODO: Fix JSF Converter issue.
         ticket.setSite(siteDAO.findSiteById(helper.selectedSite));
     }
-    
+
     /**
      * Sends asynchronous email to the specified recipient
+     *
      * @param ticket
      * @param recipient
      * @return the email parameter object to be stored in the database
@@ -381,6 +394,7 @@ public class EditTicket implements Serializable {
         private boolean assigneeEmail = true;
         private String ccEmail;
         private Subject currentSubject;
+        private List<Tag> availableTags = new ArrayList<>();
 
         // Constructors-------------------------------------------------------------
         public Helper() {
@@ -427,6 +441,10 @@ public class EditTicket implements Serializable {
             return currentSubject;
         }
 
+        public List<Tag> getAvailableTags() {
+            return availableTags;
+        }
+
         // Setters------------------------------------------------------------------
         public void setSites(List<Site> sites) {
             this.sites = sites;
@@ -464,6 +482,10 @@ public class EditTicket implements Serializable {
             this.commentACL = commentACL;
         }
 
+        public void setAvailableTags(List<Tag> availableTags) {
+            this.availableTags = availableTags;
+        }
+
         // Methods------------------------------------------------------------------
         /**
          * The auto complete function allows the input field to dynamically
@@ -492,8 +514,8 @@ public class EditTicket implements Serializable {
 
         /**
          * If the ticket has a comment added we need to complete the comments
-         * core attributes. This method provides boiler plate functions to finish 
-         * off the comment by adding required values to its attributes.
+         * core attributes. This method provides boiler plate functions to
+         * finish off the comment by adding required values to its attributes.
          */
         private void completeComment() {
             comment.setCommenter(subjectDAO.findSubjectByUid(
@@ -513,6 +535,37 @@ public class EditTicket implements Serializable {
                     comment.setAcl(nexus);
                 }
             }
+        }
+
+        /**
+         * The auto complete function allows the input field to dynamically
+         * filter down options based on currently entered values. This method is
+         * called whenever a 'keyup' event is detected in the field and passes
+         * in the current value of the field to filter down the possible correct
+         * matches from the list of subjects. Values are converted to lower case
+         * to make sure that case sensitivity is not required for a match.
+         *
+         * @param query
+         * @return The filtered list of tags that match the current value of the
+         * field.
+         */
+        public List<Tag> completeTags(String query) {
+            List<Tag> suggestions = new ArrayList<>();
+            // Add the query suggestion
+            Tag tag = new Tag();
+            tag.setId("tempID(" + query + ")");
+            tag.setName(query);
+            suggestions.add(tag);
+
+            // Add suggestions from the existing list
+            for (Tag t : availableTags) {
+                String name = t.getName();
+                if (name.toLowerCase().startsWith(query.toLowerCase())) {
+                    suggestions.add(t);
+                }
+            }
+
+            return suggestions;
         }
         
         public void aclListener() {

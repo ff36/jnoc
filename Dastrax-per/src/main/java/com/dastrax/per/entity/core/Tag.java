@@ -24,6 +24,7 @@ import javax.persistence.TableGenerator;
 @NamedQueries({
     @NamedQuery(name = "Tag.findAll", query = "SELECT e FROM Tag e"),
     @NamedQuery(name = "Tag.findByPK", query = "SELECT e FROM Tag e WHERE e.id = :id"),
+    @NamedQuery(name = "Tag.findByName", query = "SELECT e FROM Tag e WHERE e.name = :name"),
 })
 @Entity
 public class Tag implements Serializable {
@@ -42,6 +43,11 @@ public class Tag implements Serializable {
     // Constructors-------------------------------------------------------------
     public Tag() {
     }
+
+    public Tag(String name) {
+        this.name = name;
+    }
+    
     
     // Getters------------------------------------------------------------------
     public String getId() {

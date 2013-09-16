@@ -55,7 +55,7 @@ public class ExceptionUtil {
         // Get the current subject
         String user = "Not Available";
         if (SecurityUtils.getSubject().isAuthenticated()) {
-            user = SecurityUtils.getSubject().getPrincipals().asList().get(1).toString();
+            user = SecurityUtils.getSubject().getPrincipals().asList().get(0).toString();
         }
         
         // Set the variables

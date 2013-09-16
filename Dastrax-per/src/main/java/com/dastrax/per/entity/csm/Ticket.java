@@ -73,7 +73,7 @@ public class Ticket implements Serializable {
     private Site site;
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     private List<Comment> comments = new ArrayList<>();
-    @OneToMany
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Tag> tags = new ArrayList<>();
 
     // Constructors-------------------------------------------------------------
