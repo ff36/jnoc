@@ -134,6 +134,8 @@
                                 <p:menuitem value="Change to OPEN"  actionListener="#{dmsTickets.saveStatus('OPEN')}" update=":form:tickets-table  :form:growl" process="@this,action-btn" oncomplete="ticketsTable.filter(); blockui1.unblock();" disabled="#{dmsTickets.selectedLength eq 0}" onclick="blockui1.block();"/> 
                                 <p:menuitem value="Change to ARCHIVED" actionListener="#{dmsTickets.saveStatus('ARCHIVED')}" update=":form:tickets-table  :form:growl" process="@this,action-btn" oncomplete="ticketsTable.filter(); blockui1.unblock();" disabled="#{dmsTickets.selectedLength eq 0}" onclick="blockui1.block();"/> 
                                 <p:separator/>
+                                <p:menuitem value="De-activate Alarms" actionListener="#{dmsTickets.manualDeactivate()}" update=":form:tickets-table  :form:growl" process="@this,action-btn" oncomplete="ticketsTable.filter(); blockui1.unblock();" disabled="#{dmsTickets.selectedLength eq 0}" onclick="blockui1.block();"/>                             
+                                <p:separator/>
                                 <p:menuitem value="Delete" actionListener="#{dmsTickets.delete()}" update=":form:tickets-table  :form:growl" process="@this,action-btn" oncomplete="ticketsTable.filter(); blockui1.unblock();" disabled="#{dmsTickets.selectedLength eq 0}" onclick="blockui1.block();"/>  
                             </p:splitButton>
 

@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -213,6 +214,21 @@ public class DmsTickets implements Serializable {
 
     }
 
+    /**
+     * DMS Tickets can have the alarms manually de-activated.
+     */
+    public void manualDeactivate() {
+        for (DmsTicket t : selectedTickets) {
+            for (DmsAlarm a : t.getAlarms()) {
+                if (a.getStopEpoch() == 0) {
+                    a.setStopEpoch(new Date().getTime());
+                }
+            }
+            dmsTicketDAO.updateAlarms(t.getId(), t.getAlarms());
+            JsfUtil.addSuccessMessage("Alarms for Ticket DMST-" + t.getCause() + " successfully de-activated");
+        }
+    }
+    
     /**
      * Deletes the selected DMS Tickets
      */
