@@ -22,7 +22,10 @@ public class DastraxExceptionFactory extends ExceptionHandlerFactory {
     private ExceptionHandlerFactory parent;
  
     // Constructors-------------------------------------------------------------
-   public DastraxExceptionFactory(ExceptionHandlerFactory parent) {
+    public DastraxExceptionFactory() {
+    }
+    
+    public DastraxExceptionFactory(ExceptionHandlerFactory parent) {
     this.parent = parent;
    }
  

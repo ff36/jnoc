@@ -112,7 +112,7 @@ public class UriUtil {
                     + "/"
                     + DastraxCst.S3_COMPANIES_DIRECTORY
                     + "/"
-                    + companyDAO.findCompanyById(companyId)
+                    + companyDAO.findCompanyById(companyId).getS3id()
                     + "/"
                     + DastraxCst.S3_COMPANY_LOGOS_DIRECTORY
                     + "/"
