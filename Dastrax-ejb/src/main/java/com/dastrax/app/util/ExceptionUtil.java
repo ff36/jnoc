@@ -15,6 +15,7 @@ import java.util.ResourceBundle;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import org.apache.shiro.SecurityUtils;
 
 /**
  *
@@ -51,8 +52,16 @@ public class ExceptionUtil {
                 .getString("WebMasterEmailAddress")
                 );
 
+        // Get the current subject
+        String user = "Not Available";
+        if (SecurityUtils.getSubject().isAuthenticated()) {
+            user = SecurityUtils.getSubject().getPrincipals().asList().get(1).toString();
+        }
+        
         // Set the variables
         Map<String, String> vars = new HashMap<>();
+        vars.put("user", user);
+        vars.put("stage", ResourceBundle.getBundle("Config").getString("ProjectStage"));
         vars.put("exception_name", e.getClass().getName());
         vars.put("exception_message", e.getMessage());
         vars.put("exception_stack", org.apache.commons.lang.exception.ExceptionUtils.getStackTrace(e));
