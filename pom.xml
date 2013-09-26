@@ -25,5 +25,6 @@
     <module>Dastrax-ejb</module>
     <module>Dastrax-csm</module>
     <module>Dastrax-per</module>
+    <module>Dastrax-cnx</module>
   </modules>
 </project>

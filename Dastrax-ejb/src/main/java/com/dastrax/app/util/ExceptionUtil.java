@@ -54,10 +54,12 @@ public class ExceptionUtil {
 
         // Get the current subject
         String user = "Not Available";
-        if (SecurityUtils.getSubject().isAuthenticated()) {
+        try {
             user = SecurityUtils.getSubject().getPrincipals().asList().get(0).toString();
+        } catch (Exception ex) {
+            // Do nothing as this means we have no security manager
         }
-        
+
         // Set the variables
         Map<String, String> vars = new HashMap<>();
         vars.put("user", user);

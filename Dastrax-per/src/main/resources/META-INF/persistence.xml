@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
- 
-    <persistence-unit name="Dastrax_SQL_PU" transaction-type="JTA">
+  <persistence-unit name="Dastrax_SQL_PU" transaction-type="JTA">
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
     <jta-data-source>jdbc/DastraxMySQLDev</jta-data-source>
     <class>com.dastrax.per.entity.core.Account</class>
@@ -34,6 +33,7 @@
     <class>com.dastrax.per.entity.core.Audit</class>
     <class>com.dastrax.per.entity.csm.DmsAlarm</class>
     <class>com.dastrax.per.entity.csm.DmsAlarmLog</class>
+    <class>com.dastrax.per.entity.cnx.EventLog</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
       <property name="eclipselink.target-database" value="org.eclipse.persistence.nosql.adapters.mongo.MongoPlatform"/>
@@ -44,8 +44,7 @@
       <property name="eclipselink.logging.level" value="SEVERE"/>
     </properties>
   </persistence-unit>
-
-<!--
+  <!--
   <persistence-unit name="Dastrax_SQL_PU" transaction-type="JTA">
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
     <jta-data-source>jdbc/DastraxMySQLUAT</jta-data-source>
@@ -79,6 +78,7 @@
     <class>com.dastrax.per.entity.core.Audit</class>
     <class>com.dastrax.per.entity.csm.DmsAlarm</class>
     <class>com.dastrax.per.entity.csm.DmsAlarmLog</class>
+    <class>com.dastrax.per.entity.cnx.EventLog</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
       <property name="eclipselink.target-database" value="org.eclipse.persistence.nosql.adapters.mongo.MongoPlatform"/>
@@ -90,7 +90,7 @@
     </properties>
   </persistence-unit>
 -->
-<!--
+  <!--
 <persistence-unit name="Dastrax_SQL_PU" transaction-type="JTA">
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
     <jta-data-source>jdbc/DastraxMySQLPro</jta-data-source>
@@ -124,6 +124,7 @@
     <class>com.dastrax.per.entity.core.Audit</class>
     <class>com.dastrax.per.entity.csm.DmsAlarm</class>
     <class>com.dastrax.per.entity.csm.DmsAlarmLog</class>
+    <class>com.dastrax.per.entity.cnx.EventLog</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
       <property name="eclipselink.target-database" value="org.eclipse.persistence.nosql.adapters.mongo.MongoPlatform"/>

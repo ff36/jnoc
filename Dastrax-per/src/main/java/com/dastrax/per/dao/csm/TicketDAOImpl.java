@@ -10,7 +10,6 @@ import com.dastrax.per.entity.core.Subject;
 import com.dastrax.per.entity.core.Tag;
 import com.dastrax.per.entity.csm.Comment;
 import com.dastrax.per.entity.csm.Ticket;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Logger;
@@ -77,7 +76,7 @@ public class TicketDAOImpl implements TicketDAO {
         if (ticket != null) {
             // If the tags exist we need to make them managed
             List<Tag> tags = null;
-            if (!ticket.getTags().isEmpty()) {
+            if (ticket.getTags() != null && !ticket.getTags().isEmpty()) {
                 tags = ticket.getTags();
                 ticket.setTags(null);
             }
@@ -116,6 +115,16 @@ public class TicketDAOImpl implements TicketDAO {
             auditDAO.create("Added a comment to ticket DTX-" + t.getId() + ".");
         }
         return t;
+    }
+    
+    @Override
+    public Comment updateCommentACL(Comment comment) {
+        if (comment != null) {
+            em.merge(comment);
+            // Create Audit
+            auditDAO.create("Comment Nexus modified");
+        }
+        return comment;
     }
 
     @Override

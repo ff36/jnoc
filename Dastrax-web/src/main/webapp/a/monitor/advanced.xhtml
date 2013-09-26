@@ -36,7 +36,7 @@
 
             <pe:layout stateCookie="#{config.ProjectStage ne 'DEV'}" widgetVar="layourWgt" >
 
-                <pe:layoutPane id="west" position="west" resizeWhileDragging="true" size="250">
+                <pe:layoutPane id="west" position="west" resizeWhileDragging="true" size="300">
                     <p:spacer width="100%" height="45"/>
 
                     <p:spacer width="100%" height="20"/>
@@ -83,9 +83,9 @@
 
                     <p:spacer width="100%" height="10"/>
 
-                    <p:panel id="tree-panel" styleClass="ticket-options">
+                    <p:panel id="tree-panel" styleClass="ticket-options" style="overflow-y: scroll; height: 400px">
 
-                        <h:panelGrid id="tree-grid" columns="1">
+                        <h:panelGrid id="tree-grid" columns="1" >
 
                             <h:outputText value="Devices" styleClass="super-field-label"/>
 
@@ -95,7 +95,7 @@
                                 <p:ajax event="unselect" listener="#{advMonitor.onNodeSelect}" update=":form:charts :form:devices" />
 
                                 <p:column>  
-                                    <h:outputText value="#{tree.device}" />  
+                                    <h:outputText value="#{tree.node}" />  
                                 </p:column>
 
                                 <p:column style="width: 30px">  
@@ -150,18 +150,13 @@
                                 <h:panelGrid columns="2">
 
                                     <h:outputText value="Device:" styleClass="field-label-3"/>
-                                    <h:outputText value="#{advMonitor.selectedNode.data.device}"/>
+                                    <h:outputText value="#{advMonitor.selectedNode.data.node}"/>
 
-                                    <h:outputText value="Band:" styleClass="field-label-3"/>
-                                    <h:outputText value="#{advMonitor.selectedNode.data.band}"/>
-
-                                    <h:outputText value="Firmware:" styleClass="field-label-3"/>
-                                    <h:outputText value="#{advMonitor.selectedNode.data.firmware}"/>
-
-                                    <h:outputText value="Serial:" styleClass="field-label-3"/>
-                                    <h:outputText value="#{advMonitor.selectedNode.data.serial}"/>
-
-                                    <h:outputText value="Note:" styleClass="field-label-3"/>
+                                    <h:outputText value="Firmware:" styleClass="field-label-3" rendered="#{advMonitor.selectedNode.data.firmware ne null}"/>
+                                    <h:outputText value="#{advMonitor.selectedNode.data.firmware}" rendered="#{advMonitor.selectedNode.data.firmware ne null}"/>
+                                    
+                                    <h:outputText value="Frequency:" styleClass="field-label-3" rendered="#{advMonitor.selectedNode.data.frequency ne null}"/>
+                                    <h:outputText value="#{advMonitor.selectedNode.data.frequency}" rendered="#{advMonitor.selectedNode.data.frequency ne null}"/>
 
                                 </h:panelGrid>
 
@@ -180,7 +175,7 @@
                             <ui:fragment rendered="#{advMonitor.selectedNode ne null}">
 
                                 <div class="device-status-bar align-right">
-                                    <h:outputText value="#{advMonitor.selectedNode.data.device} Operational"/>
+                                    <h:outputText value="#{advMonitor.selectedNode.data.node} Operational"/>
                                 </div>
 
                                 <p:spacer width="100%" height="10"/>

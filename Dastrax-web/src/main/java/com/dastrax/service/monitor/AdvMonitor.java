@@ -5,6 +5,8 @@
 
 package com.dastrax.service.monitor;
 
+import com.dastrax.cnx.monitor.DeviceUtil;
+import com.dastrax.cnx.pojo.Device;
 import com.dastrax.per.dao.core.SiteDAO;
 import com.dastrax.per.dao.core.SubjectDAO;
 import com.dastrax.per.entity.core.Site;
@@ -56,6 +58,8 @@ public class AdvMonitor implements Serializable {
     SubjectDAO subjectDAO;
     @EJB
     SiteDAO siteDAO;
+    @EJB
+    DeviceUtil deviceUtil;
     
     // Getters------------------------------------------------------------------
     public List<Site> getSites() {
@@ -144,41 +148,32 @@ public class AdvMonitor implements Serializable {
     }
     
     public void selectSite() {
-        rootNode = new DefaultTreeNode("root", null);
+        // Get all the devices
+        List<Device> devices = deviceUtil.getDeviceTreeWithRoot(selectedSite);
+        // Find the root devices
+        for (Device device : devices) {
+            if (device.getNode().equals("ROOT")) {
+                rootNode = createTree(device, null);
+            }
+        }
         rootNode.setExpanded(true);
         
-        //DMS
-        TreeNode dms = new DefaultTreeNode(new Inventory("DMS", "", "1200", "1200-302-0911050", true), rootNode); 
-        dms.setExpanded(true);
-        
-        // BIU
-        TreeNode biu1 = new DefaultTreeNode(new Inventory("BIU1", "Sector 1", "3.2.0", "00467A15600109030003", true), dms);
-        biu1.setExpanded(true);
-          
-        //MDBU  
-        TreeNode mdbu1 = new DefaultTreeNode(new Inventory("MDBU1", "700 Public Safety  / LAPD, 700 Public Safety / LAFD, 850 Cellular / ATT, 850 Cellular / Verizon", "5.7", "03165M01657509020007", true), biu1);
-        TreeNode mdbu2 = new DefaultTreeNode(new Inventory("MDBU2", "800 Public Safety / 800PS, 800 Public Safety / iDEN 800, Paging / iDEN 900, 900I / Paging", "5.7", "03165M01657509030004", true), biu1);
-        TreeNode mdbu3 = new DefaultTreeNode(new Inventory("MDBU3", "1900 PCS", "5.7", "03165M01657509030004", true), biu1);
-        TreeNode mdbu4 = new DefaultTreeNode(new Inventory("MDBU4", "AWS-1", "5.7", "02913M01657709020006", true), biu1);
-          
-        //ODU  
-        TreeNode odu1 = new DefaultTreeNode(new Inventory("ODU1", "", "", "03425A15600309C00001", true), biu1);
-        odu1.setExpanded(true);
-        
-        //DOU  
-        TreeNode dou1 = new DefaultTreeNode(new Inventory("DOU1", "", "1.2", "03176M01658609B00005", true), odu1);
-        dou1.setExpanded(true);
-        
-        //ROU 
-        TreeNode rou1 = new DefaultTreeNode(new Inventory("ROU1", "ROU1 IDF2204", "2.5.0", " 00467A15601709060012", true), dou1);
-        rou1.setExpanded(true);
-        
-        //RDU  
-        TreeNode rdu1 = new DefaultTreeNode(new Inventory("RDU1", "AWS-1 ", "5.8", "03153M01808911700158", true), rou1);
-        TreeNode rdu2 = new DefaultTreeNode(new Inventory("RDU2", "AWS-1 ", "5.7", "03425M01807709C00012", true), rou1);
-        TreeNode rdu3 = new DefaultTreeNode(new Inventory("RDU3", "AWS-1 ", "5.7", "03425M01808509C00020", true), rou1);
-        
         selectedNode = null;
+    }
+    
+    /**
+     * Create the device tree
+     * @param device
+     * @param parentNode
+     * @return 
+     */
+    private TreeNode createTree(Device device, TreeNode parentNode) {
+        TreeNode node = new DefaultTreeNode(device, parentNode);
+        for (Device dev : device.getChildren()) {
+            TreeNode newNode = createTree(dev, node);
+            newNode.setExpanded(true);
+        }
+        return node;
     }
     
     public void onNodeSelect(NodeSelectEvent event) {  

@@ -33,7 +33,8 @@ import javax.annotation.Resource;
 import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ejb.Schedule;
-import javax.ejb.Singleton;
+import javax.ejb.Startup;
+import javax.ejb.Stateless;
 import javax.ejb.TimerService;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -44,7 +45,8 @@ import org.codehaus.jackson.map.ObjectMapper;
  * @since Aug 3, 2013
  * @author Tarka L'Herpiniere <info@tarka.tv>
  */
-@Singleton
+@Stateless
+@Startup
 public class DmsTicketUtil {
 
     // Logger-------------------------------------------------------------------
@@ -67,10 +69,13 @@ public class DmsTicketUtil {
     TimerService timerService;
 
     // Methods------------------------------------------------------------------
-    @Asynchronous
     @Schedule(minute = "*/2", hour = "*")
     public void queryQueue() {
+        processQueue();
+    }
 
+    @Asynchronous
+    private void processQueue() {
         try {
             // Find out approx how many tickets are in the queue
             GetQueueAttributesRequest request = new GetQueueAttributesRequest()
@@ -89,83 +94,86 @@ public class DmsTicketUtil {
                         .withQueueUrl(queueUrl);
             }
 
-            List<Message> messages = sqs.getClient().receiveMessage(rmr).getMessages();
+            while (qty > 0) {
 
-            for (Message message : messages) {
-                // Convert the json messages
-                JsonMsg jsonMsg = convertAlarm(message);
+                List<Message> messages = sqs.getClient().receiveMessage(rmr).getMessages();
 
-                // Check to see if the cause is already registered as a ticket
-                DmsTicket dmsT = dmsTicketDAO.findDmsTicketByCause(jsonMsg.getRootId());
+                for (Message message : messages) {
+                    // Convert the json messages
+                    JsonMsg jsonMsg = convertAlarm(message);
 
-                if (dmsT == null) {
-                    // Create a new ticket
-                    createNewTicket(jsonMsg);
-                } else {
-                    boolean reopened = false;
-                    boolean active = false;
-                    // ticket exists so determin if it is open
-                    if (dmsT.getStatus().equals(DastraxCst.TicketStatus.SOLVED.toString())
-                            || dmsT.getStatus().equals(DastraxCst.TicketStatus.ARCHIVED.toString())) {
-                        // ticket closed, check if less than 24 hrs
-                        Calendar cal = Calendar.getInstance();
-                        cal.add(Calendar.HOUR, -24);
-                        if (dmsT.getCloseEpoch() > cal.getTimeInMillis()) {
-                            // ticket should be re-opened
-                            dmsT.setStatus(DastraxCst.TicketStatus.OPEN.toString());
-                            reopened = true;
-                        } else {
-                            // ticket is older thah 24hrs create a new one
-                            createNewTicket(jsonMsg);
-                        }
+                    // Check to see if the cause is already registered as a ticket
+                    DmsTicket dmsT = dmsTicketDAO.findDmsTicketByCause(jsonMsg.getRootId());
+
+                    if (dmsT == null) {
+                        // Create a new ticket
+                        createNewTicket(jsonMsg);
                     } else {
-                        // ticket is already open so just add the 
-                        active = true;
-                    }
+                        boolean reopened = false;
+                        boolean active = false;
+                        // ticket exists so determin if it is open
+                        if (dmsT.getStatus().equals(DastraxCst.TicketStatus.SOLVED.toString())
+                                || dmsT.getStatus().equals(DastraxCst.TicketStatus.ARCHIVED.toString())) {
+                            // ticket closed, check if less than 24 hrs
+                            Calendar cal = Calendar.getInstance();
+                            cal.add(Calendar.HOUR, -24);
+                            if (dmsT.getCloseEpoch() > cal.getTimeInMillis()) {
+                                // ticket should be re-opened
+                                dmsT.setStatus(DastraxCst.TicketStatus.OPEN.toString());
+                                reopened = true;
+                            } else {
+                                // ticket is older thah 24hrs create a new one
+                                createNewTicket(jsonMsg);
+                            }
+                        } else {
+                            // ticket is already open so just add the 
+                            active = true;
+                        }
 
-                    if (reopened || active) {
-                        // verify if the ticket alarm exists
-                        boolean exists = false;
-                        for (DmsAlarm dmsA : dmsT.getAlarms()) {
-                            // If alarm exists so we want to update it
-                            if (dmsA.getAlarmId().equals(jsonMsg.getAlarmId())) {
-                                // create a alarm log of current
-                                DmsAlarmLog dal = new DmsAlarmLog();
-                                dal.setUpdateEpoch(Calendar.getInstance().getTimeInMillis());
-                                dal.setStartEpoch(dmsA.getStartEpoch());
-                                dal.setStopEpoch(dmsA.getStopEpoch());
-                                // set the new values
-                                dmsA.setStartEpoch(jsonMsg.getStartEpoch());
-                                dmsA.setStopEpoch(jsonMsg.getStopEpoch());
+                        if (reopened || active) {
+                            // verify if the ticket alarm exists
+                            boolean exists = false;
+                            for (DmsAlarm dmsA : dmsT.getAlarms()) {
+                                // If alarm exists so we want to update it
+                                if (dmsA.getAlarmId().equals(jsonMsg.getAlarmId())) {
+                                    // create a alarm log of current
+                                    DmsAlarmLog dal = new DmsAlarmLog();
+                                    dal.setUpdateEpoch(Calendar.getInstance().getTimeInMillis());
+                                    dal.setStartEpoch(dmsA.getStartEpoch());
+                                    dal.setStopEpoch(dmsA.getStopEpoch());
+                                    // set the new values
+                                    dmsA.setStartEpoch(jsonMsg.getStartEpoch());
+                                    dmsA.setStopEpoch(jsonMsg.getStopEpoch());
 
-                                // add the log
-                                if (dmsA.getLogs() == null) {
-                                    List<DmsAlarmLog> ldmal = new ArrayList<>();
-                                    ldmal.add(dal);
-                                    dmsA.setLogs(ldmal);
-                                } else {
-                                    dmsA.getLogs().add(dal);
+                                    // add the log
+                                    if (dmsA.getLogs() == null) {
+                                        List<DmsAlarmLog> ldmal = new ArrayList<>();
+                                        ldmal.add(dal);
+                                        dmsA.setLogs(ldmal);
+                                    } else {
+                                        dmsA.getLogs().add(dal);
+                                    }
+                                    exists = true;
                                 }
-                                exists = true;
+                            }
+                            // check to see if the alarm exists
+                            if (exists) {
+                                // alarm does exist so update
+                                dmsTicketDAO.updateAlarms(dmsT.getId(), dmsT.getAlarms());
+                            } else {
+                                // alarm doesn't exist so create a new one
+                                DmsAlarm dmsA = createNewAlarm(jsonMsg);
+                                // update ticket
+                                dmsT.getAlarms().add(dmsA);
+                                // persist
+                                dmsTicketDAO.updateAlarms(dmsT.getId(), dmsT.getAlarms());
                             }
                         }
-                        // check to see if the alarm exists
-                        if (exists) {
-                            // alarm does exist so update
-                            dmsTicketDAO.updateAlarms(dmsT.getId(), dmsT.getAlarms());
-                        } else {
-                            // alarm doesn't exist so create a new one
-                            DmsAlarm dmsA = createNewAlarm(jsonMsg);
-                            // update ticket
-                            dmsT.getAlarms().add(dmsA);
-                            // persist
-                            dmsTicketDAO.updateAlarms(dmsT.getId(), dmsT.getAlarms());
-                        }
                     }
+                    removeSQSMsg(message);
                 }
-                removeSQSMsg(message);
+                qty = qty - messages.size();
             }
-
         } catch (AmazonServiceException ase) {
             exu.report(ase);
             LOG.log(Level.SEVERE, "Caught an SQS AmazonServiceException", ase);
@@ -173,13 +181,13 @@ public class DmsTicketUtil {
             exu.report(ace);
             LOG.log(Level.SEVERE, "Caught an SQS AmazonClientException", ace);
         }
-
     }
 
     /**
      * Convert a JSON Message from AWS SQS to JSON object
+     *
      * @param message
-     * @return 
+     * @return
      */
     private JsonMsg convertAlarm(Message message) {
         //    Mock JSON alarm
@@ -201,9 +209,10 @@ public class DmsTicketUtil {
 
     /**
      * Creates a new ticket
+     *
      * @param jm
      * @param ids
-     * @return 
+     * @return
      */
     private DmsTicket createNewTicket(JsonMsg jm) {
         // Format the IP and get the site
@@ -239,13 +248,14 @@ public class DmsTicketUtil {
 
     /**
      * Persist new ticket
+     *
      * @param dmsT
-     * @return 
+     * @return
      */
     private DmsTicket persistTicket(DmsTicket dmsT) {
         return dmsTicketDAO.create(dmsT);
     }
-    
+
     /* 
      * TODO FIX: 
      * Eclipselink has a bug and you cannot persist an object and persist
@@ -262,9 +272,10 @@ public class DmsTicketUtil {
 
     /**
      * Create new alarm
+     *
      * @param jsonMsg
      * @param ids
-     * @return 
+     * @return
      */
     private DmsAlarm createNewAlarm(JsonMsg jsonMsg) {
         // Create a new alarm
@@ -280,7 +291,8 @@ public class DmsTicketUtil {
 
     /**
      * Remove a message from the SQS queue
-     * @param msg 
+     *
+     * @param msg
      */
     private void removeSQSMsg(Message msg) {
         sqs.getClient().deleteMessage(new DeleteMessageRequest(queueUrl, msg.getReceiptHandle()));
@@ -288,8 +300,9 @@ public class DmsTicketUtil {
 
     /**
      * Convert the incoming IP into a standard 12 digit format
+     *
      * @param ip
-     * @return 
+     * @return
      */
     private String formatIP(String ip) {
         try {

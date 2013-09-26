@@ -139,14 +139,23 @@
                         </tr>
                         <tr>
                             <td>
-                                <p:autoComplete id="tags"
-                                                value="#{createTicket.ticket.tags}"
-                                                completeMethod="#{createTicket.helper.completeTags}"
-                                                var="tag" itemLabel="#{tag.name}" 
-                                                itemValue="#{tag}"
-                                                converter="tagCvt"
-                                                multiple="true"/>
-                                <p:watermark for="tags" value="Tags"/>
+                                <table>
+                                    <tr>
+                                        <td>
+                                            <p:autoComplete id="tags"
+                                                            value="#{editTicket.ticket.tags}"
+                                                            completeMethod="#{editTicket.helper.completeTags}"
+                                                            var="tag" itemLabel="#{tag.name}" 
+                                                            itemValue="#{tag}"
+                                                            converter="tagCvt"
+                                                            multiple="true"/>
+                                        </td>
+                                        <td>
+                                            <p:graphicImage id="tag-icon" value="#{pathUtil.s3Icon('black/tag_icon_16.png')}"/>
+                                            <p:tooltip for="tag-icon" showEffect="fade" hideEffect="fade" value="Custom and predefined tags can be added to help organise and filter your ticket"/>
+                                        </td>
+                                    </tr>
+                                </table>
                             </td>
                         </tr>
                         <tr>

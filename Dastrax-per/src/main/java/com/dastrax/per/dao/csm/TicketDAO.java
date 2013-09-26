@@ -50,6 +50,12 @@ public interface TicketDAO {
     public Ticket updateComment(String id, Comment comment);
     /**
      * 
+     * @param comment
+     * @return 
+     */
+    public Comment updateCommentACL(Comment comment);
+    /**
+     * 
      * @param id
      * @param satisfied
      * @param feedback

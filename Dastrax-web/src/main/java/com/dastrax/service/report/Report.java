@@ -17,12 +17,14 @@ public class Report {
     private String id;
     private Site site;
     private String metrics;
+    private String frequency;
 
     // Constructors-------------------------------------------------------------
-    public Report(String id, Site site, String metrics) {
+    public Report(String id, Site site, String metrics, String frequency) {
         this.id = id;
         this.site = site;
         this.metrics = metrics;
+        this.frequency = frequency;
     }
 
     // Getters------------------------------------------------------------------
@@ -38,6 +40,10 @@ public class Report {
         return site;
     }
 
+    public String getFrequency() {
+        return frequency;
+    }
+
     // Setters------------------------------------------------------------------
     public void setSite(Site site) {
         this.site = site;
@@ -49,6 +55,10 @@ public class Report {
 
     public void setMetrics(String metrics) {
         this.metrics = metrics;
+    }
+
+    public void setFrequency(String frequency) {
+        this.frequency = frequency;
     }
 
 }

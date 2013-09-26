@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -332,6 +333,44 @@ public class EditTicket implements Serializable {
     }
 
     /**
+     * Comments can have their nexus modified
+     *
+     * @param comment
+     * @param commentACL
+     */
+    public void changeCommentNexus(Comment comment, String commentACL) {
+        // Match the comment to the ticket comment
+        Iterator<Comment> i = ticket.getComments().iterator();
+        while (i.hasNext()) {
+            Comment c = i.next();
+            if (c == comment) {
+                if (SecurityUtils.getSubject().hasRole(DastraxCst.Metier.ADMIN.toString())) {
+                    if (commentACL.equals("internal")) {
+                        Nexus nexus = nexusDAO.findNexusById(DastraxCst.ROOT_NEXUS_ADMIN);
+                        c.setAcl(nexus);
+                    }
+                    if (commentACL.equals("public")) {
+                        c.setAcl(null);
+                    }
+                }
+                if (SecurityUtils.getSubject().hasRole(DastraxCst.Metier.VAR.toString())) {
+                    if (commentACL.equals("internal")) {
+                        Nexus nexus = nexusDAO.findNexusById(DastraxCst.ROOT_NEXUS_ADMIN_VAR);
+                        c.setAcl(nexus);
+                    }
+                    if (commentACL.equals("public")) {
+                        c.setAcl(null);
+                    }
+                }
+                // Update the comment in the db
+                ticketDAO.updateCommentACL(c);
+            }
+        }
+        // Add success message
+        JsfUtil.addSuccessMessage("Comment has changed to " + commentACL);
+    }
+
+    /**
      * Sends asynchronous email to the specified recipient
      *
      * @param ticket
@@ -567,7 +606,7 @@ public class EditTicket implements Serializable {
 
             return suggestions;
         }
-        
+
         public void aclListener() {
             // empty listener to fire when acl is changed
         }

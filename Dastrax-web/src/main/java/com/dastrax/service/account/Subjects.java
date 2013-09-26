@@ -254,6 +254,7 @@ public class Subjects implements Serializable {
         Iterator<Permission> i = selectedSubjects[0].getPermissions().iterator();
         while (i.hasNext()) {
             Permission p = i.next();
+            p.setName(p.getName().replaceAll("\\s+", ""));
             if (p.getName().isEmpty()) {
                 i.remove();
             }

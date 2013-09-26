@@ -125,7 +125,7 @@
                                  editable="true"> 
 
                         <f:facet name="header">   
-                            <p:inputText id="globalFilter" styleClass="align-left" onkeyup="ticketsTable.filter()" style="width:200px" />  
+                            <p:inputText id="globalFilter" styleClass="align-left" onkeyup="ticketsTable.filter();" style="width:200px" />  
                             <p:watermark for="globalFilter" value="Search"/>
 
                             <p:splitButton id="action-btn" styleClass="align-right" value="Action" rendered="#{permissionUtil.hasPermission('dmsticket:edit')}">  
@@ -276,7 +276,7 @@
                                             <td>#{dmsTickets.temporalUtil.epochDateTimeFmt(alarm.startEpoch)}</td>
                                             <td>#{alarm.stopEpoch eq 0 ? '' : dmsTickets.temporalUtil.epochDateTimeFmt(alarm.stopEpoch)}</td>
                                             <td>#{alarm.stopEpoch eq 0 ? '' : alarm.totalDuration()}</td>
-                                            <td><p:graphicImage value="#{pathUtil.s3Icon('black/layers_2_icon_16.png')}" rendered="#{!alarm.logs.isEmpty()}"/></td>
+                                            <td><p:graphicImage value="#{pathUtil.s3Icon('black/layers_2_icon_16.png')}" rendered="#{!alarm.logs.isEmpty()}"/> <h:outputText value=" (#{alarm.logs.size()})" rendered="#{!alarm.logs.isEmpty()}"/></td>
                                         </tr>
                                     </tbody>
 

@@ -592,6 +592,24 @@ TR.comment-table-seperator TD
 	font-style: italic;
 	font-size: 8pt;
 }
+.comment-acl-option-btn
+{
+	/*+placement:anchor-top-right 0px 0px;*/
+	position: absolute;
+	right: 0px;
+	top: 0px;
+	margin-top: 20px;
+	margin-right: 10px;
+}
+.comment-acl-option-btn IMG
+{
+	padding-right: 2px;
+}
+.acl-change-overlay
+{
+	width: 100px;
+}
+
 /*MONITOR*/
 .monitor-indicator-online
 {
@@ -749,4 +767,3 @@ TR.comment-table-seperator TD
 	font-size: 12pt;
 	font-weight: bold;
 }
-

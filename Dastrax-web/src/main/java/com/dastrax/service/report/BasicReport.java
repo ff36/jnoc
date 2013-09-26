@@ -4,12 +4,17 @@
  */
 package com.dastrax.service.report;
 
+import com.dastrax.cnx.monitor.DeviceUtil;
+import com.dastrax.cnx.report.Generator;
+import com.dastrax.per.dao.cnx.EventLogDAO;
 import com.dastrax.per.dao.core.SiteDAO;
 import com.dastrax.per.dao.core.SubjectDAO;
+import com.dastrax.per.entity.cnx.EventLog;
 import com.dastrax.per.entity.core.Site;
 import com.dastrax.per.entity.core.Subject;
 import com.dastrax.per.project.DastraxCst;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -53,6 +58,12 @@ public class BasicReport implements Serializable {
     SubjectDAO subjectDAO;
     @EJB
     SiteDAO siteDAO;
+    @EJB
+    DeviceUtil deviceUtil;
+    @EJB
+    EventLogDAO eventLogDAO;
+    @EJB
+    Generator generator;
 
     // Getters------------------------------------------------------------------
     public List<Report> getReports() {
@@ -145,53 +156,40 @@ public class BasicReport implements Serializable {
             sites = s.getCompany().getClientSites();
         }
 
-        // Setup a list of frequencies and carriers
-        List<String> freq = new ArrayList<>();
-        freq.add("700 LTE");
-        freq.add("700 PS");
-        freq.add("800 PS/iDEN");
-        freq.add("850 Cellular");
-        freq.add("900 SMR");
-        freq.add("900 Paging");
-        freq.add("1900 PSC");
-        freq.add("2100 AWS");
-
-        List<String> carr = new ArrayList<>();
-        carr.add("AT&T");
-        carr.add("Verizon");
-
         // Setup the reporting objects
         for (Site site : sites) {
-            // Overall System
-            reports.add(new Report(UUID.randomUUID().toString(), site, "Overall System"));
-            
-            // DAS Overall
-            reports.add(new Report(UUID.randomUUID().toString(), site, "DAS Uptime"));
+
+            // Get a list of available frequencies for a given site
+            List<String> frequencies = deviceUtil.obtainFrequencies(site);
+
+            // Overall
+            reports.add(new Report(UUID.randomUUID().toString(), site, "Overall Uptime", null));
 
             // Frequency Overall
-            for (String f : freq) {
-                reports.add(new Report(UUID.randomUUID().toString(), site, f + " Overall"));
-            }
-
-            // Frequency by Carrier
-            for (String c : carr) {
-                for (String f : freq) {
-                    reports.add(new Report(UUID.randomUUID().toString(), site, f + " / " + c));
-                }
-            }
-            
-            // Carrier Overall
-            for (String c : carr) {
-                reports.add(new Report(UUID.randomUUID().toString(), site, c + " Overall"));
-            }
-
-            // Carrier by Frequency
-            for (String f : freq) {
-                for (String c : carr) {
-                    reports.add(new Report(UUID.randomUUID().toString(), site, c + " / " + f));
+            for (String f : frequencies) {
+                if (f != null) {
+                    reports.add(new Report(UUID.randomUUID().toString(), site, f + " Overall", f));
                 }
             }
 
+//            // Frequency by Carrier
+//            for (String c : carr) {
+//                for (String f : freq) {
+//                    reports.add(new Report(UUID.randomUUID().toString(), site, f + " / " + c));
+//                }
+//            }
+//            
+//            // Carrier Overall
+//            for (String c : carr) {
+//                reports.add(new Report(UUID.randomUUID().toString(), site, c + " Overall"));
+//            }
+//
+//            // Carrier by Frequency
+//            for (String f : freq) {
+//                for (String c : carr) {
+//                    reports.add(new Report(UUID.randomUUID().toString(), site, c + " / " + f));
+//                }
+//            }
         }
         reportModel = new ReportModel(reports);
         filteredReports = reports;
@@ -216,14 +214,44 @@ public class BasicReport implements Serializable {
         buildChart();
     }
 
+    public void presetSelection(String range) {
+        Calendar cal = Calendar.getInstance();
+        to = cal.getTime();
+        switch (range) {
+            case "DAY":
+                cal.add(Calendar.HOUR, -24);
+                break;
+            case "WEEK":
+                cal.add(Calendar.HOUR, -168);
+                break;
+            case "MONTH":
+                cal.add(Calendar.MONTH, -1);
+                break;
+            default:
+                break;
+        }
+        from = cal.getTime();
+        buildChart();
+    }
+    
     public void buildChart() {
         reportChart = new CartesianChartModel();
         for (Report report : selectedReports) {
             LineChartSeries series1 = new LineChartSeries();
             series1.setLabel(report.getMetrics() + " for " + report.getSite().getName());
-            for (long i = from.getTime(); i < to.getTime(); i = i + 86400000) {
-                series1.set(i, 99 + Math.random());
-            }
+
+            // Get the results
+            List<EventLog> logs = generator.generateReport(report.getSite(), from.getTime(), to.getTime(), report.getFrequency());
+
+            // Normalize the results
+            Double uptime = generator.normalizeReport(from.getTime(), to.getTime(), logs);
+            
+            // Format the dates
+            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+            
+            // Create the new series
+            series1.set("Performance Report(s) from " + sdf.format(from) + " to " + sdf.format(to), uptime);
+
             reportChart.addSeries(series1);
         }
     }

@@ -19,7 +19,7 @@
     <h:body>
 
         #{permissionUtil.hasPagePermission('ticket:edit')}
-        
+
         <f:metadata>
             <f:viewParam name="ticket" value="#{editTicket.ticketId}"/>
             <f:viewAction action="#{editTicket.init}" />
@@ -166,17 +166,26 @@
 
                         <p:inputTextarea id="comment" value="#{editTicket.helper.comment.comment}" style="width: 99%" rows="15" required="true" requiredMessage="Comment required"/>
                         <p:watermark for="comment" value="Comment"/>
-                        
+
                         <p:spacer width="100%" height="10"/>
-                        
-                        <p:autoComplete id="tags"
-                                        value="#{editTicket.ticket.tags}"
-                                        completeMethod="#{editTicket.helper.completeTags}"
-                                        var="tag" itemLabel="#{tag.name}" 
-                                        itemValue="#{tag}"
-                                        converter="tagCvt"
-                                        multiple="true"/>
-                        <p:watermark for="tags" value="Tags"/>
+
+                        <table>
+                            <tr>
+                                <td>
+                                    <p:autoComplete id="tags"
+                                                    value="#{editTicket.ticket.tags}"
+                                                    completeMethod="#{editTicket.helper.completeTags}"
+                                                    var="tag" itemLabel="#{tag.name}" 
+                                                    itemValue="#{tag}"
+                                                    converter="tagCvt"
+                                                    multiple="true"/>
+                                </td>
+                                <td>
+                                    <p:graphicImage id="tag-icon" value="#{pathUtil.s3Icon('black/tag_icon_16.png')}"/>
+                                    <p:tooltip for="tag-icon" showEffect="fade" hideEffect="fade" value="Custom and predefined tags can be added to help organise and filter your ticket"/>
+                                </td>
+                            </tr>
+                        </table>
 
                         <p:splitButton id="action-btn" styleClass="align-right" onclick="blockui1.block();" oncomplete="blockui1.unblock();" value="Submit as #{editTicket.ticket.status}" update=":form:growl" actionListener="#{editTicket.submit()}" process="@this @(.edit-ticket :input)" rendered="#{editTicket.ticket.assignee.metier.name ne 'ADMIN'}">  
                             <p:menuitem value="Submit as SOLVED" onclick="blockui1.block();" oncomplete="blockui1.unblock();" actionListener="#{editTicket.submitSolved()}" update=":form:growl" process="@this @(.edit-ticket :input)" rendered="#{editTicket.ticket.status ne 'SOLVED'}"/>  
@@ -249,7 +258,7 @@
                                 styleClass="clear-data-list">
 
                         <ui:fragment rendered="#{editTicket.nexusUtil.authorised(comment.acl)}">
-                            <table style="width:100%">
+                            <table style="width:100%;position: relative">
                                 <tr class="comment-table-seperator">
                                     <td style="width: 60px">
                                         <p:graphicImage value="#{pathUtil.profileImage(comment.commenter.uid)}"
@@ -260,9 +269,19 @@
                                     <td>
                                         <b>#{comment.commenter.contact.buildFullName()}</b>
                                         <h:outputText value="#{editTicket.temporalUtil.epochDateTimeFmt(comment.created)}" styleClass="comment-date"/>
+                                        <div class="comment-acl-option-btn">
+                                            <p:commandLink id="acl-change-btn" type="button" process="@this,acl-change-btn">
+                                                <p:graphicImage value="#{pathUtil.s3Icon('black/cog_icon_16.png')}"/>
+                                                <p:graphicImage value="#{pathUtil.s3Icon('black/br_down_icon_16.png')}" width="8px"/>
+                                            </p:commandLink>
+                                            <p:overlayPanel id="acl-change-overlay" styleClass="acl-change-overlay" for="acl-change-btn" hideEffect="fade">
+                                                <p:commandLink id="change-acl-to-public" actionListener="#{editTicket.changeCommentNexus(comment, 'public')}" value="Make Public" rendered="#{comment.acl.id eq 1}" process="@this,change-acl-to-public" update="comment-datalist :form:growl"/>
+                                                <p:commandLink id="change-acl-to-internal" actionListener="#{editTicket.changeCommentNexus(comment, 'internal')}" value="Make Internal" rendered="#{comment.acl.id eq null}" process="@this,change-acl-to-internal" update="comment-datalist :form:growl"/>
+                                            </p:overlayPanel>
+                                        </div>
                                         <p:spacer width="100%" height="10"/>
                                         <div class="#{comment.acl.id eq 1 ? 'admin-comment' : comment.acl.id eq 4 ? 'var-comment' : 'public-comment'}">
-                                            #{comment.comment}
+                                            #{comment.comment}             
                                         </div>
                                     </td>
                                 </tr>

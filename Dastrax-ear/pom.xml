@@ -62,6 +62,12 @@
         </dependency>
         <dependency>
             <groupId>com.dastrax</groupId>
+            <artifactId>Dastrax-cnx</artifactId>
+            <version>1.0.0</version>
+            <type>ejb</type>
+        </dependency>
+        <dependency>
+            <groupId>com.dastrax</groupId>
             <artifactId>Dastrax-web</artifactId>
             <version>2.1.0</version>
             <type>war</type>

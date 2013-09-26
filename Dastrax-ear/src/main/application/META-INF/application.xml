@@ -23,5 +23,8 @@
     <module>
         <ejb>Dastrax-per-2.1.0.jar</ejb>
     </module>
+    <module>
+        <ejb>Dastrax-cnx-1.0.0.jar</ejb>
+    </module>
 
 </application>
