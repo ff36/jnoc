@@ -163,9 +163,9 @@
                                                 </h:panelGrid>
                                                 
                                                 <h:panelGrid columns="1">
-                                                    <p:commandLink value="Today" actionListener="#{basicReport.presetSelection('DAY')}" ajax="true" process="@this" update="charts range-options"/>
-                                                    <p:commandLink value="Last 7 days" actionListener="#{basicReport.presetSelection('WEEK')}" ajax="true" process="@this" update="charts range-options"/>
-                                                    <p:commandLink value="Last 30 days" actionListener="#{basicReport.presetSelection('MONTH')}" ajax="true" process="@this" update="charts range-options"/>
+                                                    <p:commandLink value="Today" actionListener="#{basicReport.presetSelection('DAY')}" ajax="true" process="@this" update="charts range-options" onclick="blockui1.block();" oncomplete="blockui1.unblock();"/>
+                                                    <p:commandLink value="Last 7 days" actionListener="#{basicReport.presetSelection('WEEK')}" ajax="true" process="@this" update="charts range-options" onclick="blockui1.block();" oncomplete="blockui1.unblock();"/>
+                                                    <p:commandLink value="Last 30 days" actionListener="#{basicReport.presetSelection('MONTH')}" ajax="true" process="@this" update="charts range-options" onclick="blockui1.block();" oncomplete="blockui1.unblock();"/>
                                                 </h:panelGrid>
 
                                             </p:panel>
@@ -216,6 +216,31 @@
             </pe:layout>
 
             <pe:blockUI source=":form:metrics-table" target=":form:metrics-table" event="rowSelectCheckbox,rowUnselectCheckbox" autoShow="true">  
+                <div class="windows8-25-w">
+                    <div class="wBall" id="wBall_1">
+                        <div class="wInnerBall">
+                        </div>
+                    </div>
+                    <div class="wBall" id="wBall_2">
+                        <div class="wInnerBall">
+                        </div>
+                    </div>
+                    <div class="wBall" id="wBall_3">
+                        <div class="wInnerBall">
+                        </div>
+                    </div>
+                    <div class="wBall" id="wBall_4">
+                        <div class="wInnerBall">
+                        </div>
+                    </div>
+                    <div class="wBall" id="wBall_5">
+                        <div class="wInnerBall">
+                        </div>
+                    </div>
+                </div> 
+            </pe:blockUI>
+            
+            <pe:blockUI target=":form:range-options" widgetVar="blockui1">  
                 <div class="windows8-25-w">
                     <div class="wBall" id="wBall_1">
                         <div class="wInnerBall">

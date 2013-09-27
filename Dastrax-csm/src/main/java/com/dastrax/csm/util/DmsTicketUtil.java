@@ -71,11 +71,7 @@ public class DmsTicketUtil {
     // Methods------------------------------------------------------------------
     @Schedule(minute = "*/2", hour = "*")
     public void queryQueue() {
-        processQueue();
-    }
-
-    @Asynchronous
-    private void processQueue() {
+        List<JsonMsg> jsonMsgs = new ArrayList<>();
         try {
             // Find out approx how many tickets are in the queue
             GetQueueAttributesRequest request = new GetQueueAttributesRequest()
@@ -85,92 +81,25 @@ public class DmsTicketUtil {
             int qty = Integer.parseInt(attrs.get("ApproximateNumberOfMessages"));
             // the value must be between 1-10 so add conditional message retreive
             ReceiveMessageRequest rmr;
-            if (qty > 0 && qty < 11) {
+            if (qty > 0 && qty <= 10) {
                 rmr = new ReceiveMessageRequest()
                         .withMaxNumberOfMessages(qty)
+                        .withWaitTimeSeconds(20)
                         .withQueueUrl(queueUrl);
             } else {
                 rmr = new ReceiveMessageRequest()
+                        .withWaitTimeSeconds(20)
                         .withQueueUrl(queueUrl);
             }
 
+            // Get the messages
             while (qty > 0) {
-
                 List<Message> messages = sqs.getClient().receiveMessage(rmr).getMessages();
-
                 for (Message message : messages) {
                     // Convert the json messages
                     JsonMsg jsonMsg = convertAlarm(message);
-
-                    // Check to see if the cause is already registered as a ticket
-                    DmsTicket dmsT = dmsTicketDAO.findDmsTicketByCause(jsonMsg.getRootId());
-
-                    if (dmsT == null) {
-                        // Create a new ticket
-                        createNewTicket(jsonMsg);
-                    } else {
-                        boolean reopened = false;
-                        boolean active = false;
-                        // ticket exists so determin if it is open
-                        if (dmsT.getStatus().equals(DastraxCst.TicketStatus.SOLVED.toString())
-                                || dmsT.getStatus().equals(DastraxCst.TicketStatus.ARCHIVED.toString())) {
-                            // ticket closed, check if less than 24 hrs
-                            Calendar cal = Calendar.getInstance();
-                            cal.add(Calendar.HOUR, -24);
-                            if (dmsT.getCloseEpoch() > cal.getTimeInMillis()) {
-                                // ticket should be re-opened
-                                dmsT.setStatus(DastraxCst.TicketStatus.OPEN.toString());
-                                reopened = true;
-                            } else {
-                                // ticket is older thah 24hrs create a new one
-                                createNewTicket(jsonMsg);
-                            }
-                        } else {
-                            // ticket is already open so just add the 
-                            active = true;
-                        }
-
-                        if (reopened || active) {
-                            // verify if the ticket alarm exists
-                            boolean exists = false;
-                            for (DmsAlarm dmsA : dmsT.getAlarms()) {
-                                // If alarm exists so we want to update it
-                                if (dmsA.getAlarmId().equals(jsonMsg.getAlarmId())) {
-                                    // create a alarm log of current
-                                    DmsAlarmLog dal = new DmsAlarmLog();
-                                    dal.setUpdateEpoch(Calendar.getInstance().getTimeInMillis());
-                                    dal.setStartEpoch(dmsA.getStartEpoch());
-                                    dal.setStopEpoch(dmsA.getStopEpoch());
-                                    // set the new values
-                                    dmsA.setStartEpoch(jsonMsg.getStartEpoch());
-                                    dmsA.setStopEpoch(jsonMsg.getStopEpoch());
-
-                                    // add the log
-                                    if (dmsA.getLogs() == null) {
-                                        List<DmsAlarmLog> ldmal = new ArrayList<>();
-                                        ldmal.add(dal);
-                                        dmsA.setLogs(ldmal);
-                                    } else {
-                                        dmsA.getLogs().add(dal);
-                                    }
-                                    exists = true;
-                                }
-                            }
-                            // check to see if the alarm exists
-                            if (exists) {
-                                // alarm does exist so update
-                                dmsTicketDAO.updateAlarms(dmsT.getId(), dmsT.getAlarms());
-                            } else {
-                                // alarm doesn't exist so create a new one
-                                DmsAlarm dmsA = createNewAlarm(jsonMsg);
-                                // update ticket
-                                dmsT.getAlarms().add(dmsA);
-                                // persist
-                                dmsTicketDAO.updateAlarms(dmsT.getId(), dmsT.getAlarms());
-                            }
-                        }
-                    }
-                    removeSQSMsg(message);
+                    jsonMsg.setReceiptHandle(message.getReceiptHandle());
+                    jsonMsgs.add(jsonMsg);
                 }
                 qty = qty - messages.size();
             }
@@ -180,6 +109,84 @@ public class DmsTicketUtil {
         } catch (AmazonClientException ace) {
             exu.report(ace);
             LOG.log(Level.SEVERE, "Caught an SQS AmazonClientException", ace);
+        }
+        // Once the process of collecting the messages is complete and we have 
+        // closed the connection we can process them
+        processQueue(jsonMsgs);
+    }
+
+    @Asynchronous
+    private void processQueue(List<JsonMsg> jsonMsgs) {
+
+        for (JsonMsg jsonMsg : jsonMsgs) {
+            
+            DmsTicket dmsT = dmsTicketDAO.findDmsTicketByCause(jsonMsg.getRootId());
+            if (dmsT == null) {
+                // Create a new ticket
+                createNewTicket(jsonMsg);
+            } else {
+                boolean reopened = false;
+                boolean active = false;
+                // ticket exists so determin if it is open
+                if (dmsT.getStatus().equals(DastraxCst.TicketStatus.SOLVED.toString())
+                        || dmsT.getStatus().equals(DastraxCst.TicketStatus.ARCHIVED.toString())) {
+                    // ticket closed, check if less than 24 hrs
+                    Calendar cal = Calendar.getInstance();
+                    cal.add(Calendar.HOUR, -24);
+                    if (dmsT.getCloseEpoch() > cal.getTimeInMillis()) {
+                        // ticket should be re-opened
+                        dmsT.setStatus(DastraxCst.TicketStatus.OPEN.toString());
+                        reopened = true;
+                    } else {
+                        // ticket is older thah 24hrs create a new one
+                        createNewTicket(jsonMsg);
+                    }
+                } else {
+                    // ticket is already open so just add the 
+                    active = true;
+                }
+
+                if (reopened || active) {
+                    // verify if the ticket alarm exists
+                    boolean exists = false;
+                    for (DmsAlarm dmsA : dmsT.getAlarms()) {
+                        // If alarm exists so we want to update it
+                        if (dmsA.getAlarmId().equals(jsonMsg.getAlarmId())) {
+                            // create a alarm log of current
+                            DmsAlarmLog dal = new DmsAlarmLog();
+                            dal.setUpdateEpoch(Calendar.getInstance().getTimeInMillis());
+                            dal.setStartEpoch(dmsA.getStartEpoch());
+                            dal.setStopEpoch(dmsA.getStopEpoch());
+                            // set the new values
+                            dmsA.setStartEpoch(jsonMsg.getStartEpoch());
+                            dmsA.setStopEpoch(jsonMsg.getStopEpoch());
+
+                            // add the log
+                            if (dmsA.getLogs() == null) {
+                                List<DmsAlarmLog> ldmal = new ArrayList<>();
+                                ldmal.add(dal);
+                                dmsA.setLogs(ldmal);
+                            } else {
+                                dmsA.getLogs().add(dal);
+                            }
+                            exists = true;
+                        }
+                    }
+                    // check to see if the alarm exists
+                    if (exists) {
+                        // alarm does exist so update
+                        dmsTicketDAO.updateAlarms(dmsT.getId(), dmsT.getAlarms());
+                    } else {
+                        // alarm doesn't exist so create a new one
+                        DmsAlarm dmsA = createNewAlarm(jsonMsg);
+                        // update ticket
+                        dmsT.getAlarms().add(dmsA);
+                        // persist
+                        dmsTicketDAO.updateAlarms(dmsT.getId(), dmsT.getAlarms());
+                    }
+                }
+            }
+            removeSQSMsg(jsonMsg.getReceiptHandle());
         }
     }
 
@@ -199,7 +206,9 @@ public class DmsTicketUtil {
             mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             mapper.configure(DeserializationConfig.Feature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true);
             mapper.configure(DeserializationConfig.Feature.FAIL_ON_NULL_FOR_PRIMITIVES, false);
-            jm = mapper.readValue(message.getBody(), JsonMsg.class);
+            jm
+                    = mapper.readValue(message.getBody(), JsonMsg.class
+                    );
         } catch (IOException ioe) {
             exu.report(ioe);
             LOG.log(Level.SEVERE, "SQS IOException", ioe);
@@ -294,8 +303,8 @@ public class DmsTicketUtil {
      *
      * @param msg
      */
-    private void removeSQSMsg(Message msg) {
-        sqs.getClient().deleteMessage(new DeleteMessageRequest(queueUrl, msg.getReceiptHandle()));
+    private void removeSQSMsg(String receiptHandle) {
+        sqs.getClient().deleteMessage(new DeleteMessageRequest(queueUrl, receiptHandle));
     }
 
     /**
@@ -326,6 +335,7 @@ public class DmsTicketUtil {
             LOG.log(Level.SEVERE, "SQS Exception whilst formating IP", nfe);
         }
         return "000.000.000.000";
+
     }
 
     /**

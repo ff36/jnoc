@@ -22,6 +22,7 @@ public class JsonMsg {
     private long stopEpoch;
     private String name;
     private String squealer;
+    private String receiptHandle;
 
     // Constructors-------------------------------------------------------------
     public JsonMsg() {
@@ -54,6 +55,10 @@ public class JsonMsg {
 
     public String getSquealer() {
         return squealer;
+    }
+
+    public String getReceiptHandle() {
+        return receiptHandle;
     }
 
     // Setters------------------------------------------------------------------
@@ -90,6 +95,10 @@ public class JsonMsg {
     @JsonProperty("squealer_name")
     public void setSquealer(String squealer) {
         this.squealer = squealer;
+    }
+
+    public void setReceiptHandle(String receiptHandle) {
+        this.receiptHandle = receiptHandle;
     }
 
 }
