@@ -26,12 +26,11 @@
             <div id="tiles">
 
                 <h:panelGrid columns="4">
-                    <p:commandLink action="http://www.soliduniversityonline.com" type="button" ajax="false" rendered="#{permissionUtil.hasPermission('university:access')}">
+                    <h:outputLink value="http://www.soliduniversityonline.com" target="_blank" rendered="#{permissionUtil.hasPermission('university:access')}">
                         <p:graphicImage value="#{pathUtil.s3Image('tile_university_active.svg')}"/>
-                    </p:commandLink> 
+                    </h:outputLink> 
                     <p:graphicImage value="#{pathUtil.s3Image('tile_university_inactive.svg')}" rendered="#{!permissionUtil.hasPermission('university:access')}"/>
 
-                    
                     <p:commandLink action="access-knowledge-page" type="button" ajax="false" rendered="#{permissionUtil.hasPermission('knowledge:access')}">
                         <p:graphicImage value="#{pathUtil.s3Image('tile_knowledge_active.svg')}"/>
                     </p:commandLink> 

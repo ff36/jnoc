@@ -37,8 +37,8 @@ public class AccountRequest implements Serializable {
     private static final Logger LOG = Logger.getLogger(AccountRequest.class.getName());
     
     // Variables----------------------------------------------------------------
-    //private static final String recipient = "register@solid.com";
-    private static final String recipient = "test1@dev.tarka.tv";
+    private static final String recipient = "register@solid.com";
+    //private static final String recipient = "test1@dev.tarka.tv";
     private String name;
     private String company;
     private String email;

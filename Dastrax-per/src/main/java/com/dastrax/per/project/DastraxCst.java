@@ -46,7 +46,7 @@ public class DastraxCst {
     public static enum S3ContentType {PDF, JPEG, PNG, GIF, BMP, TIFF, PLAIN, RTF, MSWORD, ZIP};
     public static enum Metier {ADMIN, VAR, CLIENT, SOLO, ADHOC};
     public static enum CompanyType {VAR, CLIENT};
-    public static enum EmailTemplate {NEW_ACCOUNT, CHANGE_EMAIL, CHANGE_PASSWORD, NEW_TICKET, TICKET_MODIFIED, TICKET_SOLVED, EXCEPTION, ACCOUNT_REQUEST};
+    public static enum EmailTemplate {NEW_ACCOUNT, CHANGE_EMAIL, CHANGE_PASSWORD, NEW_TICKET, TICKET_MODIFIED, TICKET_SOLVED, EXCEPTION, ACCOUNT_REQUEST, RMA_REQUEST};
     public static enum L1Permissions {USER, SITE, VAR, CLIENT, TICKET, PAGE};
     public static enum L2Permissions {CREATE, UPDATE, DELETE, VIEW};
     public static enum ResponseJsf {SUCCESS, WARNING, ERROR, FATAL};
