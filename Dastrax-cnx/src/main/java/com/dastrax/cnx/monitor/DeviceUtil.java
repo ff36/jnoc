@@ -95,7 +95,7 @@ public class DeviceUtil {
     private List<Device> convertResults(ResultSet resultSet) throws SQLException {
         List<Device> devices = new ArrayList<>();
         while (resultSet.next()) {
-            if (!resultSet.getString("address").equals("Site") && resultSet.getString("state").equals("ACTIVE")) {
+            if (!resultSet.getString("address").equals("Site") && !resultSet.getString("state").equals("OFF")) {
                 Device device = new Device();
                 device.setId(UUID.randomUUID().toString());
                 device.setAddress(resultSet.getString("address"));

@@ -26,16 +26,25 @@
             <div id="tiles">
 
                 <h:panelGrid columns="4">
-                    <p:graphicImage value="#{pathUtil.s3Image('tile_university_inactive.svg')}"/>
-                    
-                    <p:graphicImage value="#{pathUtil.s3Image('tile_knowledge_inactive.svg')}"/>
+                    <p:commandLink action="http://www.soliduniversityonline.com" type="button" ajax="false" rendered="#{permissionUtil.hasPermission('university:access')}">
+                        <p:graphicImage value="#{pathUtil.s3Image('tile_university_active.svg')}"/>
+                    </p:commandLink> 
+                    <p:graphicImage value="#{pathUtil.s3Image('tile_university_inactive.svg')}" rendered="#{!permissionUtil.hasPermission('university:access')}"/>
+
+                    <p:commandLink action="access-knowledge-page" type="button" ajax="false" rendered="#{permissionUtil.hasPermission('knowledge:access')}">
+                        <p:graphicImage value="#{pathUtil.s3Image('tile_knowledge_active.svg')}"/>
+                    </p:commandLink> 
+                    <p:graphicImage value="#{pathUtil.s3Image('tile_knowledge_inactive.svg')}" rendered="#{!permissionUtil.hasPermission('knowledge:access')}"/>
                     
                     <p:commandLink action="access-list-manual-tickets-page" type="button" ajax="false" rendered="#{permissionUtil.hasPermission('ticket:access')}">
                         <p:graphicImage value="#{pathUtil.s3Image('tile_ticket_active.svg')}"/>
                     </p:commandLink> 
                     <p:graphicImage value="#{pathUtil.s3Image('tile_ticket_inactive.svg')}" rendered="#{!permissionUtil.hasPermission('ticket:access')}"/>
                     
-                    <p:graphicImage value="#{pathUtil.s3Image('tile_rma_inactive.svg')}"/>
+                    <p:commandLink action="access-rma-request-page" type="button" ajax="false" rendered="#{permissionUtil.hasPermission('rma:access')}">
+                        <p:graphicImage value="#{pathUtil.s3Image('tile_rma_active.svg')}"/>
+                    </p:commandLink> 
+                    <p:graphicImage value="#{pathUtil.s3Image('tile_rma_inactive.svg')}" rendered="#{!permissionUtil.hasPermission('rma:access')}"/>
                 </h:panelGrid>
 
                 <h:panelGrid columns="3">

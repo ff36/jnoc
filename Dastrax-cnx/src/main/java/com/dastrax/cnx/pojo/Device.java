@@ -5,6 +5,7 @@
 
 package com.dastrax.cnx.pojo;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +15,7 @@ import java.util.List;
  * @since Sep 19, 2013
  * @author Tarka L'Herpiniere <info@tarka.tv>
  */
-public class Device {
+public class Device implements Serializable {
 
     // Variables----------------------------------------------------------------
     private String id;

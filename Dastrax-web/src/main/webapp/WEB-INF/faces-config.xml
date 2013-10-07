@@ -71,6 +71,11 @@
             <to-view-id>/p/legal.jsf</to-view-id>
             <redirect />
         </navigation-case>
+        <navigation-case>
+            <from-outcome>access-request-account-page</from-outcome>
+            <to-view-id>/p/request.jsf</to-view-id>
+            <redirect />
+        </navigation-case>
     </navigation-rule>
     
     <navigation-rule>
@@ -250,6 +255,20 @@
             <redirect />
         </navigation-case>     
 
+        <!-- resources -->
+        <navigation-case>
+            <from-outcome>access-knowledge-page</from-outcome>
+            <to-view-id>/b/resources/knowledge.jsf</to-view-id>
+            <redirect />
+        </navigation-case> 
+        
+        <!-- request -->
+        <navigation-case>
+            <from-outcome>access-rma-request-page</from-outcome>
+            <to-view-id>/b/rma/request.jsf</to-view-id>
+            <redirect />
+        </navigation-case> 
+
     </navigation-rule>
     
     <navigation-rule>
@@ -321,6 +340,20 @@
             <to-view-id>/c/report/basic.jsf</to-view-id>
             <redirect />
         </navigation-case>
+
+<!-- resources -->
+        <navigation-case>
+            <from-outcome>access-knowledge-page</from-outcome>
+            <to-view-id>/c/resources/knowledge.jsf</to-view-id>
+            <redirect />
+        </navigation-case> 
+        
+        <!-- request -->
+        <navigation-case>
+            <from-outcome>access-rma-request-page</from-outcome>
+            <to-view-id>/c/rma/request.jsf</to-view-id>
+            <redirect />
+        </navigation-case> 
 
     </navigation-rule>
     

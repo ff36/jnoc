@@ -29,13 +29,9 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.Resource;
 import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
-import javax.ejb.Schedule;
-import javax.ejb.Startup;
 import javax.ejb.Stateless;
-import javax.ejb.TimerService;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -46,7 +42,6 @@ import org.codehaus.jackson.map.ObjectMapper;
  * @author Tarka L'Herpiniere <info@tarka.tv>
  */
 @Stateless
-@Startup
 public class DmsTicketUtil {
 
     // Logger-------------------------------------------------------------------
@@ -64,12 +59,8 @@ public class DmsTicketUtil {
     @EJB
     SiteDAO siteDAO;
 
-    // Resources----------------------------------------------------------------
-    @Resource
-    TimerService timerService;
-
     // Methods------------------------------------------------------------------
-    @Schedule(minute = "*/2", hour = "*")
+    //@Schedule(minute = "*", hour = "*/3")
     public void queryQueue() {
         List<JsonMsg> jsonMsgs = new ArrayList<>();
         try {
@@ -112,9 +103,12 @@ public class DmsTicketUtil {
         }
         // Once the process of collecting the messages is complete and we have 
         // closed the connection we can process them
-        processQueue(jsonMsgs);
+        if (!jsonMsgs.isEmpty()) {
+           processQueue(jsonMsgs); 
+        }
+        
     }
-
+    
     @Asynchronous
     private void processQueue(List<JsonMsg> jsonMsgs) {
 

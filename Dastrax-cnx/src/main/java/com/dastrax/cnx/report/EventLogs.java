@@ -50,19 +50,20 @@ public class EventLogs {
     ExceptionUtil exu;
     @EJB
     EventLogDAO eventLogDAO;
-    @EJB
+    @EJB(lookup = "")
     DeviceUtil deviceUtil;
 
     // Methods------------------------------------------------------------------
     /**
-     * This method is executed every 12 hours to at set intervals to trigger an
-     * SNMP get to retrieve the event log from the site DMS. No guarantee is
-     * provided that the schedule will be maintained with absolute accuracy. If
-     * a cycle is still running when the next scheduled cycle is due to start,
-     * the preceeding cycle will be allowed to complete before beginning the new
-     * one. Cycles in arrears will be queued for execution when possible.
+     * This method is executed every 3 hours to at set intervals to trigger a
+     * Database connection to retrieve the event log from the site DMS. No 
+     * guarantee is provided that the schedule will be maintained with absolute 
+     * accuracy. If a cycle is still running when the next scheduled cycle is 
+     * due to start, the preceeding cycle will be allowed to complete before 
+     * beginning the new one. Cycles in arrears will be queued for execution 
+     * when possible.
      */
-    @Schedule(minute = "*/2", hour = "*")
+    //@Schedule(minute = "*", hour = "*/3")
     protected void getLogs() {
         processLogs();
     }
@@ -164,26 +165,27 @@ public class EventLogs {
      */
     private List<EventLog> convertResult(ResultSet resultSet, Site site, List<Device> devices) throws SQLException {
         List<EventLog> logs = new ArrayList<>();
-        while (resultSet.next()) {
-            // Get the respective device from the tree
-            Device device = obtainDevice(devices, resultSet.getString("address"));
-            // Build the eventlog
-            EventLog eventLog = new EventLog();
-            eventLog.setSite(site.getId());
-            eventLog.setExternalId(resultSet.getInt("id"));
-            eventLog.setAddress(resultSet.getString("address"));
-            eventLog.setDbcolumn(resultSet.getString("dbcolumn"));
-            eventLog.setReceivedTime(resultSet.getDate("receivedTime").getTime());
-            eventLog.setClearedTime(resultSet.getDate("receivedTime").getTime());
-            eventLog.setClearedTime(resultSet.getDate("clearedTime").getTime());
-            eventLog.setDownTime(eventLog.getClearedTime() - eventLog.getReceivedTime());
-            if (device != null) {
-                eventLog.setFrequency(device.getFrequency());
-            }
-            //eventLog.setCarrier();
+        if (resultSet != null && resultSet.first() && devices != null && !devices.isEmpty() ) {
+            while (resultSet.next()) {
+                // Get the respective device from the tree
+                Device device = obtainDevice(devices, resultSet.getString("address"));
+                // Build the eventlog
+                EventLog eventLog = new EventLog();
+                eventLog.setSite(site.getId());
+                eventLog.setExternalId(resultSet.getInt("id"));
+                eventLog.setAddress(resultSet.getString("address"));
+                eventLog.setDbcolumn(resultSet.getString("dbcolumn"));
+                eventLog.setReceivedTime(resultSet.getDate("receivedTime").getTime());
+                eventLog.setClearedTime(resultSet.getDate("receivedTime").getTime());
+                eventLog.setClearedTime(resultSet.getDate("clearedTime").getTime());
+                eventLog.setDownTime(eventLog.getClearedTime() - eventLog.getReceivedTime());
+                if (device != null) {
+                    eventLog.setFrequency(device.getFrequency());
+                }
 
-            // Add the log to the list
-            logs.add(eventLog);
+                // Add the log to the list
+                logs.add(eventLog);
+            }
         }
         return logs;
     }

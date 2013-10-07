@@ -160,17 +160,11 @@
             <div class="footer">
 
                 <p:commandLink id="no-account"
-                               onclick="accountDlg.show();"
-                               type="button"
                                value="Get an account"
+                               action="access-request-account-page"
+                               ajax="false"
                                process="@this,uni-form:no-account"/>
 
-                <p:dialog header="Get an Account" widgetVar="accountDlg" modal="true" height="100">  
-                    <h:outputText value="Please contact SOLiD support on +(1) 888.409.9997"/>
-                    <h:outputText value="or"/>
-                    <p:spacer width="100%" height="1px"/>
-                    <a href="no-spam [at] example (dot) com" rel="nofollow" onclick="this.href='mailto:' + 'support' + '@' + 'solidtechusa.com'">send us an email</a>
-                </p:dialog> 
             </div>
 
         </h:form>

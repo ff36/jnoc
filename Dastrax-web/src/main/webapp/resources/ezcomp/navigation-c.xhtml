@@ -28,6 +28,8 @@
                             <p:menuitem value="Accounts" url="#{request.contextPath}/c/accounts/list.jsf" rendered="#{permissionUtil.hasPermission('account:access')}"/>
                             <p:menuitem value="Monitor" url="#{request.contextPath}/c/monitor/basic.jsf" rendered="#{permissionUtil.hasPermission('monitor-basic:access')}"/>
                             <p:menuitem value="Report" url="#{request.contextPath}/c/report/basic.jsf" rendered="#{permissionUtil.hasPermission('report-basic:access')}"/>
+                            <p:menuitem value="Resources" url="#{request.contextPath}/c/resources/knowledge.jsf" rendered="#{permissionUtil.hasPermission('knowledge:access')}"/>
+                            <p:menuitem value="RMA" url="#{request.contextPath}/c/rma/request.jsf" rendered="#{permissionUtil.hasPermission('rma:access')}"/>
                         </p:menubar>
                     </td>
                     <td class="nav-3">
