@@ -126,11 +126,11 @@
                                 </p:column>
 
                                 <p:column style="width: 30px">  
-                                    <div class="#{tree.state eq 'ACTIVE' ? 'monitor-device-status-online' : 'monitor-device-status-warning'}">
+                                    <div class="#{tree.state eq 'ACTIVE' ? 'monitor-device-status-online' : tree.state eq 'DISABLED' or tree.state eq 'FAILDISABLED' ? 'monitor-device-status-offline' : 'monitor-device-status-warning'}">
                                         <p:graphicImage rendered="" value="#{pathUtil.s3Icon('white/checkmark_icon_16.png')}"/>
                                         <p:graphicImage rendered="#{tree.state eq 'ACTIVE'}" value="#{pathUtil.s3Icon('white/checkmark_icon_16.png')}"/>
                                         <p:graphicImage rendered="#{tree.state eq 'FAILED'}" value="#{pathUtil.s3Icon('white/attention_icon_16.png')}"/>
-
+                                        <p:graphicImage rendered="#{tree.state eq 'DISABLED' or tree.state eq 'FAILDISABLED'}" value="#{pathUtil.s3Icon('white/cancel_icon_16.png')}"/>
                                     </div>
                                 </p:column>
 

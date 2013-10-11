@@ -43,7 +43,7 @@ public class Scheduler {
         dmsTicketUtil.queryQueue();
     }
     
-    @Schedule(minute = "*/5", hour = "*")
+    @Schedule(minute = "*", hour = "*/2")
     public void everySixHours() {
         eventLogs.processLogs();
     }

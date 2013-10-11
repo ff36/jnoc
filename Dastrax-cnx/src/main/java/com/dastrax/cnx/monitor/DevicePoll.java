@@ -14,6 +14,7 @@ import com.googlecode.cqengine.attribute.SimpleAttribute;
 import com.googlecode.cqengine.index.navigable.NavigableIndex;
 import com.googlecode.cqengine.query.Query;
 import static com.googlecode.cqengine.query.QueryFactory.equal;
+import static com.googlecode.cqengine.query.QueryFactory.or;
 import java.util.List;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
@@ -89,11 +90,15 @@ public class DevicePoll {
                 devices.addAll((List<Device>) e.getObjectValue());
 
                 // Create the CQEngine Query
-                Query<Device> query = equal(STATUS, "FAILED");
+                Query<Device> query = or(equal(STATUS, "FAILED"), equal(STATUS, "DISABLED"), equal(STATUS, "FAILDISABLED"));
 
                 // Execute the query and check if there are any results
                 if (devices.retrieve(query).size() > 0) {
-                    return 2;
+                    if (devices.retrieve(query).size() == lds.size()) {
+                        return 0;
+                    } else {
+                        return 2;
+                    }
                 } else {
                     return 1;
                 }
