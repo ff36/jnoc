@@ -163,8 +163,10 @@ public class BasicReport implements Serializable {
             List<String> frequencies = deviceUtil.obtainFrequencies(site);
 
             // Overall
-            reports.add(new Report(UUID.randomUUID().toString(), site, "Overall Uptime", null));
-
+            if (!frequencies.isEmpty()) {
+                reports.add(new Report(UUID.randomUUID().toString(), site, "Overall Uptime", null));
+            }
+            
             // Frequency Overall
             for (String f : frequencies) {
                 if (f != null) {

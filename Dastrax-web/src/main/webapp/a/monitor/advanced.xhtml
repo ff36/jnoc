@@ -55,8 +55,33 @@
                                              style="width: 200px"
                                              converter="siteCvt">
                                 <f:selectItems value="#{advMonitor.sites}" var="site" itemLabel="#{site.name}" itemValue="#{site}"/>
-                                <p:ajax listener="#{advMonitor.selectSite()}" update=":form:tree-panel :form:details :form:charts :form:devices"/>
+                                <p:ajax onstart="blockui1.block();" oncomplete="blockui1.unblock();" listener="#{advMonitor.selectSite()}" update=":form:tree-panel :form:details :form:charts :form:devices"/>
                             </p:selectOneMenu>
+
+                            <pe:blockUI target="option-panel-3" widgetVar="blockui1">  
+                                <div class="windows8-18-b">
+                                    <div class="wBall" id="wBall_1">
+                                        <div class="wInnerBall">
+                                        </div>
+                                    </div>
+                                    <div class="wBall" id="wBall_2">
+                                        <div class="wInnerBall">
+                                        </div>
+                                    </div>
+                                    <div class="wBall" id="wBall_3">
+                                        <div class="wInnerBall">
+                                        </div>
+                                    </div>
+                                    <div class="wBall" id="wBall_4">
+                                        <div class="wInnerBall">
+                                        </div>
+                                    </div>
+                                    <div class="wBall" id="wBall_5">
+                                        <div class="wInnerBall">
+                                        </div>
+                                    </div>
+                                </div> 
+                            </pe:blockUI>
 
                         </h:panelGrid>
 
@@ -66,16 +91,16 @@
 
                     <ui:fragment id="master-site-status">
 
-                        <div class="#{basicMonitor.deviceStatus(site.id) eq 0 ? 'site-status-bar-offline' : basicMonitor.deviceStatus(site.id) eq 1 ? 'site-status-bar-online' : 'site-status-bar-warning'}">
+                        <div class="#{advMonitor.deviceStatus() eq 0 ? 'site-status-bar-offline' : advMonitor.deviceStatus() eq 1 ? 'site-status-bar-online' : 'site-status-bar-warning'}">
                             <table width="100%">
                                 <tr>
                                     <td>
                                         <p:graphicImage value="#{pathUtil.s3Icon('white/air_signal_icon_24.png')}"/>
                                     </td>
                                     <td>
-                                        <h:outputText rendered="#{basicMonitor.deviceStatus(site.id) eq 0}" value="Offline"/>
-                                        <h:outputText rendered="#{basicMonitor.deviceStatus(site.id) eq 1}" value="Fully operational"/>
-                                        <h:outputText rendered="#{basicMonitor.deviceStatus(site.id) eq 2}" value="Partialy operational"/>
+                                        <h:outputText rendered="#{advMonitor.deviceStatus() eq 0}" value="Offline"/>
+                                        <h:outputText rendered="#{advMonitor.deviceStatus() eq 1}" value="Fully operational"/>
+                                        <h:outputText rendered="#{advMonitor.deviceStatus() eq 2}" value="Partialy operational"/>
                                     </td>
                                 </tr>
                             </table>

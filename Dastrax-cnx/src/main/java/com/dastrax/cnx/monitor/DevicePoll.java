@@ -5,7 +5,6 @@
 package com.dastrax.cnx.monitor;
 
 import com.dastrax.cnx.pojo.Device;
-import com.dastrax.cnx.snmp.SnmpUtil;
 import com.dastrax.per.dao.core.SiteDAO;
 import com.dastrax.per.entity.core.Site;
 import com.googlecode.cqengine.CQEngine;
@@ -20,8 +19,6 @@ import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ejb.LocalBean;
-import javax.ejb.Schedule;
-import javax.ejb.Startup;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
@@ -76,27 +73,32 @@ public class DevicePoll {
      * Obtain the cached device tree of a site
      *
      * @param id
-     * @return an integer representation of the device status. If it is not 
-     * possible to determine the status of the site device tree 0 is returned. 
+     * @return an integer representation of the device status. If it is not
+     * possible to determine the status of the site device tree 0 is returned.
      * If all devices are operating properly then 1 is returned. If any
      * individual devices are down then a 2 is returned.
      */
-    public int cachedSiteStatus(String id) {
+    public int cachedDeviceStatus(String id) {
         Element e = cache.get(id);
         if (e != null) {
-            // Create an indexed map to manipulate the data       
-            IndexedCollection<Device> devices = CQEngine.newInstance();
-            devices.addIndex(NavigableIndex.onAttribute(STATUS));
-            devices.addAll((List<Device>) e.getObjectValue());
+            List<Device> lds = (List<Device>) e.getObjectValue();
+            if (!lds.isEmpty()) {
+                // Create an indexed map to manipulate the data       
+                IndexedCollection<Device> devices = CQEngine.newInstance();
+                devices.addIndex(NavigableIndex.onAttribute(STATUS));
+                devices.addAll((List<Device>) e.getObjectValue());
 
-            // Create the CQEngine Query
-            Query<Device> query = equal(STATUS, "FAILED");
+                // Create the CQEngine Query
+                Query<Device> query = equal(STATUS, "FAILED");
 
-            // Execute the query and check if there are any results
-            if (devices.retrieve(query).size() > 0) {
-                return 2;
+                // Execute the query and check if there are any results
+                if (devices.retrieve(query).size() > 0) {
+                    return 2;
+                } else {
+                    return 1;
+                }
             } else {
-                return 1;
+                return 0;
             }
         } else {
             return 0;

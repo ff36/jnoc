@@ -21,17 +21,18 @@ import org.primefaces.model.SortOrder;
 
 /**
  * This class is dedicated to creating a PF LazyDataModel for DMS Tickets. Due
- * to the nature of lazy loading we want to dynamically create queries at runtime
- * based on specified filter conditions so that only the specified items are
- * searched and returned from the database. This increases the efficiency of the
- * search facility exponentially. The class accepts 3 filters that can be
- * optionally passed in. The root filter is the master filter applied by the code 
- * base based on the specific subject to restrict the possible scope of the search
- * to only their authorized items. The optional filter is a database filter that 
- * can be optionally passed in to create filter presents that the subject can
- * quickly access. The global filter is linked to the search field in the table
- * and will match the typed value against the object attributes of the remaining
- * values after the root and optional filters have been applied.
+ * to the nature of lazy loading we want to dynamically create queries at
+ * runtime based on specified filter conditions so that only the specified items
+ * are searched and returned from the database. This increases the efficiency of
+ * the search facility exponentially. The class accepts 3 filters that can be
+ * optionally passed in. The root filter is the master filter applied by the
+ * code base based on the specific subject to restrict the possible scope of the
+ * search to only their authorized items. The optional filter is a database
+ * filter that can be optionally passed in to create filter presents that the
+ * subject can quickly access. The global filter is linked to the search field
+ * in the table and will match the typed value against the object attributes of
+ * the remaining values after the root and optional filters have been applied.
+ *
  * @version Build 2.0.0
  * @since Aug 10, 2013
  * @author Tarka L'Herpiniere <info@tarka.tv>
@@ -45,7 +46,7 @@ public class DmsTicketModel extends LazyDataModel<DmsTicket> {
 
     // Constructors-------------------------------------------------------------
     public DmsTicketModel(
-            DmsTicketDAO dmsTicketDAO, 
+            DmsTicketDAO dmsTicketDAO,
             Map<String, List<String>> rootFilter,
             Map<String, List<String>> optionalFilter) {
         this.dmsTicketDAO = dmsTicketDAO;
@@ -76,7 +77,7 @@ public class DmsTicketModel extends LazyDataModel<DmsTicket> {
 
         // Predicates
         List<Predicate> predicates = new ArrayList<>();
-        
+
         // Sort
         if (sortField != null) {
             if (sortOrder == SortOrder.ASCENDING) {
@@ -85,16 +86,32 @@ public class DmsTicketModel extends LazyDataModel<DmsTicket> {
                 query.orderBy(builder.desc(ticket.get(sortField)));
             }
         }
-        
+
         // Root Filter
         if (!rootFilter.isEmpty()) {
             for (String key : rootFilter.keySet()) {
-                List<String> values = (List<String>) rootFilter.get(key);
-
                 List<Predicate> rootPredicate = new ArrayList<>();
-                for (String value : values) {
+
+                List<String> values = (List<String>) rootFilter.get(key);
+                Expression literal;
+                if (!values.isEmpty()) {
+                    for (String value : values) {
+                        // Search term
+                        literal = builder.literal((String) value);
+                        // Predicate
+                        switch (key) {
+                            case "site":
+                                rootPredicate.add(builder.equal(ticket.get(DmsTicket_.site), literal));
+                                break;
+                            default:
+                                // Don't add any predicate by default
+                                break;
+                        }
+                    }
+                } else {
+                    // This indicates that the user has access to no sites
                     // Search term
-                    Expression literal = builder.literal((String) value);
+                    literal = builder.literal((String) "DOES_NOT_EXIST");
                     // Predicate
                     switch (key) {
                         case "site":
@@ -138,7 +155,7 @@ public class DmsTicketModel extends LazyDataModel<DmsTicket> {
                 predicates.add(builder.or(optionalPredicate.toArray(new Predicate[optionalPredicate.size()])));
             }
         }
-        
+
         // Global Filter
         for (Iterator it = filters.keySet().iterator(); it.hasNext();) {
             String filterProperty = (String) it.next();

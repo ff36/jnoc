@@ -124,7 +124,7 @@ public class BasicMonitor implements Serializable {
 
     // Methods------------------------------------------------------------------
     public int deviceStatus(String siteId) {
-        return devicePole.cachedSiteStatus(siteId); 
+        return devicePole.cachedDeviceStatus(siteId); 
     }
     
     public int dmsStatus(String siteId) {

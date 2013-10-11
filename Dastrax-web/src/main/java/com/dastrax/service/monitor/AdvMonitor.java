@@ -5,6 +5,7 @@
 
 package com.dastrax.service.monitor;
 
+import com.dastrax.cnx.monitor.DevicePoll;
 import com.dastrax.cnx.monitor.DeviceUtil;
 import com.dastrax.cnx.pojo.Device;
 import com.dastrax.per.dao.core.SiteDAO;
@@ -51,6 +52,8 @@ public class AdvMonitor implements Serializable {
     SiteDAO siteDAO;
     @EJB
     DeviceUtil deviceUtil;
+    @EJB
+    DevicePoll devicePole;
     
     // Getters------------------------------------------------------------------
     public List<Site> getSites() {
@@ -146,71 +149,9 @@ public class AdvMonitor implements Serializable {
     public void onNodeSelect(NodeSelectEvent event) {  
           
     }  
-
-    /**
-     * This is a simple class designed to tidy up the outer-class by
-     * encapsulating some variables that are needed to complete some of the out
-     * methods.
-     */
-    public class Inventory {
-        // Variables----------------------------------------------------------------
-        private String device;
-        private String band;
-        private String firmware;
-        private String serial;
-        private boolean status;
-
-        // Constructors-------------------------------------------------------------
-        public Inventory(String device, String band, String firmware, String serial, boolean status) {
-            this.device = device;
-            this.band = band;
-            this.firmware = firmware;
-            this.serial = serial;
-            this.status = status;
-        }
-
-        // Getters------------------------------------------------------------------
-        public String getDevice() {
-            return device;
-        }
-
-        public String getBand() {
-            return band;
-        }
-
-        public String getFirmware() {
-            return firmware;
-        }
-
-        public String getSerial() {
-            return serial;
-        }
-
-        public boolean isStatus() {
-            return status;
-        }
-        
-        // Setters------------------------------------------------------------------
-        public void setDevice(String device) {
-            this.device = device;
-        }
-
-        public void setBand(String band) {
-            this.band = band;
-        }
-
-        public void setFirmware(String firmware) {
-            this.firmware = firmware;
-        }
-
-        public void setSerial(String serial) {
-            this.serial = serial;
-        }
-
-        public void setStatus(boolean status) {
-            this.status = status;
-        }
-        
-        
+    
+    public int deviceStatus() {
+        return devicePole.cachedDeviceStatus(selectedSite.getId()); 
     }
+
 }

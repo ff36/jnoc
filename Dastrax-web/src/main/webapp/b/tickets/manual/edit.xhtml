@@ -252,7 +252,8 @@
 
                     <p:spacer width="100%" height="20"/>
 
-                    <p:dataList value="#{editTicket.ticket.comments}" 
+                    <p:dataList id="comment-datalist"
+                                value="#{editTicket.ticket.comments}" 
                                 var="comment"
                                 itemType="none"
                                 styleClass="clear-data-list">

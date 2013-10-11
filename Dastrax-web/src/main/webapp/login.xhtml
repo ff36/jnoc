@@ -14,10 +14,6 @@
         <title>#{webBundle['default.page.title']} | #{webBundle['login.page.title']}</title>
     </h:head>
     <h:body>
-
-        <!-- TEMPORARY DMS TICKET AND EVENT LOG TRIGGER -->
-        #{pageTrigger.dmsTicketTrigger()}
-        #{pageTrigger.eventLogTrigger()}
         
         <f:metadata>
             <f:viewParam name="email" value="#{authenticate.email}"/>

@@ -66,16 +66,16 @@
 
                     <ui:fragment id="master-site-status">
 
-                        <div class="#{basicMonitor.deviceStatus(site.id) eq 0 ? 'site-status-bar-offline' : basicMonitor.deviceStatus(site.id) eq 1 ? 'site-status-bar-online' : 'site-status-bar-warning'}">
+                        <div class="#{advMonitor.deviceStatus() eq 0 ? 'site-status-bar-offline' : advMonitor.deviceStatus() eq 1 ? 'site-status-bar-online' : 'site-status-bar-warning'}">
                             <table width="100%">
                                 <tr>
                                     <td>
                                         <p:graphicImage value="#{pathUtil.s3Icon('white/air_signal_icon_24.png')}"/>
                                     </td>
                                     <td>
-                                        <h:outputText rendered="#{basicMonitor.deviceStatus(site.id) eq 0}" value="Offline"/>
-                                        <h:outputText rendered="#{basicMonitor.deviceStatus(site.id) eq 1}" value="Fully operational"/>
-                                        <h:outputText rendered="#{basicMonitor.deviceStatus(site.id) eq 2}" value="Partialy operational"/>
+                                        <h:outputText rendered="#{advMonitor.deviceStatus() eq 0}" value="Offline"/>
+                                        <h:outputText rendered="#{advMonitor.deviceStatus() eq 1}" value="Fully operational"/>
+                                        <h:outputText rendered="#{advMonitor.deviceStatus() eq 2}" value="Partialy operational"/>
                                     </td>
                                 </tr>
                             </table>
