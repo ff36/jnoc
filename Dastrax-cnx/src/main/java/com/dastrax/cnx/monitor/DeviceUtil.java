@@ -98,6 +98,7 @@ public class DeviceUtil {
             if (!resultSet.getString("address").equals("Site") && !resultSet.getString("state").equals("OFF")) {
                 Device device = new Device();
                 device.setId(UUID.randomUUID().toString());
+                device.setState(resultSet.getString("state"));
                 device.setAddress(resultSet.getString("address"));
                 device.setFirmware(resultSet.getString("firmware_version"));
                 device.setNode(extractNode(device.getAddress()));

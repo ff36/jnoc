@@ -10,7 +10,7 @@
 
     <h:head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <h:outputStylesheet name="css/auth-c.css"/>
+        <h:outputStylesheet name="css/auth-a.css"/>
         <h:outputStylesheet name="css/common.css"/>
         <h:outputScript library="js" name="jqplot.canvasAxisTickRenderer.min.js" />
         <h:outputScript library="js" name="jqplot.dateAxisRenderer.min.js" />
@@ -36,7 +36,7 @@
 
             <pe:layout stateCookie="#{config.ProjectStage ne 'DEV'}" widgetVar="layourWgt" >
 
-                <pe:layoutPane id="west" position="west" resizeWhileDragging="true" size="250">
+                <pe:layoutPane id="west" position="west" resizeWhileDragging="true" size="300">
                     <p:spacer width="100%" height="45"/>
 
                     <p:spacer width="100%" height="20"/>
@@ -66,14 +66,16 @@
 
                     <ui:fragment id="master-site-status">
 
-                        <div class="site-status-bar">
+                        <div class="#{basicMonitor.deviceStatus(site.id) eq 0 ? 'site-status-bar-offline' : basicMonitor.deviceStatus(site.id) eq 1 ? 'site-status-bar-online' : 'site-status-bar-warning'}">
                             <table width="100%">
                                 <tr>
                                     <td>
                                         <p:graphicImage value="#{pathUtil.s3Icon('white/air_signal_icon_24.png')}"/>
                                     </td>
                                     <td>
-                                        <h:outputText value="Fully operational"/>
+                                        <h:outputText rendered="#{basicMonitor.deviceStatus(site.id) eq 0}" value="Offline"/>
+                                        <h:outputText rendered="#{basicMonitor.deviceStatus(site.id) eq 1}" value="Fully operational"/>
+                                        <h:outputText rendered="#{basicMonitor.deviceStatus(site.id) eq 2}" value="Partialy operational"/>
                                     </td>
                                 </tr>
                             </table>
@@ -83,9 +85,9 @@
 
                     <p:spacer width="100%" height="10"/>
 
-                    <p:panel id="tree-panel" styleClass="ticket-options">
+                    <p:panel id="tree-panel" styleClass="ticket-options" style="overflow-y: scroll; height: 400px">
 
-                        <h:panelGrid id="tree-grid" columns="1">
+                        <h:panelGrid id="tree-grid" columns="1" >
 
                             <h:outputText value="Devices" styleClass="super-field-label"/>
 
@@ -95,12 +97,15 @@
                                 <p:ajax event="unselect" listener="#{advMonitor.onNodeSelect}" update=":form:charts :form:devices" />
 
                                 <p:column>  
-                                    <h:outputText value="#{tree.device}" />  
+                                    <h:outputText value="#{tree.node}" />  
                                 </p:column>
 
                                 <p:column style="width: 30px">  
-                                    <div class="monitor-device-status">
-                                        <p:graphicImage value="#{pathUtil.s3Icon('white/checkmark_icon_16.png')}"/>
+                                    <div class="#{tree.state eq 'ACTIVE' ? 'monitor-device-status-online' : 'monitor-device-status-warning'}">
+                                        <p:graphicImage rendered="" value="#{pathUtil.s3Icon('white/checkmark_icon_16.png')}"/>
+                                        <p:graphicImage rendered="#{tree.state eq 'ACTIVE'}" value="#{pathUtil.s3Icon('white/checkmark_icon_16.png')}"/>
+                                        <p:graphicImage rendered="#{tree.state eq 'FAILED'}" value="#{pathUtil.s3Icon('white/attention_icon_16.png')}"/>
+
                                     </div>
                                 </p:column>
 
@@ -150,18 +155,13 @@
                                 <h:panelGrid columns="2">
 
                                     <h:outputText value="Device:" styleClass="field-label-3"/>
-                                    <h:outputText value="#{advMonitor.selectedNode.data.device}"/>
+                                    <h:outputText value="#{advMonitor.selectedNode.data.node}"/>
 
-                                    <h:outputText value="Band:" styleClass="field-label-3"/>
-                                    <h:outputText value="#{advMonitor.selectedNode.data.band}"/>
+                                    <h:outputText value="Firmware:" styleClass="field-label-3" rendered="#{advMonitor.selectedNode.data.firmware ne null}"/>
+                                    <h:outputText value="#{advMonitor.selectedNode.data.firmware}" rendered="#{advMonitor.selectedNode.data.firmware ne null}"/>
 
-                                    <h:outputText value="Firmware:" styleClass="field-label-3"/>
-                                    <h:outputText value="#{advMonitor.selectedNode.data.firmware}"/>
-
-                                    <h:outputText value="Serial:" styleClass="field-label-3"/>
-                                    <h:outputText value="#{advMonitor.selectedNode.data.serial}"/>
-
-                                    <h:outputText value="Note:" styleClass="field-label-3"/>
+                                    <h:outputText value="Frequency:" styleClass="field-label-3" rendered="#{advMonitor.selectedNode.data.frequency ne null}"/>
+                                    <h:outputText value="#{advMonitor.selectedNode.data.frequency}" rendered="#{advMonitor.selectedNode.data.frequency ne null}"/>
 
                                 </h:panelGrid>
 
@@ -175,56 +175,7 @@
 
                         <p:panel id="charts" styleClass="empty-panel">
 
-                            <h2><h:outputText value="Please select a device to monitor" rendered="#{advMonitor.selectedNode eq null}"/></h2>
-
-                            <ui:fragment rendered="#{advMonitor.selectedNode ne null}">
-
-                                <div class="device-status-bar align-right">
-                                    <h:outputText value="#{advMonitor.selectedNode.data.device} Operational"/>
-                                </div>
-
-                                <p:spacer width="100%" height="10"/>
-
-                                <table width="100%">
-                                    <tr>
-                                        <td>
-                                            <p:lineChart value="#{advMonitor.cpuUtil}" zoom="true" animate="true"  
-                                                         title="CPU Utilization (%)" minY="0" style="height:200px" 
-                                                         showMarkers="false" extender="chartExtender"/>
-                                        </td>
-                                        <td>
-                                            <p:lineChart value="#{advMonitor.diskSpace}" zoom="true" animate="true"  
-                                                         title="Disk Space (GB)" minY="0" maxY="500" style="height:200px" 
-                                                         showMarkers="false" extender="chartExtender"/>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <p:lineChart value="#{advMonitor.memory}" zoom="true" animate="true"  
-                                                         title="Memory (%)" minY="0" style="height:200px" 
-                                                         showMarkers="false" extender="chartExtender"/>
-                                        </td>
-                                        <td>
-                                            <p:lineChart value="#{advMonitor.networkIn}" zoom="true" animate="true"  
-                                                         title="Network In (Bytes)" minY="0" style="height:200px" 
-                                                         showMarkers="false" extender="chartExtender"/>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <p:lineChart value="#{advMonitor.networkOut}" zoom="true" animate="true"  
-                                                         title="Network Out (Bytes)" minY="0" style="height:200px" 
-                                                         showMarkers="false" extender="chartExtender"/>
-                                        </td>
-                                        <td>
-                                            <p:lineChart value="#{advMonitor.cpuTemp}" zoom="true" animate="true"  
-                                                         title="CPU Temp (F)" style="height:200px" 
-                                                         showMarkers="false" extender="chartExtender"/>
-                                        </td>
-                                    </tr>
-                                </table>
-
-                            </ui:fragment>
+                            <h2><h:outputText value="Individual Device monitoring coming soon" rendered="#{advMonitor.selectedNode eq null}"/></h2>
 
                             <script type="text/javascript">
                                 function chartExtender() {

@@ -14,7 +14,6 @@ import com.dastrax.per.entity.core.Subject;
 import com.dastrax.per.project.DastraxCst;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -25,8 +24,6 @@ import org.apache.shiro.SecurityUtils;
 import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
-import org.primefaces.model.chart.CartesianChartModel;
-import org.primefaces.model.chart.LineChartSeries;
 
 /**
  *
@@ -46,12 +43,6 @@ public class AdvMonitor implements Serializable {
     private Site selectedSite;
     private TreeNode rootNode;  
     private TreeNode selectedNode;
-    private CartesianChartModel cpuUtil;
-    private CartesianChartModel diskSpace;
-    private CartesianChartModel memory;
-    private CartesianChartModel networkIn;
-    private CartesianChartModel networkOut;
-    private CartesianChartModel cpuTemp;
     
     // EJB----------------------------------------------------------------------
     @EJB
@@ -76,30 +67,6 @@ public class AdvMonitor implements Serializable {
 
     public TreeNode getSelectedNode() {
         return selectedNode;
-    }
-
-    public CartesianChartModel getCpuUtil() {
-        return cpuUtil;
-    }
-
-    public CartesianChartModel getDiskSpace() {
-        return diskSpace;
-    }
-
-    public CartesianChartModel getMemory() {
-        return memory;
-    }
-
-    public CartesianChartModel getNetworkIn() {
-        return networkIn;
-    }
-
-    public CartesianChartModel getNetworkOut() {
-        return networkOut;
-    }
-
-    public CartesianChartModel getCpuTemp() {
-        return cpuTemp;
     }
     
     // Setters------------------------------------------------------------------
@@ -177,62 +144,9 @@ public class AdvMonitor implements Serializable {
     }
     
     public void onNodeSelect(NodeSelectEvent event) {  
-          createSampleCharts();
+          
     }  
-    
-    private void createSampleCharts() { 
-        long ONE_MINUTE=60000;
-        long time = new Date().getTime();
-        
-        // CPU util
-        cpuUtil = new CartesianChartModel();  
-        LineChartSeries series1 = new LineChartSeries();
-        for (int i = 60; i > 0; i = i - 4) {
-            series1.set(time - (i * ONE_MINUTE), 0.3 + Math.random());
-        }
-        cpuUtil.addSeries(series1);   
-        
-        // Disk space
-        diskSpace = new CartesianChartModel();  
-        LineChartSeries series2 = new LineChartSeries();
-        for (int i = 60; i > 0; i = i - 4) {
-            series2.set(time - (i * ONE_MINUTE), 136);
-        }
-        diskSpace.addSeries(series2);
-        
-        // Memory
-        memory = new CartesianChartModel();  
-        LineChartSeries series3 = new LineChartSeries();
-        for (int i = 60; i > 0; i = i - 4) {
-            series3.set(time - (i * ONE_MINUTE), Math.random());
-        }
-        memory.addSeries(series3);
-        
-        // network in
-        networkIn = new CartesianChartModel();  
-        LineChartSeries series4 = new LineChartSeries();
-        for (int i = 60; i > 0; i = i - 4) {
-            series4.set(time - (i * ONE_MINUTE), 10000 + (int)(Math.random() * 40000));
-        }
-        networkIn.addSeries(series4);
-        
-        // network out
-        networkOut = new CartesianChartModel();  
-        LineChartSeries series5 = new LineChartSeries();
-        for (int i = 60; i > 0; i = i - 4) {
-            series5.set(time - (i * ONE_MINUTE), 10000 + (int)(Math.random() * 40000));
-        }
-        networkOut.addSeries(series5);
-        
-        // CPU Temp
-        cpuTemp = new CartesianChartModel();  
-        LineChartSeries series6 = new LineChartSeries();
-        for (int i = 60; i > 0; i = i - 4) {
-            series6.set(time - (i * ONE_MINUTE), 140 + (int)(Math.random() * 10));
-        }
-        cpuTemp.addSeries(series6);
-    }  
-    
+
     /**
      * This is a simple class designed to tidy up the outer-class by
      * encapsulating some variables that are needed to complete some of the out

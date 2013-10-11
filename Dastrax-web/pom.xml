@@ -118,6 +118,13 @@
         </dependency>
         <dependency>
             <groupId>com.dastrax</groupId>
+            <artifactId>Dastrax-csm</artifactId>
+            <version>2.0.0</version>
+            <type>jar</type>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.dastrax</groupId>
             <artifactId>Dastrax-ejb</artifactId>
             <version>2.1.0</version>
             <type>jar</type>

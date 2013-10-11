@@ -7,6 +7,8 @@ package com.dastrax.service.monitor;
 
 import com.dastrax.app.security.PasswordSvcs;
 import com.dastrax.app.util.FilterUtil;
+import com.dastrax.cnx.monitor.DevicePoll;
+import com.dastrax.cnx.snmp.SnmpUtil;
 import com.dastrax.per.dao.core.SiteDAO;
 import com.dastrax.per.dao.core.SubjectDAO;
 import com.dastrax.per.entity.core.Site;
@@ -50,6 +52,10 @@ public class BasicMonitor implements Serializable {
     SubjectDAO subjectDAO;
     @EJB
     FilterUtil filterUtil;
+    @EJB
+    DevicePoll devicePole;
+    @EJB
+    SnmpUtil snmpUtil;
     
     // Constructors-------------------------------------------------------------
     public void init() {
@@ -116,4 +122,13 @@ public class BasicMonitor implements Serializable {
         this.filter = filter;
     }
 
+    // Methods------------------------------------------------------------------
+    public int deviceStatus(String siteId) {
+        return devicePole.cachedSiteStatus(siteId); 
+    }
+    
+    public int dmsStatus(String siteId) {
+        return snmpUtil.cachedDmsStatus(siteId);
+    }
+    
 }

@@ -19,6 +19,7 @@ public class Device implements Serializable {
 
     // Variables----------------------------------------------------------------
     private String id;
+    private String state;
     private String node;
     private String address;
     private String frequency;
@@ -33,6 +34,10 @@ public class Device implements Serializable {
     // Getters------------------------------------------------------------------
     public String getId() {
         return id;
+    }
+
+    public String getState() {
+        return state;
     }
 
     public String getNode() {
@@ -62,6 +67,10 @@ public class Device implements Serializable {
     // Setters------------------------------------------------------------------
     public void setId(String id) {
         this.id = id;
+    }
+
+    public void setState(String state) {
+        this.state = state;
     }
 
     public void setNode(String node) {

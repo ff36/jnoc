@@ -6,10 +6,36 @@
 
 package com.dastrax.service.temp;
 
+import com.dastrax.cnx.report.EventLogs;
+import com.dastrax.csm.util.DmsTicketUtil;
+import javax.ejb.Asynchronous;
+import javax.ejb.EJB;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Named;
+
 /**
  *
  * @author tarka
  */
+@Named
+@RequestScoped
 public class PageTrigger {
+    
+    // EJB----------------------------------------------------------------------
+    @EJB
+    DmsTicketUtil dmsTicketUtil;
+    @EJB
+    EventLogs eventLogs;
+    
+    // Methods------------------------------------------------------------------
+    @Asynchronous
+    public void dmsTicketTrigger() {
+        dmsTicketUtil.queryQueue();
+    }
+    
+    @Asynchronous
+    public void eventLogTrigger() {
+        eventLogs.processLogs();
+    }
     
 }

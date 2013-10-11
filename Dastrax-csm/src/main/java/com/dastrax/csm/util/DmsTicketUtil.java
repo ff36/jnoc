@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import org.codehaus.jackson.map.DeserializationConfig;
@@ -109,7 +108,7 @@ public class DmsTicketUtil {
         
     }
     
-    @Asynchronous
+//    @Asynchronous
     private void processQueue(List<JsonMsg> jsonMsgs) {
 
         for (JsonMsg jsonMsg : jsonMsgs) {

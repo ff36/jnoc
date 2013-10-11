@@ -9,7 +9,7 @@
 
     <h:head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <h:outputStylesheet name="css/auth-b.css"/>
+        <h:outputStylesheet name="css/auth-a.css"/>
         <h:outputStylesheet name="css/common.css"/>
         <script src="http://maps.google.com/maps/api/js?sensor=true" type="text/javascript"></script>
         <link rel="shortcut icon" type="image/png" href="#{request.contextPath}/resources/graphics/favicon.ico" />
@@ -124,9 +124,12 @@
                             #{site.dmsIP}
                         </p:column>
                         
-                        <p:column style="width: 110px">
-                            <div class="monitor-indicator-online">
-                                <p:graphicImage value="#{pathUtil.s3Icon('white/checkmark_icon_16.png')}" styleClass="monitor-indicator-label"/>
+                        <p:column  style="width: 110px">
+                            <div class="#{basicMonitor.dmsStatus(site.id) eq 0 ? 'monitor-indicator-offline' : basicMonitor.dmsStatus(site.id) eq 1 ? 'monitor-indicator-online' : 'monitor-indicator-warning'}">
+                                <p:graphicImage rendered="#{basicMonitor.dmsStatus(site.id) eq 0}" value="#{pathUtil.s3Icon('white/cancel_icon_16.png')}" styleClass="monitor-indicator-label"/>  
+                                <p:graphicImage rendered="#{basicMonitor.dmsStatus(site.id) eq 1}" value="#{pathUtil.s3Icon('white/checkmark_icon_16.png')}" styleClass="monitor-indicator-label"/>
+                                <p:graphicImage rendered="#{basicMonitor.dmsStatus(site.id) eq 2}" value="#{pathUtil.s3Icon('white/attention_icon_16.png')}" styleClass="monitor-indicator-label"/>
+                                
                                 <table width="100%">
                                     <tr>
                                         <td width="70%"><h:outputText value="DMS" styleClass="monitor-indicator-status"/></td>
@@ -143,8 +146,11 @@
                         </p:column>
                         
                         <p:column  style="width: 110px">
-                            <div class="monitor-indicator-online">
-                                <p:graphicImage value="#{pathUtil.s3Icon('white/checkmark_icon_16.png')}" styleClass="monitor-indicator-label"/>
+                            <div class="#{basicMonitor.deviceStatus(site.id) eq 0 ? 'monitor-indicator-offline' : basicMonitor.deviceStatus(site.id) eq 1 ? 'monitor-indicator-online' : 'monitor-indicator-warning'}">
+                                <p:graphicImage rendered="#{basicMonitor.deviceStatus(site.id) eq 0}" value="#{pathUtil.s3Icon('white/cancel_icon_16.png')}" styleClass="monitor-indicator-label"/>  
+                                <p:graphicImage rendered="#{basicMonitor.deviceStatus(site.id) eq 1}" value="#{pathUtil.s3Icon('white/checkmark_icon_16.png')}" styleClass="monitor-indicator-label"/>
+                                <p:graphicImage rendered="#{basicMonitor.deviceStatus(site.id) eq 2}" value="#{pathUtil.s3Icon('white/attention_icon_16.png')}" styleClass="monitor-indicator-label"/>
+                                
                                 <table width="100%">
                                     <tr>
                                         <td width="70%"><h:outputText value="DAS" styleClass="monitor-indicator-status"/></td>

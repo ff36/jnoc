@@ -19,6 +19,9 @@
         
         #{permissionUtil.hasPagePermission('dmsticket:access')}
 
+        <!-- TEMPORARY DMS TICKET TRIGGER -->
+        #{pageTrigger.dmsTicketTrigger()}
+        
         <f:metadata>
             <f:viewParam name="filter" value="#{dmsTickets.filter}"/>
             <f:viewAction action="#{dmsTickets.init}" />

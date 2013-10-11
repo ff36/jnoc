@@ -1048,6 +1048,7 @@ Here is an example of CacheManager level resource tuning, which will use up to 4
     timeToIdle are not used and do not need to be specified.
  -->   
 <cache name="DEVICE_STATUS_CACHE" maxEntriesLocalHeap="1000" eternal="true" memoryStoreEvictionPolicy="FIFO"/>
+<cache name="DMS_STATUS_CACHE" maxEntriesLocalHeap="1000" eternal="true" memoryStoreEvictionPolicy="FIFO"/>
 
 
 <!--

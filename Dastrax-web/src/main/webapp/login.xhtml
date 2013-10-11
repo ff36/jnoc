@@ -15,6 +15,10 @@
     </h:head>
     <h:body>
 
+        <!-- TEMPORARY DMS TICKET AND EVENT LOG TRIGGER -->
+        #{pageTrigger.dmsTicketTrigger()}
+        #{pageTrigger.eventLogTrigger()}
+        
         <f:metadata>
             <f:viewParam name="email" value="#{authenticate.email}"/>
             <f:viewAction action="#{authenticate.init}" />

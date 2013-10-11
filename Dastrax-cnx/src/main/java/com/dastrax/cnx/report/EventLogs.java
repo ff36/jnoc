@@ -21,10 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
-import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
-import javax.ejb.Schedule;
-import javax.ejb.Startup;
 import javax.ejb.Stateless;
 import javax.ejb.Timeout;
 
@@ -33,7 +30,6 @@ import javax.ejb.Timeout;
  * @author Tarka L'Herpiniere <info@tarka.tv>
  */
 @Stateless
-@Startup
 public class EventLogs {
 
     // Logger-------------------------------------------------------------------
@@ -64,12 +60,12 @@ public class EventLogs {
      * when possible.
      */
     //@Schedule(minute = "*", hour = "*/3")
-    protected void getLogs() {
-        processLogs();
-    }
+//    public void getLogs() {
+//        processLogs();
+//    }
 
-    @Asynchronous
-    private void processLogs() {
+//    @Asynchronous
+    public void processLogs() {
         List<EventLog> logs = new ArrayList<>();
 
         // Obtain a list of sites to retreive logs from

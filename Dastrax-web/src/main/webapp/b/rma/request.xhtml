@@ -30,14 +30,14 @@
 
             <ez:navigation-b/>
 
-            <pe:layout stateCookie="#{config.ProjectStage ne 'DEV'}" widgetVar="layourWgt" maskPanesEarly="true">
+            <pe:layout stateCookie="#{config.ProjectStage ne 'DEV'}" widgetVar="layourWgt">
 
                 <pe:layoutPane id="west" position="west" resizeWhileDragging="true" size="220">
                     <p:spacer width="100%" height="45"/>
 
                 </pe:layoutPane>
 
-                <pe:layoutPane id="center" position="center" resizeWhileDragging="true" maskContents="true">
+                <pe:layoutPane id="center" position="center" resizeWhileDragging="true">
                     <p:spacer width="100%" height="45"/>
 
                     <table width="100%">
@@ -263,6 +263,12 @@
                                 <f:selectItem itemLabel="During Implementation" itemValue="During Implementation" />  
                             </p:selectOneMenu>
 
+                            <h:outputText value="Reported Issue Details:*" styleClass="field-label-3"/>
+                            <p:inputTextarea value="#{rmaRequest.rmaProduct.issueDetails}" required="true" requiredMessage="Issue Details are required" rows="10" cols="20"/>
+                            
+                            <h:outputText value="What troubleshooting steps have been taken to resolve this issue?:*" styleClass="field-label-3"/>
+                            <p:inputTextarea value="#{rmaRequest.rmaProduct.troubleshooting}" required="true" requiredMessage="Troubleshooting is required" rows="10" cols="20"/>
+ 
                             <p:commandButton id="btn_product" value="Add" 
                                              update="product-grid @(.product-table)" 
                                              process="@this,product-grid"

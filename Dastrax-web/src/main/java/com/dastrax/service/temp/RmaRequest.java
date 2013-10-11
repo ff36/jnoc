@@ -188,7 +188,7 @@ public class RmaRequest implements Serializable {
     public RmaProductInfo getRmaProduct() {
         return rmaProduct;
     }
-
+    
     // Setter-------------------------------------------------------------------
     public void setCompanyName(String companyName) {
         this.companyName = companyName;
@@ -310,7 +310,7 @@ public class RmaRequest implements Serializable {
                 + projectName
                 + "<br /> Quote/Sales Order/Fulfillment: "
                 + orderNumber
-                + "<br /><br /> <h4>Replacement Product Ship To Info:</h4>"
+                + "<br /><br /> <h4>RMA Contact (responsible for return of product):</h4>"
                 + "<br /> Name: "
                 + responsibleName
                 + "<br /> Company: "
@@ -356,7 +356,12 @@ public class RmaRequest implements Serializable {
                     + "<br /> Reason for return: "
                     + product.returnReason
                     + "<br /> Failure stage: "
-                    + product.failureStage;
+                    + product.failureStage
+                    + "<br /> Issue Details: "
+                    + product.issueDetails
+                    + "<br /> Troubleshooting Steps: "
+                    + product.troubleshooting
+                    + "<br />";
             html = html + temp;
         }
 
@@ -418,6 +423,8 @@ public class RmaRequest implements Serializable {
         private String partName;
         private String returnReason;
         private String failureStage;
+        private String issueDetails;
+        private String troubleshooting;
 
         // Constructor----------------------------------------------------------
         public RmaProductInfo() {
@@ -448,6 +455,14 @@ public class RmaRequest implements Serializable {
             return failureStage;
         }
 
+        public String getIssueDetails() {
+            return issueDetails;
+        }
+
+        public String getTroubleshooting() {
+            return troubleshooting;
+        }
+
         // Setters--------------------------------------------------------------
         public void setQty(int qty) {
             this.qty = qty;
@@ -471,6 +486,14 @@ public class RmaRequest implements Serializable {
 
         public void setFailureStage(String failureStage) {
             this.failureStage = failureStage;
+        }
+
+        public void setIssueDetails(String issueDetails) {
+            this.issueDetails = issueDetails;
+        }
+
+        public void setTroubleshooting(String troubleshooting) {
+            this.troubleshooting = troubleshooting;
         }
 
     }
