@@ -68,10 +68,15 @@
                     <pe:layoutPane id="center-north" resizeWhileDragging="true" position="north" size="40%">  
 
                         <p:spacer width="100%" height="45"/>
+                        
+                        <!-- Load the metrics after the page has loaded -->
+                        <p:remoteCommand global="false" actionListener="#{basicReport.initMetrics()}" name="loadMetrics" id="rc1" autoRun="true" update=":form:metrics" process="@this"/>
 
                         <p:panel id="metrics" styleClass="empty-panel">
 
                             <h2><h:outputText value="Metrics"/></h2>
+                            
+                            <h:outputText id="loading" value="Loading Metrics, this may take a few moments..." rendered="#{!basicReport.metricsLoaded}"/>
 
                             <p:dataTable id="metrics-table"
                                          widgetVar="metricsTable"
@@ -80,7 +85,8 @@
                                          selection="#{basicReport.selectedReports}"
                                          value="#{basicReport.reportModel}"
                                          styleClass="main-table"
-                                         filteredValue="#{basicReport.filteredReports}"> 
+                                         filteredValue="#{basicReport.filteredReports}"
+                                         rendered="#{basicReport.metricsLoaded}"> 
 
                                 <p:ajax event="rowSelectCheckbox"
                                         listener="#{basicReport.selectEvent}"

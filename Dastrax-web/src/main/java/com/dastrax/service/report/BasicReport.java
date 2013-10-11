@@ -21,7 +21,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
-import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
@@ -52,6 +51,7 @@ public class BasicReport implements Serializable {
     private CartesianChartModel reportChart;
     private Date from;
     private Date to;
+    private boolean metricsLoaded = false;
 
     // EJB----------------------------------------------------------------------
     @EJB
@@ -94,6 +94,10 @@ public class BasicReport implements Serializable {
         return filteredReports;
     }
 
+    public boolean isMetricsLoaded() {
+        return metricsLoaded;
+    }
+
     // Setters------------------------------------------------------------------
     public void setReports(List<Report> reports) {
         this.reports = reports;
@@ -132,8 +136,8 @@ public class BasicReport implements Serializable {
     }
 
     // Methods------------------------------------------------------------------
-    @PostConstruct
-    private void postConstruct() {
+    //@PostConstruct
+    public void initMetrics() {
 
         List<Site> sites = new ArrayList<>();
 
@@ -155,7 +159,7 @@ public class BasicReport implements Serializable {
                     .asList().get(1).toString());
             sites = s.getCompany().getClientSites();
         }
-
+        
         // Setup the reporting objects
         for (Site site : sites) {
 
@@ -174,24 +178,6 @@ public class BasicReport implements Serializable {
                 }
             }
 
-//            // Frequency by Carrier
-//            for (String c : carr) {
-//                for (String f : freq) {
-//                    reports.add(new Report(UUID.randomUUID().toString(), site, f + " / " + c));
-//                }
-//            }
-//            
-//            // Carrier Overall
-//            for (String c : carr) {
-//                reports.add(new Report(UUID.randomUUID().toString(), site, c + " Overall"));
-//            }
-//
-//            // Carrier by Frequency
-//            for (String f : freq) {
-//                for (String c : carr) {
-//                    reports.add(new Report(UUID.randomUUID().toString(), site, c + " / " + f));
-//                }
-//            }
         }
         reportModel = new ReportModel(reports);
         filteredReports = reports;
@@ -206,6 +192,8 @@ public class BasicReport implements Serializable {
             Calendar cal = Calendar.getInstance();
             to = cal.getTime();
         }
+        // Allow the datatable to be rendered
+        metricsLoaded = true;
     }
 
     public void selectEvent(SelectEvent event) {
