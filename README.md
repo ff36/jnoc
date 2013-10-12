@@ -71,6 +71,51 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 
 11. Precedence refers to how versions are compared to each other when ordered. Precedence MUST be calculated by separating the version into major, minor, patch and pre-release identifiers in that order (Build metadata does not figure into precedence). Precedence is determined by the first difference when comparing each of these identifiers from left to right as follows: Major, minor, and patch versions are always compared numerically. Example: 1.0.0 < 2.0.0 < 2.1.0 < 2.1.1. When major, minor, and patch are equal, a pre-release version has lower precedence than a normal version. Example: 1.0.0-alpha < 1.0.0. Precedence for two pre-release versions with the same major, minor, and patch version MUST be determined by comparing each dot separated identifier from left to right until a difference is found as follows: identifiers consisting of only digits are compared numerically and identifiers with letters or hyphens are compared lexically in ASCII sort order. Numeric identifiers always have lower precedence than non-numeric identifiers. A larger set of pre-release fields has a higher precedence than a smaller set, if all of the preceding identifiers are equal. Example: 1.0.0-alpha < 1.0.0-alpha.1 < 1.0.0-alpha.beta < 1.0.0-beta < 1.0.0-beta.2 < 1.0.0-beta.11 < 1.0.0-rc.1 < 1.0.0.
 
+### Permissions
+Permissions are granted to user accounts to allow them to access and perform restricted services. Permissions work by granting access to a restricted services, this means that by default an account has the minimum 'public' permissions and additional permissions need to be granted in order to allow that user to access and manipulate the desired services.
+
+Permissions are granted in the following format:
+_SERVICES:FUNCTIONS_
+
+Both services and functions can be specified as comma separate lists with no spaces;
+_SERVICE,SERVICE,SERVICE:FUNCTION,FUNCTION_
+
+All services supplied on the left of the colon (:) will be granted the function on the right of the colon. So the following would grant a user permission to view (access) and create both sites and accounts;
+_account,site:access,create_
+
+To specify different levels of granularity within a users permissions multiple permissions can be granted. The following would grant access and create to accounts but only access to sites;
+_account:access,create_
+_site:access_
+
+The * can be specified as a wildcard for both services and functions.
+
+Permissions are bound by the users account type (metier). Granting a VAR account *:* (ALL SERVICES:ALL FUNCTIONS) does not mean that they have the same access rights as an Administrator granted *:*. It simply implies that within the VAR user account they have access to all the services and functions that are available as a VAR.
+
+| Services      | Description        |
+|-------------- | ------------------ |
+| account       | User accounts.     |
+| ticket        | Support tickets.    |
+| dmsticket     | Automated tickets.  |
+| company       | VAR and Client companies. |
+| site          | DAS installation sites. |
+| report-basic  | DAS reporting. |
+| monitor-basic | DAS and DMS overall live monitoring. |
+| monitor-adv   | DAS specific device live monitoring. |
+| university    | SOLiD university. |
+| knowledge     | Egnyte file storage. |
+| rma           | Return material authorization. |
+| permission    | User permissions. By default the 'account' Service allows all account features to be manipulated EXCEPT permissions. |
+| *             | All of the above (Use very sparingly) |
+
+| Functions     | Description        |
+|-------------- | ------------------ |
+| access        | Grants privilege to 'access' the specified 'Service'. 'create, edit, delete' functions must be accompanied by 'access' otherwise these functions are rendered mute as the page will not load. |
+| create        | Grants privilege to 'create' the specified 'Service'. If the specified 'Service' does not support this it will be transparently ignored. eg. 'university' does not support 'create' however, the permission 'university:create' is valid and will simply be ignored |
+| edit          | Grants privilege to 'edit' the specified 'Service'. If the specified 'Service' does not support this it will be transparently ignored. eg. 'university' does not support 'edit' however, the permission 'university:edit' is valid and will simply be ignored |
+| delete        | Grants privilege to 'delete' the specified 'Service'. If the specified 'Service' does not support this it will be transparently ignored. eg. 'university' does not support 'delete' however, the permission 'university:edit' is valid and will simply be ignored |
+| *             | Grants all of the above (Use very sparingly) |
+
+
 ### Contact
 | Type      | Name               | Role                | Telephone    | Email               | Address                              |
 |---------- | ------------------ | ------------------- | ------------ | ------------------- | ------------------------------------ |
