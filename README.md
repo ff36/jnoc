@@ -74,8 +74,9 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 ### Permissions
 Permissions are granted to user accounts to allow them to access and perform restricted services. Permissions work by granting access to a restricted services, this means that by default an account has the minimum 'public' permissions and additional permissions need to be granted in order to allow that user to access and manipulate the desired services.
 
-Permissions are granted in the following format:
+Permissions are granted in the following format;
 _SERVICES:FUNCTIONS_
+Where the specified functions are granted for the specified services.
 
 Both services and functions can be specified as comma separate lists with no spaces;
 _SERVICE,SERVICE,SERVICE:FUNCTION,FUNCTION_
@@ -83,13 +84,13 @@ _SERVICE,SERVICE,SERVICE:FUNCTION,FUNCTION_
 All services supplied on the left of the colon (:) will be granted the function on the right of the colon. So the following would grant a user permission to view (access) and create both sites and accounts;
 _account,site:access,create_
 
-To specify different levels of granularity within a users permissions multiple permissions can be granted. The following would grant access and create to accounts but only access to sites;
+To specify different levels of granularity within a users permissions multiple permissions can be granted. The following would grant 'access' and 'create' functions to 'account' services, but only 'access' to 'sites';
 _account:access,create_
 _site:access_
 
 The * can be specified as a wildcard for both services and functions.
 
-Permissions are bound by the users account type (metier). Granting a VAR account *:* (ALL SERVICES:ALL FUNCTIONS) does not mean that they have the same access rights as an Administrator granted *:*. It simply implies that within the VAR user account they have access to all the services and functions that are available as a VAR.
+Permissions are bound by the users account type (metier). Granting a VAR account _*:*_ ({ALL SERVICES}:{ALL FUNCTIONS}) does not mean that they have the same access rights as an administrator granted *:*. It simply implies that within the VAR user account they have all the functions available in all the services that are available as a VAR.
 
 | Services      | Description        |
 |-------------- | ------------------ |
