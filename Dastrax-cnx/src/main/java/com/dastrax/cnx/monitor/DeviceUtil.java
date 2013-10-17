@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.UUID;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -77,9 +78,7 @@ public class DeviceUtil {
         } catch (ClassNotFoundException e) {
             exu.report(e);
         } catch (SQLException e) {
-            if (ResourceBundle.getBundle("Config").getString("ProjectStage").equals("PRO")) {
-                exu.report(e);
-            }
+            LOG.log(Level.INFO, "Could not reach remote MySQL on DMS", e);
         } finally {
             if (connect != null) {
                 try {
@@ -96,14 +95,16 @@ public class DeviceUtil {
         List<Device> devices = new ArrayList<>();
         while (resultSet.next()) {
             if (!resultSet.getString("address").equals("Site") && !resultSet.getString("state").contains("OFF")) {
-                Device device = new Device();
-                device.setId(UUID.randomUUID().toString());
-                device.setState(resultSet.getString("state"));
-                device.setAddress(resultSet.getString("address"));
-                device.setFirmware(resultSet.getString("firmware_version"));
-                device.setNode(extractNode(device.getAddress()));
-                device.setFrequency(convertFrequency(resultSet.getInt("type"), device.getNode()));
-                devices.add(device);
+                if (!resultSet.getString("state").contains("NEW")) {
+                    Device device = new Device();
+                    device.setId(UUID.randomUUID().toString());
+                    device.setState(resultSet.getString("state"));
+                    device.setAddress(resultSet.getString("address"));
+                    device.setFirmware(resultSet.getString("firmware_version"));
+                    device.setNode(extractNode(device.getAddress()));
+                    device.setFrequency(convertFrequency(resultSet.getInt("type"), device.getNode()));
+                    devices.add(device);
+                }
             }
         }
 

@@ -76,23 +76,23 @@ Permissions are granted to user accounts to allow them to access and perform res
 
 Permissions are granted in the following format;
 
-_SERVICES:FUNCTIONS_
+*SERVICES:FUNCTIONS*
 
 Where the specified functions are granted for the specified services.
 
 Both services and functions can be specified as comma separate lists with no spaces;
 
-_SERVICE,SERVICE,SERVICE:FUNCTION,FUNCTION_
+*SERVICE,SERVICE,SERVICE:FUNCTION,FUNCTION*
 
 All services supplied on the left of the colon (:) will be granted the function on the right of the colon. So the following would grant a user permission to view (access) and create both sites and accounts;
 
-_account,site:access,create_
+*account,site:access,create*
 
 To specify different levels of granularity within a users permissions multiple permissions can be granted. The following would grant 'access' and 'create' functions to 'account' services, but only 'access' to 'sites';
 
-_account:access,create_
+*account:access,create*
 
-_site:access_
+*site:access*
 
 The * can be specified as a wildcard for both services and functions.
 

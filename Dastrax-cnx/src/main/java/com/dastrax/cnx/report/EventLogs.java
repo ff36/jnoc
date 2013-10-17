@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -100,9 +101,7 @@ public class EventLogs {
             } catch (ClassNotFoundException e) {
                 exu.report(e);
             } catch (SQLException e) {
-                if (ResourceBundle.getBundle("Config").getString("ProjectStage").equals("PRO")) {
-                    exu.report(e);
-                }
+                LOG.log(Level.INFO, "Could not reach remote MySQL on DMS", e);
             } finally {
                 if (connect != null) {
                     try {
