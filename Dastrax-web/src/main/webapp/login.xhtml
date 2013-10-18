@@ -29,7 +29,7 @@
 
         <!-- Logo -->
         <p:graphicImage id="logo" 
-                        value="#{authenticate.logoPath}"
+                        value="#{pathUtil.s3Logo('solid_logo_v1.jpg')}"
                         rendered="#{authenticate.renderLogin or authenticate.renderUniversal}"
                         width="275"/>
 
