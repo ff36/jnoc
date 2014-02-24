@@ -55,7 +55,7 @@
                                              style="width: 200px"
                                              converter="siteCvt">
                                 <f:selectItems value="#{advMonitor.sites}" var="site" itemLabel="#{site.name}" itemValue="#{site}"/>
-                                <p:ajax listener="#{advMonitor.selectSite()}" update=":form:tree-panel :form:details :form:charts :form:devices"/>
+                                <p:ajax listener="#{advMonitor.selectSite()}" update=":form:tree-panel :form:details :form:charts :form:devices :form:master-site-status"/>
                             </p:selectOneMenu>
 
                         </h:panelGrid>
@@ -64,7 +64,7 @@
 
                     <p:spacer width="100%" height="10"/>
 
-                    <ui:fragment id="master-site-status">
+                    <h:panelGroup id="master-site-status">
 
                         <div class="#{advMonitor.deviceStatus() eq 0 ? 'site-status-bar-offline' : advMonitor.deviceStatus() eq 1 ? 'site-status-bar-online' : 'site-status-bar-warning'}">
                             <table width="100%">
@@ -81,7 +81,7 @@
                             </table>
                         </div>
 
-                    </ui:fragment>
+                    </h:panelGroup>
 
                     <p:spacer width="100%" height="10"/>
 

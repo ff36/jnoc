@@ -74,6 +74,7 @@ public class DeviceUtil {
 
                 // Create the connection
                 Class.forName("com.mysql.jdbc.Driver");
+                DriverManager.setLoginTimeout(timeout);
                 connect = DriverManager.getConnection(url, username, password);
 
                 // Create the statement
@@ -89,7 +90,8 @@ public class DeviceUtil {
         } catch (ClassNotFoundException e) {
             exu.report(e);
         } catch (SQLException e) {
-            LOG.log(Level.INFO, "Could not reach remote MySQL on DMS", e);
+            String message = "Could not reach DMS remote MySQL at " + site.getDmsIP();
+            LOG.log(Level.INFO, message);
         } finally {
             if (connect != null) {
                 try {
