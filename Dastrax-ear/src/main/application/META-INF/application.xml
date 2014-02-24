@@ -21,7 +21,7 @@
         <ejb>Dastrax-csm-2.0.0.jar</ejb>
     </module>
     <module>
-        <ejb>Dastrax-per-2.1.0.jar</ejb>
+        <ejb>Dastrax-per-2.1.1.jar</ejb>
     </module>
     <module>
         <ejb>Dastrax-cnx-1.0.0.jar</ejb>

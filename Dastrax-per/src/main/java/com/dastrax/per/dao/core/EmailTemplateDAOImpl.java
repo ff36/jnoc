@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -36,6 +38,7 @@ public class EmailTemplateDAOImpl implements EmailTemplateDAO {
     // QUERY
     ////////////////////////////////////////////////////////////////////////////
     @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public EmailTemplate findTemplateById(String id) {
         List<EmailTemplate> list = em.createNamedQuery("EmailTemplate.findByPK")
                 .setParameter("id", id)

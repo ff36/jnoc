@@ -14,7 +14,7 @@
         <title>#{webBundle['default.page.title']} | #{webBundle['login.page.title']}</title>
     </h:head>
     <h:body>
-        
+
         <f:metadata>
             <f:viewParam name="email" value="#{authenticate.email}"/>
             <f:viewAction action="#{authenticate.init}" />
@@ -27,12 +27,6 @@
                         closable="true"/>
         </div>
 
-        <!-- Logo -->
-        <p:graphicImage id="logo" 
-                        value="#{pathUtil.s3Logo('solid_logo_v1.jpg')}"
-                        rendered="#{authenticate.renderLogin or authenticate.renderUniversal}"
-                        width="275"/>
-
         <!-- Authentication -->
         <h:form id="form"
                 rendered="#{authenticate.renderLogin}">
@@ -41,6 +35,15 @@
 
                 <p:focus/> 
 
+                <h:panelGrid columns="1">
+                    <!-- Logo -->
+                    <p:graphicImage id="logo"
+                                    styleClass="login-logo"
+                                    value="#{pathUtil.s3Logo('solid_logo_v1.jpg')}"
+                                    rendered="#{authenticate.renderLogin or authenticate.renderUniversal}"
+                                    width="275"/>
+                </h:panelGrid> 
+                
                 <h:panelGrid columns="2">
 
                     <p:inputText id="email"

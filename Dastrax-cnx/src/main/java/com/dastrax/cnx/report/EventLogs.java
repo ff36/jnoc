@@ -39,6 +39,7 @@ public class EventLogs {
     // Variables----------------------------------------------------------------
     private final String username = ResourceBundle.getBundle("Config").getString("DMSUsernameDB");
     private final String password = ResourceBundle.getBundle("Config").getString("DMSPasswordDB");
+    private final int timeout = 5; // Query timeout in secounds
 
     // EJB----------------------------------------------------------------------
     @EJB
@@ -53,18 +54,17 @@ public class EventLogs {
     // Methods------------------------------------------------------------------
     /**
      * This method is executed every 3 hours to at set intervals to trigger a
-     * Database connection to retrieve the event log from the site DMS. No 
-     * guarantee is provided that the schedule will be maintained with absolute 
-     * accuracy. If a cycle is still running when the next scheduled cycle is 
-     * due to start, the preceeding cycle will be allowed to complete before 
-     * beginning the new one. Cycles in arrears will be queued for execution 
+     * Database connection to retrieve the event log from the site DMS. No
+     * guarantee is provided that the schedule will be maintained with absolute
+     * accuracy. If a cycle is still running when the next scheduled cycle is
+     * due to start, the preceeding cycle will be allowed to complete before
+     * beginning the new one. Cycles in arrears will be queued for execution
      * when possible.
      */
     //@Schedule(minute = "*", hour = "*/3")
 //    public void getLogs() {
 //        processLogs();
 //    }
-
 //    @Asynchronous
     public void processLogs() {
         List<EventLog> logs = new ArrayList<>();
@@ -85,6 +85,7 @@ public class EventLogs {
                 }
                 // Create the connection
                 Class.forName("com.mysql.jdbc.Driver");
+                DriverManager.setLoginTimeout(timeout);
                 connect = DriverManager.getConnection(url, username, password);
 
                 // Get the last synched log entry
@@ -101,7 +102,8 @@ public class EventLogs {
             } catch (ClassNotFoundException e) {
                 exu.report(e);
             } catch (SQLException e) {
-                LOG.log(Level.INFO, "Could not reach remote MySQL on DMS", e);
+                String message = "Could not reach DMS remote MySQL at " + site.getDmsIP();
+                LOG.log(Level.INFO, message);
             } finally {
                 if (connect != null) {
                     try {
@@ -160,7 +162,7 @@ public class EventLogs {
      */
     private List<EventLog> convertResult(ResultSet resultSet, Site site, List<Device> devices) throws SQLException {
         List<EventLog> logs = new ArrayList<>();
-        if (resultSet != null && resultSet.first() && devices != null && !devices.isEmpty() ) {
+        if (resultSet != null && resultSet.first() && devices != null && !devices.isEmpty()) {
             while (resultSet.next()) {
                 // Get the respective device from the tree
                 Device device = obtainDevice(devices, resultSet.getString("address"));

@@ -48,7 +48,7 @@ A:link:hover, A:visited:hover
 #authenticate
 {
 	position: fixed;
-	top: 50%;
+	top: 30%;
 	left: 50%;
 	margin-top: -89px;
 	margin-left: -162px;
@@ -68,7 +68,7 @@ A:link:hover, A:visited:hover
 #forgot
 {
 	position: fixed;
-	top: 50%;
+	top: 30%;
 	left: 50%;
 	margin-top: -89px;
 	margin-left: -162px;
@@ -157,12 +157,9 @@ A:link:hover, A:visited:hover
 	font-size: 14pt;
 	color: #606060;
 }
-#logo
+.login-logo
 {
-	position: fixed;
-	left: 50%;
-	top: 20%;
-	margin-left: -142px;
+	margin-left: 18px;
 }
 #messages
 {
