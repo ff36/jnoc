@@ -6,6 +6,7 @@ package com.dastrax.cnx.monitor;
 
 import com.dastrax.app.util.ExceptionUtil;
 import com.dastrax.cnx.pojo.Device;
+import com.dastrax.cnx.snmp.SnmpUtil;
 import com.dastrax.per.entity.core.Site;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -44,10 +45,13 @@ public class DeviceUtil {
     // Variables----------------------------------------------------------------
     private final String username = ResourceBundle.getBundle("Config").getString("DMSUsernameDB");
     private final String password = ResourceBundle.getBundle("Config").getString("DMSPasswordDB");
+    private final int timeout = 5; // Query timeout in secounds
 
     // EJB----------------------------------------------------------------------
     @EJB
     ExceptionUtil exu;
+    @EJB
+    SnmpUtil snmpUtil;
 
     // Methods------------------------------------------------------------------
     public List<Device> getDeviceTree(Site site) {
@@ -64,16 +68,23 @@ public class DeviceUtil {
                     url = "jdbc:mysql://" + site.getDmsIP() + ":3306/solid";
                     break;
             }
-            // Create the connection
-            Class.forName("com.mysql.jdbc.Driver");
-            connect = DriverManager.getConnection(url, username, password);
 
-            // Create the statement
-            Statement statement = connect.createStatement();
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM status");
+            // If the DMS is operational we want to establish a connection
+            if (snmpUtil.cachedDmsStatus(site.getId()) != 0) {
 
-            // Convert the Results to objects
-            devices = convertResults(resultSet);
+                // Create the connection
+                Class.forName("com.mysql.jdbc.Driver");
+                connect = DriverManager.getConnection(url, username, password);
+
+                // Create the statement
+                Statement statement = connect.createStatement();
+                statement.setQueryTimeout(timeout);
+
+                // Retreive and convert the results
+                try (ResultSet resultSet = statement.executeQuery("SELECT * FROM status")) {
+                    devices = convertResults(resultSet);
+                }
+            }
 
         } catch (ClassNotFoundException e) {
             exu.report(e);
@@ -268,24 +279,29 @@ public class DeviceUtil {
                         url = "jdbc:mysql://" + site.getDmsIP() + ":3306/solid";
                         break;
                 }
-                // Create the connection
-                Class.forName("com.mysql.jdbc.Driver");
-                connect = DriverManager.getConnection(url, username, password);
 
-                // Create the statement
-                Statement statement = connect.createStatement();
-                ResultSet resultSet = statement.executeQuery("SELECT * FROM alarm WHERE address = '" + deviceAddress + "' AND dbcolumn LIKE '%" + alarm + "%'");
+                // If the DMS is operational we want to establish a connection
+                if (snmpUtil.cachedDmsStatus(site.getId()) != 0) {
 
-                // Get the Hysteresis in millisecounds
-                while (resultSet.next()) {
-                    hysteresis = resultSet.getInt("alarmHysteresis") * 1000;
+                    // Create the connection
+                    Class.forName("com.mysql.jdbc.Driver");
+                    connect = DriverManager.getConnection(url, username, password);
+
+                    // Create the statement
+                    Statement statement = connect.createStatement();
+                    ResultSet resultSet = statement.executeQuery("SELECT * FROM alarm WHERE address = '" + deviceAddress + "' AND dbcolumn LIKE '%" + alarm + "%'");
+
+                    // Get the Hysteresis in millisecounds
+                    while (resultSet.next()) {
+                        hysteresis = resultSet.getInt("alarmHysteresis") * 1000;
+                    }
                 }
 
             } catch (ClassNotFoundException e) {
                 exu.report(e);
             } catch (SQLException e) {
                 if (ResourceBundle.getBundle("Config").getString("ProjectStage").equals("PRO")) {
-                    exu.report(e);
+                    LOG.log(Level.INFO, "Could not reach remote MySQL on DMS", e);
                 }
             } finally {
                 if (connect != null) {
@@ -314,18 +330,23 @@ public class DeviceUtil {
                     url = "jdbc:mysql://" + site.getDmsIP() + ":3306/solid";
                     break;
             }
-            // Create the connection
-            Class.forName("com.mysql.jdbc.Driver");
-            connect = DriverManager.getConnection(url, username, password);
 
-            // Create the statement
-            Statement statement = connect.createStatement();
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM alarm");
+            // If the DMS is operational we want to establish a connection
+            if (snmpUtil.cachedDmsStatus(site.getId()) != 0) {
 
-            // Get the Hysteresis in millisecounds
-            while (resultSet.next()) {
-                if (resultSet.getString("alarmHysteresis") != null) {
-                    results.put(resultSet.getString("address"), resultSet.getLong("alarmHysteresis") * 1000);
+                // Create the connection
+                Class.forName("com.mysql.jdbc.Driver");
+                connect = DriverManager.getConnection(url, username, password);
+
+                // Create the statement
+                Statement statement = connect.createStatement();
+                ResultSet resultSet = statement.executeQuery("SELECT * FROM alarm");
+
+                // Get the Hysteresis in millisecounds
+                while (resultSet.next()) {
+                    if (resultSet.getString("alarmHysteresis") != null) {
+                        results.put(resultSet.getString("address"), resultSet.getLong("alarmHysteresis") * 1000);
+                    }
                 }
             }
 
@@ -333,7 +354,7 @@ public class DeviceUtil {
             exu.report(e);
         } catch (SQLException e) {
             if (ResourceBundle.getBundle("Config").getString("ProjectStage").equals("PRO")) {
-                exu.report(e);
+                LOG.log(Level.INFO, "Could not reach remote MySQL on DMS", e);
             }
         } finally {
             if (connect != null) {
@@ -354,10 +375,15 @@ public class DeviceUtil {
      * @return
      */
     public List<String> obtainFrequencies(Site site) {
-        List<Device> devices = getDeviceTree(site);
+        
         Set<String> frequencies = new HashSet();
-        for (Device device : devices) {
-            frequencies.add(device.getFrequency());
+        // If the DMS is operational we want to obtain the frequencies
+        if (snmpUtil.cachedDmsStatus(site.getId()) != 0) {
+            List<Device> devices = getDeviceTree(site);
+
+            for (Device device : devices) {
+                frequencies.add(device.getFrequency());
+            }
         }
         return new ArrayList<>(frequencies);
     }

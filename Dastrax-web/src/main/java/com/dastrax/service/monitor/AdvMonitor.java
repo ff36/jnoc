@@ -2,12 +2,12 @@
  * Copyright 2013 SOLiD Inc ALL RIGHTS RESERVED.
  * Developed by: Tarka L'Herpiniere <info@tarka.tv>.
  */
-
 package com.dastrax.service.monitor;
 
 import com.dastrax.cnx.monitor.DevicePoll;
 import com.dastrax.cnx.monitor.DeviceUtil;
 import com.dastrax.cnx.pojo.Device;
+import com.dastrax.cnx.snmp.SnmpUtil;
 import com.dastrax.per.dao.core.SiteDAO;
 import com.dastrax.per.dao.core.SubjectDAO;
 import com.dastrax.per.entity.core.Site;
@@ -35,16 +35,16 @@ import org.primefaces.model.TreeNode;
 @Named
 @ViewScoped
 public class AdvMonitor implements Serializable {
-    
+
     // Logger-------------------------------------------------------------------
     private static final Logger LOG = Logger.getLogger(AdvMonitor.class.getName());
 
     // Variables----------------------------------------------------------------
     private List<Site> sites = new ArrayList<>();
     private Site selectedSite;
-    private TreeNode rootNode;  
+    private TreeNode rootNode;
     private TreeNode selectedNode;
-    
+
     // EJB----------------------------------------------------------------------
     @EJB
     SubjectDAO subjectDAO;
@@ -54,7 +54,9 @@ public class AdvMonitor implements Serializable {
     DeviceUtil deviceUtil;
     @EJB
     DevicePoll devicePole;
-    
+    @EJB
+    SnmpUtil snmpUtil;
+
     // Getters------------------------------------------------------------------
     public List<Site> getSites() {
         return sites;
@@ -71,7 +73,7 @@ public class AdvMonitor implements Serializable {
     public TreeNode getSelectedNode() {
         return selectedNode;
     }
-    
+
     // Setters------------------------------------------------------------------
     public void setSites(List<Site> sites) {
         this.sites = sites;
@@ -88,7 +90,7 @@ public class AdvMonitor implements Serializable {
     public void setSelectedNode(TreeNode selectedNode) {
         this.selectedNode = selectedNode;
     }
-    
+
     // Methods------------------------------------------------------------------
     @PostConstruct
     private void postConstruct() {
@@ -112,30 +114,40 @@ public class AdvMonitor implements Serializable {
         }
         // set the selected site as the first in the list
         if (!sites.isEmpty()) {
-          selectedSite = sites.get(0);
-          selectSite();
+            selectedSite = sites.get(0);
+            selectSite();
         }
     }
-    
+
     public void selectSite() {
-        // Get all the devices
-        List<Device> devices = deviceUtil.getDeviceTreeWithRoot(selectedSite);
-        // Find the root devices
-        for (Device device : devices) {
-            if (device.getNode().equals("ROOT")) {
-                rootNode = createTree(device, null);
+
+        // If the DMS is operational we want to get the device tree
+        if (snmpUtil.cachedDmsStatus(selectedSite.getId()) != 0) {
+
+            // Get all the devices
+            List<Device> devices = deviceUtil.getDeviceTreeWithRoot(selectedSite);
+
+            // Find the root devices
+            for (Device device : devices) {
+                if (device.getNode().equals("ROOT")) {
+                    rootNode = createTree(device, null);
+                }
             }
+            rootNode.setExpanded(true);
+        } else {
+            // If the DMS is offline we want to set the rootNode to NULL
+            rootNode = null;
         }
-        rootNode.setExpanded(true);
-        
+
         selectedNode = null;
     }
-    
+
     /**
      * Create the device tree
+     *
      * @param device
      * @param parentNode
-     * @return 
+     * @return
      */
     private TreeNode createTree(Device device, TreeNode parentNode) {
         TreeNode node = new DefaultTreeNode(device, parentNode);
@@ -145,13 +157,13 @@ public class AdvMonitor implements Serializable {
         }
         return node;
     }
-    
-    public void onNodeSelect(NodeSelectEvent event) {  
-          
-    }  
-    
+
+    public void onNodeSelect(NodeSelectEvent event) {
+
+    }
+
     public int deviceStatus() {
-        return devicePole.cachedDeviceStatus(selectedSite.getId()); 
+        return devicePole.cachedDeviceStatus(selectedSite.getId());
     }
 
 }

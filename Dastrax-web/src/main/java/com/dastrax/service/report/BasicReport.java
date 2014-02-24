@@ -6,6 +6,7 @@ package com.dastrax.service.report;
 
 import com.dastrax.cnx.monitor.DeviceUtil;
 import com.dastrax.cnx.report.Generator;
+import com.dastrax.cnx.snmp.SnmpUtil;
 import com.dastrax.per.dao.cnx.EventLogDAO;
 import com.dastrax.per.dao.core.SiteDAO;
 import com.dastrax.per.dao.core.SubjectDAO;
@@ -64,6 +65,8 @@ public class BasicReport implements Serializable {
     EventLogDAO eventLogDAO;
     @EJB
     Generator generator;
+    @EJB
+    SnmpUtil snmpUtil;
 
     // Getters------------------------------------------------------------------
     public List<Report> getReports() {
@@ -159,22 +162,25 @@ public class BasicReport implements Serializable {
                     .asList().get(1).toString());
             sites = s.getCompany().getClientSites();
         }
-        
+
         // Setup the reporting objects
         for (Site site : sites) {
 
-            // Get a list of available frequencies for a given site
-            List<String> frequencies = deviceUtil.obtainFrequencies(site);
+            // If the DMS is operational we want to establish a connection
+            if (snmpUtil.cachedDmsStatus(site.getId()) != 0) {
+                // Get a list of available frequencies for a given site
+                List<String> frequencies = deviceUtil.obtainFrequencies(site);
 
-            // Overall
-            if (!frequencies.isEmpty()) {
-                reports.add(new Report(UUID.randomUUID().toString(), site, "Overall Uptime", null));
-            }
-            
-            // Frequency Overall
-            for (String f : frequencies) {
-                if (f != null) {
-                    reports.add(new Report(UUID.randomUUID().toString(), site, f + " Overall", f));
+                // Overall
+                if (!frequencies.isEmpty()) {
+                    reports.add(new Report(UUID.randomUUID().toString(), site, "Overall Uptime", null));
+                }
+
+                // Frequency Overall
+                for (String f : frequencies) {
+                    if (f != null) {
+                        reports.add(new Report(UUID.randomUUID().toString(), site, f + " Overall", f));
+                    }
                 }
             }
 
@@ -223,7 +229,7 @@ public class BasicReport implements Serializable {
         from = cal.getTime();
         buildChart();
     }
-    
+
     public void buildChart() {
         reportChart = new CartesianChartModel();
         for (Report report : selectedReports) {
@@ -235,10 +241,10 @@ public class BasicReport implements Serializable {
 
             // Normalize the results
             Double uptime = generator.normalizeReport(from.getTime(), to.getTime(), logs);
-            
+
             // Format the dates
             SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
-            
+
             // Create the new series
             series1.set("Performance Report(s) from " + sdf.format(from) + " to " + sdf.format(to), uptime);
 

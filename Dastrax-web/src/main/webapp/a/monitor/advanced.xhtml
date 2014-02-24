@@ -55,7 +55,7 @@
                                              style="width: 200px"
                                              converter="siteCvt">
                                 <f:selectItems value="#{advMonitor.sites}" var="site" itemLabel="#{site.name}" itemValue="#{site}"/>
-                                <p:ajax onstart="blockui1.block();" oncomplete="blockui1.unblock();" listener="#{advMonitor.selectSite()}" update=":form:tree-panel :form:details :form:charts :form:devices"/>
+                                <p:ajax onstart="blockui1.block();" oncomplete="blockui1.unblock();" listener="#{advMonitor.selectSite()}" update=":form:tree-panel :form:details :form:charts :form:devices :form:master-site-status"/>
                             </p:selectOneMenu>
 
                             <pe:blockUI target="option-panel-3" widgetVar="blockui1">  
