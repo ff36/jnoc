@@ -1,0 +1,184 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <h:outputStylesheet name="css/login.css"/>
+        <h:outputStylesheet name="css/common.css"/>
+        <link rel="shortcut icon" type="image/png" href="#{request.contextPath}/resources/images/favicon.ico" />
+        <title>#{msgs['default.page.title']} | #{msgs['login.page.title']}</title>
+    </h:head>
+    <h:body>
+
+        <f:metadata>
+            <f:viewParam name="email" value="#{authenticate.email}"/>
+            <f:viewAction action="#{authenticate.init}" />
+        </f:metadata>
+
+        <div id="messages">
+            <p:messages redisplay="false"
+                        showDetail="false" 
+                        autoUpdate="true"
+                        closable="true"/>
+        </div>
+
+        <!-- Authentication -->
+        <h:form id="form"
+                rendered="#{authenticate.renderLogin}">
+
+            <div id="authenticate">
+
+                <p:focus/> 
+
+                <h:panelGrid columns="1">
+                    <!-- Logo -->
+                    <p:graphicImage id="logo"
+                                    styleClass="login-logo"
+                                    value="#{pathUtil.s3Logo('solid_logo_v1.jpg')}"
+                                    rendered="#{authenticate.renderLogin or authenticate.renderUniversal}"
+                                    width="275"/>
+                </h:panelGrid> 
+
+                <table>
+                    <tr>
+                        <td>
+                            <h:panelGrid columns="2">
+
+                                <p:inputText id="email"
+                                             value="#{authenticate.email}"
+                                             required="true"
+                                             requiredMessage="#{msgs['error.email.required']}"/>
+                                <p:watermark for="email" value="#{msgs['login.email']}"/>
+
+                                <p:password id="password"
+                                            value="#{authenticate.password}"
+                                            required="true"
+                                            requiredMessage="#{msgs['error.password.required']}"/>
+                                <p:watermark for="password" value="#{msgs['login.password']}"/>
+
+                            </h:panelGrid>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p:commandButton id="login-btn"
+                                             action="#{authenticate.authenticate()}"
+                                             ajax="false" 
+                                             value="#{msgs['login.login.btn']}"
+                                             onclick="PF('blockui1').block();"
+                                             oncomplete="PF('blockui1').unblock();"
+                                             process="@this,email,password,remember-me"/>
+
+                            <pe:blockUI target="login-btn" widgetVar="blockui1">  
+                                <div class="windows8-25-w">
+                                    <div class="wBall" id="wBall_1">
+                                        <div class="wInnerBall">
+                                        </div>
+                                    </div>
+                                    <div class="wBall" id="wBall_2">
+                                        <div class="wInnerBall">
+                                        </div>
+                                    </div>
+                                    <div class="wBall" id="wBall_3">
+                                        <div class="wInnerBall">
+                                        </div>
+                                    </div>
+                                    <div class="wBall" id="wBall_4">
+                                        <div class="wInnerBall">
+                                        </div>
+                                    </div>
+                                    <div class="wBall" id="wBall_5">
+                                        <div class="wInnerBall">
+                                        </div>
+                                    </div>
+                                </div> 
+                            </pe:blockUI>
+
+                        </td>
+                    </tr>
+                </table>
+
+            </div>
+
+            <div class="footer">
+
+                <p:commandLink id="forgot-password"
+                               action="access-forgot-pwd-page"
+                               value="#{msgs['login.forgot.password']}"
+                               process="@this,form:forgot-password"/>
+            </div>
+
+        </h:form>
+
+        <!-- Universal -->
+        <h:form id="uni-form"
+                rendered="#{authenticate.renderUniversal}">
+
+            <div id="universal">
+
+                <p:focus/> 
+
+                <h:panelGrid columns="2">
+
+                    <p:inputText id="uni-email"
+                                 value="#{authenticate.email}"
+                                 required="true"
+                                 requiredMessage="#{msgs['error.email.required']}"/>
+                    <p:watermark for="uni-email" value="#{msgs['login.email']}"/>
+
+                </h:panelGrid>
+
+
+                <p:commandButton id="uni-login-btn"
+                                 action="#{authenticate.redirect()}"
+                                 ajax="false" 
+                                 value="#{msgs['login.login.btn']}"
+                                 onclick="PF('blockui1').block();"
+                                 oncomplete="PF('blockui1').unblock();"
+                                 process="@this,uni-email"/>
+
+                <pe:blockUI target="uni-login-btn" widgetVar="blockui1">  
+                    <div class="windows8-25-w">
+                        <div class="wBall" id="wBall_1">
+                            <div class="wInnerBall">
+                            </div>
+                        </div>
+                        <div class="wBall" id="wBall_2">
+                            <div class="wInnerBall">
+                            </div>
+                        </div>
+                        <div class="wBall" id="wBall_3">
+                            <div class="wInnerBall">
+                            </div>
+                        </div>
+                        <div class="wBall" id="wBall_4">
+                            <div class="wInnerBall">
+                            </div>
+                        </div>
+                        <div class="wBall" id="wBall_5">
+                            <div class="wInnerBall">
+                            </div>
+                        </div>
+                    </div> 
+                </pe:blockUI>
+
+            </div>
+
+            <div class="footer">
+
+                <p:commandLink id="no-account"
+                               value="Get an account"
+                               action="access-request-account-page"
+                               process="@this,uni-form:no-account"/>
+
+            </div>
+
+        </h:form>
+
+    </h:body>
+</html>

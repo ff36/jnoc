@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:cc="http://xmlns.jcp.org/jsf/composite"
+      xmlns:pe="http://primefaces.org/ui/extensions">
+
+    <!-- INTERFACE -->
+    <cc:interface>
+        <cc:attribute required="true" name="target"/>
+        <cc:attribute required="true" name="widgetVar"/>
+    </cc:interface>
+
+    <!-- IMPLEMENTATION -->
+    <cc:implementation>
+        <pe:blockUI target="#{cc.attrs.target}" widgetVar="#{cc.attrs.widgetVar}">  
+            <div class="windows8-18-b">
+                <div class="wBall" id="wBall_1">
+                    <div class="wInnerBall">
+                    </div>
+                </div>
+                <div class="wBall" id="wBall_2">
+                    <div class="wInnerBall">
+                    </div>
+                </div>
+                <div class="wBall" id="wBall_3">
+                    <div class="wInnerBall">
+                    </div>
+                </div>
+                <div class="wBall" id="wBall_4">
+                    <div class="wInnerBall">
+                    </div>
+                </div>
+                <div class="wBall" id="wBall_5">
+                    <div class="wInnerBall">
+                    </div>
+                </div>
+            </div> 
+        </pe:blockUI>
+    </cc:implementation>
+</html>

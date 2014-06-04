@@ -1,0 +1,173 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:cc="http://xmlns.jcp.org/jsf/composite"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <!-- INTERFACE -->
+    <cc:interface>
+    </cc:interface>
+
+    <!-- IMPLEMENTATION -->
+    <cc:implementation>
+
+        <div class="header-background">
+            <table width="100%">
+                <tr>
+                    <td class="nav-1">
+                        <!-- LOGO -->
+                        <p:graphicImage id="header-logo" height="30px" value="#{pathUtil.s3Logo('dastrax_logo_v3.png')}"/>
+                    </td>
+                    <td class="nav-2" width="120px">
+                        <!-- LOGO -->
+                        <p:megaMenu autoDisplay="false">  
+                            <p:submenu label="Services">  
+                                <p:column>  
+                                    <h:panelGrid columns="2" width="250px" columnClasses="menu-column-icon, menu-column-link">
+                                        <p:graphicImage value="#{pathUtil.s3Icon('black/dashboard_icon_16.png')}"/>
+                                        <p:commandLink value="Dashboard" 
+                                                       action="access-dashboard-page"
+                                                       onmouseover="document.getElementById('dashboard-hover-details').style.display = 'block'"
+                                                       onmouseout="document.getElementById('dashboard-hover-details').style.display = 'none'"/>
+
+
+                                        <p:graphicImage value="#{pathUtil.s3Icon('black/page_layout_icon_16.png')}"/>
+                                        <p:commandLink value="Edit Menu"
+                                                       action="access-personal-settings-navigation-page"
+                                                       onmouseover="document.getElementById('edit-menu-hover-details').style.display = 'block'"
+                                                       onmouseout="document.getElementById('edit-menu-hover-details').style.display = 'none'"/>
+                                    </h:panelGrid>
+
+                                </p:column> 
+
+                                <p:column>  
+                                    <h:panelGrid columns="2" width="200px" columnClasses="menu-column-icon, menu-column-link">
+                                        <p:graphicImage value="#{pathUtil.s3Icon('black/doc_lines_stright_icon_16.png')}"/>
+                                        <p:commandLink value="Support Tickets"
+                                                       action="access-list-tickets-page"
+                                                       onmouseover="document.getElementById('ticket-hover-details').style.display = 'block'"
+                                                       onmouseout="document.getElementById('ticket-hover-details').style.display = 'none'"/>
+
+                                        <p:graphicImage value="#{pathUtil.s3Icon('black/flag_icon_16.png')}"/>
+                                        <p:commandLink value="Incidents"
+                                                       action="access-list-incidents-page"
+                                                       onmouseover="document.getElementById('incident-hover-details').style.display = 'block'"
+                                                       onmouseout="document.getElementById('incident-hover-details').style.display = 'none'"/>
+
+                                        <p:graphicImage value="#{pathUtil.s3Icon('black/user_icon_16.png')}"/>
+                                        <p:commandLink value="Accounts"
+                                                       action="access-accounts-list-page"
+                                                       onmouseover="document.getElementById('account-hover-details').style.display = 'block'"
+                                                       onmouseout="document.getElementById('account-hover-details').style.display = 'none'"/>
+
+                                        <p:graphicImage value="#{pathUtil.s3Icon('black/box_icon_16.png')}"/>
+                                        <p:commandLink value="Companies"
+                                                       action="access-list-companies-page"
+                                                       onmouseover="document.getElementById('company-hover-details').style.display = 'block'"
+                                                       onmouseout="document.getElementById('company-hover-details').style.display = 'none'"/>
+
+                                        <p:graphicImage value="#{pathUtil.s3Icon('black/air_signal_icon_16.png')}"/>
+                                        <p:commandLink value="Sites"
+                                                       action="access-list-sites-page"
+                                                       onmouseover="document.getElementById('site-hover-details').style.display = 'block'"
+                                                       onmouseout="document.getElementById('site-hover-details').style.display = 'none'"/>
+
+                                        <p:graphicImage value="#{pathUtil.s3Icon('black/refresh_icon_16.png')}"/>
+                                        <p:commandLink value="RMA"
+                                                       action="access-create-rma-page"
+                                                       onmouseover="document.getElementById('rma-hover-details').style.display = 'block'"
+                                                       onmouseout="document.getElementById('rma-hover-details').style.display = 'none'"/>
+
+                                        <p:graphicImage value="#{pathUtil.s3Icon('black/chart_bar_icon_16.png')}"/>
+                                        <p:commandLink value="Analytics"
+                                                       action="access-analytics-page"
+                                                       onmouseover="document.getElementById('report-hover-details').style.display = 'block'"
+                                                       onmouseout="document.getElementById('report-hover-details').style.display = 'none'"/>
+                                    </h:panelGrid>
+                                </p:column>
+
+
+
+                                <p:column>
+                                    <p:spacer width="100%" height="7px"/>
+                                    
+                                    <div id="dashboard-hover-details" class="menu-hover-details" style="display: none">
+                                        <p:graphicImage value="#{pathUtil.s3Icon('black/dashboard_icon_48.png')}"/>
+                                        <br></br>
+                                        <h:outputText value="Dashboard lets you see an overview of your account performance and settings."/>
+                                    </div>
+                                    
+                                    <div id="edit-menu-hover-details" class="menu-hover-details" style="display: none">
+                                        <p:graphicImage value="#{pathUtil.s3Icon('black/page_layout_icon_48.png')}"/>
+                                        <br></br>
+                                        <h:outputText value="Customise the navigation menu to make your most used services more accessible."/>
+                                    </div>
+                                    
+                                    <div id="ticket-hover-details" class="menu-hover-details" style="display: none">
+                                        <p:graphicImage value="#{pathUtil.s3Icon('black/doc_lines_stright_icon_48.png')}"/>
+                                        <br></br>
+                                        <h:outputText value="Support Tickets let you manage your case ticket cycles. Create, update, and resolve reported issues. "/>
+                                    </div>
+                                    
+                                    <div id="incident-hover-details" class="menu-hover-details" style="display: none">
+                                        <p:graphicImage value="#{pathUtil.s3Icon('black/flag_icon_48.png')}"/>
+                                        <br></br>
+                                        <h:outputText value="Incidents are automated events registered when a site encounters a problem."/>
+                                    </div>
+                                    
+                                    <div id="account-hover-details" class="menu-hover-details" style="display: none">
+                                        <p:graphicImage value="#{pathUtil.s3Icon('black/user_icon_48.png')}"/>
+                                        <br></br>
+                                        <h:outputText value="Create,edit, and manage permissions, access, and more for related user accounts."/>
+                                    </div>
+                                    
+                                    <div id="company-hover-details" class="menu-hover-details" style="display: none">
+                                        <p:graphicImage value="#{pathUtil.s3Icon('black/box_icon_48.png')}"/>
+                                        <br></br>
+                                        <h:outputText value="Companies allow you to group together resources such as sites, accounts, reports etc."/>
+                                    </div>
+                                    
+                                    <div id="site-hover-details" class="menu-hover-details" style="display: none">
+                                        <p:graphicImage value="#{pathUtil.s3Icon('black/air_signal_icon_48.png')}"/>
+                                        <br></br>
+                                        <h:outputText value="Sites are managed DAS installations that can generate reporting and monitoring on performance."/>
+                                    </div>
+                                    
+                                    <div id="rma-hover-details" class="menu-hover-details" style="display: none">
+                                        <p:graphicImage value="#{pathUtil.s3Icon('black/refresh_icon_48.png')}"/>
+                                        <br></br>
+                                        <h:outputText value="Return Merchandise Authorisation (RMA) lets you generate a return request in order to receive a refund, replacement, or repair."/>
+                                    </div>
+                                    
+                                    <div id="report-hover-details" class="menu-hover-details" style="display: none">
+                                        <p:graphicImage value="#{pathUtil.s3Icon('black/chart_bar_icon_48.png')}"/>
+                                        <br></br>
+                                        <h:outputText value="Analytics provides monitoring for DAS resources. Track metrics, gain insight, and react immediately to keep sites running smoothly."/>
+                                    </div>
+                                    
+                                </p:column>
+
+                            </p:submenu>  
+                        </p:megaMenu> 
+                    </td>
+                    <td class="nav-2">
+                        <!-- NAV BAR -->
+                        <p:menubar styleClass="navigation-update-class" autoDisplay="false" model="#{navigator.model}"/>
+                    </td>
+                    <td class="nav-3">
+
+                        <p:commandLink action="access-settings-profile-page" >
+                            <p:graphicImage value="#{pathUtil.s3Icon('white/wrench_plus_2_icon_16.png')}"/>
+                        </p:commandLink>
+
+                        <p:commandLink action="#{authenticate.logout()}">
+                            <p:graphicImage value="#{pathUtil.s3Icon('white/doc_export_icon_16.png')}"/>
+                        </p:commandLink>
+                    </td>
+                </tr>
+            </table>
+
+        </div>
+    </cc:implementation>
+</html>

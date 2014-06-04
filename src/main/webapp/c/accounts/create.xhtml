@@ -1,0 +1,289 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:ez="http://xmlns.jcp.org/jsf/composite/ezcomp"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <h:outputStylesheet name="css/auth.css"/>
+        <h:outputStylesheet name="css/common.css"/>
+        <link rel="shortcut icon" type="image/png" href="#{request.contextPath}/resources/images/favicon.ico" />
+        <title>#{msgs['default.page.title']} | #{msgs['client.account.create.page.title']}</title>
+    </h:head>
+
+    <h:body>
+
+        #{permissionUtil.hasPagePermission('account:create')}
+
+        <h:form id="form">
+
+            <pe:ajaxErrorHandler />
+
+            <p:growl id="growl" 
+                     redisplay="false"
+                     showDetail="false" 
+                     sticky="false" />
+
+            <ez:navigation-a/>
+
+            <pe:layout stateCookie="#{config.ProjectStage ne 'DEV'}" widgetVar="layourWgt" >
+
+                <pe:layoutPane id="north" position="north" closable="false" resizable="false" size="40"/>
+                
+                <pe:layoutPane id="west" position="west" resizeWhileDragging="true" size="220">
+                    
+
+                    <table class="side-menu">
+                        <tr>
+                            <td>
+                                <h3>Accounts</h3>
+                            </td>
+                        </tr>
+                        <tr class="hover">
+                            <td>
+                                <p:commandLink id="client" value="Administrator" process="@this" update=":form:switch">
+                                    <f:setPropertyActionListener target="#{createAccount.helper.accountType}" value="CLIENT"/>
+                                </p:commandLink>
+                            </td>
+                        </tr>
+                    </table>
+
+                </pe:layoutPane>
+
+                <pe:layoutPane id="center" position="center" resizeWhileDragging="true">
+                    
+
+                    <table>
+                        <tr>
+
+                            <td class="create-col-1">
+
+                                <pe:switch id="switch" value="#{createAccount.helper.accountType}">  
+
+                                    <pe:defaultCase>  
+
+                                        <p:spacer width="100%" height="20px"/>
+
+                                        <h:panelGrid columns="2">
+                                            <p:graphicImage value="#{pathUtil.s3Icon('black/br_prev_icon_24.png')}"/>
+                                            <h:outputText value="Select an account type"/>
+                                        </h:panelGrid>
+
+                                    </pe:defaultCase> 
+
+                                    <pe:case value="CLIENT">  
+
+                                        <h2>Client</h2>
+                                        <p:spacer width="100%" height="20px"/>
+
+                                        <h3>Account</h3>
+                                        
+                                        <table>
+                                            <tr>
+                                                <td><h:outputText value="Email:*" styleClass="field-label-3"/></td>
+                                                <td style="position: relative">
+                                                    <p:inputText id="email" styleClass="ajax-val" value="#{createAccount.subject.transEmail}" required="true" requiredMessage="Email is required">
+                                                        <p:ajax process="@this,email" event="keyup" listener="#{ajaxValidUtil.emailAvailable(component)}" update="email-val create-btn"/>
+                                                    </p:inputText>
+                                                    <h:outputText id="email-val" value="#{ajaxValidUtil.emailFree ? 'Available' : 'Unavailable'}" styleClass="#{ajaxValidUtil.emailFree ? 'positive-field' : 'negative-field'}"/>                                                       
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><h:outputText value="First Name:*" styleClass="field-label-3"/></td>
+                                                <td><p:inputText value="#{createAccount.subject.contact.firstName}" required="true" requiredMessage="Name is required"/></td>
+                                            </tr>
+                                            <tr>
+                                                <td><h:outputText value="Last Name:*" styleClass="field-label-3"/></td>
+                                                <td><p:inputText value="#{createAccount.subject.contact.lastName}" required="true" requiredMessage="Name is required"/></td>
+                                            </tr>
+                                        </table>
+
+                                        <p:spacer width="100%" height="20px"/>
+
+                                        <ui:fragment rendered="#{permissionUtil.hasPermission('permission:create')}">
+
+                                            <h3>Permissions</h3>
+
+                                            <p:dataTable id="perm-table" styleClass="perm-table" value="#{createAccount.subject.permissions}" var="permission">  
+
+                                                <p:column>  
+                                                    <f:facet name="header">  
+                                                        <h:outputText value="Permission" />  
+                                                    </f:facet>  
+                                                    <h:outputText value="#{permission.name}" />  
+                                                </p:column>  
+
+                                                <p:column>  
+                                                    <p:commandLink value="Remove" update="perm-table" process="@this,perm-table"
+                                                                   action="#{createAccount.subject.removePermission(permission)}"/>  
+                                                </p:column>  
+
+                                            </p:dataTable>
+
+                                            <p:spacer width="100%" height="20px"/>
+
+                                        </ui:fragment>
+
+                                        <h3>Address</h3>
+
+                                        <p:dataTable id="add-table" styleClass="add-table" value="#{createAccount.subject.contact.addresses}" var="address">  
+
+                                            <p:column>  
+                                                <f:facet name="header">  
+                                                    <h:outputText value="Address" />  
+                                                </f:facet>  
+                                                <h:outputText value="#{address.buildCompleteAddress()}" />  
+                                            </p:column>  
+
+                                            <p:column>  
+                                                <p:commandLink value="Remove" update="add-table" process="@this,add-table"
+                                                               action="#{createAccount.subject.contact.removeAddress(address)}"/>  
+                                            </p:column>  
+
+                                        </p:dataTable>
+
+                                        <p:spacer width="100%" height="20px"/>
+
+                                        <h3>Telephone</h3>
+
+                                        <p:dataTable id="tel-table" styleClass="tel-table" value="#{createAccount.subject.contact.telephones}" var="telephone">  
+
+                                            <p:column>  
+                                                <f:facet name="header">  
+                                                    <h:outputText value="Number" />  
+                                                </f:facet>  
+                                                <h:outputText value="#{telephone.type}: #{telephone.internationalFormat()}" />  
+                                            </p:column>  
+
+                                            <p:column>  
+                                                <p:commandLink value="Remove" update="tel-table" process="@this,tel-table"
+                                                               action="#{createAccount.subject.contact.removeTelephone(telephone)}"/>  
+                                            </p:column>  
+
+                                        </p:dataTable>
+
+                                        <p:spacer width="100%" height="20px"/>
+
+                                        <p:commandButton id="create-btn" 
+                                                         value="Create Account"
+                                                         action="#{createAccount.client()}"
+                                                         onclick="PF('blockui1').block();"
+                                                         oncomplete="PF('blockui1').unblock();"
+                                                         update=":form:growl"
+                                                         process="@this,:form:switch"
+                                                         disabled="#{!ajaxValidUtil.emailFree}"/>
+
+                                        <pe:blockUI target="create-btn" widgetVar="blockui1">  
+                                            <div class="windows8-18-b">
+                                                <div class="wBall" id="wBall_1">
+                                                    <div class="wInnerBall">
+                                                    </div>
+                                                </div>
+                                                <div class="wBall" id="wBall_2">
+                                                    <div class="wInnerBall">
+                                                    </div>
+                                                </div>
+                                                <div class="wBall" id="wBall_3">
+                                                    <div class="wInnerBall">
+                                                    </div>
+                                                </div>
+                                                <div class="wBall" id="wBall_4">
+                                                    <div class="wInnerBall">
+                                                    </div>
+                                                </div>
+                                                <div class="wBall" id="wBall_5">
+                                                    <div class="wInnerBall">
+                                                    </div>
+                                                </div>
+                                            </div> 
+                                        </pe:blockUI>
+
+                                    </pe:case>  
+
+                                </pe:switch>
+
+                            </td>
+                        </tr>
+                    </table>
+                </pe:layoutPane>
+
+                <pe:layoutPane id="east" position="east" resizeWhileDragging="true" size="370">
+                    
+
+                    <p:panel rendered="#{permissionUtil.hasPermission('permission:create')}">
+                        <h:panelGrid id="perm-grid" columns="2" columnClasses="field-label-3">
+
+                            <h:outputText value="Permission:"/>
+                            <p:inputText value="#{createAccount.helper.permission.name}"/>
+
+                            <p:commandButton id="btn_perm" value="Add" 
+                                             update="perm-grid @(.perm-table)" 
+                                             process="@this,perm-grid"
+                                             action="#{createAccount.helper.addPermission()}"/>
+
+                        </h:panelGrid>
+                    </p:panel>
+
+                    <p:spacer width="100%" height="10px"/>
+
+                    <p:panel>
+                        <h:panelGrid id="add-grid" columns="2" columnClasses="field-label-3">
+
+                            <h:outputText value="Street:"/>
+                            <p:inputText value="#{createAccount.helper.address.lineTwo}"/>
+
+                            <h:outputText value="City:"/>
+                            <p:inputText value="#{createAccount.helper.address.lineThree}"/>
+
+                            <h:outputText value="State:"/>
+                            <p:inputText value="#{createAccount.helper.address.lineFour}"/>
+
+                            <h:outputText value="Zip Code:"/>
+                            <p:inputText value="#{createAccount.helper.address.lineFive}"/>
+
+                            <p:commandButton id="btn_add" value="Add" 
+                                             update="add-grid @(.add-table)" 
+                                             process="@this,add-grid"
+                                             action="#{createAccount.helper.addAddress()}"/>
+
+                        </h:panelGrid>
+                    </p:panel>
+
+                    <p:spacer width="100%" height="10px"/>
+
+                    <p:panel>
+                        <h:panelGrid id="tel-grid" columns="1" columnClasses="field-label-3">
+
+                            <ez:telephone type="#{createAccount.helper.telephone.type}"
+                                          coutry="#{createAccount.helper.telephone.country}"                     
+                                          number="#{createAccount.helper.telephone.localNumber}"/>
+
+                            <p:commandButton value="Add" 
+                                             update="tel-grid @(.tel-table)" 
+                                             process="@this,tel-grid"
+                                             action="#{createAccount.helper.addTelephone()}"/>
+
+                        </h:panelGrid>
+                    </p:panel>
+
+                    <p:spacer width="100%" height="10px"/>
+
+                </pe:layoutPane>
+
+            </pe:layout>
+
+        </h:form>
+
+        <!-- JIRA -->
+        <script type="text/javascript" src="https://dastrax.atlassian.net/s/d41d8cd98f00b204e9800998ecf8427e/en_US-hgwqx7-1988229788/6132/31/1.4.0-m5/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?collectorId=5962a16e"></script>
+
+
+    </h:body>
+
+</html>
+

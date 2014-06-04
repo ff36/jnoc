@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:cc="http://xmlns.jcp.org/jsf/composite"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+
+    <!-- INTERFACE -->
+    <cc:interface>
+    </cc:interface>
+
+    <!-- IMPLEMENTATION -->
+    <cc:implementation>
+        <h:panelGrid columns="3" styleClass="footer-table">
+            <h:outputText value="© 2012 - 2014 Solid Technologies Inc. or its affiliates. All rights reserved. (#{config['ProjectStage'] eq 'DEV' ? config['Build'] : config['Version']})"/>
+            <p:commandLink value="Privacy Policy"/>
+            <p:commandLink value="Terms of Use"/>
+        </h:panelGrid>
+
+        <p:commandButton styleClass="footer-feedback-button white-button"
+                         value="Feedback"
+                         process="@this"
+                         onclick="PF('feedback-dlg').show();"
+                         update="@(.dlg-feedback-update-class)"/> 
+
+        <p:dialog id="feedback-dlg" header="Send us feedback" widgetVar="feedback-dlg" dynamic="true" resizable="false" width="600">  
+
+            Thank you for taking a moment to give us feedback on the system.
+            <hr></hr>
+
+            <h3>Tell us about your experience:</h3>
+            <p:inputTextarea styleClass="feedback-text-area" value="#{feedback.feedback}"/>
+
+            <hr></hr>
+
+            <p:commandButton styleClass="green-button" 
+                             action="#{feedback.sendFeedback()}"
+                             value="Send Feedback" 
+                             process="@this @(.feedback-text-area)" 
+                             update=":form:growl"
+                             onsuccess="PF('feedback-dlg').hide()">
+
+            </p:commandButton> 
+
+        </p:dialog>
+    </cc:implementation>
+</html>

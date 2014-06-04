@@ -1,0 +1,468 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:ez="http://xmlns.jcp.org/jsf/composite/ezcomp"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <h:outputStylesheet name="css/auth.css"/>
+        <h:outputStylesheet name="css/common.css"/>
+        <link rel="shortcut icon" type="image/png" href="#{request.contextPath}/resources/images/favicon.ico" />
+        <title>#{msgs['default.page.title']} | #{msgs['admin.ticket.edit.page.title']}</title>
+    </h:head>
+
+    <h:body>
+
+        #{permissionUtil.hasPagePermission('ticket:edit')}
+
+        <f:metadata>
+            <f:viewParam name="ticket" value="#{editTicket.ticketId}"/>
+            <f:viewAction action="#{editTicket.init}" />
+        </f:metadata>
+
+        <h:form id="form" >
+
+            <pe:ajaxErrorHandler />
+
+            <p:growl id="growl" 
+                     redisplay="false"
+                     showDetail="false" 
+                     sticky="false" />
+
+            <ez:navigation-a/>
+
+            <pe:layout stateCookie="#{config.ProjectStage ne 'DEV'}" widgetVar="layoutWgt" >
+
+                <pe:layoutPane id="north" position="north" closable="false" resizable="false" size="40"/>
+
+                <pe:layoutPane id="west" position="west" resizeWhileDragging="true" size="280">
+
+                    <div class="edit-ticket">
+
+                        <table class="page-container">
+                            <thead>
+                                <tr><th>Status</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+
+                                        <p:spacer width="100%" height="20px"/>
+
+                                        <p:selectOneMenu value="#{editTicket.ticket.status}"
+                                                         style="width: 230px"> 
+                                            <f:selectItem itemLabel="OPEN" itemValue="OPEN" rendered="#{editTicket.ticket.status ne 'OPEN'}"/> 
+                                            <f:selectItem itemLabel="SOLVED" itemValue="SOLVED" rendered="#{editTicket.ticket.status ne 'SOLVED'}"/>
+                                            <f:selectItem itemLabel="ARCHIVED" itemValue="ARCHIVED" rendered="#{editTicket.ticket.status ne 'ARCHIVED'}"/>  
+                                        </p:selectOneMenu> 
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <p:spacer width="100%" height="10px"/>
+                        
+                        <table class="page-container">
+                            <thead>
+                                <tr><th>Requester</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+
+                                        <p:spacer width="100%" height="20px"/>
+
+                                        <h:outputText value="#{editTicket.ticket.requester.contact.buildFullName()}"/>
+
+                                        <h3>Send email</h3>
+                                        <p:selectBooleanCheckbox value="#{editTicket.helper.requesterEmail}"/>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <p:spacer width="100%" height="10px"/>
+
+                        <table class="page-container">
+                            <thead>
+                                <tr><th>Assignee</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+
+                                        <p:spacer width="100%" height="20px"/>
+
+                                        <p:inplace id="assigneeAIP" styleClass="inplace" editor="true" label="#{editTicket.ticket.assignee eq null ? 'None' : editTicket.ticket.assignee.contact.buildFullName()}">  
+                                            <p:ajax event="save" listener="#{editTicket.changeAssignee()}"/>
+                                            <p:autoComplete id="assignee"
+                                                            value="#{editTicket.ticket.assignee}" 
+                                                            completeMethod="#{editTicket.helper.completeAssignee}"
+                                                            var="ass" itemLabel="#{ass.contact.buildFullName()}" 
+                                                            itemValue="#{ass}" converter="subjectCvt" forceSelection="true"
+                                                            style="width: 230px"/>
+                                        </p:inplace>
+
+                                        <h3>Send email</h3>
+                                        <p:selectBooleanCheckbox value="#{editTicket.helper.assigneeEmail}"/>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <p:spacer width="100%" height="10px"/>
+
+                        <table class="page-container">
+                            <thead>
+                                <tr><th>Details</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+
+                                        <h3>Topic</h3>
+                                        <p:selectOneMenu value="#{editTicket.ticket.topic}"
+                                                         effect="fade"
+                                                         style="width: 230px"
+                                                         required="true"
+                                                         requiredMessage="Type required">    
+                                            <f:selectItems value="#{enumController.ticketTopics}" var="topic" itemLabel="#{topic.label}" itemValue="#{topic}"/>
+                                        </p:selectOneMenu>
+
+                                        <h3>Severity</h3>
+                                        <p:selectOneMenu value="#{editTicket.ticket.severity}" 
+                                                         effect="fade"
+                                                         style="width: 230px"
+                                                         required="true"
+                                                         requiredMessage="Severity required">  
+                                            <f:selectItems value="#{enumController.ticketSeverities}" var="severity" itemLabel="#{severity.label}" itemValue="#{severity}"/>
+                                        </p:selectOneMenu>
+
+                                        <h3>Site</h3>
+                                        <p:selectOneMenu value="#{editTicket.ticket.site}"
+                                                         style="width: 230px"
+                                                         converter="siteCvt">
+                                            <f:selectItem itemLabel="-" noSelectionOption="true" />
+                                            <f:selectItems value="#{editTicket.helper.availableSites}" var="site" itemLabel="#{site.name}" itemValue="#{site}"/>
+                                        </p:selectOneMenu>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <p:spacer width="100%" height="10px"/>
+
+                        <table class="page-container">
+                            <thead>
+                                <tr><th>Email CC</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+
+                                        <p:spacer width="100%" height="20px"/>
+
+                                        <p:autoComplete id="cc"
+                                                        value="#{editTicket.helper.ccEmail}"
+                                                        completeMethod="#{editTicket.helper.completeCCEmail}"
+                                                        multiple="true"
+                                                        styleClass="ccemail"/>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+
+                        <p:spacer width="100%" height="10px"/>
+
+                        <table class="page-container">
+                            <thead>
+                                <tr><th>Search Tags</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+
+                                        <p:spacer width="100%" height="20px"/>
+
+                                        <p:autoComplete id="tags"
+                                                        value="#{editTicket.ticket.tags}"
+                                                        completeMethod="#{editTicket.helper.completeTags}"
+                                                        var="tag" 
+                                                        itemLabel="#{tag.name}" 
+                                                        itemValue="#{tag}"
+                                                        converter="tagCvt"
+                                                        multiple="true"
+                                                        styleClass="tags"/>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+
+                    </div>
+
+                </pe:layoutPane>
+
+                <pe:layoutPane id="center" position="center" resizeWhileDragging="true">
+
+
+                    <div id="comment" class="edit-ticket">
+
+                        <table class="page-container">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        #{editTicket.ticket.title}
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+
+                                        <p:spacer width="100%" height="20"/>
+
+                                        <p:dataList id="comment-datalist" 
+                                                    value="#{editTicket.ticket.comments}" 
+                                                    var="comment"
+                                                    itemType="none"
+                                                    styleClass="clear-data-list">
+
+                                            <ui:fragment rendered="#{editTicket.nexusUtil.authorised(comment.nexus)}">
+                                                <table style="width:100%;position: relative">
+                                                    <tr class="comment-table-seperator">
+                                                        <td style="width: 60px">
+                                                            <p:graphicImage value="#{pathUtil.profileImage(comment.commenter.uid)}"
+                                                                            height="60px"
+                                                                            styleClass="comment-image circular-clip-60"/>
+
+                                                        </td>
+                                                        <td>
+                                                            <b>#{comment.commenter.contact.buildFullName()}</b>
+                                                            <h:outputText value="#{editTicket.temporalUtil.epochDateTimeFmt(comment.createEpoch)}" styleClass="comment-date"/>
+                                                            <div class="comment-acl-option-btn">
+                                                                <p:commandLink id="acl-change-btn" type="button" process="@this,acl-change-btn">
+                                                                    <p:graphicImage value="#{pathUtil.s3Icon('black/cog_icon_16.png')}"/>
+                                                                    <p:graphicImage value="#{pathUtil.s3Icon('black/br_down_icon_16.png')}" width="8px"/>
+                                                                </p:commandLink>
+                                                                <p:menu id="acl-change-overlay" overlay="true" trigger="acl-change-btn">   
+                                                                    <p:menuitem id="change-acl-to-public" actionListener="#{editTicket.changeCommentNexus(comment, 'public')}" value="Make Public" rendered="#{comment.nexus.id eq 1}" process="@this,change-acl-to-public" update="comment-datalist :form:growl"/>
+                                                                    <p:menuitem id="change-acl-to-internal" actionListener="#{editTicket.changeCommentNexus(comment, 'internal')}" value="Make Internal" rendered="#{comment.nexus.id eq null}" process="@this,change-acl-to-internal" update="comment-datalist :form:growl"/>                                               
+                                                                </p:menu>
+                                                            </div>
+                                                            <p:spacer width="100%" height="10"/>
+                                                            <div class="#{comment.nexus.id eq 1 ? 'admin-comment' : comment.nexus.id eq 4 ? 'var-comment' : 'public-comment'}">
+                                                                <h:outputText value="#{comment.comment}" escape="false"/>             
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </ui:fragment>
+
+                                        </p:dataList>
+
+
+                                        <table style="width:100%;position: relative">
+                                            <tr class="comment-table-seperator">
+                                                <td style="width: 60px">
+                                                    <p:graphicImage value="#{pathUtil.profileImage()}"
+                                                                    height="60px"
+                                                                    styleClass="comment-image circular-clip-60"/>
+
+                                                </td>
+                                                <td>
+
+                                                    <h:panelGroup id="lazy-group-1">
+
+                                                        <p:inputText widgetVar="comment-reply-holder" styleClass="comment-reply-holder" rendered="#{!editTicket.renderWYSIWYG}">
+                                                            <p:ajax event="focus" update="@parent" listener="#{editTicket.changeWYSIWYG()}"/>
+                                                        </p:inputText>
+
+                                                        <p:watermark for="@widgetVar(comment-reply-holder)" value="Add a comment or upload a file..."/>
+
+                                                        <h:panelGroup rendered="#{editTicket.renderWYSIWYG}">
+
+                                                            <table width="100%">
+                                                                <tr>
+                                                                    <td width="225px">
+                                                                        <p:selectOneButton value="#{editTicket.helper.commentACL}" styleClass="comment-type-selector">  
+                                                                            <f:selectItem itemLabel="Public reply" itemValue="public" />  
+                                                                            <f:selectItem itemLabel="Internal reply" itemValue="internal" />
+                                                                            <p:ajax event="change" process="@this" listener="#{editTicket.helper.aclListener()}" update="form:cmt-msg"/>
+                                                                        </p:selectOneButton> 
+                                                                    </td>
+                                                                    <td>
+                                                                        <h:outputText id="cmt-msg" styleClass="comment-acl-msg" value="#{editTicket.helper.commentACL eq 'public' ? '(Your comment will be visible by everyone)' : '(Your comment will ONLY be visible to members of your team)'}"/>
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+
+                                                            <p:spacer width="100%" height="10"/>
+
+                                                            <pe:ckEditor id="comment" value="#{editTicket.helper.comment.comment}" width="100%" 
+                                                                         toolbar="[['Undo','Redo'],['Cut','Copy','Paste','PasteText','PasteFromWord'],['Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat'],['NumberedList','BulletedList'],['AlignLeft','Center','AlignRight','Justify'],['Link','Unlink'],['Find','Replace','-', 'SpellChecker', 'Scayt'],['Styles'],['Format'],['Font'],['FontSize'],['TextColor']]"/>
+
+                                                            <p:spacer width="100%" height="10"/>
+
+
+
+                                                            <p:commandButton id="action-btn" 
+                                                                             widgetVar="action-button-wv"
+                                                                             styleClass="green-button" 
+                                                                             value="Submit" 
+                                                                             onclick="PF('blockui1').block();" 
+                                                                             oncomplete="PF('blockui1').unblock();" 
+                                                                             update=":form:growl" 
+                                                                             actionListener="#{editTicket.submit()}" 
+                                                                             process="@this @(.edit-ticket :input)"/>
+
+                                                            <ez:blockUI target="@widgetVar(action-button-wv)" widgetVar="blockui1"/>
+
+                                                        </h:panelGroup>
+
+                                                    </h:panelGroup>
+
+                                                </td>
+                                            </tr>
+                                        </table>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+
+                </pe:layoutPane>
+
+                <pe:layoutPane id="east" position="east" resizeWhileDragging="true" size="480" >
+
+                    <table class="page-container">
+                        <thead>
+                            <tr><th>Attachments</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+
+                                    <p:spacer width="100%" height="20"/>
+
+                                    <table class="table-align-top">
+                                        <tr>
+                                            <td>
+                                                <p:graphicImage id="upload-ajax-spinner" name="images/ajax-loader.gif" style="display: none" styleClass="profile-upload-ajax-spinner"/>
+
+                                                <p:fileUpload id="uploader"
+                                                              styleClass="profile-uploader"
+                                                              fileUploadListener="#{editTicket.uploadAttachment}" 
+                                                              mode="advanced" 
+                                                              dragDropSupport="true" 
+                                                              auto="true"
+                                                              update=":form:growl :form:attachments @this :form:lazy-group-1"
+                                                              onstart="document.getElementById('upload-drag-drop-message').style.display = 'none'; document.getElementById('form:upload-ajax-spinner').style.display = 'block'"
+                                                              oncomplete="document.getElementById('upload-drag-drop-message').style.display = 'block'; document.getElementById('form:upload-ajax-spinner').style.display = 'none'"
+                                                              onerror="PF('blockui2').unblock();"
+                                                              sizeLimit="2097152" 
+                                                              allowTypes="/(\.|\/)(gif|jpe?g|png|tiff|mpeg|mpg|mov|avi|wmv|flv|txt|doc?x|xls?x|ppt?x|pdf|eps|zip)$/"
+                                                              label="Add Attachment"
+                                                              invalidFileMessage="Sorry, this file type is currently not supported."
+                                                              invalidSizeMessage="Sorry, the maximum file size is 2MB."/>
+
+                                                <div id="upload-drag-drop-message" class="menu-hover-details" style="padding-left: 6px;">
+                                                    <h:outputText value="You can also drag and drop files from your computer."/>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+
+                                    <p:spacer width="100%" height="20"/>
+
+                                    <p:dataTable id="attachments"
+                                                 var="attachment" 
+                                                 value="#{editTicket.ticket.attachments}"  
+                                                 paginator="true"
+                                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                                 paginatorPosition="top"
+                                                 paginatorAlwaysVisible="false"
+                                                 emptyMessage="This ticket currently has no attachments"
+                                                 styleClass="type2-table">
+
+                                        <p:column style="width: 50px">
+                                            <p:commandLink process="@this"
+                                                           action="#{editTicket.viewAttachment(attachment)}"
+                                                           target="_blank"
+                                                           title="View"> 
+                                                <p:graphicImage value="#{editTicket.helper.fileTypeIcon(attachment)}" height="50px"/>
+                                            </p:commandLink>
+                                        </p:column>
+
+                                        <p:column>
+                                            <h:outputText value="#{attachment.title}"/>
+                                        </p:column>
+
+                                        <p:column>
+                                            <p:commandLink process="@this"
+                                                           action="#{editTicket.viewAttachment(attachment)}"
+                                                           target="_blank"
+                                                           title="Edit"> 
+                                                <p:graphicImage value="#{pathUtil.s3Icon('black/doc_edit_icon_16.png')}"/>
+                                            </p:commandLink>
+                                        </p:column>
+
+                                        <p:column>
+                                            <p:commandLink process="@this"
+                                                           action="#{editTicket.removeAttachment(attachment)}"
+                                                           update=":form:attachments :form:growl"
+                                                           onclick="PF('blockui2').block();" 
+                                                           oncomplete="PF('blockui2').unblock();"
+                                                           title="Delete"> 
+                                                <p:graphicImage value="#{pathUtil.s3Icon('black/trash_icon_16.png')}"/>
+                                            </p:commandLink>
+                                        </p:column>
+
+                                    </p:dataTable> 
+
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <p:spacer width="100%" height="20"/>
+
+                    <table class="page-container">
+                        <thead>
+                            <tr><th>Similar Solved Tickets</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </pe:layoutPane>
+
+                <pe:layoutPane id="south" position="south" closable="false" resizable="false" size="40"><ez:footer/></pe:layoutPane>
+
+            </pe:layout>
+
+        </h:form>
+
+    </h:body>
+
+</html>
+

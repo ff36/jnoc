@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
+  <persistence-unit name="Dastrax_PU" transaction-type="JTA">
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+    <jta-data-source>jdbc/DastraxDev</jta-data-source>
+    <class>com.dastrax.per.entity.Account</class>
+    <class>com.dastrax.per.entity.Address</class>
+    <class>com.dastrax.per.entity.Attachment</class>
+    <class>com.dastrax.per.entity.Audit</class>
+    <class>com.dastrax.per.entity.Comment</class>
+    <class>com.dastrax.per.entity.Company</class>
+    <class>com.dastrax.per.entity.Contact</class>
+    <class>com.dastrax.per.entity.Filter</class>
+    <class>com.dastrax.per.entity.Incident</class>
+    <class>com.dastrax.per.entity.IncidentEvent</class>
+    <class>com.dastrax.per.entity.Metier</class>
+    <class>com.dastrax.per.entity.Nexus</class>
+    <class>com.dastrax.per.entity.Permission</class>
+    <class>com.dastrax.per.entity.Tag</class>
+    <class>com.dastrax.per.entity.Telephone</class>
+    <class>com.dastrax.per.entity.Ticket</class>
+    <class>com.dastrax.per.entity.User</class>
+    <class>com.dastrax.per.entity.Token</class>
+    <class>com.dastrax.per.entity.Template</class>
+    <class>com.dastrax.per.entity.DAS</class>
+    <exclude-unlisted-classes>true</exclude-unlisted-classes>
+    <properties>
+      <property name="eclipselink.logging.level" value="SEVERE"/>
+    </properties>
+  </persistence-unit>
+</persistence>

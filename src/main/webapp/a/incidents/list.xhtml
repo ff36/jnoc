@@ -1,0 +1,306 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:ez="http://xmlns.jcp.org/jsf/composite/ezcomp"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <h:outputStylesheet name="css/auth.css"/>
+        <h:outputStylesheet name="css/common.css"/>
+        <link rel="shortcut icon" type="image/png" href="#{request.contextPath}/resources/images/favicon.ico" />
+        <title>#{msgs['default.page.title']} | #{msgs['admin.dmsticket.list.page.title']}</title>
+    </h:head>
+
+    <h:body>
+
+        #{permissionUtil.hasPagePermission('dmsticket:access')}
+
+        <f:metadata>
+            <f:viewParam name="filter" value="#{incidents.filter}"/>
+            <f:viewAction action="#{incidents.init}" />
+        </f:metadata>
+
+        <h:form id="form">
+
+            <pe:ajaxErrorHandler />
+
+            <p:growl id="growl" 
+                     redisplay="false"
+                     showDetail="false" 
+                     sticky="false" />
+
+            <ez:navigation-a/>
+
+            <pe:layout stateCookie="#{config.ProjectStage ne 'DEV'}" widgetVar="layoutWgt" >
+
+                <pe:layoutPane id="north" position="north" closable="false" resizable="false" size="40"/>
+
+                <pe:layoutPane id="west" position="west" resizeWhileDragging="true" size="220">
+
+                    <table class="navigation-sidebar">
+                        <thead>
+                            <tr><th>Incident Dashboard</th></tr>
+                        </thead>
+                        <tfoot><tr><td></td></tr></tfoot>
+                        <tbody>
+                            <tr>
+                                <td class="active">Incidents</td>
+                            </tr>
+                            <tr>
+                                <td><p:commandLink value="Visualizer" action="access-visualize-incidents-page" process="@this" type="button"/></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <p:spacer width="100%" height="10px"/>
+
+                    <table class="navigation-sidebar">
+                        <thead>
+                            <tr><th>Filters</th></tr>
+                        </thead>
+                        <tfoot><tr><td></td></tr></tfoot>
+                        <tbody>
+                            <tr>
+                                <td><p:commandLink value="My Unsolved" action="#{companies.tempFilterApply(12)}" process="@this" type="button"/></td>
+                            </tr>
+                            <tr>
+                                <td><p:commandLink value="My Solved" action="#{companies.tempFilterApply(13)}" process="@this" type="button"/></td>
+                            </tr>
+                            <tr>
+                                <td><p:commandLink value="My Archived" action="#{companies.tempFilterApply(13)}" process="@this" type="button"/></td>
+                            </tr>
+                            <tr>
+                                <td><p:commandLink value="Unsolved" action="#{companies.tempFilterApply(13)}" process="@this" type="button"/></td>
+                            </tr>
+                            <tr>
+                                <td><p:commandLink value="Unassigned" action="#{companies.tempFilterApply(13)}" process="@this" type="button"/></td>
+                            </tr>
+                            <tr>
+                                <td><p:commandLink value="Solved" action="#{companies.tempFilterApply(13)}" process="@this" type="button"/></td>
+                            </tr>
+                            <tr>
+                                <td><p:commandLink value="Archived" action="#{companies.tempFilterApply(13)}" process="@this" type="button"/></td>
+                            </tr>
+                            <tr>
+                                <td><p:commandLink value="Clear Filters" action="#{companies.tempFilterApply(0)}" process="@this" type="button"/></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </pe:layoutPane>
+
+                <pe:layoutPane id="center" position="center" resizeWhileDragging="true">
+
+
+                    <table class="page-container">
+                        <thead>
+                            <tr><th>Incidents</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+
+                                    <p:spacer width="100%" height="20px"/>
+                                    
+                                    <p:dataTable id="incidents-table"
+                                                 widgetVar="ticketsTable"
+                                                 var="incident"
+                                                 emptyMessage="#{msgs['empty.datatable']}"
+                                                 selection="#{incidents.selectedIncidents}"
+                                                 value="#{incidents.incidentModel}"
+                                                 filteredValue="#{incidents.filtered}"
+                                                 styleClass="type1-table"
+                                                 lazy="true"
+                                                 paginator="true"
+                                                 rows="20"
+                                                 rowsPerPageTemplate="20,50"
+                                                 paginatorAlwaysVisible="false"
+                                                 paginatorPosition="bottom"
+                                                 editable="true"> 
+
+                                        <f:facet name="header">   
+                                            <p:inputText id="globalFilter" styleClass="align-left" onkeyup="ticketsTable.filter();" style="width:200px" />  
+                                            <p:watermark for="globalFilter" value="Search"/>
+
+                                            <p:splitButton id="action-btn" styleClass="align-right" value="Action" rendered="#{permissionUtil.hasPermission('dmsticket:edit')}">  
+                                                <p:menuitem value="Change to SOLVED" onclick="PF('layoutWgt').open('south');" update=":form:growl" process="@this,action-btn" disabled="#{incidents.selectedLength eq 0}"/>  
+                                                <p:separator/>
+                                                <p:menuitem value="Change to OPEN"  actionListener="#{incidents.saveStatus('OPEN')}" update=":form:incidents-table  :form:growl" process="@this,action-btn" oncomplete="ticketsTable.filter(); PF('blockui1').unblock();" disabled="#{incidents.selectedLength eq 0}" onclick="PF('blockui1').block();"/> 
+                                                <p:menuitem value="Change to ARCHIVED" actionListener="#{incidents.saveStatus('ARCHIVED')}" update=":form:incidents-table  :form:growl" process="@this,action-btn" oncomplete="ticketsTable.filter(); PF('blockui1').unblock();" disabled="#{incidents.selectedLength eq 0}" onclick="PF('blockui1').block();"/> 
+                                                <p:separator/>
+                                                <p:menuitem value="De-activate Alarms" actionListener="#{incidents.manualDeactivate()}" update=":form:incidents-table  :form:growl" process="@this,action-btn" oncomplete="ticketsTable.filter(); PF('blockui1').unblock();" disabled="#{incidents.selectedLength eq 0}" onclick="PF('blockui1').block();"/>                             
+                                                <p:separator/>
+                                                <p:menuitem value="Delete" actionListener="#{incidents.delete()}" update=":form:incidents-table  :form:growl" process="@this,action-btn" oncomplete="ticketsTable.filter(); PF('blockui1').unblock();" disabled="#{incidents.selectedLength eq 0}" onclick="PF('blockui1').block();"/>  
+                                            </p:splitButton>
+
+                                            <pe:blockUI target="action-btn" widgetVar="blockui1">  
+                                                <div class="windows8-18-b">
+                                                    <div class="wBall" id="wBall_1">
+                                                        <div class="wInnerBall">
+                                                        </div>
+                                                    </div>
+                                                    <div class="wBall" id="wBall_2">
+                                                        <div class="wInnerBall">
+                                                        </div>
+                                                    </div>
+                                                    <div class="wBall" id="wBall_3">
+                                                        <div class="wInnerBall">
+                                                        </div>
+                                                    </div>
+                                                    <div class="wBall" id="wBall_4">
+                                                        <div class="wInnerBall">
+                                                        </div>
+                                                    </div>
+                                                    <div class="wBall" id="wBall_5">
+                                                        <div class="wInnerBall">
+                                                        </div>
+                                                    </div>
+                                                </div> 
+                                            </pe:blockUI>
+
+                                        </f:facet> 
+
+                                        <p:ajax event="rowSelectCheckbox"  
+                                                update=":form:incidents-table:action-btn"/>  
+                                        <p:ajax event="rowUnselectCheckbox"
+                                                update=":form:incidents-table:action-btn"/>
+                                        <p:ajax event="rowSelect"  
+                                                update=":form:incidents-table:action-btn"/>  
+                                        <p:ajax event="rowUnselect"
+                                                update=":form:incidents-table:action-btn"/>
+                                        <p:ajax event="rowEdit" 
+                                                listener="#{incidents.onRowEdit}" 
+                                                update=":form:incidents-table:action-btn :form:growl" /> 
+
+                                        <p:column selectionMode="multiple" style="width:18px" />
+
+                                        <p:column style="width:18px">  
+                                            <p:rowToggler />  
+                                        </p:column> 
+
+                                        <p:column headerText="ID"
+                                                  filterBy="#{incident.cause}"
+                                                  filterStyle="display:none"
+                                                  sortBy="#{incident.cause}">
+                                            DMST-#{incident.cause}
+                                        </p:column>
+
+                                        <p:column headerText="Status"
+                                                  filterBy="#{incident.status}"
+                                                  filterStyle="display:none"
+                                                  sortBy="#{incident.status}">
+                                            #{incident.status}
+                                        </p:column>
+
+                                        <p:column headerText="Title"
+                                                  filterBy="#{incident.title}"
+                                                  filterStyle="display:none"
+                                                  sortBy="#{incident.title}">
+                                            <p:cellEditor>  
+                                                <f:facet name="output"><h:outputText value="#{incident.title}"/></f:facet>  
+                                                <f:facet name="input"><p:inputText value="#{incident.title}" style="width: 90%"/></f:facet>  
+                                            </p:cellEditor>                       
+                                        </p:column>
+
+                                        <p:column headerText="Created"
+                                                  filterBy="#{incidents.temporalUtil.epochDateTimeFmt(incident.openEpoch)}"
+                                                  filterStyle="display:none"
+                                                  sortBy="#{incidents.temporalUtil.epochDateTimeFmt(incident.openEpoch)}">
+                                            #{incidents.temporalUtil.epochDateTimeFmt(incident.openEpoch)}                        
+                                        </p:column>
+
+                                        <p:column headerText="Assignee"
+                                                  filterBy="#{incident.assignee.contact.buildFullName()}"
+                                                  filterStyle="display:none"
+                                                  sortBy="#{incident.assignee.contact.buildFullName()}">
+                                            <p:cellEditor>  
+                                                <f:facet name="output"><h:outputText value="#{incidents.helper.convertStringToSubject(incident.assignee).contact.buildFullName()}" /></f:facet>  
+                                                <f:facet name="input">
+                                                    <p:autoComplete id="assignee"
+                                                                    value="#{incident.assigneeTrans}"
+                                                                    completeMethod="#{incidents.helper.completeSubject}"
+                                                                    var="t" itemLabel="#{t.contact.buildFullName()}" 
+                                                                    itemValue="#{t}" forceSelection="true" converter="subjectCvt"
+                                                                    style="width: 250px"/>
+                                                </f:facet>  
+                                            </p:cellEditor> 
+                                        </p:column>
+
+                                        <p:column headerText="Priority"
+                                                  filterBy="#{incident.priority}"
+                                                  filterStyle="display:none"
+                                                  sortBy="#{incident.priority}">
+                                            #{incident.priority}
+                                        </p:column>
+
+                                        <p:column style="width:25px" rendered="#{permissionUtil.hasPermission('dmsticket:edit')}">  
+                                            <p:rowEditor />  
+                                        </p:column> 
+
+                                        <p:rowExpansion styleClass="row-exp">  
+
+                                            <h3>Alarms</h3>
+                                            <table class="dms-sub-table">
+                                                <thead>
+                                                    <tr>
+                                                        <td></td>
+                                                        <td>ID</td>
+                                                        <td>Name</td>
+                                                        <td>Squealer</td>
+                                                        <td>Triggered</td>
+                                                        <td>Ended</td>
+                                                        <td>Duration</td>
+                                                        <td></td>
+                                                    </tr>
+                                                </thead>
+
+                                                <p:dataList value="#{incident.alarms}" 
+                                                            var="alarm"
+                                                            itemType="none"
+                                                            styleClass="clear-data-list">
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>
+                                                                <p:graphicImage value="#{pathUtil.s3Icon('black/on_icon_16.png')}" rendered="#{alarm.stopEpoch eq 0}"/>
+                                                                <p:graphicImage value="#{pathUtil.s3Icon('black/off_icon_16.png')}" rendered="#{alarm.stopEpoch ne 0}"/>
+                                                            </td>
+                                                            <td>#{alarm.alarmId}</td>
+                                                            <td>#{alarm.alarmName}</td>
+                                                            <td>#{alarm.squealer}</td>
+                                                            <td>#{incidents.temporalUtil.epochDateTimeFmt(alarm.startEpoch)}</td>
+                                                            <td>#{alarm.stopEpoch eq 0 ? '' : incidents.temporalUtil.epochDateTimeFmt(alarm.stopEpoch)}</td>
+                                                            <td>#{alarm.stopEpoch eq 0 ? '' : alarm.totalDuration()}</td>
+                                                            <td><p:graphicImage value="#{pathUtil.s3Icon('black/layers_2_icon_16.png')}" rendered="#{!alarm.logs.isEmpty()}"/> <h:outputText value=" (#{alarm.logs.size()})" rendered="#{!alarm.logs.isEmpty()}"/></td>
+                                                        </tr>
+                                                    </tbody>
+
+                                                </p:dataList>
+
+                                            </table>
+
+                                        </p:rowExpansion>
+
+                                    </p:dataTable>
+
+
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </pe:layoutPane>
+
+                <pe:layoutPane id="south" position="south" closable="false" resizable="false" size="40"><ez:footer/></pe:layoutPane>
+
+            </pe:layout>
+
+        </h:form>
+
+    </h:body>
+
+</html>
+

@@ -1,0 +1,380 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:ez="http://xmlns.jcp.org/jsf/composite/ezcomp"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <h:outputStylesheet name="css/auth.css"/>
+        <h:outputStylesheet name="css/common.css"/>
+        <link rel="shortcut icon" type="image/png" href="#{request.contextPath}/resources/images/favicon.ico" />
+        <title>#{msgs['default.page.title']} | #{msgs['admin.ticket.create.page.title']}</title>
+    </h:head>
+
+    <h:body>
+
+        #{permissionUtil.hasPagePermission('ticket:create')}
+
+        <f:metadata>
+            <f:viewParam name="requester" value="#{createTicket.viewParamRequester}"/>
+        </f:metadata>
+
+        <h:form id="form">
+
+            <pe:ajaxErrorHandler />
+
+            <p:growl id="growl" 
+                     redisplay="false"
+                     showDetail="false" 
+                     sticky="false" />
+
+            <ez:navigation-a/>
+
+            <pe:layout stateCookie="#{config.ProjectStage ne 'DEV'}" widgetVar="layoutWgt" >
+
+                <pe:layoutPane id="north" position="north" closable="false" resizable="false" size="40"/>
+
+                <pe:layoutPane id="west" position="west" resizeWhileDragging="true" size="280">
+
+                    <p:remoteCommand process="@this" autoRun="true" async="true" actionListener="#{createTicket.loadAvailableRequesters()}" update=":form:option-group-1"/>
+                    <p:remoteCommand process="@this" autoRun="true" async="true" actionListener="#{createTicket.loadAvailableAssignees()}" update=":form:option-group-2"/>
+                    <p:remoteCommand process="@this" autoRun="true" async="true" actionListener="#{createTicket.loadAvailableSites()}" update=":form:option-group-3"/>
+                    <p:remoteCommand process="@this" autoRun="true" async="true" actionListener="#{createTicket.loadAvailableTags()}" update=":form:option-group-4"/>
+
+                    <table class="page-container">
+                        <thead>
+                            <tr><th>Requester*</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+
+                                    <p:spacer width="100%" height="20px"/>
+
+                                    <h:panelGroup id="option-group-1">
+
+                                        <p:graphicImage name="images/ajax-loader.gif" rendered="#{!createTicket.renderRequester}" styleClass="ajax-lazy-loader" height="18px"/>
+
+                                        <p:autoComplete id="requester"
+                                                        value="#{createTicket.ticket.requester}"
+                                                        completeMethod="#{createTicket.completeRequesterSubject}"
+                                                        var="requester"
+                                                        converter="subjectCvt"
+                                                        itemLabel="#{requester.contact.buildFullName()}#{requester.email eq null ? '' : ' (' }#{requester.email}#{requester.email eq null ? '' : ')' }"
+                                                        itemValue="#{requester}" 
+                                                        forceSelection="true"
+                                                        styleClass="requester" 
+                                                        required="true" 
+                                                        requiredMessage="Requester is required"
+                                                        rendered="#{createTicket.renderRequester}">
+                                            <p:ajax event="itemSelect" update="@widgetVar(create-btn-wv) :form:option-group-6" />
+                                        </p:autoComplete>                                      
+
+                                        <h3>Send email</h3>
+                                        <p:selectBooleanCheckbox value="#{createTicket.requesterEmail}"/>
+
+                                    </h:panelGroup>
+
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <p:spacer width="100%" height="10px"/>
+
+                    <table class="page-container">
+                        <thead>
+                            <tr><th>Assignee</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+
+                                    <p:spacer width="100%" height="20px"/>
+
+                                    <h:panelGroup id="option-group-2">
+
+                                        <p:graphicImage name="images/ajax-loader.gif" rendered="#{!createTicket.renderAssignee}" styleClass="ajax-lazy-loader" height="18px"/>
+
+                                        <p:autoComplete id="assignee"
+                                                        value="#{createTicket.ticket.assignee}"
+                                                        completeMethod="#{createTicket.completeAssigneeSubject}"
+                                                        var="assignee"
+                                                        converter="subjectCvt"
+                                                        itemLabel="#{assignee.contact.buildFullName()}#{assignee.email eq null ? '' : ' (' }#{assignee.email}#{assignee.email eq null ? '' : ')' }"
+                                                        itemValue="#{assignee}" 
+                                                        forceSelection="true"
+                                                        styleClass="assignee"
+                                                        rendered="#{createTicket.renderAssignee}">
+                                            <p:ajax event="itemSelect" update=":form:option-group-7" />
+                                        </p:autoComplete>
+
+                                        <h3>Send email</h3>
+                                        <p:selectBooleanCheckbox value="#{createTicket.assigneeEmail}"/>
+
+                                    </h:panelGroup>
+
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <p:spacer width="100%" height="10px"/>
+
+                    <table class="page-container">
+                        <thead>
+                            <tr><th>Details</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+
+                                    <h3>Topic</h3>
+                                    <p:selectOneMenu value="#{createTicket.ticket.topic}"
+                                                     effect="fade"
+                                                     style="width: 230px"
+                                                     required="true"
+                                                     requiredMessage="Type required">    
+                                        <f:selectItems value="#{enumController.ticketTopics}" var="topic" itemLabel="#{topic.label}" itemValue="#{topic}"/>
+                                    </p:selectOneMenu>
+
+                                    <h3>Severity</h3>
+                                    <p:selectOneMenu value="#{createTicket.ticket.severity}" 
+                                                     effect="fade"
+                                                     style="width: 230px"
+                                                     required="true"
+                                                     requiredMessage="Severity required">  
+                                        <f:selectItems value="#{enumController.ticketSeverities}" var="severity" itemLabel="#{severity.label}" itemValue="#{severity}"/>
+                                    </p:selectOneMenu>
+
+                                    <h:panelGroup id="option-group-3">
+
+                                        <p:graphicImage name="images/ajax-loader.gif" rendered="#{!createTicket.renderSites}" styleClass="ajax-lazy-loader" height="18px"/>
+
+                                        <h3>Site</h3>
+                                        <p:selectOneMenu value="#{createTicket.ticket.site}"
+                                                         style="width: 230px"
+                                                         converter="siteCvt"
+                                                         rendered="#{createTicket.renderSites}">
+                                            <f:selectItem itemLabel="-" noSelectionOption="true" />
+                                            <f:selectItems value="#{createTicket.availableSites}" var="site" itemLabel="#{site.name}" itemValue="#{site}"/>
+                                        </p:selectOneMenu>
+                                        
+                                    </h:panelGroup>
+
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <p:spacer width="100%" height="10px"/>
+
+                    <table class="page-container">
+                        <thead>
+                            <tr><th>Email CC</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+
+                                    <p:spacer width="100%" height="20px"/>
+
+                                    <p:autoComplete id="cc"
+                                                    value="#{createTicket.ccEmail}"
+                                                    completeMethod="#{createTicket.completeCCEmail}"
+                                                    multiple="true"
+                                                    styleClass="ccemail"/>
+
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <p:spacer width="100%" height="10px"/>
+
+                    <table class="page-container">
+                        <thead>
+                            <tr><th>Search Tags</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+
+                                    <p:spacer width="100%" height="20px"/>
+
+                                    <h:panelGroup id="option-group-4">
+
+                                        <p:graphicImage name="images/ajax-loader.gif" rendered="#{!createTicket.renderTags}" styleClass="ajax-lazy-loader" height="18px"/>
+
+                                        <p:autoComplete id="tags"
+                                                        value="#{createTicket.ticket.tags}"
+                                                        completeMethod="#{createTicket.completeTags}"
+                                                        var="tag" 
+                                                        itemLabel="#{tag.name}" 
+                                                        itemValue="#{tag}"
+                                                        converter="tagCvt"
+                                                        multiple="true"
+                                                        styleClass="tags"
+                                                        rendered="#{createTicket.renderTags}"/>
+
+                                    </h:panelGroup>
+
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </pe:layoutPane>
+
+                <pe:layoutPane id="center" position="center" resizeWhileDragging="true" styleClassHeader="layout-header">
+
+                    <table class="page-container">
+                        <thead>
+                            <tr><th>New Support Ticket</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+
+                                    <p:spacer width="100%" height="10"/>
+
+                                    <table width="100%">
+                                        <tr>
+                                            <td>
+                                                <p:inputText id="title" value="#{createTicket.ticket.title}" style="width: 400px" required="true" requiredMessage="Subject required">
+                                                    <p:ajax event="keyup" update="@widgetVar(create-btn-wv) :form:option-group-5" />
+                                                </p:inputText>
+                                                <p:watermark for="title" value="SUBJECT"/>
+                                            </td>
+                                            <td width="75px">
+                                                <p:selectOneMenu value="#{createTicket.ticket.status}"> 
+                                                    <f:selectItem itemLabel="OPEN" itemValue="OPEN" rendered="#{createTicket.ticket.status ne 'OPEN'}"/> 
+                                                    <f:selectItem itemLabel="SOLVED" itemValue="SOLVED" rendered="#{createTicket.ticket.status ne 'SOLVED'}"/>  
+                                                    <f:selectItem itemLabel="ARCHIVED" itemValue="ARCHIVED" rendered="#{createTicket.ticket.status ne 'ARCHIVED'}"/>  
+                                                </p:selectOneMenu> 
+                                            </td>
+                                        </tr>
+                                    </table>
+
+                                    <table width="100%">
+                                        <tr>
+                                            <td>
+                                                <pe:ckEditor id="comment" value="#{createTicket.comment.comment}" required="true" requiredMessage="Comment required" width="100%" 
+                                                             toolbar="[['Undo','Redo'],['Cut','Copy','Paste','PasteText','PasteFromWord'],['Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat'],['NumberedList','BulletedList'],['AlignLeft','Center','AlignRight','Justify'],['Link','Unlink'],['Find','Replace','-', 'SpellChecker', 'Scayt'],['Styles'],['Format'],['Font'],['FontSize'],['TextColor']]"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+
+                                                <p:commandButton id="create-btn" 
+                                                                 widgetVar="create-btn-wv"
+                                                                 styleClass="green-button" 
+                                                                 value="Submit" 
+                                                                 onclick="PF('blockui1').block();" 
+                                                                 oncomplete="PF('blockui1').unblock();" 
+                                                                 update=":form:growl" 
+                                                                 actionListener="#{createTicket.create()}" 
+                                                                 process="@this,:form:west :form:center :form:create-btn"
+                                                                 disabled="#{createTicket.ticket.requester eq null or createTicket.ticket.title eq null}"/>
+
+                                                <ez:blockUI target="@widgetVar(create-btn-wv)" widgetVar="blockui1"/>
+
+
+                                                <hr></hr>
+
+                                                <span style="font-style: italic; margin-right: 10px; color: #c7c7c7">Create another support ticket</span>
+                                                <p:selectBooleanCheckbox value="#{createTicket.postCreateAction}"/>
+                                            </td>
+                                        </tr>
+                                    </table>           
+
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </pe:layoutPane>
+
+                <pe:layoutPane id="east" position="east" resizable="false" size="400">
+
+
+
+                    <table class="page-container">
+                        <thead>
+                            <tr><th>Related Tickets</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+
+                                    <h:panelGroup id="option-group-5">
+
+
+                                    </h:panelGroup>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <p:spacer width="100%" height="20px"/>
+
+                    <h:panelGroup id="option-group-6">
+
+                        <h:panelGroup rendered="#{createTicket.ticket.requester ne null}">
+
+                            <table class="page-container">
+                                <thead>
+                                    <tr><th>Other Tickets by #{createTicket.ticket.requester.contact.buildFullName()}</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                        </h:panelGroup>
+
+                    </h:panelGroup>
+
+                    <p:spacer width="100%" height="20px"/>
+
+                    <h:panelGroup id="option-group-7">
+
+                        <h:panelGroup rendered="#{createTicket.ticket.assignee ne null}">
+
+                            <table class="page-container">
+                                <thead>
+                                    <tr><th>Other Tickets by #{createTicket.ticket.assignee.contact.buildFullName()}</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                        </h:panelGroup>
+
+                    </h:panelGroup>
+
+                </pe:layoutPane>
+                
+                <pe:layoutPane id="south" position="south" closable="false" resizable="false" size="40"><ez:footer/></pe:layoutPane>
+
+            </pe:layout>
+
+        </h:form>
+
+    </h:body>
+
+</html>
+

@@ -1,0 +1,377 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:ez="http://xmlns.jcp.org/jsf/composite/ezcomp"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <h:outputStylesheet name="css/auth.css"/>
+        <h:outputStylesheet name="css/common.css"/>
+        <link rel="shortcut icon" type="image/png" href="#{request.contextPath}/resources/images/favicon.ico" />
+        <title>#{msgs['default.page.title']} | #{msgs['var.company.create.page.title']}</title>
+    </h:head>
+
+    <h:body>
+
+        #{permissionUtil.hasPagePermission('company:create')}
+
+        <h:form id="form">
+
+            <pe:ajaxErrorHandler />
+
+            <p:growl id="growl" 
+                     redisplay="false"
+                     showDetail="false" 
+                     sticky="false" />
+
+            <ez:navigation-a/>
+
+            <pe:layout stateCookie="#{config.ProjectStage ne 'DEV'}" widgetVar="layourWgt" >
+
+                <pe:layoutPane id="north" position="north" closable="false" resizable="false" size="40"/>
+                
+                <pe:layoutPane id="west" position="west" resizeWhileDragging="true" size="220">
+                    
+
+                    <table class="side-menu">
+                        <tr>
+                            <td>
+                                <h3>Quick Companies</h3>
+                            </td>
+                        </tr>
+                        <tr class="hover">
+                            <td>
+                                <p:commandLink id="min-client" value="Client" process="@this" update=":form:switch :form:switch-east" actionListener="#{createCompany.helper.quickFilterSites('CLIENT')}"/>
+                            </td>
+                        </tr>
+                    </table>
+
+                </pe:layoutPane>
+
+                <pe:layoutPane id="center" position="center" resizeWhileDragging="true">
+                    
+
+                    <table>
+                        <tr>
+
+                            <td class="create-col-3">
+
+                                <pe:switch id="switch" value="#{createCompany.company.type}">  
+
+                                    <pe:defaultCase>  
+
+                                        <p:spacer width="100%" height="20px"/>
+
+                                        <h:panelGrid columns="2">
+                                            <p:graphicImage value="#{pathUtil.s3Icon('black/br_prev_icon_24.png')}"/>
+                                            <h:outputText value="Select an company type"/>
+                                        </h:panelGrid>
+
+                                    </pe:defaultCase> 
+
+                                    <pe:case value="CLIENT"> 
+
+                                        <h2>New Client Company</h2>
+                                        <p:spacer width="100%" height="20px"/>
+
+                                        <h:panelGrid columns="2" columnClasses="field-label-3">
+
+                                            <h:outputText value="Name:*" styleClass="field-label-3"/>
+                                            <p:inputText value="#{createCompany.company.name}" rendered="true" requiredMessage="Name is required"/>
+
+                                        </h:panelGrid>
+
+                                        <p:spacer width="100%" height="20px"/>
+
+                                        <h3>Contacts ( <p:commandLink id="new-contact" action="#{createCompany.addContact()}" update="contact-list" process="@this,new-contact,contact-list">
+                                                <p:graphicImage value="#{pathUtil.s3Icon('black/contact_icon_16.png')}"/>
+                                            </p:commandLink> )</h3>
+
+                                        <p:spacer width="100%" height="10px"/>
+
+                                        <p:dataList id="contact-list" 
+                                                    styleClass="clear-data-list" 
+                                                    value="#{createCompany.company.contacts}"
+                                                    var="contact"
+                                                    itemType="none">
+
+                                            <p:panel>
+
+                                                <p:commandLink id="remove-contact" styleClass="align-right" action="#{createCompany.removeContact(contact)}" update="contact-list" process="@this,remove-contact,contact-list">
+                                                    <p:graphicImage value="#{pathUtil.s3Icon('black/trash_icon_16.png')}"/>
+                                                </p:commandLink>
+
+                                                <h:panelGrid columns="2" columnClasses="field-label-3">
+
+                                                    <h:outputText value="First Name:"/>
+                                                    <p:inputText value="#{contact.firstName}"/>
+
+                                                    <h:outputText value="Last Name:"/>
+                                                    <p:inputText value="#{contact.lastName}"/>
+
+                                                    <h:outputText value="Email:"/>
+                                                    <p:inputText value="#{contact.email}"/>
+
+                                                </h:panelGrid>
+
+                                                <p:spacer width="100%" height="20px"/>
+
+                                                <h4>Addresses ( <p:commandLink id="new-address" action="#{contact.addAddress()}" update="address-list" process="@this,new-address,address-list">
+                                                        <p:graphicImage value="#{pathUtil.s3Icon('black/contact_card_icon_16.png')}"/>
+                                                    </p:commandLink> )</h4>
+
+                                                <p:dataList id="address-list" 
+                                                            styleClass="clear-data-list" 
+                                                            value="#{contact.addresses}"
+                                                            var="address"
+                                                            itemType="none">
+
+                                                    <h:panelGrid columns="3" columnClasses="field-label-3">
+
+                                                        <h:outputText value="Street:"/>
+                                                        <p:inputText value="#{address.lineTwo}"/>
+                                                        <p:commandLink id="remove-address" action="#{contact.removeAddress(address)}" update="address-list" process="@this,remove-address,address-list">
+                                                            <p:graphicImage value="#{pathUtil.s3Icon('black/trash_icon_16.png')}"/>
+                                                        </p:commandLink>
+
+                                                        <h:outputText value="City:"/>
+                                                        <p:inputText value="#{address.lineThree}"/>
+                                                        <h:outputText value=""/>
+
+                                                        <h:outputText value="State:"/>
+                                                        <p:inputText value="#{address.lineFour}"/>
+                                                        <h:outputText value=""/>
+
+                                                        <h:outputText value="Zip Code:"/>
+                                                        <p:inputText value="#{address.lineFive}"/>
+                                                        <h:outputText value=""/>
+
+                                                    </h:panelGrid>
+
+                                                    <p:spacer width="100%" height="10px"/>
+                                                    
+                                                </p:dataList>
+
+                                                <p:spacer width="100%" height="10px"/>
+
+                                                <h4>Telephones ( <p:commandLink id="new-telephone" action="#{contact.addTelephone()}" update="telephone-list" process="@this,new-telephone,telephone-list">
+                                                        <p:graphicImage value="#{pathUtil.s3Icon('black/phone_1_icon_16.png')}"/>
+                                                    </p:commandLink> )</h4>
+
+                                                <p:dataList id="telephone-list" 
+                                                            styleClass="clear-data-list" 
+                                                            value="#{contact.telephones}"
+                                                            var="telephone"
+                                                            itemType="none">
+
+                                                    <h:panelGrid columns="1" columnClasses="field-label-3">
+
+                                                        <h:panelGrid columns="2">
+
+                                                            <ez:telephone type="#{telephone.type}"
+                                                                          coutry="#{telephone.country}"                     
+                                                                          number="#{telephone.localNumber}"/>
+
+                                                            <p:commandLink id="remove-telephone" action="#{contact.removeTelephone(telephone)}" update="telephone-list" process="@this,remove-telephone,telephone-list">
+                                                                <p:graphicImage value="#{pathUtil.s3Icon('black/trash_icon_16.png')}"/>
+                                                            </p:commandLink>
+
+                                                        </h:panelGrid>
+
+                                                    </h:panelGrid>
+
+                                                </p:dataList>
+
+                                            </p:panel>
+                                            
+                                            <p:spacer width="100%" height="10px"/>
+
+                                        </p:dataList>
+
+                                        <p:spacer width="100%" height="20px"/>
+
+                                        <p:commandButton id="create-btn" 
+                                                         value="Create Account"
+                                                         action="#{createCompany.client()}"
+                                                         onclick="PF('blockui1').block();"
+                                                         oncomplete="PF('blockui1').unblock();"
+                                                         update=":form:growl"
+                                                         process="@this,:form:switch :form:switch-east"/>
+
+                                        <pe:blockUI target="create-btn" widgetVar="blockui1">  
+                                            <div class="windows8-18-b">
+                                                <div class="wBall" id="wBall_1">
+                                                    <div class="wInnerBall">
+                                                    </div>
+                                                </div>
+                                                <div class="wBall" id="wBall_2">
+                                                    <div class="wInnerBall">
+                                                    </div>
+                                                </div>
+                                                <div class="wBall" id="wBall_3">
+                                                    <div class="wInnerBall">
+                                                    </div>
+                                                </div>
+                                                <div class="wBall" id="wBall_4">
+                                                    <div class="wInnerBall">
+                                                    </div>
+                                                </div>
+                                                <div class="wBall" id="wBall_5">
+                                                    <div class="wInnerBall">
+                                                    </div>
+                                                </div>
+                                            </div> 
+                                        </pe:blockUI>
+
+                                    </pe:case>  
+                                    
+                                </pe:switch>
+
+                            </td>
+                        </tr>
+                    </table>
+
+                    <p:spacer width="100%" height="50px"/>
+
+                </pe:layoutPane>
+
+
+                <pe:layoutPane id="east" position="east" resizeWhileDragging="true" size="455">
+                    
+
+                    <pe:switch id="switch-east" value="#{createCompany.company.type}">
+
+                        <pe:defaultCase>  
+
+                        </pe:defaultCase> 
+
+                        <pe:case value="VAR">
+
+                            <h3>Sites</h3>
+
+                            <p:pickList id="sites" value="#{createCompany.helper.varSites}" var="site"  
+                                        itemValue="#{site}" itemLabel="#{site.id}" 
+                                        converter="siteCvt">  
+
+                                <f:facet name="sourceCaption">Available</f:facet>  
+                                <f:facet name="targetCaption">Selected</f:facet> 
+
+                                <p:column style="width:75%;">  
+                                    #{site.name}  
+                                </p:column>  
+
+                            </p:pickList>
+
+                            <p:spacer width="100%" height="20px"/>
+
+                            <h3>Clients</h3>
+
+                            <p:pickList id="clients" value="#{createCompany.helper.clients}" var="client"  
+                                        itemValue="#{client}" itemLabel="#{client.id}" 
+                                        converter="companyCvt">  
+
+                                <f:facet name="sourceCaption">Available</f:facet>  
+                                <f:facet name="targetCaption">Selected</f:facet> 
+
+                                <p:column style="width:75%;">  
+                                    #{client.name}  
+                                </p:column>  
+
+                            </p:pickList>
+
+                        </pe:case> 
+
+                        <pe:case value="CLIENT">
+
+                            <h3>Sites</h3>
+
+                            <p:pickList id="sites" value="#{createCompany.helper.clientSites}" var="site"  
+                                        itemValue="#{site}" itemLabel="#{site.id}" 
+                                        converter="siteCvt">  
+
+                                <f:facet name="sourceCaption">Available</f:facet>  
+                                <f:facet name="targetCaption">Selected</f:facet> 
+
+                                <p:column style="width:75%;">  
+                                    #{site.name}  
+                                </p:column>  
+
+                            </p:pickList>
+
+                        </pe:case>
+
+                        <pe:case value="QUICKVAR">
+
+                            <h3>Sites</h3>
+
+                            <p:pickList id="sites" value="#{createCompany.helper.varSites}" var="site"  
+                                        itemValue="#{site}" itemLabel="#{site.id}" 
+                                        converter="siteCvt">  
+
+                                <f:facet name="sourceCaption">Available</f:facet>  
+                                <f:facet name="targetCaption">Selected</f:facet> 
+
+                                <p:column style="width:75%;">  
+                                    #{site.name}  
+                                </p:column>  
+
+                            </p:pickList>
+
+                            <p:spacer width="100%" height="20px"/>
+
+                            <h3>Clients</h3>
+
+                            <p:pickList id="clients" value="#{createCompany.helper.clients}" var="client"  
+                                        itemValue="#{client}" itemLabel="#{client.id}" 
+                                        converter="companyCvt">  
+
+                                <f:facet name="sourceCaption">Available</f:facet>  
+                                <f:facet name="targetCaption">Selected</f:facet> 
+
+                                <p:column style="width:75%;">  
+                                    #{client.name}  
+                                </p:column>  
+
+                            </p:pickList>
+
+                        </pe:case>
+
+                        <pe:case value="QUICKCLIENT">
+
+                            <h3>Sites</h3>
+
+                            <p:pickList id="sites" value="#{createCompany.helper.clientSites}" var="site"  
+                                        itemValue="#{site}" itemLabel="#{site.id}" 
+                                        converter="siteCvt">  
+
+                                <f:facet name="sourceCaption">Available</f:facet>  
+                                <f:facet name="targetCaption">Selected</f:facet> 
+
+                                <p:column style="width:75%;">  
+                                    #{site.name}  
+                                </p:column>  
+
+                            </p:pickList>
+
+                        </pe:case>
+
+                    </pe:switch>  
+
+                </pe:layoutPane>
+
+            </pe:layout>
+
+        </h:form>
+
+        <!-- JIRA -->
+        <script type="text/javascript" src="https://dastrax.atlassian.net/s/d41d8cd98f00b204e9800998ecf8427e/en_US-hgwqx7-1988229788/6132/31/1.4.0-m5/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?collectorId=5962a16e"></script>
+
+
+    </h:body>
+
+</html>
+

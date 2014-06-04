@@ -1,0 +1,357 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:ez="http://xmlns.jcp.org/jsf/composite/ezcomp"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <h:outputStylesheet name="css/auth.css"/>
+        <h:outputStylesheet name="css/common.css"/>
+        <link rel="shortcut icon" type="image/png" href="#{request.contextPath}/resources/images/favicon.ico" />
+        <title>#{msgs['default.page.title']} | #{msgs['client.ticket.edit.page.title']}</title>
+    </h:head>
+
+    <h:body>
+
+        #{permissionUtil.hasPagePermission('ticket:edit')}
+
+        <f:metadata>
+            <f:viewParam name="ticket" value="#{editTicket.ticketId}"/>
+            <f:viewAction action="#{editTicket.init}" />
+        </f:metadata>
+
+        <h:form id="form" >
+
+            <pe:ajaxErrorHandler />
+
+            <p:growl id="growl" 
+                     redisplay="false"
+                     showDetail="false" 
+                     sticky="false" />
+
+            <ez:navigation-a/>
+
+            <pe:layout stateCookie="#{config.ProjectStage ne 'DEV'}" widgetVar="layoutWgt" >
+
+                <pe:layoutPane id="north" position="north" closable="false" resizable="false" size="40"/>
+
+                <pe:layoutPane id="west" position="west" resizeWhileDragging="true" size="280">
+
+                    <div class="edit-ticket">
+
+                        <p:panel id="option-panel-2" styleClass="ticket-options">
+
+                            <h:panelGrid id="option-grid-2" columns="1">
+
+                                <h:outputText value="Assignee" styleClass="super-field-label"/>
+                                <h:outputText value="#{editTicket.ticket.assignee eq null ? 'None' : editTicket.ticket.assignee.contact.buildFullName()}"/>
+                                
+                            </h:panelGrid>
+
+                        </p:panel>
+
+                        <p:spacer width="100%" height="10px"/>
+
+                        <p:panel id="option-panel-3" styleClass="ticket-options">
+
+                            <h:panelGrid id="option-grid-3" columns="1">
+
+                                <h:outputText value="Type*" styleClass="super-field-label"/>
+                                <p:selectOneMenu value="#{editTicket.ticket.type}"
+                                                 effect="fade"
+                                                 style="width: 230px"
+                                                 required="true"
+                                                 requiredMessage="Type required">  
+                                    <f:selectItem itemLabel="-" itemValue="" />  
+                                    <f:selectItem itemLabel="General" itemValue="General" />
+                                    <f:selectItem itemLabel="Equipment Failure" itemValue="Equipment Failure" />
+                                    <f:selectItem itemLabel="Connection Failure" itemValue="Connection Failure" />
+                                    <f:selectItem itemLabel="Signal Source Failure" itemValue="Signal Source Failure" />
+                                    <f:selectItem itemLabel="Informational" itemValue="Informational" />
+                                    <f:selectItem itemLabel="Total System Failure" itemValue="Total System Failure" />
+                                </p:selectOneMenu>
+
+                                <h:outputText value="Severity*" styleClass="super-field-label"/>
+                                <p:selectOneMenu value="#{editTicket.ticket.priority}" 
+                                                 effect="fade"
+                                                 style="width: 230px"
+                                                 required="true"
+                                                 requiredMessage="Severity required">  
+                                    <f:selectItem itemLabel="-" itemValue="" />  
+                                    <f:selectItem itemLabel="Sev 1 - (Service Down)" itemValue="Sev 1" />
+                                    <f:selectItem itemLabel="Sev 2 - (Service Disruption)" itemValue="Sev 2" />
+                                    <f:selectItem itemLabel="Sev 3 - (General Support)" itemValue="Sev 3" />
+                                </p:selectOneMenu>
+
+                                <h:outputText value="Site" styleClass="super-field-label"/>
+                                <p:inplace id="siteAIP" styleClass="inplace" editor="true" label="#{editTicket.ticket.site.name eq null ? 'None' : editTicket.ticket.site.name}">  
+                                    <p:ajax event="save" listener="#{editTicket.changeSite()}"/>
+                                    <p:selectOneMenu value="#{editTicket.helper.selectedSite}"
+                                                     effect="fade"
+                                                     style="width: 230px">  
+                                        <f:selectItem itemLabel="-" itemValue="" /> 
+                                        <f:selectItems value="#{editTicket.helper.sites}" var="site" itemLabel="#{site.name}" itemValue="#{site.id}"/>
+
+                                    </p:selectOneMenu>
+                                </p:inplace> 
+
+                            </h:panelGrid>
+
+                        </p:panel>
+
+                        <p:spacer width="100%" height="10px"/>
+
+                        <p:panel id="option-panel-4" styleClass="ticket-options">
+
+                            <h:panelGrid id="option-grid-4" columns="1">
+
+                                <h:outputText value="Email CC" styleClass="super-field-label"/>
+                                <p:autoComplete id="cc"
+                                                value="#{editTicket.helper.ccEmail}"
+                                                completeMethod="#{editTicket.helper.completeCCEmail}"
+                                                multiple="true"
+                                                styleClass="ccemail"/>
+
+                            </h:panelGrid>
+
+                        </p:panel>
+
+                        <p:spacer width="100%" height="10px"/>
+
+                        <p:panel id="option-panel-5" styleClass="ticket-options">
+
+                            <h:panelGrid id="option-grid-5" columns="1">
+
+                                <h:outputText value="Search Tags" styleClass="super-field-label"/>
+                                <p:autoComplete id="tags"
+                                                value="#{editTicket.ticket.tags}"
+                                                completeMethod="#{editTicket.helper.completeTags}"
+                                                var="tag" 
+                                                itemLabel="#{tag.name}" 
+                                                itemValue="#{tag}"
+                                                converter="tagCvt"
+                                                multiple="true"
+                                                styleClass="tags"/>
+
+                            </h:panelGrid>
+
+                        </p:panel>
+
+                    </div>
+
+                </pe:layoutPane>
+
+                <pe:layoutPane id="center" position="center" resizeWhileDragging="true" styleClassHeader="layout-header">
+
+                    <pe:layoutPane id="center-north" position="north" size="550" resizeWhileDragging="true">
+
+                        <div id="comment" class="edit-ticket">
+
+                            <table width="100%">
+                                <tr>
+                                    <td width="215px"></td>
+                                    <td></td>
+                                    <td width="75px">
+                                        <p:selectOneMenu value="#{editTicket.ticket.status}"> 
+                                            <f:selectItem itemLabel="OPEN" itemValue="OPEN" rendered="#{editTicket.ticket.status ne 'OPEN'}"/> 
+                                            <f:selectItem itemLabel="SOLVED" itemValue="SOLVED" rendered="#{editTicket.ticket.status ne 'SOLVED'}"/>
+                                            <f:selectItem itemLabel="ARCHIVED" itemValue="ARCHIVED" rendered="#{editTicket.ticket.status ne 'ARCHIVED'}"/>   
+                                        </p:selectOneMenu> 
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <p:spacer width="100%" height="10"/>
+
+                            <pe:ckEditor id="comment" value="#{editTicket.helper.comment.comment}" width="100%" 
+                                         toolbar="[['Undo','Redo'],['Cut','Copy','Paste','PasteText','PasteFromWord'],['Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat'],['NumberedList','BulletedList'],['AlignLeft','Center','AlignRight','Justify'],['Link','Unlink'],['Find','Replace','-', 'SpellChecker', 'Scayt'],['Styles'],['Format'],['Font'],['FontSize'],['TextColor']]"/>
+
+                            <p:spacer width="100%" height="10"/>
+
+                            <div class="upload-container">
+
+                                <p:fileUpload id="uploader"
+                                              styleClass="uploader"
+                                              fileUploadListener="#{editTicket.uploadFile}" 
+                                              mode="advanced" 
+                                              dragDropSupport="true" 
+                                              auto="true"
+                                              update=":form:growl :form:attachments @this"
+                                              onstart="PF('blockui2').block();"
+                                              oncomplete="PF('blockui2').unblock();"
+                                              onerror="PF('blockui2').unblock();"
+                                              sizeLimit="2097152" 
+                                              allowTypes="/(\.|\/)(gif|jpe?g|png|tiff|mpeg|mpg|mov|avi|wmv|flv|txt|doc?x|xls?x|ppt?x|pdf|eps|zip)$/"
+                                              label="select them."
+                                              invalidFileMessage="Sorry, this file type is currently not supported."
+                                              invalidSizeMessage="Sorry, the maximum file size is 2MB."/>
+
+                                <h:outputText styleClass="upload-info" value="Attach files by dropping them here or"/>
+
+                            </div>
+
+                            <p:commandButton id="action-btn" styleClass="green-button" value="Submit" onclick="PF('blockui1').block();" oncomplete="PF('blockui1').unblock();" update=":form:growl" actionListener="#{editTicket.submit()}" process="@this @(.edit-ticket :input)"/>
+
+                            <pe:blockUI target="action-btn" widgetVar="blockui1">  
+                                <div class="windows8-18-b">
+                                    <div class="wBall" id="wBall_1">
+                                        <div class="wInnerBall">
+                                        </div>
+                                    </div>
+                                    <div class="wBall" id="wBall_2">
+                                        <div class="wInnerBall">
+                                        </div>
+                                    </div>
+                                    <div class="wBall" id="wBall_3">
+                                        <div class="wInnerBall">
+                                        </div>
+                                    </div>
+                                    <div class="wBall" id="wBall_4">
+                                        <div class="wInnerBall">
+                                        </div>
+                                    </div>
+                                    <div class="wBall" id="wBall_5">
+                                        <div class="wInnerBall">
+                                        </div>
+                                    </div>
+                                </div> 
+                            </pe:blockUI>
+
+                        </div>
+
+                    </pe:layoutPane>
+
+                    <pe:layoutPane id="center-center" position="center" resizeWhileDragging="true" styleClassHeader="layout-header">
+
+                        <f:facet name="header">  
+                            <h:outputText value="Attachments"/>  
+                        </f:facet>
+
+                        <p:dataTable id="attachments"
+                                     var="attachment" 
+                                     value="#{editTicket.ticket.attachments}"  
+                                     paginator="true"
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                     paginatorPosition="top"
+                                     paginatorAlwaysVisible="false"
+                                     emptyMessage="This ticket currently has no attachments"
+                                     styleClass="main-table no-table-header">
+
+                            <p:column style="width: 50px">
+                                <p:commandLink process="@this"
+                                               action="#{editTicket.viewAttachment(attachment)}"
+                                               target="_blank"
+                                               title="View"> 
+                                    <p:graphicImage value="#{editTicket.helper.fileTypeIcon(attachment)}" height="50px"/>
+                                </p:commandLink>
+                            </p:column>
+
+                            <p:column>
+                                <h:outputText value="#{attachment.title}"/>
+                            </p:column>
+
+                            <p:column>
+                                <p:commandLink process="@this"
+                                               action="#{editTicket.viewAttachment(attachment)}"
+                                               target="_blank"
+                                               title="Edit"> 
+                                    <p:graphicImage value="#{pathUtil.s3Icon('black/doc_edit_icon_16.png')}"/>
+                                </p:commandLink>
+                            </p:column>
+
+                            <p:column>
+                                <p:commandLink process="@this"
+                                               action="#{editTicket.removeAttachment(attachment)}"
+                                               update=":form:attachments :form:growl"
+                                               onclick="PF('blockui2').block();" 
+                                               oncomplete="PF('blockui2').unblock();"
+                                               title="Delete"> 
+                                    <p:graphicImage value="#{pathUtil.s3Icon('black/trash_icon_16.png')}"/>
+                                </p:commandLink>
+                            </p:column>
+
+                        </p:dataTable> 
+
+                        <pe:blockUI target="attachments" widgetVar="blockui2">  
+                            <div class="windows8-18-b">
+                                <div class="wBall" id="wBall_1">
+                                    <div class="wInnerBall">
+                                    </div>
+                                </div>
+                                <div class="wBall" id="wBall_2">
+                                    <div class="wInnerBall">
+                                    </div>
+                                </div>
+                                <div class="wBall" id="wBall_3">
+                                    <div class="wInnerBall">
+                                    </div>
+                                </div>
+                                <div class="wBall" id="wBall_4">
+                                    <div class="wInnerBall">
+                                    </div>
+                                </div>
+                                <div class="wBall" id="wBall_5">
+                                    <div class="wInnerBall">
+                                    </div>
+                                </div>
+                            </div> 
+                        </pe:blockUI>
+
+                    </pe:layoutPane>
+
+                </pe:layoutPane>
+
+                <pe:layoutPane id="east" position="east" resizeWhileDragging="true" size="40%" styleClassHeader="layout-header">
+
+                    <f:facet name="header">  
+                        <h:outputText value="Ticket DTX-#{editTicket.ticket.id} Comments"/>  
+                    </f:facet>
+
+                    <p:dataList id="comment-datalist" 
+                                value="#{editTicket.ticket.comments}" 
+                                var="comment"
+                                itemType="none"
+                                styleClass="clear-data-list">
+
+                        <ui:fragment rendered="#{editTicket.nexusUtil.authorised(comment.acl)}">
+                            <table style="width:100%;position: relative">
+                                <tr class="comment-table-seperator">
+                                    <td style="width: 60px">
+                                        <p:graphicImage value="#{pathUtil.profileImage(comment.commenter.uid)}"
+                                                        height="60px"
+                                                        styleClass="comment-image"/>
+
+                                    </td>
+                                    <td>
+                                        <b>#{comment.commenter.contact.buildFullName()}</b>
+                                        <h:outputText value="#{editTicket.temporalUtil.epochDateTimeFmt(comment.created)}" styleClass="comment-date"/>
+                                        <p:spacer width="100%" height="10"/>
+                                        <div class="#{comment.acl.id eq 1 ? 'admin-comment' : comment.acl.id eq 4 ? 'var-comment' : 'public-comment'}">
+                                            <h:outputText value="#{comment.comment}" escape="false"/>             
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </ui:fragment>
+
+                    </p:dataList>
+
+                </pe:layoutPane>
+
+            </pe:layout>
+
+        </h:form>
+
+        <!-- JIRA -->
+        <script type="text/javascript" src="https://dastrax.atlassian.net/s/d41d8cd98f00b204e9800998ecf8427e/en_US-hgwqx7-1988229788/6132/31/1.4.0-m5/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?collectorId=5962a16e"></script>
+
+
+    </h:body>
+
+</html>
+

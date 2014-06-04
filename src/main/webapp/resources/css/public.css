@@ -1,0 +1,225 @@
+/*
+Copyright 2013 SOLiD Inc ALL RIGHTS RESERVED.
+Developed by: Tarka L'Herpiniere <tarka@solid.com>.
+
+ 
+Created on : Jul 16, 2013, 2:16:13 PM
+Author     : Tarka L'Herpiniere <tarka@solid.com>
+*/
+*
+{
+	margin: 0;
+}
+HTML, BODY
+{
+	height: 100%;
+}
+TABLE TD
+{
+	padding-bottom: 5px;
+}
+BODY
+{
+	background-color: #FFFFFF;
+	font-size: 12px;
+	font-family: Verdana, Geneva, sans-serif;
+	color: #000000;
+}
+/*LINK*/
+A:link, A:visited
+{
+	color: #045491;
+	text-decoration: none;
+}
+A:link:hover, A:visited:hover
+{
+	color: #045491;
+	text-decoration: underline;
+}
+/*TEMPLATE*/
+#main-wrapper
+{
+	min-height: 100%;
+	height: auto !important;
+	height: 100%;
+	margin: 0 auto -80px;
+	width: 100%;
+	position: relative;
+}
+#header-bg
+{
+	height: 90px;
+	width: 100%;
+	z-index: -1;
+}
+#header-form
+{
+	/*+placement:anchor-top-right 0px -60px;*/
+	position: absolute;
+	right: 0px;
+	top: -60px;
+}
+#header-form TABLE TD
+{
+	padding: 0px 10px;
+}
+#header-form A
+{
+	color: #606060;
+}
+#header-wrapper
+{
+	background-image: url(data:image/jpeg;base64,/9j/4AAQSkZJRgABAgAAZABkAAD/7AARRHVja3kAAQAEAAAAZAAA/+4ADkFkb2JlAGTAAAAAAf/bAIQAAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQICAgICAgICAgICAwMDAwMDAwMDAwEBAQEBAQECAQECAgIBAgIDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMD/8AAEQgBZwAGAwERAAIRAQMRAf/EAIsAAQEBAAIDAAAAAAAAAAAAAAUGBAEDBwgJAQEAAwEBAAAAAAAAAAAAAAAAAQIDBAUQAAECBAIFCQQHCQEAAAAAAAECAwAREwQSBWEiFBUG8CFRkaHR4SMWMUGBUnGxMkKS0iSisjNT0zQ1VZUHEQEAAQQCAwAAAAAAAAAAAAAAEfABIWFB8XGBEv/aAAwDAQACEQMRAD8A9gd5L/mK6z+aPXmqs5cIbb9I/EO6KTZKH3gPn7DGXpdEbxHIjvjP6unOkLvAdJ6z+WKSnFdvGXqzJP8AdZV/0bP+vGc2rpaPD61ucXf+mbpZpcTZhveR2ipnWb0MGF3DRw3OHavsTxeVixfdlGayHcYys8NW7Cs/fbtEtLCL5L+BT5ouA2q7Y+a6wgKlsw1wlITOYgOld5lvpth1XDtwu0KHMFoGcSGVBkk3arqdZtlwEyuJYz7YDgu8T+nUXAcy6WxuPOOSe2o2WzoU2sK/gbRgxFXNL7PvnAZV2WV+m2T6guK4ZW4Mv2kKb2hST+lNiBUbbS4ggLIw6xV7FCAXcOWDhy3QeHnw+pKmk5mpmkwq4m8K6MwBLtwrGkmiZJEimckiAs3LXiUcKsECx3aWClZRLbzZSeEnqo2engAlT82WGfPigE3sry08M2jm+rhdyHlK3Sp8O27Tk7rmRYp8y2UZzqnVOI/MICpft7NXDtlbJydxu7Reu1M2LCEtvpBecopuRJbi0oeSCgkhISD0SbOFzc2GdemMvD6Wtzbwe2RQS1tBe/UTx4TipY6+GYxTnPVwQFK7lNiMrtXW75Tt8q5drZYbZ5Ldu2rEkPJuFeStawwjFLnIUkc2AzCxct7FWXs26MuDd828px3MdqWovtGrJk2hFFuWJOsDPU0mAtF2+YHKmGV/4zbn1Mp8n+8bZZL2sDX1WrhPMTg1ubnnAUBsWQyhYWC6px1K2aQAQ2hLJacqTwrLqlrGGWrgn94QDdIYQMElAqJXi51JIQEpl7AElJOmegQCVDR9cAtS0dvjAL0dB6xALUdHZAMUR8p/D4QC9DR+zAM7Po+qAZoDo/dgGdnHQOzugGNnHQOzugGdnGjl8IBihyn4QDFDT2+EAvR+nrHdAMUTp6xALUTyTAK0Ro7e+AVo6D1iASo6B1mASp/Ry+EAhT0jqgN9LQnq8IDbgHy+7o90Bswj5hy+MB//2Q==);
+	height: 350px;
+}
+#header-content
+{
+	width: 960px;
+	margin: 0 auto;
+	position: relative;
+}
+.ui-tabmenu-nav
+{
+	background: #000000;
+	height: 44px;
+	-webkit-border-radius: 0px;
+	-moz-border-radius: 0px;
+	border-radius: 0px;
+}
+.ui-tabmenuitem
+{
+	background: transparent;
+	border: none;
+	margin: 6px !important;
+}
+.ui-tabmenuitem:hover
+{
+	background: transparent;
+	border: none;
+	margin: 6px !important;
+}
+.ui-menuitem-text
+{
+	color: #FFFFFF;
+	-webkit-font-smoothing: subpixel-antialiased;
+	font-family: Verdana;
+	font-size: small;
+}
+#content
+{
+	width: 960px;
+	margin: -200px auto 5px;
+	padding: 10px;
+	overflow-y: hidden !important;
+	overflow-x: hidden !important;
+}
+#footer-bg
+{
+	width: 100%;
+	border-top: 1px groove #606060;
+	/*+placement:anchor-bottom-left 0px 0px;*/
+	position: absolute;
+	left: 0px;
+	bottom: 0px;
+	background: #AEAEAE;
+}
+#footer, #push
+{
+	height: 78px;
+	width: 960px;
+	color: #FFFFFF;
+	margin: 0 auto;
+}
+#header-logo
+{
+	/*+placement:anchor-top-left 0px -85px;*/
+	position: absolute;
+	left: 0px;
+	top: -85px;
+}
+/*FOOTER*/
+.col-1
+{
+	width: 285px;
+	padding-top: 10px;
+	vertical-align: top;
+}
+.col-2
+{
+	width: 285px;
+	padding-top: 10px;
+	vertical-align: top;
+}
+.col-3
+{
+	width: 285px;
+	padding-top: 10px;
+	vertical-align: top;
+}
+.col-4
+{
+	width: 250px;
+	padding-top: 15px;
+	vertical-align: top;
+}
+.copyright
+{
+	text-align: right;
+	/*+placement:float-right 0px 0px;*/
+	float: right;
+	position: relative;
+	left: 0px;
+	top: 0px;
+	font-size: 0.85em;
+}
+#footer A
+{
+	font-size: 0.85em;
+	color: #606060;
+}
+.footer-logo
+{
+	font-weight: bold;
+}
+/*GENERAL*/
+.field-label
+{
+	font-weight: bold;
+	margin-right: 20px;
+}
+.side-note
+{
+	font-style: italic;
+	font-size: 7pt;
+	vertical-align: bottom;
+	padding-left: 5px;
+	padding-right: 5px;
+	color: #606060;
+}
+/*CONTACT*/
+#contact-container
+{
+	position: relative;
+}
+#contact-address
+{
+	/*+placement:anchor-bottom-left 74px 204px;*/
+	position: absolute;
+	left: 74px;
+	bottom: 204px;
+	width: 200px;
+	font-style: italic;
+}
+#contact-details
+{
+	/*+placement:anchor-top-right 115px 50px;*/
+	position: absolute;
+	right: 115px;
+	top: 50px;
+	width: 200px;
+	text-align: right;
+}
+.telephone-number-label
+{
+	min-width: 130px;
+}

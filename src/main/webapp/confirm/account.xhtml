@@ -1,0 +1,116 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <h:outputStylesheet name="css/login.css"/>
+        <h:outputStylesheet name="css/common.css"/>
+        <link rel="shortcut icon" type="image/png" href="#{request.contextPath}/resources/images/favicon.ico" />
+        <title>#{msgs['default.page.title']} | #{msgs['confirm.account.page.title']}</title>
+    </h:head>
+    <h:body>
+
+        <f:metadata>
+            <f:viewParam name="token" value="#{createAccount.helper.token}"/>
+            <f:viewAction action="#{createAccount.init}" />
+        </f:metadata>
+
+        <div id="messages">
+            <p:messages redisplay="false"
+                        showDetail="false" 
+                        autoUpdate="true"
+                        closable="true"/>
+        </div>
+
+        <!-- Logo -->
+        <p:graphicImage id="logo" 
+                        value="#{pathUtil.s3Logo('dastrax_logo_v1.png')}"/>
+
+        <!-- Authentication -->
+        <h:form id="form" rendered="#{createAccount.helper.renderPublicForm}">
+
+            <div id="confirm-account">
+
+                <p:focus/> 
+
+                <h:panelGrid columns="2">
+
+                    <p:password id="pin"
+                                value="#{createAccount.helper.pinCode}"
+                                required="true"
+                                requiredMessage="Pin code required"/>
+                    <p:watermark for="pin" value="Pin Code"/>
+
+                    <p:password id="psw-a"
+                                value="#{createAccount.helper.tempPswA}"
+                                required="true"
+                                requiredMessage="#{msgs['error.password.required']}"/>
+                    <p:watermark for="psw-a" value="New Password"/>
+
+                    <p:password id="psw-b"
+                                value="#{createAccount.helper.tempPswB}"
+                                required="true"
+                                requiredMessage="#{msgs['error.password.required']}"/>
+                    <p:watermark for="psw-b" value="Confirm Password"/>
+
+                </h:panelGrid>
+
+                <p:selectBooleanButton id="legal" 
+                                       value="#{createAccount.helper.legal}"
+                                       onLabel="Accepted"
+                                       onIcon="ui-icon-check"
+                                       offLabel="Accept Legal">
+                    <p:ajax update=":form:save-btn"/>
+                </p:selectBooleanButton>
+
+
+                <p:commandButton id="save-btn"
+                                 action="#{createAccount.confirm()}"
+                                 ajax="false" 
+                                 value="Confirm"
+                                 onclick="PF('blockui1').block();"
+                                 oncomplete="PF('blockui1').unblock();"
+                                 process="@this,psw-a,psw-b,legal"
+                                 update=":form :messages"
+                                 disabled="#{!createAccount.helper.legal}"/>
+
+                <pe:blockUI target="save-btn" widgetVar="blockui1">  
+                    <div class="windows8-25-w">
+                        <div class="wBall" id="wBall_1">
+                            <div class="wInnerBall">
+                            </div>
+                        </div>
+                        <div class="wBall" id="wBall_2">
+                            <div class="wInnerBall">
+                            </div>
+                        </div>
+                        <div class="wBall" id="wBall_3">
+                            <div class="wInnerBall">
+                            </div>
+                        </div>
+                        <div class="wBall" id="wBall_4">
+                            <div class="wInnerBall">
+                            </div>
+                        </div>
+                        <div class="wBall" id="wBall_5">
+                            <div class="wInnerBall">
+                            </div>
+                        </div>
+                    </div> 
+                </pe:blockUI>
+
+            </div>
+
+            <div class="footer">
+
+            </div>
+
+        </h:form>
+
+    </h:body>
+</html>
