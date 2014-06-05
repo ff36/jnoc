@@ -61,7 +61,7 @@ public class Comment implements Serializable {
     //<editor-fold defaultstate="collapsed" desc="EJB">
     @Transient
     @EJB
-    CrudService dap;
+    private CrudService dap;
 //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="Getters">
@@ -189,7 +189,7 @@ public class Comment implements Serializable {
      */
     public void changeNexus(String commentACL) {
 
-        if (SessionUser.isAdministrator()) {
+        if (SessionUser.getCurrentUser().isAdministrator()) {
             if (commentACL.equals("internal")) {
                 nexus = (Nexus) dap.find(Nexus.class, DTX.RootNexus.ADMIN);
             }
@@ -197,7 +197,7 @@ public class Comment implements Serializable {
                 nexus = null;
             }
         }
-        if (SessionUser.isVAR()) {
+        if (SessionUser.getCurrentUser().isVAR()) {
             if (commentACL.equals("internal")) {
                 nexus = (Nexus) dap.find(Nexus.class, DTX.RootNexus.ADMIN_VAR);
             }

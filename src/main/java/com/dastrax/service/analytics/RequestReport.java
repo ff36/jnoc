@@ -40,7 +40,7 @@ public class RequestReport implements Serializable {
 
     //<editor-fold defaultstate="collapsed" desc="EJB">
     @EJB
-            CrudService dap;
+    private CrudService dap;
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Constructors">
@@ -87,7 +87,7 @@ public class RequestReport implements Serializable {
     @PostConstruct
     public void init() {
         // ADMIN access
-        if (SessionUser.isAdministrator()) {
+        if (SessionUser.getCurrentUser().isAdministrator()) {
             das = (List<DAS>) dap.findWithNamedQuery("DAS.findAll");
         } else {
            User user = (User) dap.find(User.class, SessionUser.getCurrentUser().getId());

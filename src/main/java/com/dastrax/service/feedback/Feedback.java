@@ -41,7 +41,7 @@ public class Feedback implements Serializable {
 
     //<editor-fold defaultstate="collapsed" desc="EJB">
     @EJB
-    CrudService dap;
+    private CrudService dap;
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Constructors">

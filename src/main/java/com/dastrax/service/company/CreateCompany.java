@@ -34,7 +34,7 @@ public class CreateCompany implements Serializable {
 
     //<editor-fold defaultstate="collapsed" desc="Properties">
     private static final long serialVersionUID = 1L;
-    private static final List<Locale> countries = Countries.getWorldCountries();
+    private final List<Locale> countries;
     private Company company;
     private List<Company> vars;
     private Contact newContact;
@@ -43,6 +43,8 @@ public class CreateCompany implements Serializable {
 
     //<editor-fold defaultstate="collapsed" desc="Constructors">
     public CreateCompany() {
+        //this.countries = Countries.getWorldCountries();
+        this.countries = new ArrayList<>();
         this.company = new Company();
         this.newContact = new Contact();
     }
@@ -54,7 +56,7 @@ public class CreateCompany implements Serializable {
      *
      * @return the value of countries
      */
-    public static List<Locale> getCountries() {
+    public List<Locale> getCountries() {
         return countries;
     }
     

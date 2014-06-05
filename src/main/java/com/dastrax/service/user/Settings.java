@@ -41,7 +41,7 @@ public class Settings implements Serializable {
     
     //<editor-fold defaultstate="collapsed" desc="EJB">
     @EJB
-    CrudService dap;
+    private CrudService dap;
 
 //</editor-fold>
     

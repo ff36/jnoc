@@ -34,8 +34,9 @@ import java.util.logging.Logger;
 import javax.enterprise.inject.Default;
 
 /**
- * Methods dedicated to handling Domain Name System (DNSManager) based functions. The
- AWS Route 53 DNSManager service offers anAPI to control the DNSManager records.
+ * Methods dedicated to handling Domain Name System (DNSManager) based
+ * functions. The AWS Route 53 DNSManager service offers anAPI to control the
+ * DNSManager records.
  *
  * @version 1.0.0
  * @since Build 1.0.0 (Jul 17, 2013)
@@ -67,7 +68,10 @@ public class DefaultDNSManager implements DNSManager {
     public boolean createCNAME(String prefix) {
 
         // If in DEV stage we don't want to write anything to route 53
-        if (!stage.equals(DTX.ProjectStage.DEV.toString())) {
+        if (stage.equals(DTX.ProjectStage.DEV.toString())) {
+            // Fake the response for DEV
+            return true;
+        } else {
 
             if (!recordSetExists(prefix)) {
 
@@ -106,10 +110,6 @@ public class DefaultDNSManager implements DNSManager {
                         .getString("valid.dns.exists"));
                 return false;
             }
-
-        } else {
-            // Fake the response for DEV
-            return true;
         }
     }
 
@@ -124,7 +124,10 @@ public class DefaultDNSManager implements DNSManager {
     public boolean deleteCNAME(String prefix) {
 
         // If in DEV stage we don't want to write anything to route 53
-        if (!stage.equals(DTX.ProjectStage.DEV.toString())) {
+        if (stage.equals(DTX.ProjectStage.DEV.toString())) {
+            // Fake the response for DEV
+            return true;
+        } else {
 
             // Make sure the record set exists before trying to delete it.
             if (recordSetExists(prefix)) {
@@ -160,9 +163,7 @@ public class DefaultDNSManager implements DNSManager {
             } else {
                 return true;
             }
-        } else {
-            // Fake the response for DEV
-            return true;
+
         }
 
     }
@@ -210,36 +211,39 @@ public class DefaultDNSManager implements DNSManager {
      */
     @Override
     public boolean recordSetExists(String prefix) {
-        boolean result = false;
 
-        // Generate a query to find if the record set exists
-        ListResourceRecordSetsRequest lrrsr = new ListResourceRecordSetsRequest();
-        lrrsr.setHostedZoneId(zoneId);
-        lrrsr.setMaxItems("1");
-        lrrsr.setStartRecordName(prefix + name);
+        if (stage.equals(DTX.ProjectStage.DEV.toString())) {
+            // Fake the response for DEV
+            return false;
+        } else {
+            // Generate a query to find if the record set exists
+            ListResourceRecordSetsRequest lrrsr = new ListResourceRecordSetsRequest();
+            lrrsr.setHostedZoneId(zoneId);
+            lrrsr.setMaxItems("1");
+            lrrsr.setStartRecordName(prefix + name);
 
-        try {
-            // Request the query
-            ListResourceRecordSetsResult lrrsr1 = route53.listResourceRecordSets(lrrsr);
+            try {
+                // Request the query
+                ListResourceRecordSetsResult lrrsr1 = route53.listResourceRecordSets(lrrsr);
 
-            // Iterate over the result list
-            for (ResourceRecordSet rrs : lrrsr1.getResourceRecordSets()) {
-                if (rrs.getName().equals(prefix + name)) {
-                    result = true;
+                // Iterate over the result list
+                for (ResourceRecordSet rrs : lrrsr1.getResourceRecordSets()) {
+                    if (rrs.getName().equals(prefix + name)) {
+                        return true;
+                    }
                 }
+
+            } catch (AmazonServiceException ase) {
+                LOG.log(Level.INFO, "Resource does not exist on route 53", ase);
             }
-
-        } catch (AmazonServiceException ase) {
-            LOG.log(Level.INFO, "Resource does not exist on route 53", ase);
+            return false;
         }
-
-        return result;
     }
 
     /**
      * Retrieves a list of existing record sets on route 53 with the system
      * zoneId.
-     * 
+     *
      * @param maxItems For all record Sets maxItems should be set to 0.
      * @return A list of all existing record sets from route 53. The list can be
      * empty. If an exception is encountered null is returned.
@@ -269,7 +273,7 @@ public class DefaultDNSManager implements DNSManager {
 
     /**
      * In order to access the AWS Route 53 API we need to create and use a
-     * AmazonRoute53Client. This class is responsible for creating that object. 
+     * AmazonRoute53Client. This class is responsible for creating that object.
      * It only has a single getter that returns the AmazonRoute53Client.
      *
      * @version 2.0.0
@@ -289,7 +293,7 @@ public class DefaultDNSManager implements DNSManager {
                 try (InputStream credentialsAsStream = Thread.currentThread()
                         .getContextClassLoader()
                         .getResourceAsStream("aws-api.properties")) {
-                    
+
                     AWSCredentials credentials = new PropertiesCredentials(credentialsAsStream);
                     client = new AmazonRoute53Client(credentials);
                 }

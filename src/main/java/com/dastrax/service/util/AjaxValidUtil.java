@@ -53,7 +53,7 @@ public class AjaxValidUtil implements Serializable {
 
     //<editor-fold defaultstate="collapsed" desc="EJB">
     @EJB
-    CrudService dap;
+    private CrudService dap;
 
 //</editor-fold>
     

@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:ez="http://xmlns.jcp.org/jsf/composite/ezcomp"
       xmlns:f="http://java.sun.com/jsf/core">
 
     <h:head>
@@ -39,7 +39,7 @@
                     <!-- Logo -->
                     <p:graphicImage id="logo"
                                     styleClass="login-logo"
-                                    value="#{pathUtil.s3Logo('solid_logo_v1.jpg')}"
+                                    value="#{uriUtil.logo('solid_logo_v1.jpg', true)}"
                                     rendered="#{authenticate.renderLogin or authenticate.renderUniversal}"
                                     width="275"/>
                 </h:panelGrid> 
@@ -67,6 +67,7 @@
                     <tr>
                         <td>
                             <p:commandButton id="login-btn"
+                                             styleClass="login-button-update-class"
                                              action="#{authenticate.authenticate()}"
                                              ajax="false" 
                                              value="#{msgs['login.login.btn']}"
@@ -74,30 +75,7 @@
                                              oncomplete="PF('blockui1').unblock();"
                                              process="@this,email,password,remember-me"/>
 
-                            <pe:blockUI target="login-btn" widgetVar="blockui1">  
-                                <div class="windows8-25-w">
-                                    <div class="wBall" id="wBall_1">
-                                        <div class="wInnerBall">
-                                        </div>
-                                    </div>
-                                    <div class="wBall" id="wBall_2">
-                                        <div class="wInnerBall">
-                                        </div>
-                                    </div>
-                                    <div class="wBall" id="wBall_3">
-                                        <div class="wInnerBall">
-                                        </div>
-                                    </div>
-                                    <div class="wBall" id="wBall_4">
-                                        <div class="wInnerBall">
-                                        </div>
-                                    </div>
-                                    <div class="wBall" id="wBall_5">
-                                        <div class="wInnerBall">
-                                        </div>
-                                    </div>
-                                </div> 
-                            </pe:blockUI>
+                            <ez:blockUI target="@(.login-button-update-class)" widgetVar="blockui1"/>
 
                         </td>
                     </tr>
@@ -135,6 +113,7 @@
 
 
                 <p:commandButton id="uni-login-btn"
+                                 styleClass="login-button-update-class"
                                  action="#{authenticate.redirect()}"
                                  ajax="false" 
                                  value="#{msgs['login.login.btn']}"
@@ -142,31 +121,8 @@
                                  oncomplete="PF('blockui1').unblock();"
                                  process="@this,uni-email"/>
 
-                <pe:blockUI target="uni-login-btn" widgetVar="blockui1">  
-                    <div class="windows8-25-w">
-                        <div class="wBall" id="wBall_1">
-                            <div class="wInnerBall">
-                            </div>
-                        </div>
-                        <div class="wBall" id="wBall_2">
-                            <div class="wInnerBall">
-                            </div>
-                        </div>
-                        <div class="wBall" id="wBall_3">
-                            <div class="wInnerBall">
-                            </div>
-                        </div>
-                        <div class="wBall" id="wBall_4">
-                            <div class="wInnerBall">
-                            </div>
-                        </div>
-                        <div class="wBall" id="wBall_5">
-                            <div class="wInnerBall">
-                            </div>
-                        </div>
-                    </div> 
-                </pe:blockUI>
-
+                <ez:blockUI target="@(.login-button-update-class)" widgetVar="blockui1"/>
+               
             </div>
 
             <div class="footer">

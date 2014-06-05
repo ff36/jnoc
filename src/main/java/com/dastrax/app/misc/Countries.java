@@ -28,7 +28,7 @@ public class Countries {
      */
     public static List<Locale> getWorldCountries() {
         
-        List<Locale> worldCountries = new ArrayList<>();
+        List<Locale> worldCountries = new ArrayList<>(Locale.getISOCountries().length);
         
         String[] locales = Locale.getISOCountries();
         
@@ -39,30 +39,32 @@ public class Countries {
             }
         }
         
-        // Comparator to sort the countries into order with priority
-        Comparator<Locale> comparator = (Locale o1, Locale o2) -> {
-            if (o1.getDisplayCountry().equals(o2.getDisplayCountry())) {
-                return 0;
-            }
-            // Set the priority locals to be at the top
-            Locale[] priorityLocales = {
-                Locale.US,
-                Locale.UK
-            };
-            for (Locale priorityLocale : priorityLocales) {
-                Locale priority = priorityLocale;
-                if (o1.getDisplayCountry().equals(priority.getDisplayCountry())) {
-                    return -1;
-                }
-                if (o2.getDisplayCountry().equals(priority.getDisplayCountry())) {
-                    return 1;
-                }
-            }
-            // Default to straight comparison.
-            return o1.getDisplayCountry().compareTo(o2.getDisplayCountry());
-        };
-        // Sort the list
-        Collections.sort(worldCountries, comparator);
+        // TODO: Why is this causing an out of index exception!!!???
+        
+//        // Comparator to sort the countries into order with priority
+//        Comparator<Locale> comparator = (Locale o1, Locale o2) -> {
+//            if (o1.getDisplayCountry().equals(o2.getDisplayCountry())) {
+//                return 0;
+//            }
+//            // Set the priority locals to be at the top
+//            Locale[] priorityLocales = {
+//                Locale.US,
+//                Locale.UK
+//            };
+//            for (Locale priorityLocale : priorityLocales) {
+//                Locale priority = priorityLocale;
+//                if (o1.getDisplayCountry().equals(priority.getDisplayCountry())) {
+//                    return -1;
+//                }
+//                if (o2.getDisplayCountry().equals(priority.getDisplayCountry())) {
+//                    return 1;
+//                }
+//            }
+//            // Default to straight comparison.
+//            return o1.getDisplayCountry().compareTo(o2.getDisplayCountry());
+//        };
+//        // Sort the list
+//        Collections.sort(worldCountries, comparator);
         
         return worldCountries;
     }

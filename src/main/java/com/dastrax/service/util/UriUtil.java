@@ -10,6 +10,7 @@ import com.dastrax.app.service.internal.DefaultURI;
 import com.dastrax.per.entity.Company;
 import com.dastrax.per.entity.User;
 import com.dastrax.per.project.DTX;
+import java.io.Serializable;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
 
@@ -25,10 +26,10 @@ import javax.inject.Named;
  */
 @Named
 @RequestScoped
-public class PathUtil {
+public class UriUtil implements Serializable  {
 
     //<editor-fold defaultstate="collapsed" desc="Constructors">
-    public PathUtil() {
+    public UriUtil() {
     }
 //</editor-fold>
 

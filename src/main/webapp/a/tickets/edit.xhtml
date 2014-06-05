@@ -244,7 +244,7 @@
                                                 <table style="width:100%;position: relative">
                                                     <tr class="comment-table-seperator">
                                                         <td style="width: 60px">
-                                                            <p:graphicImage value="#{pathUtil.profileImage(comment.commenter.uid)}"
+                                                            <p:graphicImage value="#{URIUtil().profileImage(comment.commenter.uid)}"
                                                                             height="60px"
                                                                             styleClass="comment-image circular-clip-60"/>
 
@@ -254,8 +254,8 @@
                                                             <h:outputText value="#{editTicket.temporalUtil.epochDateTimeFmt(comment.createEpoch)}" styleClass="comment-date"/>
                                                             <div class="comment-acl-option-btn">
                                                                 <p:commandLink id="acl-change-btn" type="button" process="@this,acl-change-btn">
-                                                                    <p:graphicImage value="#{pathUtil.s3Icon('black/cog_icon_16.png')}"/>
-                                                                    <p:graphicImage value="#{pathUtil.s3Icon('black/br_down_icon_16.png')}" width="8px"/>
+                                                                    <p:graphicImage value="#{URIUtil().s3Icon('black/cog_icon_16.png')}"/>
+                                                                    <p:graphicImage value="#{URIUtil().s3Icon('black/br_down_icon_16.png')}" width="8px"/>
                                                                 </p:commandLink>
                                                                 <p:menu id="acl-change-overlay" overlay="true" trigger="acl-change-btn">   
                                                                     <p:menuitem id="change-acl-to-public" actionListener="#{editTicket.changeCommentNexus(comment, 'public')}" value="Make Public" rendered="#{comment.nexus.id eq 1}" process="@this,change-acl-to-public" update="comment-datalist :form:growl"/>
@@ -277,7 +277,7 @@
                                         <table style="width:100%;position: relative">
                                             <tr class="comment-table-seperator">
                                                 <td style="width: 60px">
-                                                    <p:graphicImage value="#{pathUtil.profileImage()}"
+                                                    <p:graphicImage value="#{URIUtil().profileImage()}"
                                                                     height="60px"
                                                                     styleClass="comment-image circular-clip-60"/>
 
@@ -417,7 +417,7 @@
                                                            action="#{editTicket.viewAttachment(attachment)}"
                                                            target="_blank"
                                                            title="Edit"> 
-                                                <p:graphicImage value="#{pathUtil.s3Icon('black/doc_edit_icon_16.png')}"/>
+                                                <p:graphicImage value="#{URIUtil().s3Icon('black/doc_edit_icon_16.png')}"/>
                                             </p:commandLink>
                                         </p:column>
 
@@ -428,7 +428,7 @@
                                                            onclick="PF('blockui2').block();" 
                                                            oncomplete="PF('blockui2').unblock();"
                                                            title="Delete"> 
-                                                <p:graphicImage value="#{pathUtil.s3Icon('black/trash_icon_16.png')}"/>
+                                                <p:graphicImage value="#{URIUtil().s3Icon('black/trash_icon_16.png')}"/>
                                             </p:commandLink>
                                         </p:column>
 

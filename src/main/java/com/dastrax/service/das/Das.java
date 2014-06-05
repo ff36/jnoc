@@ -46,7 +46,7 @@ public class Das implements Serializable {
     private ModelQuery model;
 
     @Inject
-    Navigator navigator;
+    private Navigator navigator;
 
 //</editor-fold>
     

@@ -128,7 +128,7 @@
                                             <p:ajax event="rowToggle"/>
 
                                             <p:column id="acl" style="width:18px">
-                                                <p:graphicImage value="#{pathUtil.s3Icon('black/padlock_closed_icon_16.png')}"
+                                                <p:graphicImage value="#{URIUtil().s3Icon('black/padlock_closed_icon_16.png')}"
                                                                 title="Account Locked"
                                                                 rendered="#{account.account.locked}"/>  
                                             </p:column>
@@ -168,7 +168,7 @@
                                             </p:column>
 
                                             <p:column id="verified" style="width:18px">
-                                                <p:graphicImage value="#{pathUtil.s3Icon('black/checkbox_checked_icon_16.png')}"
+                                                <p:graphicImage value="#{URIUtil().s3Icon('black/checkbox_checked_icon_16.png')}"
                                                                 title="Verified"
                                                                 rendered="#{account.account.confirmed}"/>   
                                             </p:column>
@@ -177,12 +177,12 @@
 
                                                 <div class="expanded-row-wrapper-1">
                                                     
-                                                    <p:graphicImage styleClass="expanded-row-arrow" value="#{pathUtil.s3Image('arrow_down_right.png')}" height="160px"/>
+                                                    <p:graphicImage styleClass="expanded-row-arrow" value="#{URIUtil().s3Image('arrow_down_right.png')}" height="160px"/>
                                                     
                                                     <table class="expanded-row-table">
                                                         <tr>
                                                             <td width="50px">
-                                                                <p:graphicImage styleClass="profile-image circular-clip-60" value="#{pathUtil.profileImage(account.uid)}" height="60px"/>
+                                                                <p:graphicImage styleClass="profile-image circular-clip-60" value="#{URIUtil().profileImage(account.uid)}" height="60px"/>
                                                             </td>
                                                             <td>
                                                                 <table>
@@ -198,7 +198,7 @@
                                                                         </td>
                                                                         <td width="20px">
                                                                             <h:outputLink type="button" value="mailto:#{account.email}" title="Send email to #{account.email}">
-                                                                                <p:graphicImage value="#{pathUtil.s3Icon('black/mail_2_icon_16.png')}"/>
+                                                                                <p:graphicImage value="#{URIUtil().s3Icon('black/mail_2_icon_16.png')}"/>
                                                                             </h:outputLink>
                                                                         </td>
                                                                     </tr>
@@ -349,7 +349,7 @@
 
                                                             <p:column width="20">
                                                                 <p:commandLink update="@(.dlg-address-update-class)" title="Remove Address" process="@(.dlg-address-update-class)">
-                                                                    <p:graphicImage value="#{pathUtil.s3Icon('black/trash_icon_16.png')}"/>
+                                                                    <p:graphicImage value="#{URIUtil().s3Icon('black/trash_icon_16.png')}"/>
                                                                     <p:collector value="#{address}" removeFrom="#{account.contact.addresses}" unique="true"/> 
                                                                 </p:commandLink>
                                                             </p:column>
@@ -437,7 +437,7 @@
 
                                                             <p:column width="20">
                                                                 <p:commandLink update="@(.dlg-telephone-update-class)" title="Remove Telephone" process="@(.dlg-telephone-update-class)">
-                                                                    <p:graphicImage value="#{pathUtil.s3Icon('black/trash_icon_16.png')}"/>
+                                                                    <p:graphicImage value="#{URIUtil().s3Icon('black/trash_icon_16.png')}"/>
                                                                     <p:collector value="#{telephone}" removeFrom="#{account.contact.telephones}" unique="true"/> 
                                                                 </p:commandLink>
                                                             </p:column>
@@ -521,7 +521,7 @@
 
                                                             <p:column width="20">
                                                                 <p:commandLink update="@(.dlg-permission-update-class)" title="Remove Permission" process="@(.dlg-permission-update-class)">
-                                                                    <p:graphicImage value="#{pathUtil.s3Icon('black/trash_icon_16.png')}"/>
+                                                                    <p:graphicImage value="#{URIUtil().s3Icon('black/trash_icon_16.png')}"/>
                                                                     <p:collector value="#{permission}" removeFrom="#{account.permissions}" unique="true"/> 
                                                                 </p:commandLink>
                                                             </p:column>

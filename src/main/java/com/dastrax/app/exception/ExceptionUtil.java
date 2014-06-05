@@ -28,8 +28,10 @@ import org.apache.shiro.SecurityUtils;
  * @since Build 2.0.0 (Jul 14, 2013)
  * @author Tarka L'Herpiniere
  * @author <tarka@solid.com>
+ * 
+ * TODO: This could probably do with an interface and split out the development
+ * stages
  */
-// TODO: This could probably do with an interface
 public class ExceptionUtil {
 
     //<editor-fold defaultstate="collapsed" desc="Properties">
@@ -39,12 +41,12 @@ public class ExceptionUtil {
 
     //<editor-fold defaultstate="collapsed" desc="EJB">
     @EJB
-    CrudService dap;
+    private CrudService dap;
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="CDI">
     @Inject
-    Emailer emailer;
+    private Emailer emailer;
 //</editor-fold>
 
     /**

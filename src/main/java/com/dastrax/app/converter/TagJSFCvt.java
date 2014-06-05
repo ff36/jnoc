@@ -29,7 +29,7 @@ public class TagJSFCvt implements Converter {
 
     //<editor-fold defaultstate="collapsed" desc="Properties">
     @EJB
-            CrudService dap;
+    private CrudService dap;
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Overrides">

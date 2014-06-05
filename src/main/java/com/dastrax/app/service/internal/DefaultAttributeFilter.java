@@ -34,12 +34,12 @@ public class DefaultAttributeFilter implements AttributeFilter {
 
     //<editor-fold defaultstate="collapsed" desc="EJB">
     @EJB
-    CrudService dap;
+    private CrudService dap;
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="CDI">
     @Inject
-    ExceptionUtil exu;
+    private ExceptionUtil exu;
 //</editor-fold>
 
     /**
@@ -79,7 +79,7 @@ public class DefaultAttributeFilter implements AttributeFilter {
         Map<String, List<Long>> filters = new HashMap<>();
         User user = (User) dap.find(User.class, SessionUser.getCurrentUser().getId());
 
-        if (SessionUser.isVAR()) {
+        if (SessionUser.getCurrentUser().isVAR()) {
             List<Long> companies = new ArrayList<>();
             // Add the VAR company ID
             if (includeOwnCompany) {
@@ -92,7 +92,7 @@ public class DefaultAttributeFilter implements AttributeFilter {
             filters.put("company", companies);
         }
 
-        if (SessionUser.isClient()) {
+        if (SessionUser.getCurrentUser().isClient()) {
             List<Long> companies = new ArrayList<>();
             // Add the Client company ID
             companies.add(user.getCompany().getId());

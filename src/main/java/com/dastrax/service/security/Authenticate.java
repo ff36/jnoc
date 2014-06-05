@@ -5,6 +5,7 @@
  */
 package com.dastrax.service.security;
 
+import com.dastrax.app.misc.JsfUtil;
 import com.dastrax.app.service.internal.DefaultDNSManager;
 import com.dastrax.app.service.internal.DefaultURI;
 import com.dastrax.app.services.DNSManager;
@@ -14,14 +15,12 @@ import com.dastrax.per.entity.Audit;
 import com.dastrax.per.entity.Company;
 import com.dastrax.per.entity.User;
 import com.dastrax.per.project.DTX;
-import com.dastrax.app.misc.JsfUtil;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.context.ExternalContext;
@@ -69,12 +68,12 @@ public class Authenticate implements Serializable {
 
     //<editor-fold defaultstate="collapsed" desc="EJB">
     @EJB
-    CrudService dap;
+    private CrudService dap;
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="CDI">
     @Inject
-    Audit audit;
+    private Audit audit;
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Getters">
@@ -150,8 +149,7 @@ public class Authenticate implements Serializable {
      * and subdomain are checked to make sure the authenticating user is on the
      * correct login page.
      */
-    @PostConstruct
-    private void init() {
+    public void init() {
         /*
          * Obtain the current URL so we can populate the page based on the
          * sub-domain.
@@ -163,6 +161,9 @@ public class Authenticate implements Serializable {
         DNSManager dns = new DefaultDNSManager();
         subdomain = dns.extract(contextURL);
 
+        // Set the email
+        email = JsfUtil.getRequestParameter("email");
+        
         // Are we in DEV mode. If so bypass all this
         if (!stage.equals(DTX.ProjectStage.DEV.toString())) {
 
@@ -352,8 +353,8 @@ public class Authenticate implements Serializable {
                 }
 
                 if (isAuthorised
-                        | subdomain.equals(ResourceBundle.getBundle("config")
-                                .getString("AdminSubdomain"))
+                        | ResourceBundle.getBundle("config")
+                                .getString("AdminSubdomain").equals(subdomain)
                         | stage.equals(DTX.ProjectStage.DEV.toString())) {
 
                     if (user.getAccount().isConfirmed()) {

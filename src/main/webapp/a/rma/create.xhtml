@@ -249,7 +249,7 @@
 
                                                         <p:column width="20">
                                                             <p:commandLink update="product-table" title="Remove Product" process="product-table">
-                                                                <p:graphicImage value="#{pathUtil.s3Icon('black/trash_icon_16.png')}"/>
+                                                                <p:graphicImage value="#{URIUtil().s3Icon('black/trash_icon_16.png')}"/>
                                                                 <p:collector value="#{product}" removeFrom="#{rmaRequest.products}" unique="true"/> 
                                                             </p:commandLink>
                                                         </p:column>

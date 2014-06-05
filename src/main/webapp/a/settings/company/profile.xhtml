@@ -85,7 +85,7 @@
                                     <table class="table-align-top">
                                         <tr>
                                             <td>
-                                                <p:graphicImage id="profile-image" value="#{settings.uploadUtil.uploadFile.uri eq null ? pathUtil.companyLogo1P('dastrax_logo_v2.png') : settings.uploadUtil.uploadFile.uri}" height="100px"/>
+                                                <p:graphicImage id="profile-image" value="#{settings.uploadUtil.uploadFile.uri eq null ? URIUtil().companyLogo1P('dastrax_logo_v2.png') : settings.uploadUtil.uploadFile.uri}" height="100px"/>
                                             </td>
                                             <td>
                                                 <p:graphicImage id="upload-ajax-spinner" name="images/ajax-loader.gif" style="display: none" styleClass="profile-upload-ajax-spinner"/>
@@ -196,7 +196,7 @@
 
                                             <p:column width="20">
                                                 <p:commandLink update=":form:addresses" title="Remove Address" process=":form:addresses">
-                                                    <p:graphicImage value="#{pathUtil.s3Icon('black/trash_icon_16.png')}"/>
+                                                    <p:graphicImage value="#{URIUtil().s3Icon('black/trash_icon_16.png')}"/>
                                                     <p:collector value="#{address}" removeFrom="#{settings.subject.contact.addresses}" unique="true"/> 
                                                 </p:commandLink>
                                             </p:column>
@@ -317,7 +317,7 @@
 
                                             <p:column width="20">
                                                 <p:commandLink update=":form:telephones" title="Remove Telephone" process=":form:telephones">
-                                                    <p:graphicImage value="#{pathUtil.s3Icon('black/trash_icon_16.png')}"/>
+                                                    <p:graphicImage value="#{URIUtil().s3Icon('black/trash_icon_16.png')}"/>
                                                     <p:collector value="#{telephone}" removeFrom="#{settings.subject.contact.telephones}" unique="true"/> 
                                                 </p:commandLink>
                                             </p:column>

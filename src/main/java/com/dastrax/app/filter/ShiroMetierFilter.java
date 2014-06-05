@@ -6,6 +6,8 @@
 
 package com.dastrax.app.filter;
 
+import com.dastrax.app.security.SessionUser;
+import com.dastrax.per.entity.User;
 import com.dastrax.per.project.DTX;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -82,30 +84,24 @@ public class ShiroMetierFilter implements Filter {
             FilterChain chain)
             throws IOException, ServletException {
         
-        Subject currentUser = SecurityUtils.getSubject();
+        User user = SessionUser.getCurrentUser();
         HttpServletResponse httpResponse=(HttpServletResponse)response;
 
-        if (currentUser.hasRole(DTX.Metier.ADMIN.toString())) {
-            httpResponse.sendRedirect("a/dashboard.jsf");
+        if (user.isAdministrator()) {
+            httpResponse.sendRedirect("a/welcome.jsf");
             return;
-        }
-
-        if (currentUser.hasRole(DTX.Metier.VAR.toString())) {            
+        } 
+        
+        if (user.isVAR()) {            
             httpResponse.sendRedirect("b/welcome.jsf");
             return;
-        }
+        } 
         
-        if (currentUser.hasRole(DTX.Metier.CLIENT.toString())) {            
+        if (user.isClient()) {            
             httpResponse.sendRedirect("c/welcome.jsf");
             return;
-        }
-
-        if (currentUser.hasRole(null)) {
-            httpResponse.sendRedirect("login.jsf");
-            return;
-        }
-
-        
+        } 
+      
         Throwable problem = null;
         try {
             chain.doFilter(request, response);

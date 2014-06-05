@@ -70,7 +70,7 @@ public class Nexus implements Serializable {
     //<editor-fold defaultstate="collapsed" desc="EJB">
     @Transient
     @EJB
-    CrudService dap;
+    private CrudService dap;
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Getters">

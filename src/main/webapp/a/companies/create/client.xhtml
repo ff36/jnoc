@@ -70,7 +70,7 @@
                                     <table class="table-align-top">
                                         <tr>
                                             <td>
-                                                <p:graphicImage styleClass="company-logo-update-class" value="#{createCompany.uploadUtil.uploadFile.uri eq null ? pathUtil.companyLogo1P('dastrax_logo_v2.png') : createCompany.uploadUtil.uploadFile.uri}" height="100px"/>
+                                                <p:graphicImage styleClass="company-logo-update-class" value="#{createCompany.uploadUtil.uploadFile.uri eq null ? URIUtil().companyLogo1P('dastrax_logo_v2.png') : createCompany.uploadUtil.uploadFile.uri}" height="100px"/>
                                             </td>
                                             <td>
                                                 <p:graphicImage id="upload-ajax-spinner" name="images/ajax-loader.gif" style="display: none" styleClass="profile-upload-ajax-spinner"/>
@@ -205,7 +205,7 @@
 
                                                             <p:column width="20">
                                                                 <p:commandLink update="@(.contacts-update-class)" title="Remove Contact" process="@(.contacts-update-class)">
-                                                                    <p:graphicImage value="#{pathUtil.s3Icon('black/trash_icon_16.png')}"/>
+                                                                    <p:graphicImage value="#{URIUtil().s3Icon('black/trash_icon_16.png')}"/>
                                                                     <p:collector value="#{contact}" removeFrom="#{createCompany.company.contacts}" unique="true"/> 
                                                                 </p:commandLink>
                                                             </p:column>

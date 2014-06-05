@@ -6,7 +6,6 @@
 package com.dastrax.app.security;
 
 import com.dastrax.per.entity.User;
-import com.dastrax.per.project.DTX;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
@@ -70,50 +69,19 @@ public class SessionUser {
      * at authentication time and is <b>NOT</b> updated until the subjects
      * re-authenticates.
      *
-     * @return the User associated with the current calling session.
+     * @return the User associated with the current calling session. If no user
+     * is associated with the session a new empty User is returned.
      */
     public static User getCurrentUser() {
-        return (User) SecurityUtils
+        try {
+            return (User) SecurityUtils
                 .getSubject()
                 .getPrincipals()
                 .asList()
                 .get(0);
-    }
-
-    /**
-     * Convenience method to determine if the current user has a metier of
-     * type Administrator.
-     * @return True if the current user has a metier of Administrator.
-     * Otherwise false.
-     */
-    public static boolean isAdministrator() {
-        return getCurrentUser()
-                .getMetier().getName()
-                .equals(DTX.Metier.ADMIN.toString());
-    }
-
-    /**
-     * Convenience method to determine if the current user has a metier of
-     * type VAR.
-     * @return True if the current user has a metier of type VAR.
-     * Otherwise false.
-     */
-    public static boolean isVAR() {
-        return getCurrentUser()
-                .getMetier().getName()
-                .equals(DTX.Metier.VAR.toString());
-    }
-
-    /**
-     * Convenience method to determine if the current user has a metier of
-     * type Client.
-     * @return True if the current user has a metier of type Client.
-     * Otherwise false.
-     */
-    public static boolean isClient() {
-        return getCurrentUser()
-                .getMetier().getName()
-                .equals(DTX.Metier.CLIENT.toString());
+        } catch (NullPointerException npe) {
+            return new User();
+        }
     }
 
 }

@@ -30,7 +30,7 @@ import javax.persistence.criteria.CriteriaQuery;
  */
 @Stateless
 @Local(CrudService.class)
-@TransactionAttribute(TransactionAttributeType.MANDATORY)
+@TransactionAttribute(TransactionAttributeType.REQUIRED)
 public class DefaultCrudService implements CrudService {
 
     //<editor-fold defaultstate="collapsed" desc="Properties">

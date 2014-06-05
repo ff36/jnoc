@@ -109,7 +109,7 @@ public class ShiroDastraxRealm extends AuthorizingRealm {
                     "PrincipalCollection method argument cannot be null.");
         }
         
-        String email = (String) getAvailablePrincipal(principals);
+        User currentUser = (User) getAvailablePrincipal(principals);
         
         try {
             
@@ -118,7 +118,8 @@ public class ShiroDastraxRealm extends AuthorizingRealm {
             
             List<User> users = (List<User>)dap.findWithNamedQuery(
                     "User.findByEmail", 
-                    QueryParameter.with("email", email).parameters());
+                    QueryParameter
+                            .with("email", currentUser.getEmail()).parameters());
             
             User user = users.get(0);
             

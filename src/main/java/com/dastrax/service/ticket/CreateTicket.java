@@ -47,7 +47,7 @@ public class CreateTicket implements Serializable {
 
     //<editor-fold defaultstate="collapsed" desc="EJB">
     @EJB
-    CrudService dap;
+    private CrudService dap;
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Getters">
@@ -119,12 +119,12 @@ public class CreateTicket implements Serializable {
             if (!users.isEmpty()) {
 
                 // If the user exists admins can set them as requesters.
-                if (SessionUser.isAdministrator()) {
+                if (SessionUser.getCurrentUser().isAdministrator()) {
                     ticket.setRequester(users.get(0));
                 }
 
                 // Can only set other people in their company and clients
-                if (SessionUser.isVAR()) {
+                if (SessionUser.getCurrentUser().isVAR()) {
                     // Get all the client companies
                     for (Company client : users.get(0).getCompany().getClients()) {
                         // Get all the users of that client company
@@ -146,7 +146,7 @@ public class CreateTicket implements Serializable {
                 }
 
                 // Can only set other people in their company
-                if (SessionUser.isClient()) {
+                if (SessionUser.getCurrentUser().isClient()) {
                     if (users.get(0).getCompany().equals(
                             SessionUser.getCurrentUser().getCompany())) {
                         ticket.setRequester(users.get(0));

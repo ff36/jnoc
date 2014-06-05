@@ -154,13 +154,13 @@ public class Ticket implements Serializable {
     //<editor-fold defaultstate="collapsed" desc="EJB">
     @Transient
     @EJB
-    CrudService dap;
+    private CrudService dap;
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="CDI">
     @Transient
     @Inject
-    Navigator navigator;
+    private Navigator navigator;
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Getters">
@@ -646,7 +646,8 @@ public class Ticket implements Serializable {
         creator = (User) dap.find(User.class, SessionUser.getCurrentUser().getId());
 
         // VAR access
-        if (SessionUser.isVAR() || SessionUser.isClient()) {
+        if (SessionUser.getCurrentUser().isVAR() 
+                || SessionUser.getCurrentUser().isClient()) {
             requester = creator;
         }
 
@@ -698,7 +699,7 @@ public class Ticket implements Serializable {
      */
     public void delete() {
         // ADMIN access
-        if (SessionUser.isAdministrator()) {
+        if (SessionUser.getCurrentUser().isAdministrator()) {
             dap.delete(Ticket.class, id);
             JsfUtil.addSuccessMessage("Ticket " + id + " deleted");
         }
@@ -794,14 +795,14 @@ public class Ticket implements Serializable {
         boolean initable = false;
 
         // Admins can load any ticket
-        if (SessionUser.isAdministrator()) {
+        if (SessionUser.getCurrentUser().isAdministrator()) {
             initable = true;
         }
         /* 
          VAR can load ticket whos requester is either in their company or
          in a client company
          */
-        if (SessionUser.isVAR()) {
+        if (SessionUser.getCurrentUser().isVAR()) {
             if (SessionUser.getCurrentUser().getCompany()
                     .equals(requester.getCompany())
                     || SessionUser.getCurrentUser().getCompany().getClients()
@@ -813,7 +814,7 @@ public class Ticket implements Serializable {
         /* 
          Client can load ticket whos requester is a member of their company
          */
-        if (SessionUser.isClient()) {
+        if (SessionUser.getCurrentUser().isClient()) {
             if (SessionUser.getCurrentUser().getCompany()
                     .equals(requester.getCompany())) {
                 initable = true;
@@ -841,11 +842,11 @@ public class Ticket implements Serializable {
         List<User> ar = null;
 
         // ADMIN access can set anybody to be a requester
-        if (SessionUser.isAdministrator()) {
+        if (SessionUser.getCurrentUser().isAdministrator()) {
             ar = dap.findWithNamedQuery("User.findAll");
         }
         // VAR access can set people in their own company
-        if (SessionUser.isVAR()) {
+        if (SessionUser.getCurrentUser().isVAR()) {
             ar = dap.findWithNamedQuery(
                     "User.findByCompany",
                     QueryParameter.with(
@@ -875,7 +876,7 @@ public class Ticket implements Serializable {
         List<User> aa = null;
 
         // ADMIN access can set anybody to be an assignee
-        if (SessionUser.isAdministrator()) {
+        if (SessionUser.getCurrentUser().isAdministrator()) {
             aa = dap.findWithNamedQuery(
                     "User.findByMetier",
                     QueryParameter.with("name", DTX.Metier.ADMIN).parameters());
@@ -898,11 +899,12 @@ public class Ticket implements Serializable {
         List<DAS> ad = null;
 
         // ADMIN access can set any das
-        if (SessionUser.isAdministrator()) {
+        if (SessionUser.getCurrentUser().isAdministrator()) {
             ad = dap.findWithNamedQuery("DAS.findAll");
         }
         // VAR and CLIENT access can only set das related to their company
-        if (SessionUser.isVAR() || SessionUser.isClient()) {
+        if (SessionUser.getCurrentUser().isVAR() 
+                || SessionUser.getCurrentUser().isClient()) {
             User user = (User) dap.find(
                     User.class, SessionUser.getCurrentUser().getId());
             ad = user.getCompany().getDas();

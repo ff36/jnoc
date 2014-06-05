@@ -42,7 +42,7 @@ public class UploadFile {
     public FileMeta getMeta() {
         return meta;
     }
-    
+
     /**
      * Get the value of image
      *
@@ -70,9 +70,9 @@ public class UploadFile {
     public boolean isUploaded() {
         return uploaded;
     }
-    
-    //</editor-fold>
 
+    //</editor-fold>
+    
     //<editor-fold defaultstate="collapsed" desc="Setters">
     /**
      * Set the value of meta
@@ -110,7 +110,7 @@ public class UploadFile {
     public void setUploaded(boolean uploaded) {
         this.uploaded = uploaded;
     }
-    
+
 //</editor-fold>
     
     /**
@@ -260,7 +260,7 @@ public class UploadFile {
      * @author Tarka L'Herpiniere
      * @author <tarka@solid.com>
      */
-    public class Image extends UploadFile {
+    public class Image {
 
         //<editor-fold defaultstate="collapsed" desc="Properties">
         private int width;

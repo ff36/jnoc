@@ -45,12 +45,12 @@ public class EditTicket implements Serializable {
 
     //<editor-fold defaultstate="collapsed" desc="EJB">
     @EJB
-    CrudService dap;
+    private CrudService dap;
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="CDI">
     @Inject
-    Navigator navigator;
+    private Navigator navigator;
 
 //</editor-fold>
     

@@ -265,8 +265,8 @@
                                                     <tbody>
                                                         <tr>
                                                             <td>
-                                                                <p:graphicImage value="#{pathUtil.s3Icon('black/on_icon_16.png')}" rendered="#{alarm.stopEpoch eq 0}"/>
-                                                                <p:graphicImage value="#{pathUtil.s3Icon('black/off_icon_16.png')}" rendered="#{alarm.stopEpoch ne 0}"/>
+                                                                <p:graphicImage value="#{URIUtil().s3Icon('black/on_icon_16.png')}" rendered="#{alarm.stopEpoch eq 0}"/>
+                                                                <p:graphicImage value="#{URIUtil().s3Icon('black/off_icon_16.png')}" rendered="#{alarm.stopEpoch ne 0}"/>
                                                             </td>
                                                             <td>#{alarm.alarmId}</td>
                                                             <td>#{alarm.alarmName}</td>
@@ -274,7 +274,7 @@
                                                             <td>#{incidents.temporalUtil.epochDateTimeFmt(alarm.startEpoch)}</td>
                                                             <td>#{alarm.stopEpoch eq 0 ? '' : incidents.temporalUtil.epochDateTimeFmt(alarm.stopEpoch)}</td>
                                                             <td>#{alarm.stopEpoch eq 0 ? '' : alarm.totalDuration()}</td>
-                                                            <td><p:graphicImage value="#{pathUtil.s3Icon('black/layers_2_icon_16.png')}" rendered="#{!alarm.logs.isEmpty()}"/> <h:outputText value=" (#{alarm.logs.size()})" rendered="#{!alarm.logs.isEmpty()}"/></td>
+                                                            <td><p:graphicImage value="#{URIUtil().s3Icon('black/layers_2_icon_16.png')}" rendered="#{!alarm.logs.isEmpty()}"/> <h:outputText value=" (#{alarm.logs.size()})" rendered="#{!alarm.logs.isEmpty()}"/></td>
                                                         </tr>
                                                     </tbody>
 

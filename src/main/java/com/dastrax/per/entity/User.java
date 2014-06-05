@@ -120,7 +120,7 @@ public class User implements Serializable {
     //<editor-fold defaultstate="collapsed" desc="EJB">
     @Transient
     @EJB
-    CrudService dap;
+    private CrudService dap;
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Constructors">
@@ -512,7 +512,11 @@ public class User implements Serializable {
      * false.
      */
     public boolean isAdministrator() {
-        return metier.getName().equals(DTX.Metier.ADMIN.toString());
+        try {
+            return metier.getName().equals(DTX.Metier.ADMIN.toString());
+        } catch (NullPointerException e) {
+            return false;
+        }
     }
 
     /**
@@ -522,7 +526,11 @@ public class User implements Serializable {
      * false.
      */
     public boolean isVAR() {
-        return metier.getName().equals(DTX.Metier.VAR.toString());
+        try {
+            return metier.getName().equals(DTX.Metier.VAR.toString());
+        } catch (NullPointerException e) {
+            return false;
+        }
     }
 
     /**
@@ -532,7 +540,24 @@ public class User implements Serializable {
      * false.
      */
     public boolean isClient() {
-        return metier.getName().equals(DTX.Metier.CLIENT.toString());
+        try {
+            return metier.getName().equals(DTX.Metier.CLIENT.toString());
+        } catch (NullPointerException e) {
+            return false;
+        }
+    }
+    
+    /**
+     * Convenience method to determine if this user has a metier.
+     *
+     * @return True if the current user has a metier. Otherwise false.
+     */
+    public boolean isNothing() {
+        try {
+            return metier.getName().isEmpty();
+        } catch (NullPointerException npe) {
+            return true;
+        }
     }
 
     /**
