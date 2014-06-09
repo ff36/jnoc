@@ -44,7 +44,7 @@ public class Password {
     public String getEncrypted() {
         return encrypted;
     }
-    
+
     /**
      * Get the value of email
      *
@@ -53,7 +53,7 @@ public class Password {
     public String getEmail() {
         return email;
     }
-    
+
     /**
      * Get the value of confirm
      *
@@ -62,7 +62,7 @@ public class Password {
     public String getConfirm() {
         return confirm;
     }
-    
+
     /**
      * Get the value of request
      *
@@ -71,7 +71,7 @@ public class Password {
     public String getRequest() {
         return request;
     }
-    
+
     /**
      * Get the value of current
      *
@@ -81,7 +81,7 @@ public class Password {
         return current;
     }
 //</editor-fold>
-    
+
     //<editor-fold defaultstate="collapsed" desc="Setters">
     /**
      * Set the value of encrypted
@@ -91,7 +91,7 @@ public class Password {
     public void setEncrypted(String encrypted) {
         this.encrypted = encrypted;
     }
-    
+
     /**
      * Set the value of email
      *
@@ -100,7 +100,7 @@ public class Password {
     public void setEmail(String email) {
         this.email = email;
     }
-    
+
     /**
      * Set the value of confirm
      *
@@ -109,7 +109,7 @@ public class Password {
     public void setConfirm(String confirm) {
         this.confirm = confirm;
     }
-    
+
     /**
      * Set the value of request
      *
@@ -118,7 +118,7 @@ public class Password {
     public void setRequest(String request) {
         this.request = request;
     }
-    
+
     /**
      * Set the value of current
      *
@@ -127,7 +127,7 @@ public class Password {
     public void setCurrent(String current) {
         this.current = current;
     }
-    
+
     public void setBothPasswords(String password) {
         request = password;
         confirm = password;
@@ -136,7 +136,7 @@ public class Password {
 
     /**
      * Encrypts a clear text UTF8 password using SHIRO's one way hash.
-     * 
+     *
      * @return true if the encryption was successful. Otherwise false.
      */
     public boolean encrypt() {
@@ -206,7 +206,6 @@ public class Password {
             //            return false;
             //        }
             //</editor-fold>
-            
         } else {
             // The requested password is null
             return false;
@@ -222,9 +221,14 @@ public class Password {
      * password.getRequest().equals(password.getConfirm()).
      */
     public boolean matchRequested() {
-        if (request != null && confirm != null) {
-            return request.equals(confirm);
-        } else {
+        try {
+            if (!request.isEmpty() && !confirm.isEmpty()) {
+                return request.equals(confirm);
+            } else {
+                // The passwords dont match
+                return false;
+            }
+        } catch (NullPointerException npe) {
             // The requested and/or confirm password is null
             return false;
         }
@@ -244,7 +248,7 @@ public class Password {
         try {
             PasswordService psvc = new DefaultPasswordService();
             result = psvc.passwordsMatch(
-                    current, 
+                    current,
                     encrypted);
         } catch (Exception e) {
             LOG.log(Level.OFF, "Exception: SHIRO -> PASSWORD SERVICE", e);
@@ -273,7 +277,7 @@ public class Password {
          * character requirements the password is re-generated.
          */
         while (retry) {
-            
+
             // Generate a random password
             password = "";
             Random RANDOM = new SecureRandom();

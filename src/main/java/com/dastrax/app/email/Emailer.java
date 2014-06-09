@@ -21,9 +21,9 @@ import javax.ejb.Asynchronous;
 public interface Emailer {
     
     //<editor-fold defaultstate="collapsed" desc="Properties">
-    String protocol = ResourceBundle.getBundle("config").getString("SenderEmailAddress");
+    String emailSender = ResourceBundle.getBundle("config").getString("SenderEmailAddress");
     String baseUrl = ResourceBundle.getBundle("config").getString("BaseUrl");
-    String emailSender = ResourceBundle.getBundle("config").getString("AccessProtocol");
+    String protocol = ResourceBundle.getBundle("config").getString("AccessProtocol");
 //</editor-fold>
     
     /**

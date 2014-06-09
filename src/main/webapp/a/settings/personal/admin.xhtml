@@ -5,7 +5,7 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:pe="http://primefaces.org/ui/extensions"
       xmlns:ez="http://xmlns.jcp.org/jsf/composite/ezcomp"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
     <h:head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -28,11 +28,19 @@
 
             <ez:navigation-a/>
 
-            <pe:layout stateCookie="#{config.ProjectStage ne 'DEV'}" widgetVar="layourWgt" >
+            <pe:layout stateCookie="#{config.ProjectStage ne 'DEV'}" 
+                       widgetVar="layourWgt" >
 
-                <pe:layoutPane id="north" position="north" closable="false" resizable="false" size="40"/>
+                <pe:layoutPane id="north" 
+                               position="north" 
+                               closable="false" 
+                               resizable="false" 
+                               size="40"/>
 
-                <pe:layoutPane id="west" position="west" resizeWhileDragging="true" size="220">
+                <pe:layoutPane id="west" 
+                               position="west" 
+                               resizeWhileDragging="true" 
+                               size="220">
 
                     <table class="navigation-sidebar">
                         <thead>
@@ -41,16 +49,25 @@
                         <tfoot><tr><td></td></tr></tfoot>
                         <tbody>
                             <tr>
-                                <td><p:commandLink value="Profile" action="access-personal-settings-profile-page" process="@this" type="button"/></td>
+                                <td><p:commandLink value="Profile" 
+                                                   action="/a/settings/personal/profile.xhtml?faces-redirect=true" 
+                                                   process="@this" 
+                                                   type="button"/></td>
                             </tr>
                             <tr>
                                 <td class="active">Account settings</td>
                             </tr>
                             <tr>
-                                <td><p:commandLink value="Security" action="access-personal-settings-security-page" process="@this" type="button"/></td>
+                                <td><p:commandLink value="Security" 
+                                                   action="/a/settings/personal/security.xhtml?faces-redirect=true" 
+                                                   process="@this" 
+                                                   type="button"/></td>
                             </tr>
                             <tr>
-                                <td><p:commandLink value="Navigation" action="access-personal-settings-navigation-page" process="@this" type="button"/></td>
+                                <td><p:commandLink value="Navigation" 
+                                                   action="/a/settings/personal/navigation.xhtml?faces-redirect=true" 
+                                                   process="@this" 
+                                                   type="button"/></td>
                             </tr>
                         </tbody>
                     </table>
@@ -64,177 +81,246 @@
                         <tfoot><tr><td></td></tr></tfoot>
                         <tbody>
                             <tr>
-                                <td><p:commandLink value="Profile" action="access-company-settings-profile-page" process="@this" type="button"/></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    
-                </pe:layoutPane>
-
-                <pe:layoutPane id="center" position="center" resizeWhileDragging="true">
-
-                    <table class="page-container">
-                        <thead>
-                            <tr><th>Change Password</th></tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>
-
-                                    <h3>Old Password</h3>
-                                    <h:panelGrid columns="1" styleClass="table-field-spacer">
-
-                                        <p:password value="#{settings.password.current}" styleClass="password-update-class" required="true" requiredMessage="Please enter your current password">
-                                            <p:ajax event="keyup" update="save-password-button" />
-                                        </p:password>
-
-                                    </h:panelGrid>
-
-                                    <h3>New Password</h3>
-                                    <h:panelGrid columns="1" styleClass="table-field-spacer">
-
-                                        <p:password value="#{settings.password.request}" styleClass="password-update-class">
-                                            <p:ajax event="keyup" update="save-password-button password-min-requirement-class" />
-                                        </p:password>
-
-                                        <p:outputPanel id="password-min-requirement-class">
-
-                                            <p:panel rendered="#{!settings.passwordUtil.meetsMinRequirement(settings.password) and settings.password.request ne null and settings.password.request ne ''}" styleClass="field-warning">
-                                                Password is too short (minimum is 7 characters) and needs at least one number.
-                                            </p:panel>
-
-                                        </p:outputPanel>
-
-                                    </h:panelGrid>
-
-                                    <h3>Confirm New Password</h3>
-                                    <h:panelGrid columns="1" styleClass="table-field-spacer">
-
-                                        <p:password value="#{settings.password.confirm}" styleClass="password-update-class">
-                                            <p:ajax event="keyup" update="save-password-button password-match-requirement-class" />
-                                        </p:password>
-
-                                        <p:outputPanel id="password-match-requirement-class">
-
-                                            <p:panel rendered="#{!settings.passwordUtil.passwordsMatch(settings.password) and settings.password.confirm ne null and settings.password.confirm ne ''}" styleClass="field-warning">
-                                                Passwords don't match
-                                            </p:panel>
-
-                                        </p:outputPanel>
-
-                                    </h:panelGrid>
-
-                                    <p:spacer width="100%" height="20px"/>
-
-                                    <p:commandButton id="save-password-button" 
-                                                     styleClass="green-button" 
-                                                     actionListener="#{settings.updatePassword()}" 
-                                                     value="Update Password" 
-                                                     process="@this @(.password-update-class)" 
-                                                     update=":form:growl @(.password-update-class)"
-                                                     onclick="PF('blockui1').block();"
-                                                     oncomplete="PF('blockui1').unblock();"
-                                                     disabled="#{!settings.passwordUtil.meetsMinRequirement(settings.password) or !settings.passwordUtil.passwordsMatch(settings.password)}"/>
-
-                                    <ez:blockUI target=":form:save-password-button" widgetVar="blockui1"/>
-
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-                    <p:spacer width="100%" height="20px"/>
-
-                    <table class="page-container">
-                        <thead>
-                            <tr><th>Change Username</th></tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>
-
-                                    <h3>New Email</h3>
-                                    <h:panelGrid columns="1" styleClass="table-field-spacer">
-
-                                        <p:inputText value="#{settings.subject.transEmail}" styleClass="username-update-class">
-                                            <p:ajax event="keyup" update="new-email-valid-class new-email-button"/>
-                                        </p:inputText>
-
-                                        <p:outputPanel id="new-email-valid-class">
-
-                                            <p:panel rendered="#{!ajaxValidUtil.emailAvailable(settings.subject.transEmail) and settings.subject.transEmail.length() gt 2}" styleClass="field-warning">
-                                                Email is not available
-                                            </p:panel>
-
-                                            <p:panel rendered="#{ajaxValidUtil.emailAvailable(settings.subject.transEmail)}" styleClass="field-note">
-                                                We will send an email to this address to complete your change of username.
-                                            </p:panel>
-
-                                        </p:outputPanel>
-
-                                    </h:panelGrid>
-
-                                    <p:spacer width="100%" height="20px"/>
-
-                                    <p:commandButton id="new-email-button" 
-                                                     styleClass="green-button" 
-                                                     actionListener="#{settings.updateEmail()}" 
-                                                     value="Update Username" 
-                                                     process="@this @(.username-update-class)" 
-                                                     update=":form:growl @(.username-update-class) new-email-valid-class @this"
-                                                     onclick="PF('blockui2').block();"
-                                                     oncomplete="PF('blockui2').unblock();"
-                                                     disabled="#{!ajaxValidUtil.emailAvailable(settings.subject.transEmail)}"/>
-
-                                    <ez:blockUI target=":form:new-email-button" widgetVar="blockui2"/>
-
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-                    <p:spacer width="100%" height="20px"/>
-
-                    <table class="page-container">
-                        <thead>
-                            <tr><th>Close Account</th></tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>
-
-                                    <p:spacer width="100%" height="20px"/>
-
-                                    <h:outputText value="There is no comming back from this! Closing your account is final so make sure you really want to do this before proceeding."/>
-
-                                    <p:spacer width="100%" height="20px"/>
-
-                                    <p:commandButton id="close-account-button" 
-                                                     styleClass="red-button" 
-                                                     actionListener="#{settings.closeAccount()}" 
-                                                     value="Close your Account" 
-                                                     process="@this" 
-                                                     update=":form:growl"
-                                                     onclick="PF('blockui3').block();"
-                                                     oncomplete="PF('blockui3').unblock();">
-                                        <p:confirm header="Delete Account" icon="ui-icon-alert" message="Are you sure you want to completely remove your account? You will no longer be able to use any of the account features, nor willyou be able to retreive any information from your account." /> 
-                                    </p:commandButton>
-
-                                    <p:confirmDialog global="true" showEffect="fade" width="450">  
-                                        <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"/>  
-                                        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close"/>       
-                                    </p:confirmDialog> 
-
-                                    <ez:blockUI target=":form:close-account-button" widgetVar="blockui3"/>
-
-                                </td>
+                                <td><p:commandLink value="Profile" 
+                                                   action="/a/settings/company/profile.xhtml?faces-redirect=true" 
+                                                   process="@this" 
+                                                   type="button"/></td>
                             </tr>
                         </tbody>
                     </table>
 
                 </pe:layoutPane>
 
-                <pe:layoutPane id="south" position="south" closable="false" resizable="false" size="40"><ez:footer/></pe:layoutPane>
+                <pe:layoutPane id="center" 
+                               position="center" 
+                               resizeWhileDragging="true">
+
+                    <p:remoteCommand autoRun="true" 
+                                     async="true" 
+                                     actionListener="#{settings.init()}" 
+                                     update=":form:lazy-update-class"/>
+
+                    <h:panelGroup id="lazy-update-class">
+
+                        <table class="page-container">
+                            <thead>
+                                <tr><th>Change Password</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+
+                                        <p:graphicImage name="images/ajax-loader.gif" 
+                                                        rendered="#{!settings.render}" 
+                                                        styleClass="ajax-lazy-loader"/>
+
+                                        <ui:fragment rendered="#{settings.render}">
+
+                                            <h3>Old Password</h3>
+                                            <h:panelGrid columns="1" styleClass="table-field-spacer">
+
+                                                <p:password value="#{settings.user.newPassword.current}" 
+                                                            styleClass="password-update-class" 
+                                                            required="true" 
+                                                            requiredMessage="Please enter your current password">
+                                                    <p:ajax event="keyup" update="save-password-button" />
+                                                </p:password>
+
+                                            </h:panelGrid>
+
+                                            <h3>New Password</h3>
+                                            <h:panelGrid columns="1" styleClass="table-field-spacer">
+
+                                                <p:password value="#{settings.user.newPassword.request}" styleClass="password-update-class">
+                                                    <p:ajax event="keyup" 
+                                                            update="save-password-button password-min-requirement-class" />
+                                                </p:password>
+
+                                                <p:outputPanel id="password-min-requirement-class">
+                                                    <p:panel rendered="#{!settings.user.newPassword.strengthCheck() and settings.user.newPassword.request ne null and settings.user.newPassword.request ne ''}" 
+                                                             styleClass="field-warning">
+                                                        Password is too short (minimum is 7 characters) and needs at least one number.
+                                                    </p:panel>
+
+                                                </p:outputPanel>
+
+                                            </h:panelGrid>
+
+                                            <h3>Confirm New Password</h3>
+                                            <h:panelGrid columns="1" styleClass="table-field-spacer">
+
+                                                <p:password value="#{settings.user.newPassword.confirm}" 
+                                                            styleClass="password-update-class">
+                                                    <p:ajax event="keyup" 
+                                                            update="save-password-button password-match-requirement-class" />
+                                                </p:password>
+
+                                                <p:outputPanel id="password-match-requirement-class">
+
+                                                    <p:panel rendered="#{!settings.user.newPassword.matchRequested() and settings.user.newPassword.request ne null}" 
+                                                             styleClass="field-warning">
+                                                        Passwords don't match
+                                                    </p:panel>
+
+                                                </p:outputPanel>
+
+                                            </h:panelGrid>
+
+                                            <p:spacer width="100%" height="20px"/>
+
+                                            <p:commandButton id="save-password-button"
+                                                             styleClass="green-button" 
+                                                             actionListener="#{settings.user.updatePassword()}" 
+                                                             value="Update Password" 
+                                                             process="@this @(.password-update-class)" 
+                                                             update=":form:growl @(.password-update-class) @this"
+                                                             onclick="PF('blockui1').block();"
+                                                             oncomplete="PF('blockui1').unblock();"
+                                                             disabled="#{!settings.user.newPassword.strengthCheck() or !settings.user.newPassword.matchRequested() or settings.user.newPassword.current eq null or settings.user.newPassword.current eq ''}"/>
+
+                                            <ez:blockUI target=":form:save-password-button" 
+                                                        widgetVar="blockui1"/>
+
+                                        </ui:fragment>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <p:spacer width="100%" height="20px"/>
+
+                        <table class="page-container">
+                            <thead>
+                                <tr><th>Change Username</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+
+                                        <p:graphicImage name="images/ajax-loader.gif" 
+                                                        rendered="#{!settings.render}" 
+                                                        styleClass="ajax-lazy-loader"/>
+
+                                        <ui:fragment rendered="#{settings.render}">
+
+                                            <h3>New Email</h3>
+                                            <h:panelGrid columns="1" 
+                                                         styleClass="table-field-spacer">
+
+                                                <p:inputText value="#{settings.user.newEmail}" 
+                                                             styleClass="username-update-class">
+                                                    <p:ajax event="keyup" 
+                                                            update="new-email-valid-class new-email-button"/>
+                                                </p:inputText>
+
+                                                <p:outputPanel id="new-email-valid-class">
+
+                                                    <p:panel rendered="#{!ajaxValidUtil.emailAvailable(settings.user.newEmail) and settings.user.newEmail.length() gt 2}" 
+                                                             styleClass="field-warning">
+                                                        Email is not available
+                                                    </p:panel>
+
+                                                    <p:panel rendered="#{ajaxValidUtil.emailAvailable(settings.user.newEmail)}" 
+                                                             styleClass="field-note">
+                                                        We will send an email to this address to complete your change of username.
+                                                    </p:panel>
+
+                                                </p:outputPanel>
+
+                                            </h:panelGrid>
+
+                                            <p:spacer width="100%" height="20px"/>
+
+                                            <p:commandButton id="new-email-button" 
+                                                             styleClass="green-button" 
+                                                             actionListener="#{settings.user.newEmailEmail()}" 
+                                                             value="Update Username" 
+                                                             process="@this @(.username-update-class)" 
+                                                             update=":form:growl @(.username-update-class) new-email-valid-class @this"
+                                                             onclick="PF('blockui2').block();"
+                                                             oncomplete="PF('blockui2').unblock();"
+                                                             disabled="#{!ajaxValidUtil.emailAvailable(settings.user.newEmail)}"/>
+
+                                            <ez:blockUI target=":form:new-email-button" 
+                                                        widgetVar="blockui2"/>
+
+                                        </ui:fragment>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <p:spacer width="100%" height="20px"/>
+
+                        <table class="page-container">
+                            <thead>
+                                <tr><th>Close Account</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+
+                                        <p:graphicImage name="images/ajax-loader.gif" 
+                                                        rendered="#{!settings.render}" 
+                                                        styleClass="ajax-lazy-loader"/>
+
+                                        <ui:fragment rendered="#{settings.render}">
+
+                                            <p:spacer width="100%" height="20px"/>
+
+                                            <h:outputText value="There is no comming back from this! Closing your account is final so make sure you really want to do this before proceeding."/>
+
+                                            <p:spacer width="100%" height="20px"/>
+
+                                            <p:commandButton id="close-account-button" 
+                                                             styleClass="red-button" 
+                                                             actionListener="#{settings.user.close()}" 
+                                                             value="Close your Account" 
+                                                             process="@this" 
+                                                             update=":form:growl"
+                                                             onclick="PF('blockui3').block();"
+                                                             oncomplete="PF('blockui3').unblock();">
+                                                <p:confirm header="Delete Account" 
+                                                           icon="ui-icon-alert" 
+                                                           message="Are you sure you want to completely remove your account? You will no longer be able to use any of the account features, nor willyou be able to retreive any information from your account." /> 
+                                            </p:commandButton>
+
+                                            <p:confirmDialog global="true" 
+                                                             showEffect="fade" 
+                                                             width="450">  
+                                                <p:commandButton value="Yes" 
+                                                                 type="button" 
+                                                                 styleClass="ui-confirmdialog-yes" 
+                                                                 icon="ui-icon-check"/>  
+                                                <p:commandButton value="No" 
+                                                                 type="button" 
+                                                                 styleClass="ui-confirmdialog-no" 
+                                                                 icon="ui-icon-close"/>       
+                                            </p:confirmDialog> 
+
+                                            <ez:blockUI target=":form:close-account-button" 
+                                                        widgetVar="blockui3"/>
+
+                                        </ui:fragment>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </h:panelGroup>
+
+                </pe:layoutPane>
+
+                <pe:layoutPane id="south" 
+                               position="south" 
+                               closable="false" 
+                               resizable="false" 
+                               size="40">
+                    <ez:footer/>
+                </pe:layoutPane>
 
             </pe:layout>
 

@@ -138,24 +138,24 @@ public class DTX {
      */
     public static enum EmailTemplate {
 
-        NEW_ACCOUNT("1"),
-        CHANGE_EMAIL("2"),
-        CHANGE_PASSWORD("3"),
-        NEW_TICKET("4"),
-        TICKET_MODIFIED("5"),
-        TICKET_SOLVED("6"),
-        EXCEPTION("7"),
-        ACCOUNT_REQUEST("8"),
-        RMA_REQUEST("9"),
-        FEEDBACK("10");
+        NEW_ACCOUNT(1L),
+        CHANGE_EMAIL(2L),
+        CHANGE_PASSWORD(3L),
+        NEW_TICKET(4L),
+        TICKET_MODIFIED(5L),
+        TICKET_SOLVED(6L),
+        EXCEPTION(7L),
+        ACCOUNT_REQUEST(8L),
+        RMA_REQUEST(9L),
+        FEEDBACK(10L);
 
-        private final String value;
+        private final Long value;
 
-        private EmailTemplate(String value) {
+        private EmailTemplate(Long value) {
             this.value = value;
         }
 
-        public String getValue() {
+        public Long getValue() {
             return value;
         }
     };
@@ -380,18 +380,18 @@ public class DTX {
      */
     public static enum RootNexus {
 
-        ADMIN("1"),
-        VAR("2"),
-        CLIENT("3"),
-        ADMIN_VAR("4");
+        ADMIN(1L),
+        VAR(2L),
+        CLIENT(3L),
+        ADMIN_VAR(4L);
 
-        private final String value;
+        private final Long value;
 
-        private RootNexus(String value) {
+        private RootNexus(Long value) {
             this.value = value;
         }
 
-        public String getValue() {
+        public Long getValue() {
             return value;
         }
 

@@ -5,14 +5,24 @@
  */
 package com.dastrax.per.entity;
 
+import com.dastrax.per.dap.CrudService;
+import com.dastrax.per.dap.QueryParameter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.ejb.Asynchronous;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -36,20 +46,22 @@ import javax.persistence.NamedQuery;
 @NamedQueries({
     @NamedQuery(name = "Token.findAll", query = "SELECT e FROM Token e"),
     @NamedQuery(name = "Token.findByID", query = "SELECT e FROM Token e WHERE e.id = :id"),
-    @NamedQuery(name = "Token.findByEmail", query = "SELECT e FROM Token e WHERE e.email = :email")
+    @NamedQuery(name = "Token.findByEmail", query = "SELECT e FROM Token e WHERE e.email = :email"),
+    @NamedQuery(name = "Token.findByEpoch", query = "SELECT e FROM Token e WHERE e.createEpoch < :epoch")
 })
 @Entity
 public class Token implements Serializable {
 
     //<editor-fold defaultstate="collapsed" desc="Properties">
+    private static final Logger LOG = Logger.getLogger(Token.class.getName());
     private static final long serialVersionUID = 1L;
-    
+
     @Id
     private Long id;
     private String email;
-    @Column(name="USERID")
+    @Column(name = "USERID")
     private String user;
-    @Column(name="PARAMETERVALUES")
+    @Column(name = "PARAMETERVALUES")
     private String parameters;
     private Long createEpoch;
 //</editor-fold>
@@ -68,7 +80,7 @@ public class Token implements Serializable {
     public Long getId() {
         return id;
     }
-    
+
     /**
      * Get the value of email
      *
@@ -77,7 +89,7 @@ public class Token implements Serializable {
     public String getEmail() {
         return email;
     }
-    
+
     /**
      * Get the value of user
      *
@@ -97,7 +109,6 @@ public class Token implements Serializable {
     }
 
 //</editor-fold>
-    
     //<editor-fold defaultstate="collapsed" desc="Setters">
     /**
      * Set the value of id.
@@ -107,7 +118,7 @@ public class Token implements Serializable {
     public void setId(Long id) {
         this.id = id;
     }
-    
+
     /**
      * Set the value of email.
      *
@@ -116,7 +127,7 @@ public class Token implements Serializable {
     public void setEmail(String email) {
         this.email = email;
     }
-    
+
     /**
      * Set the value of user.
      *
@@ -136,14 +147,13 @@ public class Token implements Serializable {
     }
 
 //</editor-fold>
-    
     /**
-     * Set the value of parameters. 
+     * Set the value of parameters.
      *
      * @param parameters new value of parameters
      */
     public void setParameters(Map<String, String> parameters) {
-       
+
         try {
             ObjectMapper mapper = new ObjectMapper();
             this.parameters = mapper.writeValueAsString(parameters);
@@ -151,7 +161,7 @@ public class Token implements Serializable {
             // Unable to convert map to JSON string
         }
     }
-    
+
     /**
      * Get the value of parameters
      *
@@ -160,14 +170,47 @@ public class Token implements Serializable {
     public Map<String, String> getParameters() {
         try {
             ObjectMapper mapper = new ObjectMapper();
-            return mapper.readValue(this.parameters, 
-                    new TypeReference<HashMap<String,String>>(){});
+            return mapper.readValue(this.parameters,
+                    new TypeReference<HashMap<String, String>>() {
+                    });
         } catch (IOException ex) {
             // Unable to convert JSON to map
         }
         return null;
     }
-    
+
+    /**
+     * Tidies up the database by deleting any tokens that are over 24 hours old.
+     * This method is asynchronous and will return immedietly regardless of
+     * whether the operation was successful or not.
+     *
+     */
+    @Asynchronous
+    public void tidy() {
+        try {
+
+            CrudService dap = (CrudService) InitialContext.doLookup(
+                    ResourceBundle.getBundle("config").getString("CRUD"));
+
+            // Get the tokens with a creationEpoch more than 24 hours ago
+            Calendar cal = Calendar.getInstance();
+            cal.add(Calendar.DAY_OF_MONTH, -1);
+            List<Token> tokens
+                    = dap.findWithNamedQuery(
+                            "Token.findByEpoch",
+                            QueryParameter
+                            .with("epoch", cal.getTimeInMillis())
+                            .parameters());
+
+            for (Token token : tokens) {
+                dap.delete(Token.class, token.id);
+            }
+
+        } catch (NamingException ex) {
+            LOG.log(Level.SEVERE, null, ex);
+        }
+    }
+
     //<editor-fold defaultstate="collapsed" desc="Overrides">
     @Override
     public int hashCode() {
@@ -175,7 +218,7 @@ public class Token implements Serializable {
         hash = 17 * hash + Objects.hashCode(this.id);
         return hash;
     }
-    
+
     /**
      * Warning - this method won't work in the case the id fields are not set.
      *
@@ -197,5 +240,5 @@ public class Token implements Serializable {
         return true;
     }
 //</editor-fold>
-    
+
 }

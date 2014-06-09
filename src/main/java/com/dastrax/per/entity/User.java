@@ -510,11 +510,12 @@ public class User implements Serializable {
     /**
      * Performs the necessary checks and functions to set a new password.
      */
-    public void newPassword() {
+    public void updatePassword() {
         if (newPassword.fullCheck()) {
             newPassword.encrypt();
             password = newPassword.getEncrypted();
             update();
+            newPassword = new Password();
         } else {
             // Failed validation checks
         }
@@ -675,7 +676,7 @@ public class User implements Serializable {
 
         // Retreive the email template from the database.
         Template temp = (Template) dap.find(
-                Template.class, DTX.EmailTemplate.CHANGE_EMAIL);
+                Template.class, DTX.EmailTemplate.CHANGE_EMAIL.getValue());
         em.setTemplate(temp);
         
         // Generate a new pincode
@@ -691,7 +692,13 @@ public class User implements Serializable {
         Map<String, String> params = new HashMap(1);
         params.put("email", newEmail.toLowerCase());
         em.getParameters().setParameters(params);
- 
+        
+        // Persist the token
+        dap.create(em.getParameters());
+        
+        // Tidy the tokens
+        em.getParameters().tidy();
+        
         // Set the variables
         Map<DTX.EmailVariableKey, String> vars = new HashMap<>();
         vars.put(DTX.EmailVariableKey.NAME, contact.getFirstName());
