@@ -28,11 +28,19 @@
 
             <ez:navigation-a/>
 
-            <pe:layout stateCookie="#{config.ProjectStage ne 'DEV'}" widgetVar="layourWgt" >
+            <pe:layout stateCookie="#{config.ProjectStage ne 'DEV'}" 
+                       widgetVar="layourWgt" >
 
-                <pe:layoutPane id="north" position="north" closable="false" resizable="false" size="40"/>
+                <pe:layoutPane id="north" 
+                               position="north" 
+                               closable="false" 
+                               resizable="false" 
+                               size="40"/>
 
-                <pe:layoutPane id="west" position="west" resizeWhileDragging="true" size="220">
+                <pe:layoutPane id="west" 
+                               position="west" 
+                               resizeWhileDragging="true" 
+                               size="220">
 
                     <table class="navigation-sidebar">
                         <thead>
@@ -41,13 +49,22 @@
                         <tfoot><tr><td></td></tr></tfoot>
                         <tbody>
                             <tr>
-                                <td><p:commandLink value="Profile" action="access-personal-settings-profile-page" process="@this" type="button"/></td>
+                                <td><p:commandLink value="Profile" 
+                                                   action="/a/settings/personal/profile.xhtml?faces-redirect=true" 
+                                                   process="@this" 
+                                                   type="button"/></td>
                             </tr>
                             <tr>
-                                <td><p:commandLink value="Account settings" action="access-personal-settings-admin-page" process="@this" type="button"/></td>
+                                <td><p:commandLink value="Account settings" 
+                                                   action="/a/settings/personal/admin.xhtml?faces-redirect=true" 
+                                                   process="@this" 
+                                                   type="button"/></td>
                             </tr>
                             <tr>
-                                <td><p:commandLink value="Security" action="access-personal-settings-security-page" process="@this" type="button"/></td>
+                                <td><p:commandLink value="Security" 
+                                                   action="/a/settings/personal/security.xhtml?faces-redirect=true" 
+                                                   process="@this" 
+                                                   type="button"/></td>
                             </tr>
                             <tr>
                                 <td class="active">Navigation</td>
@@ -64,14 +81,19 @@
                         <tfoot><tr><td></td></tr></tfoot>
                         <tbody>
                             <tr>
-                                <td><p:commandLink value="Profile" action="access-company-settings-profile-page" process="@this" type="button"/></td>
+                                <td><p:commandLink value="Profile" 
+                                                   action="/a/settings/company/profile.xhtml?faces-redirect=true" 
+                                                   process="@this" 
+                                                   type="button"/></td>
                             </tr>
                         </tbody>
                     </table>
                     
                 </pe:layoutPane>
 
-                <pe:layoutPane id="center" position="center" resizeWhileDragging="true">
+                <pe:layoutPane id="center" 
+                               position="center" 
+                               resizeWhileDragging="true">
 
                     <table class="page-container">
                         <thead>
@@ -107,7 +129,8 @@
                                                      onclick="PF('blockui1').block();"
                                                      oncomplete="PF('blockui1').unblock();"/>
 
-                                    <ez:blockUI target=":form:save-navigation-button" widgetVar="blockui1"/>
+                                    <ez:blockUI target=":form:save-navigation-button" 
+                                                widgetVar="blockui1"/>
 
                                 </td>
                             </tr>
@@ -116,7 +139,13 @@
 
                 </pe:layoutPane>
 
-                <pe:layoutPane id="south" position="south" closable="false" resizable="false" size="40"><ez:footer/></pe:layoutPane>
+                <pe:layoutPane id="south" 
+                               position="south" 
+                               closable="false" 
+                               resizable="false" 
+                               size="40">
+                    <ez:footer/>
+                </pe:layoutPane>
 
             </pe:layout>
 

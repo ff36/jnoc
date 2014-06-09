@@ -5,11 +5,14 @@
  */
 package com.dastrax.service.company;
 
+import com.dastrax.app.misc.JsfUtil;
 import com.dastrax.app.model.CompanyModelQuery;
 import com.dastrax.app.model.DataTable;
 import com.dastrax.app.model.ModelQuery;
 import com.dastrax.service.navigation.Navigator;
 import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -31,7 +34,8 @@ public class Companies implements Serializable {
     //<editor-fold defaultstate="collapsed" desc="Properties">
     private static final long serialVersionUID = 1L;
     private DataTable dataTable;
-    private ModelQuery model;
+    private final ModelQuery model;
+    private final Map<String, List<String>> parameters;
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="CDI">
@@ -43,6 +47,7 @@ public class Companies implements Serializable {
     //<editor-fold defaultstate="collapsed" desc="Constructors">
     public Companies() {
         this.model = new CompanyModelQuery();
+        parameters = JsfUtil.getRequestParameters();
     }
 //</editor-fold>
 
@@ -83,7 +88,7 @@ public class Companies implements Serializable {
      */
     public void init() {
         dataTable = new DataTable(model);
-        dataTable.initTable();
+        dataTable.initTable(parameters);
     }
 
 }

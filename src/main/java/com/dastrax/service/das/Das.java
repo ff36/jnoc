@@ -5,12 +5,15 @@
  */
 package com.dastrax.service.das;
 
+import com.dastrax.app.misc.JsfUtil;
 import com.dastrax.app.model.DasModelQuery;
 import com.dastrax.app.model.DataTable;
 import com.dastrax.app.model.ModelQuery;
 import com.dastrax.app.security.Password;
 import com.dastrax.service.navigation.Navigator;
 import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -37,6 +40,7 @@ public class Das implements Serializable {
     private DataTable dataTable;
     private final ModelQuery model;
     private Password password;
+    private final Map<String, List<String>> parameters;
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="CDI">
@@ -48,6 +52,7 @@ public class Das implements Serializable {
     //<editor-fold defaultstate="collapsed" desc="Constructors">
     public Das() {
         this.model = new DasModelQuery();
+        parameters = JsfUtil.getRequestParameters();
     }
 //</editor-fold>
 
@@ -106,7 +111,7 @@ public class Das implements Serializable {
      */
     public void init() {
         dataTable = new DataTable(model);
-        dataTable.initTable();
+        dataTable.initTable(parameters);
         password = new Password();
     }
 

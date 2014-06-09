@@ -5,11 +5,14 @@
  */
 package com.dastrax.service.incident;
 
+import com.dastrax.app.misc.JsfUtil;
 import com.dastrax.app.model.DataTable;
 import com.dastrax.app.model.IncidentModelQuery;
 import com.dastrax.app.model.ModelQuery;
 import com.dastrax.service.navigation.Navigator;
 import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -34,7 +37,8 @@ public class Incidents implements Serializable {
     
     private static final long serialVersionUID = 1L;
     private DataTable dataTable;
-    private ModelQuery model;
+    private final ModelQuery model;
+    private final Map<String, List<String>> parameters;
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="CDI">
@@ -46,6 +50,7 @@ public class Incidents implements Serializable {
     //<editor-fold defaultstate="collapsed" desc="Constructors">
     public Incidents() {
         this.model = new IncidentModelQuery();
+        parameters = JsfUtil.getRequestParameters();
     }
 //</editor-fold>
 
@@ -77,7 +82,7 @@ public class Incidents implements Serializable {
      */
     public void init() {
         dataTable = new DataTable(model);
-        dataTable.initTable();
+        dataTable.initTable(parameters);
     }
 
 }

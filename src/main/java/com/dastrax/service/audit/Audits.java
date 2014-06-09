@@ -5,10 +5,13 @@
  */
 package com.dastrax.service.audit;
 
+import com.dastrax.app.misc.JsfUtil;
 import com.dastrax.app.model.AuditModelQuery;
 import com.dastrax.app.model.DataTable;
 import com.dastrax.app.model.ModelQuery;
 import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
@@ -29,13 +32,15 @@ public class Audits implements Serializable {
     //<editor-fold defaultstate="collapsed" desc="Properties">
     private static final long serialVersionUID = 1L;
     private DataTable dataTable;
-    private ModelQuery model;
-
+    private final ModelQuery model;
+    private boolean render;
+    private final Map<String, List<String>> parameters;
 //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="Constructors">
     public Audits() {
         this.model = new AuditModelQuery();
+        parameters = JsfUtil.getRequestParameters();
     }
 //</editor-fold>
     
@@ -47,6 +52,15 @@ public class Audits implements Serializable {
      */
     public DataTable getDataTable() {
         return dataTable;
+    }
+
+    /**
+     * Get the value of render.
+     *
+     * @return the value of render
+     */
+    public boolean isRender() {
+        return render;
     }
 //</editor-fold>
 
@@ -67,7 +81,8 @@ public class Audits implements Serializable {
      */
     public void init() {
         dataTable = new DataTable(model);
-        dataTable.initTable();
+        dataTable.initTable(parameters);
+        render = true;
     }
 
 }

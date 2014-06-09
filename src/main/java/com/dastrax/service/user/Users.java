@@ -5,13 +5,15 @@
  */
 package com.dastrax.service.user;
 
+import com.dastrax.app.misc.JsfUtil;
 import com.dastrax.app.model.DataTable;
 import com.dastrax.app.model.ModelQuery;
 import com.dastrax.app.model.UserModelQuery;
 import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 import javax.faces.view.ViewScoped;
-import javax.inject.Inject;
 import javax.inject.Named;
 
 /**
@@ -33,12 +35,14 @@ public class Users implements Serializable {
     private static final long serialVersionUID = 1L;
     
     private DataTable dataTable;
-    private ModelQuery model;
+    private final ModelQuery model;
+    private final Map<String, List<String>> parameters;
 //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="Constructors">
     public Users() {
         this.model = new UserModelQuery();
+        parameters = JsfUtil.getRequestParameters();
     }
 
 //</editor-fold>
@@ -71,7 +75,7 @@ public class Users implements Serializable {
      */
     public void init() {
         dataTable = new DataTable(model);
-        dataTable.initTable();
+        dataTable.initTable(parameters);
     }
  
 }

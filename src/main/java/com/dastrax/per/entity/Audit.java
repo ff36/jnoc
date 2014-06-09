@@ -5,6 +5,7 @@
  */
 package com.dastrax.per.entity;
 
+import com.dastrax.app.misc.TemporalUtil;
 import com.dastrax.app.security.SessionUser;
 import com.dastrax.per.dap.CrudService;
 import java.io.Serializable;
@@ -95,6 +96,15 @@ public class Audit implements Serializable {
         return createEpoch;
     }
 
+    /**
+     * Get the value of createEpoch as a string
+     *
+     * @return the value of createEpoch as a string
+     */
+    public String getCreateTimestamp() {
+        return TemporalUtil.epochToStringDateTime(createEpoch);
+    }
+    
     /**
      * Get the value of description. The audit event description
      *

@@ -5,7 +5,11 @@
  */
 package com.dastrax.app.misc;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -23,15 +27,15 @@ import javax.faces.model.SelectItem;
 public class JsfUtil {
 
     /**
-     * Creates an array of entity objects to be displayed in a pick list with 
+     * Creates an array of entity objects to be displayed in a pick list with
      * the option of adding a blank entry.
-     * 
+     *
      * @param entities
      * @param selectOne
      * @return SelectItem[]
      */
     public static SelectItem[] getSelectItems(
-            List<?> entities, 
+            List<?> entities,
             boolean selectOne) {
         int size = selectOne ? entities.size() + 1 : entities.size();
         SelectItem[] items = new SelectItem[size];
@@ -48,7 +52,7 @@ public class JsfUtil {
 
     /**
      * Add an error message to the JSF presentation layer.
-     * 
+     *
      * @param ex
      * @param defaultMsg
      */
@@ -63,7 +67,7 @@ public class JsfUtil {
 
     /**
      * Add an error message to the JSF presentation layer.
-     * 
+     *
      * @param messages
      */
     public static void addErrorMessages(List<String> messages) {
@@ -74,7 +78,7 @@ public class JsfUtil {
 
     /**
      * Add an error message to the JSF presentation layer.
-     * 
+     *
      * @param msg
      */
     public static void addErrorMessage(String msg) {
@@ -85,7 +89,7 @@ public class JsfUtil {
 
     /**
      * Add a success message to the JSF presentation layer.
-     * 
+     *
      * @param msg
      */
     public static void addSuccessMessage(String msg) {
@@ -96,7 +100,7 @@ public class JsfUtil {
 
     /**
      * Add a warning message to the JSF presentation layer.
-     * 
+     *
      * @param msg
      */
     public static void addWarningMessage(String msg) {
@@ -107,7 +111,7 @@ public class JsfUtil {
 
     /**
      * Add a fatal message to the JSF presentation layer.
-     * 
+     *
      * @param msg
      */
     public static void addFatalMessage(String msg) {
@@ -118,7 +122,7 @@ public class JsfUtil {
 
     /**
      * Obtain any request parameters from the URL.
-     * 
+     *
      * @param key (This is the identifier used to specify the parameter)
      * @return The value of the specified parameter if one exists
      */
@@ -130,18 +134,50 @@ public class JsfUtil {
     }
 
     /**
+     * Obtain a list of all the query parameters in the URL. As of JSF 2.2 this
+     * needs to be called from the constructor.
+     *
+     * @return The value of the specified parameter if one exists
+     */
+    public static Map<String, List<String>> getRequestParameters() {
+        // Get all the query parameters
+        Map<String, String> parameterMap
+                = FacesContext.getCurrentInstance()
+                .getExternalContext()
+                .getRequestParameterMap();
+        
+        // Response map
+        Map<String, List<String>> response = new HashMap<>(parameterMap.size());
+
+        // Convert the parameters to a List<String, List<String>>
+        for (Map.Entry<String, String> entry : parameterMap.entrySet()) {
+            if (entry.getValue().contains(",")) {
+                String[] value = entry.getValue().split(",");
+                response.putIfAbsent(entry.getKey(), Arrays.asList(value));
+            } else {
+                List<String> single = new ArrayList(1);
+                single.add(entry.getValue());
+                response.putIfAbsent(entry.getKey(), single);
+            }
+        }
+        
+        return response;
+    }
+
+    /**
      * Instead of retrieving a string parameter and then retrieving the related
      * object from the database it is possible to specify a converter and have
      * the lookup automatically encompassed into this method.
-     * 
+     *
      * @param requestParameterName
      * @param converter
      * @param component
-     * @return An object that is represented by the string value in the parameter
+     * @return An object that is represented by the string value in the
+     * parameter
      */
     public static Object getObjectFromRequestParameter(
-            String requestParameterName, 
-            Converter converter, 
+            String requestParameterName,
+            Converter converter,
             UIComponent component) {
         String theId = JsfUtil.getRequestParameter(requestParameterName);
         return converter.getAsObject(

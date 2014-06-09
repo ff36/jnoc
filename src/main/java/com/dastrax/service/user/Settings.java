@@ -84,7 +84,7 @@ public class Settings implements Serializable {
      */
     public void init() {
         user = (User) dap.find(User.class, SessionUser.getCurrentUser().getId());
-        render = true;
+        render = true;      
     }
 
 }

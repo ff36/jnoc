@@ -5,7 +5,7 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:pe="http://primefaces.org/ui/extensions"
       xmlns:ez="http://xmlns.jcp.org/jsf/composite/ezcomp"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
     <h:head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -28,11 +28,19 @@
 
             <ez:navigation-a/>
 
-            <pe:layout stateCookie="#{config.ProjectStage ne 'DEV'}" widgetVar="layourWgt" >
+            <pe:layout stateCookie="#{config.ProjectStage ne 'DEV'}" 
+                       widgetVar="layourWgt" >
 
-                <pe:layoutPane id="north" position="north" closable="false" resizable="false" size="40"/>
+                <pe:layoutPane id="north" 
+                               position="north" 
+                               closable="false" 
+                               resizable="false" 
+                               size="40"/>
 
-                <pe:layoutPane id="west" position="west" resizeWhileDragging="true" size="220">
+                <pe:layoutPane id="west" 
+                               position="west" 
+                               resizeWhileDragging="true" 
+                               size="220">
 
                     <table class="navigation-sidebar">
                         <thead>
@@ -41,20 +49,29 @@
                         <tfoot><tr><td></td></tr></tfoot>
                         <tbody>
                             <tr>
-                                <td><p:commandLink value="Profile" action="access-personal-settings-profile-page" process="@this" type="button"/></td>
+                                <td><p:commandLink value="Profile" 
+                                                   action="/a/settings/personal/profile.xhtml?faces-redirect=true" 
+                                                   process="@this" 
+                                                   type="button"/></td>
                             </tr>
                             <tr>
-                                <td><p:commandLink value="Account settings" action="access-personal-settings-admin-page" process="@this" type="button"/></td>
+                                <td><p:commandLink value="Account settings" 
+                                                   action="/a/settings/personal/admin.xhtml?faces-redirect=true" 
+                                                   process="@this" 
+                                                   type="button"/></td>
                             </tr>
                             <tr>
                                 <td class="active">Security</td>
                             </tr>
                             <tr>
-                                <td><p:commandLink value="Navigation" action="access-personal-settings-navigation-page" process="@this" type="button"/></td>
+                                <td><p:commandLink value="Navigation" 
+                                                   action="/a/settings/personal/navigation.xhtml?faces-redirect=true" 
+                                                   process="@this" 
+                                                   type="button"/></td>
                             </tr>
                         </tbody>
                     </table>
-                    
+
                     <p:spacer width="100%" height="10px"/>
 
                     <table class="navigation-sidebar">
@@ -64,82 +81,106 @@
                         <tfoot><tr><td></td></tr></tfoot>
                         <tbody>
                             <tr>
-                                <td><p:commandLink value="Profile" action="access-company-settings-profile-page" process="@this" type="button"/></td>
+                                <td><p:commandLink value="Profile" 
+                                                   action="/a/settings/company/profile.xhtml?faces-redirect=true" 
+                                                   process="@this" 
+                                                   type="button"/></td>
                             </tr>
                         </tbody>
                     </table>
 
                 </pe:layoutPane>
 
-                <pe:layoutPane id="center" position="center" resizeWhileDragging="true">
+                <pe:layoutPane id="center" 
+                               position="center" 
+                               resizeWhileDragging="true">
 
-                    <table class="page-container">
-                        <thead>
-                            <tr><th>Session</th></tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>
-                                    <table class="table-align-top">
-                                        <tr>
-                                            <td>
-                                                <p:spacer width="100%" height="20px"/>
-                                                <p:graphicImage value="#{URIUtil().s3Icon('black/monitor_icon_32.png')}"/>
-                                            </td>
+                    <p:remoteCommand autoRun="true" 
+                                     async="true" 
+                                     actionListener="#{settings.init()}" 
+                                     update=":form:lazy-update-class"/>
 
-                                            <td>
-                                                <h3>IP:</h3>
-                                                #{sessionData.ip}
+                    <p:remoteCommand autoRun="true" 
+                                     async="true" 
+                                     actionListener="#{audits.init()}" 
+                                     update=":form:lazy-update-class"/>
 
-                                                <h3>Browser:</h3>
-                                                #{sessionData.agent.name} (#{sessionData.agent.versionNumber.major}.#{sessionData.agent.versionNumber.minor}.#{sessionData.agent.versionNumber.bugfix})
+                    <h:panelGroup id="lazy-update-class">
 
-                                                <h3>OS:</h3>
-                                                #{sessionData.agent.operatingSystem.name}
-                                            </td>
-                                        </tr>
-                                    </table>
+                        <table class="page-container">
+                            <thead>
+                                <tr><th>Session</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
 
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                                        <p:graphicImage name="images/ajax-loader.gif" 
+                                                        rendered="#{!settings.render}" 
+                                                        styleClass="ajax-lazy-loader"/>
 
-                    <p:spacer width="100%" height="20px"/>
+                                        <ui:fragment rendered="#{settings.render}">
 
-                    <table class="page-container">
-                        <thead>
-                            <tr><th>Security History</th></tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>
+                                            <table class="table-align-top">
+                                                <tr>
+                                                    <td>
+                                                        <p:spacer width="100%" height="20px"/>
+                                                        <p:graphicImage value="#{uriUtil.icon('black/monitor_icon_32.png', true)}"/>
+                                                    </td>
 
-                                    <p:remoteCommand autoRun="true" async="true" actionListener="#{audits.retrieveAudits()}" update=":form:lazy-group-1"/>
+                                                    <td>
+                                                        <h3>IP:</h3>
+                                                        #{jsfSessionUser.ip}
 
-                                    <p:spacer width="100%" height="20px"/>
+                                                        <h3>Browser:</h3>
+                                                        #{jsfSessionUser.userAgent.name} (#{jsfSessionUser.userAgent.versionNumber.major}.#{jsfSessionUser.userAgent.versionNumber.minor}.#{jsfSessionUser.userAgent.versionNumber.bugfix})
 
-                                    This is a security log of important events involving your account.
+                                                        <h3>OS:</h3>
+                                                        #{jsfSessionUser.userAgent.operatingSystem.name}
+                                                    </td>
+                                                </tr>
+                                            </table>
 
-                                    <p:spacer width="100%" height="5px"/>
+                                        </ui:fragment>
 
-                                    <h:panelGroup id="lazy-group-1">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
 
-                                        <p:graphicImage name="images/ajax-loader.gif" rendered="#{!audits.renderAudits}" styleClass="ajax-lazy-loader"/>
+                        <p:spacer width="100%" height="20px"/>
+
+                        <table class="page-container">
+                            <thead>
+                                <tr><th>Security History</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+
+                                        <p:spacer width="100%" height="20px"/>
+
+                                        This is a security log of important events involving your account.
+
+                                        <p:spacer width="100%" height="5px"/>
+
+                                        <p:graphicImage name="images/ajax-loader.gif" 
+                                                        rendered="#{!audits.render}" 
+                                                        styleClass="ajax-lazy-loader"/>
 
                                         <p:dataTable id="audits-table"
                                                      widgetVar="auditsTable"
                                                      var="audit"
                                                      emptyMessage="#{msgs['empty.datatable']}"
-                                                     selection="#{audits.selectedAudits}"
-                                                     value="#{audits.auditModel}"
-                                                     filteredValue="#{audits.filtered}"
+                                                     selection="#{audits.dataTable.selected}"
+                                                     value="#{audits.dataTable.model}"
+                                                     filteredValue="#{audits.dataTable.filtered}"
                                                      styleClass="type3-table"
                                                      lazy="true"
                                                      sortBy="createEpoch"
                                                      sortOrder="descending"
                                                      rows="50"
-                                                     rendered="#{audits.renderAudits}"
+                                                     rendered="#{audits.render}"
                                                      scrollable="true"
                                                      liveScroll="true"
                                                      scrollRows="20"
@@ -150,20 +191,28 @@
                                             </p:column>
 
                                             <p:column width="150">
-                                                <h:outputText value="#{audits.temporalUtil.epochDateTimeFmt(audit.createEpoch)}"/>
+                                                <h:outputText value="#{audit.getCreateTimestamp()}"/>
                                             </p:column>
 
                                         </p:dataTable>
 
-                                    </h:panelGroup>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                                        
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </h:panelGroup>
 
                 </pe:layoutPane>
 
-                <pe:layoutPane id="south" position="south" closable="false" resizable="false" size="40"><ez:footer/></pe:layoutPane>
+                <pe:layoutPane id="south" 
+                               position="south" 
+                               closable="false" 
+                               resizable="false" 
+                               size="40">
+                    <ez:footer/>
+                </pe:layoutPane>
 
             </pe:layout>
 

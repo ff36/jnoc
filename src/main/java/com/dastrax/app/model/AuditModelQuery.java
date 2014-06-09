@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -94,7 +95,7 @@ public class AuditModelQuery implements ModelQuery {
 
         // Implement the Root Filter
         if (!rootFilter.isEmpty()) {
-            for (String key : (List<String>) rootFilter.keySet()) {
+            for (String key : (Set<String>) rootFilter.keySet()) {
                 List<Long> values = (List<Long>) rootFilter.get(key);
 
                 List<Predicate> rootPredicate = new ArrayList<>();
@@ -117,7 +118,7 @@ public class AuditModelQuery implements ModelQuery {
 
         // Implement the Optional Specified Filter
         if (!optionalFilter.isEmpty()) {
-            for (String key : (List<String>) optionalFilter.keySet()) {
+            for (String key : (Set<String>) optionalFilter.keySet()) {
                 List<String> values = (List<String>) optionalFilter.get(key);
 
                 List<Predicate> optionalPredicate = new ArrayList<>();

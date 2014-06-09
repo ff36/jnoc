@@ -5,19 +5,15 @@
  */
 package com.dastrax.app.model;
 
-import com.dastrax.app.misc.JsfUtil;
 import com.dastrax.app.service.internal.DefaultAttributeFilter;
 import com.dastrax.app.services.AttributeFilter;
 import com.dastrax.per.dap.CrudService;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.faces.context.FacesContext;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.criteria.CriteriaQuery;
@@ -154,35 +150,15 @@ public class DataTable {
      * page first and subsequently loading the data by using an ajax remote
      * command call. Once the data has loaded we set the render property to
      * true.
+     * @param parameters
      */
-    public void initTable() {
+    public void initTable(Map<String, List<String>> parameters) {
         AttributeFilter attFilter = new DefaultAttributeFilter();
-
-        // Optional filter map
-        Map<String, List<String>> optionalMap = new HashMap<>();
-        
-        // Obtain all the query parameters
-        Map<String, String> parameterMap = (Map<String, String>) FacesContext
-                .getCurrentInstance()
-                .getExternalContext()
-                .getRequestParameterMap();
-
-        // Convert the parameters to a List<String, List<String>>
-        for (Map.Entry<String, String> entry : parameterMap.entrySet()) {
-            if (entry.getValue().contains(",")) {
-                String[] value = entry.getValue().split(",");
-                optionalMap.putIfAbsent(entry.getKey(), Arrays.asList(value));
-            } else {
-                List<String> single = new ArrayList(1);
-                single.add(entry.getValue());
-                optionalMap.putIfAbsent(entry.getKey(), single);
-            }
-        }
 
         this.model = new DataTableModel(
                 this.modelQuery,
                 attFilter.authorizedAuthors(),
-                optionalMap);
+                parameters);
 
         this.render = true;
     }
