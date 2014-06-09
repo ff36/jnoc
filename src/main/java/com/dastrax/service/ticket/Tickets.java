@@ -7,8 +7,7 @@ package com.dastrax.service.ticket;
 
 import com.dastrax.app.model.DataTable;
 import com.dastrax.app.model.ModelQuery;
-import com.dastrax.app.model.ModelQueryQualifier;
-import com.dastrax.app.model.ModelQueryType;
+import com.dastrax.app.model.TicketModelQuery;
 import com.dastrax.service.navigation.Navigator;
 import java.io.Serializable;
 import java.util.logging.Logger;
@@ -35,19 +34,21 @@ public class Tickets implements Serializable {
     
     private static final long serialVersionUID = 1L;
     private DataTable dataTable;
+    private ModelQuery model;
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="CDI">
-    @Inject
-    @ModelQueryQualifier
-    @ModelQueryType(ModelQueryType.ModelQueries.TICKET)
-    private ModelQuery model;
-
     @Inject
     private Navigator navigator;
 
 //</editor-fold>
     
+    //<editor-fold defaultstate="collapsed" desc="Constructors">
+    public Tickets() {
+        this.model = new TicketModelQuery();
+    }
+//</editor-fold>
+
     //<editor-fold defaultstate="collapsed" desc="Getters">
     /**
      * Get the value of dataTable.

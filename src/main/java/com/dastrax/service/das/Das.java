@@ -5,10 +5,9 @@
  */
 package com.dastrax.service.das;
 
+import com.dastrax.app.model.DasModelQuery;
 import com.dastrax.app.model.DataTable;
 import com.dastrax.app.model.ModelQuery;
-import com.dastrax.app.model.ModelQueryQualifier;
-import com.dastrax.app.model.ModelQueryType;
 import com.dastrax.app.security.Password;
 import com.dastrax.service.navigation.Navigator;
 import java.io.Serializable;
@@ -36,20 +35,22 @@ public class Das implements Serializable {
     
     private static final long serialVersionUID = 1L;
     private DataTable dataTable;
+    private final ModelQuery model;
     private Password password;
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="CDI">
     @Inject
-    @ModelQueryQualifier
-    @ModelQueryType(ModelQueryType.ModelQueries.DAS)
-    private ModelQuery model;
-
-    @Inject
     private Navigator navigator;
 
 //</editor-fold>
     
+    //<editor-fold defaultstate="collapsed" desc="Constructors">
+    public Das() {
+        this.model = new DasModelQuery();
+    }
+//</editor-fold>
+
     //<editor-fold defaultstate="collapsed" desc="Getters">
     /**
      * Get the value of dataTable.

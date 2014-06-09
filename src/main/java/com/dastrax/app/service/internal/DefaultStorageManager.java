@@ -37,9 +37,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.ejb.EJB;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
 /**
  * This class contains methods to facilitate functions relating to file storage.
@@ -60,15 +62,17 @@ public class DefaultStorageManager implements StorageManager {
     //<editor-fold defaultstate="collapsed" desc="Properties">
     private static final Logger LOG = Logger.getLogger(DefaultStorageManager.class.getName());
     private final S3 s3 = new S3();
-//</editor-fold>
-
-    //<editor-fold defaultstate="collapsed" desc="EJB">
-    @EJB
     private CrudService dap;
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Constructors">
     public DefaultStorageManager() {
+        try {
+            dap = (CrudService) InitialContext.doLookup(
+                    ResourceBundle.getBundle("config").getString("CRUD"));
+        } catch (NamingException ex) {
+            LOG.log(Level.SEVERE, null, ex);
+        }
     }
 //</editor-fold>
 
@@ -91,7 +95,7 @@ public class DefaultStorageManager implements StorageManager {
 
         switch (keyType) {
             case USER_PROFILE_IMAGE:
-                user = (User)dap.find(User.class, id);
+                user = (User)dap.find(User.class, Long.parseLong(id));
                 key = DTX.StorageDirectory.USERS.getValue()
                         + "/"
                         + user.getAccount().getS3id()
@@ -101,7 +105,7 @@ public class DefaultStorageManager implements StorageManager {
                         + DTX.StorageFile.USER_PROFILE_GRAPHIC.getValue();
                 break;
             case COMPANY_LOGO:
-                company = (Company)dap.find(Company.class, id);
+                company = (Company)dap.find(Company.class, Long.parseLong(id));
                 key = DTX.StorageDirectory.COMPANIES.getValue()
                         + "/"
                         + company.getS3id()
@@ -111,13 +115,13 @@ public class DefaultStorageManager implements StorageManager {
                         + DTX.StorageFile.COMPANY_LOGO.getValue();
                 break;
             case USER_DIRECTORY:
-                user = (User)dap.find(User.class, id);
+                user = (User)dap.find(User.class, Long.parseLong(id));
                 key = DTX.StorageDirectory.USERS.getValue()
                         + "/"
                         + user.getAccount().getS3id();
                 break;
             case COMPANY_DIRECTORY:
-                company = (Company)dap.find(Company.class, id);
+                company = (Company)dap.find(Company.class, Long.parseLong(id));
                 key = DTX.StorageDirectory.COMPANIES.getValue()
                         + "/"
                         + company.getS3id();

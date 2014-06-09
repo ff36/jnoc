@@ -9,10 +9,14 @@ import com.dastrax.app.security.SessionUser;
 import com.dastrax.per.dap.CrudService;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.ResourceBundle;
 import java.util.concurrent.Future;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.AsyncResult;
 import javax.ejb.Asynchronous;
-import javax.ejb.EJB;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -40,8 +44,9 @@ import javax.persistence.Transient;
     @NamedQuery(name = "Audit.findReverse", query = "SELECT e FROM Audit e ORDER BY e.createEpoch DESC"),})
 @Entity
 public class Audit implements Serializable {
-
+    
     //<editor-fold defaultstate="collapsed" desc="Properties">
+    private static final Logger LOG = Logger.getLogger(Audit.class.getName());
     private static final long serialVersionUID = 1L;
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -55,15 +60,20 @@ public class Audit implements Serializable {
     private User target;
 //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="Transient Properties">
+    @Transient
+    private CrudService dap;
+//</editor-fold>
+    
     //<editor-fold defaultstate="collapsed" desc="Constructors">
     public Audit() {
+        try {
+            dap = (CrudService) InitialContext.doLookup(
+                    ResourceBundle.getBundle("config").getString("CRUD"));
+        } catch (NamingException ex) {
+            LOG.log(Level.SEVERE, null, ex);
+        }
     }
-//</editor-fold>
-
-    //<editor-fold defaultstate="collapsed" desc="EJB">
-    @Transient
-    @EJB
-    private CrudService dap;
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Getters">

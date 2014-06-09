@@ -5,10 +5,9 @@
  */
 package com.dastrax.service.company;
 
+import com.dastrax.app.model.CompanyModelQuery;
 import com.dastrax.app.model.DataTable;
 import com.dastrax.app.model.ModelQuery;
-import com.dastrax.app.model.ModelQueryQualifier;
-import com.dastrax.app.model.ModelQueryType;
 import com.dastrax.service.navigation.Navigator;
 import java.io.Serializable;
 import javax.faces.view.ViewScoped;
@@ -32,19 +31,21 @@ public class Companies implements Serializable {
     //<editor-fold defaultstate="collapsed" desc="Properties">
     private static final long serialVersionUID = 1L;
     private DataTable dataTable;
+    private ModelQuery model;
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="CDI">
-    @Inject
-    @ModelQueryQualifier
-    @ModelQueryType(ModelQueryType.ModelQueries.COMPANY)
-    private ModelQuery model;
-
     @Inject
     private Navigator navigator;
 
 //</editor-fold>
     
+    //<editor-fold defaultstate="collapsed" desc="Constructors">
+    public Companies() {
+        this.model = new CompanyModelQuery();
+    }
+//</editor-fold>
+
     //<editor-fold defaultstate="collapsed" desc="Getters">
     /**
      * Get the value of dataTable.

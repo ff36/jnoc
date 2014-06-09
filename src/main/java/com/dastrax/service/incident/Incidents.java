@@ -6,9 +6,8 @@
 package com.dastrax.service.incident;
 
 import com.dastrax.app.model.DataTable;
+import com.dastrax.app.model.IncidentModelQuery;
 import com.dastrax.app.model.ModelQuery;
-import com.dastrax.app.model.ModelQueryQualifier;
-import com.dastrax.app.model.ModelQueryType;
 import com.dastrax.service.navigation.Navigator;
 import java.io.Serializable;
 import java.util.logging.Logger;
@@ -35,19 +34,21 @@ public class Incidents implements Serializable {
     
     private static final long serialVersionUID = 1L;
     private DataTable dataTable;
+    private ModelQuery model;
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="CDI">
-    @Inject
-    @ModelQueryQualifier
-    @ModelQueryType(ModelQueryType.ModelQueries.INCIDENT)
-    private ModelQuery model;
-
     @Inject
     private Navigator navigator;
 
 //</editor-fold>
     
+    //<editor-fold defaultstate="collapsed" desc="Constructors">
+    public Incidents() {
+        this.model = new IncidentModelQuery();
+    }
+//</editor-fold>
+
     //<editor-fold defaultstate="collapsed" desc="Getters">
     /**
      * Get the value of dataTable.

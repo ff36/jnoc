@@ -22,18 +22,18 @@ import net.sf.uadetector.ReadableUserAgent;
  */
 @Named
 @SessionScoped
-public class JSFSessionUser implements Serializable {
+public class JsfSessionUser implements Serializable {
 
     //<editor-fold defaultstate="collapsed" desc="Properties">
     private static final long serialVersionUID = 1L;
     
-    private User currentUser;
-    private ReadableUserAgent userAgent;
-    private String ip;
+    private final User currentUser;
+    private final ReadableUserAgent userAgent;
+    private final String ip;
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Constructors">
-    public JSFSessionUser() {
+    public JsfSessionUser() {
         this.currentUser = SessionUser.getCurrentUser();
         this.userAgent = SessionUser.getUserAgent();
         this.ip = SessionUser.getIP();
@@ -67,35 +67,7 @@ public class JSFSessionUser implements Serializable {
     public User getCurrentUser() {
         return currentUser;
     }
-//</editor-fold>
-    
-    //<editor-fold defaultstate="collapsed" desc="Setters">
-    /**
-     * Set the value of ip
-     *
-     * @param ip new value of ip
-     */
-    public void setIp(String ip) {
-        this.ip = ip;
-    }
-    
-    /**
-     * Set the value of userAgent
-     *
-     * @param userAgent new value of userAgent
-     */
-    public void setUserAgent(ReadableUserAgent userAgent) {
-        this.userAgent = userAgent;
-    }
-    
-    /**
-     * Set the value of currentUser
-     *
-     * @param currentUser new value of currentUser
-     */
-    public void setCurrentUser(User currentUser) {
-        this.currentUser = currentUser;
-    }
-//</editor-fold>
 
+//</editor-fold>
+    
 }

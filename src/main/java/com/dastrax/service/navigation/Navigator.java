@@ -107,23 +107,24 @@ public class Navigator implements Serializable {
         menuItems = new ArrayList<>();
 
         // List all the existing menu items
-        menuItems.add(new MenuItem("1", "Dashboard", "access-dashboard-page"));
-        menuItems.add(new MenuItem("2", "Support Tickets", "access-list-tickets-page"));
-        menuItems.add(new MenuItem("3", "Create Support Ticket", "access-create-ticket-page"));
-        menuItems.add(new MenuItem("4", "Incidents", "access-list-incidents-page"));
-        menuItems.add(new MenuItem("5", "Accounts", "access-accounts-list-page"));
-        menuItems.add(new MenuItem("6", "Create Account", "access-create-account-page"));
-        menuItems.add(new MenuItem("7", "Companies", "access-list-companies-page"));
-        menuItems.add(new MenuItem("8", "Create Company", "access-create-company-page"));
-        menuItems.add(new MenuItem("9", "Sites", "access-list-sites-page"));
-        menuItems.add(new MenuItem("10", "Create Site", "access-create-site-page"));
-        menuItems.add(new MenuItem("11", "Create RMA", "access-create-rma-page"));
-        menuItems.add(new MenuItem("12", "Analytics", "access-analytics-page"));
-        menuItems.add(new MenuItem("13", "Profile Settings", "access-personal-settings-profile-page"));
-        menuItems.add(new MenuItem("14", "Account Settings", "access-personal-settings-admin-page"));
-        menuItems.add(new MenuItem("15", "Security Settings", "access-personal-settings-security-page"));
-        menuItems.add(new MenuItem("16", "Navigation Settings", "access-personal-settings-navigation-page"));
-        menuItems.add(new MenuItem("17", "Company Profile Settings", "access-company-settings-profile-page"));
+        menuItems.add(new MenuItem("1", "Dashboard", "/a/dashboard.xhtml?faces-redirect=true"));
+        menuItems.add(new MenuItem("2", "Support Tickets", "/a/tickets/list.xhtml?faces-redirect=true"));
+        menuItems.add(new MenuItem("3", "Create Support Ticket", "/a/tickets/create.xhtml?faces-redirect=true"));
+        menuItems.add(new MenuItem("4", "Incidents", "/a/incidents/list.xhtml?faces-redirect=true"));
+        menuItems.add(new MenuItem("5", "Accounts", "/a/accounts/list.xhtml?faces-redirect=true"));
+        menuItems.add(new MenuItem("6", "Create Account", "/a/accounts/create.xhtml?faces-redirect=true"));
+        menuItems.add(new MenuItem("7", "Companies", "/a/companies/list.xhtml?faces-redirect=true"));
+        menuItems.add(new MenuItem("8", "Create Company", "/a/companies/create.xhtml?faces-redirect=true"));
+        menuItems.add(new MenuItem("9", "DAS", "/a/das/list.xhtml?faces-redirect=true"));
+        menuItems.add(new MenuItem("10", "Create DAS", "/a/das/create.xhtml?faces-redirect=true"));
+        menuItems.add(new MenuItem("11", "Create RMA", "/a/rma/create.xhtml?faces-redirect=true"));
+        menuItems.add(new MenuItem("12", "Analytics", "/a/analytics/dashboard.xhtml?faces-redirect=true"));
+        menuItems.add(new MenuItem("13", "Profile Settings", "/a/settings/personal/profile.xhtml?faces-redirect=true"));
+        menuItems.add(new MenuItem("14", "Account Settings", "/a/settings/personal/admin.xhtml?faces-redirect=true"));
+        menuItems.add(new MenuItem("15", "Security Settings", "/a/settings/personal/security.xhtml?faces-redirect=true"));
+        menuItems.add(new MenuItem("16", "Navigation Settings", "/a/settings/personal/navigation.xhtml?faces-redirect=true"));
+        menuItems.add(new MenuItem("17", "Company Profile Settings", "/a/settings/company/profile.xhtml?faces-redirect=true"));
+        menuItems.add(new MenuItem("18", "Support Tickets", "/a/tickets/analytics.xhtml?faces-redirect=true"));
 
         menuItemDataModel = new MenuItemDataModel(menuItems);
 

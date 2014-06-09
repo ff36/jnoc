@@ -5,11 +5,18 @@
  */
 package com.dastrax.per.entity;
 
+import com.dastrax.app.misc.TemporalUtil;
+import com.dastrax.per.dap.CrudService;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -36,8 +43,9 @@ import javax.persistence.Transient;
     @NamedQuery(name = "Contact.findByID", query = "SELECT e FROM Contact e WHERE e.id = :id"),})
 @Entity
 public class Contact implements Serializable {
-
+    
     //<editor-fold defaultstate="collapsed" desc="Properties">
+    private static final Logger LOG = Logger.getLogger(Contact.class.getName());
     private static final long serialVersionUID = 1L;
     
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,14 +55,16 @@ public class Contact implements Serializable {
     private String firstName;
     private String lastName;
     private String email;
-    @OneToMany(cascade = {CascadeType.ALL})
+    @OneToMany(cascade = {CascadeType.ALL}, orphanRemoval = true)
     private List<Telephone> telephones;
-    @OneToMany(cascade = {CascadeType.ALL})
+    @OneToMany(cascade = {CascadeType.ALL}, orphanRemoval = true)
     private List<Address> addresses;
     private Long dobEpoch;
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Transient Properties">
+    @Transient
+    private CrudService dap;
     @Transient
     private Address newAddress;
     @Transient
@@ -67,6 +77,15 @@ public class Contact implements Serializable {
     public Contact() {
         this.addresses = new ArrayList<>();
         this.telephones = new ArrayList<>();
+        
+        this.newTelephone = new Telephone();
+        
+        try {
+            dap = (CrudService) InitialContext.doLookup(
+                    ResourceBundle.getBundle("config").getString("CRUD"));
+        } catch (NamingException ex) {
+            LOG.log(Level.SEVERE, null, ex);
+        }
     }
 //</editor-fold>
 
@@ -240,6 +259,16 @@ public class Contact implements Serializable {
     public void setDobEpoch(Long dobEpoch) {
         this.dobEpoch = dobEpoch;
     }
+
+    /**
+     * Set the value of dob.
+     *
+     * @param dob new value of dob
+     */
+    public void setDob(Date dob) {
+        this.dobEpoch = TemporalUtil.dateToEpoch(dob);
+    }
+
     
     /**
      * Set the value of type.
@@ -270,6 +299,13 @@ public class Contact implements Serializable {
 
 //</editor-fold>
 
+    /**
+     * Update the persistence layer with a new version of the contact.
+     */
+    public void update() {
+        dap.update(this);
+    }
+    
     /**
      * Constructs a concatenated users name based on the available properties.
      * 

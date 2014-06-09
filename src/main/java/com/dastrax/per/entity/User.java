@@ -30,9 +30,12 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.ResourceBundle;
 import java.util.UUID;
-import javax.ejb.EJB;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -75,8 +78,9 @@ import org.primefaces.extensions.event.ImageAreaSelectEvent;
 @Table(name = "SUBJECT")
 @Entity
 public class User implements Serializable {
-
+    
     //<editor-fold defaultstate="collapsed" desc="Properties">
+    private static final Logger LOG = Logger.getLogger(User.class.getName());
     private static final long serialVersionUID = 1L;
 
     @Version
@@ -92,7 +96,7 @@ public class User implements Serializable {
     private Contact contact;
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private Account account;
-    @OneToMany(cascade = {CascadeType.ALL})
+    @OneToMany(cascade = {CascadeType.ALL}, orphanRemoval = true)
     private List<Permission> permissions;
     @ManyToOne
     private Metier metier;
@@ -101,6 +105,8 @@ public class User implements Serializable {
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Transient Properties">
+    @Transient
+    private CrudService dap;
     @Transient
     private String newEmail;
     @Transient
@@ -116,12 +122,6 @@ public class User implements Serializable {
     @Transient
     Password newPassword;
 //</editor-fold>
-    
-    //<editor-fold defaultstate="collapsed" desc="EJB">
-    @Transient
-    @EJB
-    private CrudService dap;
-//</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Constructors">
     public User() {
@@ -136,6 +136,13 @@ public class User implements Serializable {
         this.uploadFile = new UploadFile();
         this.availableCompanies = new ArrayList<>();
         this.request = new Request();
+        
+        try {
+            dap = (CrudService) InitialContext.doLookup(
+                    ResourceBundle.getBundle("config").getString("CRUD"));
+        } catch (NamingException ex) {
+            LOG.log(Level.SEVERE, null, ex);
+        }
     }
 //</editor-fold>
 
@@ -273,6 +280,15 @@ public class User implements Serializable {
      */
     public Password getNewPassword() {
         return newPassword;
+    }
+
+    /**
+     * Get the value of uploadFile.
+     *
+     * @return the value of uploadFile
+     */
+    public UploadFile getUploadFile() {
+        return uploadFile;
     }
 
 //</editor-fold>
@@ -609,9 +625,11 @@ public class User implements Serializable {
      * Saves the user profile image from its temporary location to its permanent
      * storage location.
      */
-    private void saveProfileImage() {
+    public void saveProfileImage() {
         UploadManager uploader = new DefaultUploadManager();
-        uploader.save(uploadFile, this);
+        if (uploadFile.isUploaded()) {
+            uploader.save(uploadFile, this);
+        }
     }
 
     /**
@@ -628,6 +646,15 @@ public class User implements Serializable {
         uploadFile.getImage().getImageCrop().setHeight(event.getHeight());
     }
 
+    /**
+     * Saves the user profile image from its temporary location to its permanent
+     * storage location.
+     */
+    public void cropProfileImage() {
+        UploadManager uploader = new DefaultUploadManager();
+        uploader.crop(uploadFile, DTX.CroppableType.USER_PROFILE_IMAGE);
+    }
+    
     /**
      * This is just a convenience method for Primefaces Collector.
      */

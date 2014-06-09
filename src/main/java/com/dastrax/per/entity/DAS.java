@@ -11,8 +11,12 @@ import com.dastrax.app.misc.JsfUtil;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import javax.ejb.EJB;
+import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.faces.context.FacesContext;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -47,8 +51,9 @@ import javax.validation.constraints.Pattern;
     @NamedQuery(name = "DAS.findByIP", query = "SELECT e FROM DAS e WHERE e.dms = :dms"),})
 @Entity
 public class DAS implements Serializable {
-
+    
     //<editor-fold defaultstate="collapsed" desc="Properties">
+    private static final Logger LOG = Logger.getLogger(DAS.class.getName());
     private static final long serialVersionUID = 1L;
 
     @Version
@@ -74,20 +79,23 @@ public class DAS implements Serializable {
     
     //<editor-fold defaultstate="collapsed" desc="Transient Properties">
     @Transient
+    private CrudService dap;
+    @Transient
     private List<Company> companies;
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Constructors">
     public DAS() {
         this.contacts = new ArrayList<>();
+        
+        try {
+            dap = (CrudService) InitialContext.doLookup(
+                    ResourceBundle.getBundle("config").getString("CRUD"));
+        } catch (NamingException ex) {
+            LOG.log(Level.SEVERE, null, ex);
+        }
     }
 
-//</editor-fold>
-    
-    //<editor-fold defaultstate="collapsed" desc="EJB">
-    @Transient
-    @EJB
-    private CrudService dap;
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Getters">

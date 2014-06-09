@@ -5,14 +5,11 @@
  */
 package com.dastrax.service.audit;
 
+import com.dastrax.app.model.AuditModelQuery;
 import com.dastrax.app.model.DataTable;
 import com.dastrax.app.model.ModelQuery;
-import com.dastrax.app.model.ModelQueryQualifier;
-import com.dastrax.app.model.ModelQueryType;
-import com.dastrax.app.model.ModelQueryType.ModelQueries;
 import java.io.Serializable;
 import javax.faces.view.ViewScoped;
-import javax.inject.Inject;
 import javax.inject.Named;
 
 /**
@@ -32,14 +29,14 @@ public class Audits implements Serializable {
     //<editor-fold defaultstate="collapsed" desc="Properties">
     private static final long serialVersionUID = 1L;
     private DataTable dataTable;
-//</editor-fold>
-
-    //<editor-fold defaultstate="collapsed" desc="CDI">
-    @Inject
-    @ModelQueryQualifier
-    @ModelQueryType(ModelQueries.AUDIT)
     private ModelQuery model;
 
+//</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="Constructors">
+    public Audits() {
+        this.model = new AuditModelQuery();
+    }
 //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="Getters">

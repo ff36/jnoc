@@ -17,7 +17,7 @@
                 <tr>
                     <td class="nav-1">
                         <!-- LOGO -->
-                        <p:graphicImage id="header-logo" height="30px" value="#{URIUtil().s3Logo('dastrax_logo_v3.png')}"/>
+                        <p:graphicImage id="header-logo" height="30px" value="#{uriUtil.companyLogo(false)}"/>
                     </td>
                     <td class="nav-2" width="120px">
                         <!-- LOGO -->
@@ -25,16 +25,16 @@
                             <p:submenu label="Services">  
                                 <p:column>  
                                     <h:panelGrid columns="2" width="250px" columnClasses="menu-column-icon, menu-column-link">
-                                        <p:graphicImage value="#{URIUtil().s3Icon('black/dashboard_icon_16.png')}"/>
+                                        <p:graphicImage value="#{uriUtil.icon('black/dashboard_icon_16.png', true)}"/>
                                         <p:commandLink value="Dashboard" 
-                                                       action="access-dashboard-page"
+                                                       action="/a/dashboard.xhtml?faces-redirect=true"
                                                        onmouseover="document.getElementById('dashboard-hover-details').style.display = 'block'"
                                                        onmouseout="document.getElementById('dashboard-hover-details').style.display = 'none'"/>
 
 
-                                        <p:graphicImage value="#{URIUtil().s3Icon('black/page_layout_icon_16.png')}"/>
+                                        <p:graphicImage value="#{uriUtil.icon('black/page_layout_icon_16.png', true)}"/>
                                         <p:commandLink value="Edit Menu"
-                                                       action="access-personal-settings-navigation-page"
+                                                       action="/a/settings/personal/navigation.xhtml?faces-redirect=true"
                                                        onmouseover="document.getElementById('edit-menu-hover-details').style.display = 'block'"
                                                        onmouseout="document.getElementById('edit-menu-hover-details').style.display = 'none'"/>
                                     </h:panelGrid>
@@ -43,45 +43,45 @@
 
                                 <p:column>  
                                     <h:panelGrid columns="2" width="200px" columnClasses="menu-column-icon, menu-column-link">
-                                        <p:graphicImage value="#{URIUtil().s3Icon('black/doc_lines_stright_icon_16.png')}"/>
+                                        <p:graphicImage value="#{uriUtil.icon('black/doc_lines_stright_icon_16.png', true)}"/>
                                         <p:commandLink value="Support Tickets"
-                                                       action="access-list-tickets-page"
+                                                       action="/a/tickets/list.xhtml?faces-redirect=true"
                                                        onmouseover="document.getElementById('ticket-hover-details').style.display = 'block'"
                                                        onmouseout="document.getElementById('ticket-hover-details').style.display = 'none'"/>
 
-                                        <p:graphicImage value="#{URIUtil().s3Icon('black/flag_icon_16.png')}"/>
+                                        <p:graphicImage value="#{uriUtil.icon('black/flag_icon_16.png', true)}"/>
                                         <p:commandLink value="Incidents"
-                                                       action="access-list-incidents-page"
+                                                       action="/a/incidents/list.xhtml?faces-redirect=true"
                                                        onmouseover="document.getElementById('incident-hover-details').style.display = 'block'"
                                                        onmouseout="document.getElementById('incident-hover-details').style.display = 'none'"/>
 
-                                        <p:graphicImage value="#{URIUtil().s3Icon('black/user_icon_16.png')}"/>
+                                        <p:graphicImage value="#{uriUtil.icon('black/user_icon_16.png', true)}"/>
                                         <p:commandLink value="Accounts"
-                                                       action="access-accounts-list-page"
+                                                       action="/a/accounts/list.xhtml?faces-redirect=true"
                                                        onmouseover="document.getElementById('account-hover-details').style.display = 'block'"
                                                        onmouseout="document.getElementById('account-hover-details').style.display = 'none'"/>
 
-                                        <p:graphicImage value="#{URIUtil().s3Icon('black/box_icon_16.png')}"/>
+                                        <p:graphicImage value="#{uriUtil.icon('black/box_icon_16.png', true)}"/>
                                         <p:commandLink value="Companies"
-                                                       action="access-list-companies-page"
+                                                       action="/a/companies/list.xhtml?faces-redirect=true"
                                                        onmouseover="document.getElementById('company-hover-details').style.display = 'block'"
                                                        onmouseout="document.getElementById('company-hover-details').style.display = 'none'"/>
 
-                                        <p:graphicImage value="#{URIUtil().s3Icon('black/air_signal_icon_16.png')}"/>
-                                        <p:commandLink value="Sites"
-                                                       action="access-list-sites-page"
-                                                       onmouseover="document.getElementById('site-hover-details').style.display = 'block'"
-                                                       onmouseout="document.getElementById('site-hover-details').style.display = 'none'"/>
+                                        <p:graphicImage value="#{uriUtil.icon('black/air_signal_icon_16.png', true)}"/>
+                                        <p:commandLink value="DAS"
+                                                       action="/a/das/list.xhtml?faces-redirect=true"
+                                                       onmouseover="document.getElementById('das-hover-details').style.display = 'block'"
+                                                       onmouseout="document.getElementById('das-hover-details').style.display = 'none'"/>
 
-                                        <p:graphicImage value="#{URIUtil().s3Icon('black/refresh_icon_16.png')}"/>
+                                        <p:graphicImage value="#{uriUtil.icon('black/refresh_icon_16.png', true)}"/>
                                         <p:commandLink value="RMA"
-                                                       action="access-create-rma-page"
+                                                       action="/a/rma/create.xhtml?faces-redirect=true"
                                                        onmouseover="document.getElementById('rma-hover-details').style.display = 'block'"
                                                        onmouseout="document.getElementById('rma-hover-details').style.display = 'none'"/>
 
-                                        <p:graphicImage value="#{URIUtil().s3Icon('black/chart_bar_icon_16.png')}"/>
+                                        <p:graphicImage value="#{uriUtil.icon('black/chart_bar_icon_16.png', true)}"/>
                                         <p:commandLink value="Analytics"
-                                                       action="access-analytics-page"
+                                                       action="/a/analytics/dashboard.xhtml?faces-redirect=true"
                                                        onmouseover="document.getElementById('report-hover-details').style.display = 'block'"
                                                        onmouseout="document.getElementById('report-hover-details').style.display = 'none'"/>
                                     </h:panelGrid>
@@ -93,55 +93,55 @@
                                     <p:spacer width="100%" height="7px"/>
                                     
                                     <div id="dashboard-hover-details" class="menu-hover-details" style="display: none">
-                                        <p:graphicImage value="#{URIUtil().s3Icon('black/dashboard_icon_48.png')}"/>
+                                        <p:graphicImage value="#{uriUtil.icon('black/dashboard_icon_48.png', true)}"/>
                                         <br></br>
                                         <h:outputText value="Dashboard lets you see an overview of your account performance and settings."/>
                                     </div>
                                     
                                     <div id="edit-menu-hover-details" class="menu-hover-details" style="display: none">
-                                        <p:graphicImage value="#{URIUtil().s3Icon('black/page_layout_icon_48.png')}"/>
+                                        <p:graphicImage value="#{uriUtil.icon('black/page_layout_icon_48.png', true)}"/>
                                         <br></br>
                                         <h:outputText value="Customise the navigation menu to make your most used services more accessible."/>
                                     </div>
                                     
                                     <div id="ticket-hover-details" class="menu-hover-details" style="display: none">
-                                        <p:graphicImage value="#{URIUtil().s3Icon('black/doc_lines_stright_icon_48.png')}"/>
+                                        <p:graphicImage value="#{uriUtil.icon('black/doc_lines_stright_icon_48.png', true)}"/>
                                         <br></br>
                                         <h:outputText value="Support Tickets let you manage your case ticket cycles. Create, update, and resolve reported issues. "/>
                                     </div>
                                     
                                     <div id="incident-hover-details" class="menu-hover-details" style="display: none">
-                                        <p:graphicImage value="#{URIUtil().s3Icon('black/flag_icon_48.png')}"/>
+                                        <p:graphicImage value="#{uriUtil.icon('black/flag_icon_48.png', true)}"/>
                                         <br></br>
                                         <h:outputText value="Incidents are automated events registered when a site encounters a problem."/>
                                     </div>
                                     
                                     <div id="account-hover-details" class="menu-hover-details" style="display: none">
-                                        <p:graphicImage value="#{URIUtil().s3Icon('black/user_icon_48.png')}"/>
+                                        <p:graphicImage value="#{uriUtil.icon('black/user_icon_48.png', true)}"/>
                                         <br></br>
                                         <h:outputText value="Create,edit, and manage permissions, access, and more for related user accounts."/>
                                     </div>
                                     
                                     <div id="company-hover-details" class="menu-hover-details" style="display: none">
-                                        <p:graphicImage value="#{URIUtil().s3Icon('black/box_icon_48.png')}"/>
+                                        <p:graphicImage value="#{uriUtil.icon('black/box_icon_48.png', true)}"/>
                                         <br></br>
                                         <h:outputText value="Companies allow you to group together resources such as sites, accounts, reports etc."/>
                                     </div>
                                     
-                                    <div id="site-hover-details" class="menu-hover-details" style="display: none">
-                                        <p:graphicImage value="#{URIUtil().s3Icon('black/air_signal_icon_48.png')}"/>
+                                    <div id="das-hover-details" class="menu-hover-details" style="display: none">
+                                        <p:graphicImage value="#{uriUtil.icon('black/air_signal_icon_48.png', true)}"/>
                                         <br></br>
-                                        <h:outputText value="Sites are managed DAS installations that can generate reporting and monitoring on performance."/>
+                                        <h:outputText value="DAS are managed DAS installations that can generate reporting and monitoring on performance."/>
                                     </div>
                                     
                                     <div id="rma-hover-details" class="menu-hover-details" style="display: none">
-                                        <p:graphicImage value="#{URIUtil().s3Icon('black/refresh_icon_48.png')}"/>
+                                        <p:graphicImage value="#{uriUtil.icon('black/refresh_icon_48.png', true)}"/>
                                         <br></br>
                                         <h:outputText value="Return Merchandise Authorisation (RMA) lets you generate a return request in order to receive a refund, replacement, or repair."/>
                                     </div>
                                     
                                     <div id="report-hover-details" class="menu-hover-details" style="display: none">
-                                        <p:graphicImage value="#{URIUtil().s3Icon('black/chart_bar_icon_48.png')}"/>
+                                        <p:graphicImage value="#{uriUtil.icon('black/chart_bar_icon_48.png', true)}"/>
                                         <br></br>
                                         <h:outputText value="Analytics provides monitoring for DAS resources. Track metrics, gain insight, and react immediately to keep sites running smoothly."/>
                                     </div>
@@ -157,12 +157,12 @@
                     </td>
                     <td class="nav-3">
 
-                        <p:commandLink action="access-settings-profile-page" >
-                            <p:graphicImage value="#{URIUtil().s3Icon('white/wrench_plus_2_icon_16.png')}"/>
+                        <p:commandLink action="/a/settings/personal/profile.xhtml?faces-redirect=true" >
+                            <p:graphicImage value="#{uriUtil.icon('white/wrench_plus_2_icon_16.png', true)}"/>
                         </p:commandLink>
 
                         <p:commandLink action="#{authenticate.logout()}">
-                            <p:graphicImage value="#{URIUtil().s3Icon('white/doc_export_icon_16.png')}"/>
+                            <p:graphicImage value="#{uriUtil.icon('white/doc_export_icon_16.png', true)}"/>
                         </p:commandLink>
                     </td>
                 </tr>

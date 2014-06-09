@@ -216,19 +216,19 @@
         <dependency>
             <groupId>org.primefaces</groupId>
             <artifactId>primefaces</artifactId>
-            <version>4.0</version>
+            <version>5.0</version>
         </dependency>
         
         <dependency>
             <groupId>org.primefaces.extensions</groupId>
             <artifactId>primefaces-extensions</artifactId>
-            <version>1.2.1</version>
+            <version>2.0.0</version>
         </dependency>
         
         <dependency>
             <groupId>org.primefaces.extensions</groupId>
             <artifactId>resources-ckeditor</artifactId>
-            <version>1.2.1</version>
+            <version>2.0.0</version>
         </dependency>
         
         <dependency>
@@ -236,6 +236,13 @@
             <artifactId>afterwork</artifactId>
             <version>1.0.8</version>
         </dependency>
+        
+        <dependency>
+            <groupId>rome</groupId>
+            <artifactId>rome</artifactId>
+            <version>1.0</version>
+        </dependency>
+
         <!-- END | PRIMEFACES -->
 
         <!-- START | JUNIT -->

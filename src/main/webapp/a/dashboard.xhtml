@@ -1,0 +1,147 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:ez="http://xmlns.jcp.org/jsf/composite/ezcomp">
+
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <h:outputStylesheet name="css/auth.css"/>
+        <h:outputStylesheet name="css/common.css"/>
+        <link rel="shortcut icon" type="image/png" href="#{request.contextPath}/resources/images/favicon.ico" />
+        <title>#{msgs['default.page.title']} | #{msgs['var.welcome.page.title']}</title>
+    </h:head>
+    <h:body>
+
+        <h:form id="form">
+
+            <pe:ajaxErrorHandler />
+
+            <p:growl id="growl" 
+                     redisplay="false"
+                     showDetail="false" 
+                     sticky="false" />
+
+            <ez:navigation-a/>
+
+            <pe:layout stateCookie="#{config.ProjectStage ne 'DEV'}" widgetVar="layoutWgt" >
+
+                <pe:layoutPane id="north" position="north" closable="false" resizable="false" size="40"/>
+
+                <pe:layoutPane id="center" position="center" resizeWhileDragging="true">
+
+                    <table class="page-container" style="height: 100%">
+                        <thead>
+                            <tr><th>Welcome back #{jsfSessionUser.currentUser.contact.firstName}</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+
+                                    <div style="width: 610px; margin-left: auto; margin-right: auto">
+
+                                        <pe:fluidGrid resizeBound="false"
+                                                      vGutter="10"
+                                                      hGutter="10"
+                                                      hasImages="true"
+                                                      fitWidth="true">
+
+                                            <pe:fluidGridItem rendered="#{jsfSessionUser.currentUser.hasPermission('university:access')}" >
+                                                <h:outputLink value="http://www.soliduniversityonline.com" 
+                                                              target="_blank">
+                                                    <p:graphicImage value="#{uriUtil.image('tile_university_active.svg', true)}"/>
+                                                </h:outputLink>
+                                            </pe:fluidGridItem>
+
+                                            <pe:fluidGridItem rendered="#{jsfSessionUser.currentUser.hasPermission('knowledge:access')}" >
+                                                <p:commandLink action="access-dashboard-page"
+                                                               type="button" 
+                                                               ajax="false">
+                                                    <p:graphicImage value="#{uriUtil.image('tile_knowledge_active.svg', true)}"/>
+                                                </p:commandLink> 
+                                            </pe:fluidGridItem>
+
+                                            <pe:fluidGridItem rendered="#{jsfSessionUser.currentUser.hasPermission('ticket:access')}" >
+                                                <p:commandLink action="access-dashboard-page"
+                                                               type="button" 
+                                                               ajax="false">
+                                                    <p:graphicImage value="#{uriUtil.image('tile_ticket_active.svg', true)}"/>
+                                                </p:commandLink> 
+                                            </pe:fluidGridItem>
+
+                                            <pe:fluidGridItem rendered="#{jsfSessionUser.currentUser.hasPermission('rma:access')}" >
+                                                <p:commandLink action="access-dashboard-page"
+                                                               type="button" 
+                                                               ajax="false">
+                                                    <p:graphicImage value="#{uriUtil.image('tile_rma_active.svg', true)}"/>
+                                                </p:commandLink> 
+                                            </pe:fluidGridItem>
+
+                                            <pe:fluidGridItem rendered="#{jsfSessionUser.currentUser.hasPermission('monitor-basic:access')}" >
+                                                <p:commandLink action="access-dashboard-page"
+                                                               type="button" 
+                                                               ajax="false">
+                                                    <p:graphicImage value="#{uriUtil.image('tile_noc_active.svg', true)}"/>
+                                                </p:commandLink>
+                                            </pe:fluidGridItem>
+
+                                            <pe:fluidGridItem>
+                                                <p:commandLink action="access-dashboard-page"
+                                                               type="button" 
+                                                               ajax="false">
+                                                    <p:graphicImage value="#{uriUtil.image('tile_feedback_active.svg', true)}"/>
+                                                </p:commandLink>
+                                            </pe:fluidGridItem>
+
+                                            <pe:fluidGridItem>
+                                                <p:commandLink action="access-dashboard-page"
+                                                               type="button" 
+                                                               ajax="false">
+                                                    <p:graphicImage value="#{uriUtil.image('tile_contact_active.svg', true)}"/>
+                                                </p:commandLink>
+                                            </pe:fluidGridItem>
+
+                                        </pe:fluidGrid>
+
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </pe:layoutPane>
+                
+                <pe:layoutPane id="east" position="east" resizeWhileDragging="true" size="350">
+
+                    <table class="page-container" style="height:100% ">
+                        <thead>
+                            <tr><th>News</th></tr>
+                        </thead>
+                        <tfoot><tr><td></td></tr></tfoot>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <p:spacer width="100%" height="20px"/>
+                                    
+                                    <p:feedReader value="http://solid.com/blog/?feed=rss2" var="feed">
+                                        <h:outputText value="#{feed.title}" style="font-weight: bold;display:block"/>
+                                        <h:outputText value="#{feed.description.value}" escape="false"/>
+                                        <hr></hr>
+                                    </p:feedReader>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </pe:layoutPane>
+
+                <pe:layoutPane id="south" position="south" closable="false" resizable="false" size="40"><ez:footer/></pe:layoutPane>
+
+            </pe:layout>
+
+        </h:form>
+
+    </h:body>
+</html>

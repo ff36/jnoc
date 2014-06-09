@@ -5,15 +5,19 @@
  */
 package com.dastrax.app.model;
 
+import com.dastrax.app.misc.JsfUtil;
 import com.dastrax.app.service.internal.DefaultAttributeFilter;
 import com.dastrax.app.services.AttributeFilter;
 import com.dastrax.per.dap.CrudService;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.faces.context.FacesContext;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.criteria.CriteriaQuery;
@@ -39,7 +43,6 @@ public class DataTable {
     private List filtered;
     private boolean render;
     private final ModelQuery modelQuery;
-    private String filter;
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Constructors">
@@ -107,15 +110,6 @@ public class DataTable {
         return render;
     }
 
-    /**
-     * Get the value of filter. Optional filter ID to pass to the DataTableModel
-     *
-     * @return the value of render
-     */
-    public String getFilter() {
-        return filter;
-    }
-
 //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="Setters">
@@ -151,15 +145,6 @@ public class DataTable {
         this.filtered = filtered;
     }
 
-    /**
-     * Set the value of filter. Optional filter ID to pass to the DataTableModel
-     *
-     * @param filter new value of filter
-     */
-    public void setFilter(String filter) {
-        this.filter = filter;
-    }
-
 //</editor-fold>
     
     /**
@@ -173,10 +158,31 @@ public class DataTable {
     public void initTable() {
         AttributeFilter attFilter = new DefaultAttributeFilter();
 
+        // Optional filter map
+        Map<String, List<String>> optionalMap = new HashMap<>();
+        
+        // Obtain all the query parameters
+        Map<String, String> parameterMap = (Map<String, String>) FacesContext
+                .getCurrentInstance()
+                .getExternalContext()
+                .getRequestParameterMap();
+
+        // Convert the parameters to a List<String, List<String>>
+        for (Map.Entry<String, String> entry : parameterMap.entrySet()) {
+            if (entry.getValue().contains(",")) {
+                String[] value = entry.getValue().split(",");
+                optionalMap.putIfAbsent(entry.getKey(), Arrays.asList(value));
+            } else {
+                List<String> single = new ArrayList(1);
+                single.add(entry.getValue());
+                optionalMap.putIfAbsent(entry.getKey(), single);
+            }
+        }
+
         this.model = new DataTableModel(
                 this.modelQuery,
                 attFilter.authorizedAuthors(),
-                attFilter.optionalTableFilter(this.filter));
+                optionalMap);
 
         this.render = true;
     }
@@ -233,17 +239,17 @@ public class DataTable {
          * @return A List of persistence records that match the CriteriaQuery
          */
         @Override
-        public List load (
+        public List load(
                 int first,
                 int pageSize,
                 String sortField,
                 SortOrder sortOrder,
                 Map filters) {
-            
+
             try {
                 CrudService dap = (CrudService) InitialContext.doLookup(
                         ResourceBundle.getBundle("config").getString("CRUD"));
-                
+
                 CriteriaQuery query = modelQuery.query(
                         first,
                         pageSize,
@@ -253,15 +259,15 @@ public class DataTable {
                         filters,
                         rootFilter,
                         optionalFilter);
-                
+
                 // Get the full query row count
                 int rowCount = dap.findWithCriteriaQuery(query).size();
-                
+
                 // Paginate the query
                 List data = dap.findWithCriteriaQuery(query, first, pageSize);
-                
+
                 setRowCount(rowCount);
-                
+
                 return data;
             } catch (NamingException ex) {
                 LOG.log(Level.SEVERE, null, ex);

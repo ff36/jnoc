@@ -8,7 +8,6 @@ package com.dastrax.app.filter;
 
 import com.dastrax.app.security.SessionUser;
 import com.dastrax.per.entity.User;
-import com.dastrax.per.project.DTX;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
@@ -20,8 +19,6 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.subject.Subject;
 
 /**
  * Filters and redirects users based on their Metier. This filter is used by
@@ -88,17 +85,17 @@ public class ShiroMetierFilter implements Filter {
         HttpServletResponse httpResponse=(HttpServletResponse)response;
 
         if (user.isAdministrator()) {
-            httpResponse.sendRedirect("a/welcome.jsf");
+            httpResponse.sendRedirect("a/dashboard.jsf");
             return;
         } 
         
         if (user.isVAR()) {            
-            httpResponse.sendRedirect("b/welcome.jsf");
+            httpResponse.sendRedirect("b/dashboard.jsf");
             return;
         } 
         
         if (user.isClient()) {            
-            httpResponse.sendRedirect("c/welcome.jsf");
+            httpResponse.sendRedirect("c/dashboard.jsf");
             return;
         } 
       

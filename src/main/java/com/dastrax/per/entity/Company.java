@@ -22,9 +22,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.ejb.EJB;
 import javax.faces.context.FacesContext;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -87,6 +89,8 @@ public class Company implements Serializable {
 
     //<editor-fold defaultstate="collapsed" desc="Transient Properties">
     @Transient
+    private CrudService dap;
+    @Transient
     private DualListModel<DAS> linkedAndAvailableDas;
     @Transient
     private DualListModel<Company> linkedAndAvailableClientCompanies;
@@ -100,13 +104,14 @@ public class Company implements Serializable {
         this.das = new ArrayList<>();
         this.contacts = new ArrayList<>();
         this.uploadFile = new UploadFile();
+        
+        try {
+            dap = (CrudService) InitialContext.doLookup(
+                    ResourceBundle.getBundle("config").getString("CRUD"));
+        } catch (NamingException ex) {
+            LOG.log(Level.SEVERE, null, ex);
+        }
     }
-//</editor-fold>
-
-    //<editor-fold defaultstate="collapsed" desc="EJB">
-    @Transient
-    @EJB
-    private CrudService dap;
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Getters">

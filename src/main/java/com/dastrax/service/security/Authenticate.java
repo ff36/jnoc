@@ -25,7 +25,6 @@ import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
-import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -69,11 +68,6 @@ public class Authenticate implements Serializable {
     //<editor-fold defaultstate="collapsed" desc="EJB">
     @EJB
     private CrudService dap;
-//</editor-fold>
-
-    //<editor-fold defaultstate="collapsed" desc="CDI">
-    @Inject
-    private Audit audit;
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Getters">
@@ -393,8 +387,8 @@ public class Authenticate implements Serializable {
                                 dap.update(user.getAccount());
 
                                 // Audit the authentication
-                                audit.log("Signed in from "
-                                        + request.getRemoteAddr());
+//                                new Audit().log("Signed in from "
+//                                        + request.getRemoteAddr());
 
                                 /*
                                  If the original request was for a protected 

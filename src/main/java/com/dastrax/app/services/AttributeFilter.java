@@ -36,7 +36,7 @@ public interface AttributeFilter {
      * @param filterId The database index of the filter
      * @return An OOR representation of the JSON filter.
      */
-    public Map optionalTableFilter(String filterId);
+//    public Map optionalTableFilter(String filterId);
     
     /**
      * Determines all the companies that the current user has access to.

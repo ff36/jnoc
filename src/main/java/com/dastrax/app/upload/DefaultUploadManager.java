@@ -21,12 +21,15 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import net.coobird.thumbnailator.Thumbnails;
+import org.apache.commons.io.IOUtils;
 import org.primefaces.event.FileUploadEvent;
+import org.primefaces.model.UploadedFile;
 
 /**
  * Methods dedicated to handling file uploads. Specifically the transition to
@@ -86,7 +89,8 @@ public class DefaultUploadManager implements UploadManager {
             // Create a temporary file
             File file = File.createTempFile(temporaryFileName, ".tmp");
             FileOutputStream fos = new FileOutputStream(file);
-            fos.write(event.getFile().getContents());
+            InputStream inputstream = event.getFile().getInputstream();
+            fos.write(IOUtils.toByteArray(inputstream));
 
             // Upload the file to the storage temporary file directory
             storage.put(key, file, CannedAccessControlList.PublicRead);
@@ -142,6 +146,7 @@ public class DefaultUploadManager implements UploadManager {
         try {
             StorageManager storage = new DefaultStorageManager();
             S3Object object = storage.get(uploadFile.getMeta().getS3Key());
+            // TODO This should work with try-with-resource but doesn't!
             S3ObjectInputStream objectData = object.getObjectContent();
 
             BufferedImage cropped = ImageIO.read(objectData)
@@ -154,19 +159,27 @@ public class DefaultUploadManager implements UploadManager {
             // Crop the image with respect to the type
             switch (type) {
                 case USER_PROFILE_IMAGE:
-                    cropped = Thumbnails.of(cropped).size(100, 100).asBufferedImage();
+                    cropped = Thumbnails.of(cropped).size(100, 100)
+                            .asBufferedImage();
                     break;
                 case COMPANY_LOGO:
-                    int xValue = (100 / uploadFile.getImage().getImageCrop().getY())
+                    int xValue = (
+                            100 
+                            / uploadFile.getImage().getImageCrop().getY())
                             * uploadFile.getImage().getImageCrop().getX();
-                    cropped = Thumbnails.of(cropped).size(xValue, 100).asBufferedImage();
+                    cropped = Thumbnails.of(cropped).size(xValue, 100)
+                            .asBufferedImage();
                     break;
 
             }
 
             // Create a temporary file
-            File file = File.createTempFile(uploadFile.getMeta().getNewName(), ".tmp");
-            ImageIO.write(cropped, null, file);
+            File file = File.createTempFile(
+                    uploadFile.getMeta().getNewName(), ".tmp");
+            ImageIO.write(
+                    cropped, 
+                    uploadFile.getMeta().getContentType().split("/")[1], 
+                    file);
 
             // Upload the file to the storage temporary file directory
             String key = storage.keyGenerator(

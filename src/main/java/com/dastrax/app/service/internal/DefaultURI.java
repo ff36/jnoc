@@ -35,7 +35,6 @@ public class DefaultURI implements URI {
     private final boolean viaCDN;
 
 //</editor-fold>
-    
     //<editor-fold defaultstate="collapsed" desc="Constructors">
     private DefaultURI(User user, Company company, URIType uriType, String mime, String file, Attachment attachment, boolean viaCDN) {
         this.user = user;
@@ -170,30 +169,37 @@ public class DefaultURI implements URI {
             origin = baseURL + "/" + s3Bucket;
         }
 
-        // Generate the theoretical URL
-        url = protocol
-                + origin
-                + "/"
-                + DTX.StorageDirectory.COMPANIES.getValue()
-                + "/"
-                + company.getS3id()
-                + "/"
-                + DTX.StorageDirectory.COMPANY_LOGOS.getValue()
-                + "/"
-                + DTX.StorageFile.COMPANY_LOGO.getValue();
+        try {
 
-        // Check the theoretical URL to determin if we need a fallback graphic
-        if (!urlExists(url)) {
+            // Generate the theoretical URL
             url = protocol
                     + origin
                     + "/"
-                    + DTX.StorageDirectory.CORE.getValue()
+                    + DTX.StorageDirectory.COMPANIES.getValue()
                     + "/"
-                    + DTX.StorageDirectory.CORE_GRAPHICS.getValue()
+                    + company.getS3id()
                     + "/"
-                    + DTX.StorageDirectory.CORE_IMAGES.getValue()
+                    + DTX.StorageDirectory.COMPANY_LOGOS.getValue()
                     + "/"
-                    + DTX.StorageFile.CORE_COMPANY_LOGO_HOLDER.getValue();
+                    + DTX.StorageFile.COMPANY_LOGO.getValue();
+
+            // Check the theoretical URL to determin if we need a fallback graphic
+            if (!urlExists(url)) {
+                url = protocol
+                        + origin
+                        + "/"
+                        + DTX.StorageDirectory.CORE.getValue()
+                        + "/"
+                        + DTX.StorageDirectory.CORE_GRAPHICS.getValue()
+                        + "/"
+                        + DTX.StorageDirectory.CORE_IMAGES.getValue()
+                        + "/"
+                        + DTX.StorageFile.CORE_COMPANY_LOGO_HOLDER.getValue();
+            }
+
+        } catch (NullPointerException npe) {
+            // Company is null. This means its an administrator!
+            url = logo("dastrax_logo_v3.png", true);
         }
 
         return url;
@@ -361,7 +367,7 @@ public class DefaultURI implements URI {
                 + attachment.getId();
 
     }
-    
+
     /**
      * Generates the URL to a system icon
      *
@@ -384,16 +390,16 @@ public class DefaultURI implements URI {
         return protocol
                 + origin
                 + "/"
-                + DTX.StorageDirectory.CORE
+                + DTX.StorageDirectory.CORE.getValue()
                 + "/"
-                + DTX.StorageDirectory.CORE_GRAPHICS
+                + DTX.StorageDirectory.CORE_GRAPHICS.getValue()
                 + "/"
-                + DTX.StorageDirectory.CORE_ICONS
+                + DTX.StorageDirectory.CORE_ICONS.getValue()
                 + "/"
                 + file;
 
     }
-    
+
     /**
      * Generates the URL to a system image
      *
@@ -416,16 +422,16 @@ public class DefaultURI implements URI {
         return protocol
                 + origin
                 + "/"
-                + DTX.StorageDirectory.CORE
+                + DTX.StorageDirectory.CORE.getValue()
                 + "/"
-                + DTX.StorageDirectory.CORE_GRAPHICS
+                + DTX.StorageDirectory.CORE_GRAPHICS.getValue()
                 + "/"
-                + DTX.StorageDirectory.CORE_IMAGES
+                + DTX.StorageDirectory.CORE_IMAGES.getValue()
                 + "/"
                 + file;
 
     }
-    
+
     /**
      * Generates the URL to a system logo
      *
@@ -448,11 +454,11 @@ public class DefaultURI implements URI {
         return protocol
                 + origin
                 + "/"
-                + DTX.StorageDirectory.CORE
+                + DTX.StorageDirectory.CORE.getValue()
                 + "/"
-                + DTX.StorageDirectory.CORE_GRAPHICS
+                + DTX.StorageDirectory.CORE_GRAPHICS.getValue()
                 + "/"
-                + DTX.StorageDirectory.CORE_LOGOS
+                + DTX.StorageDirectory.CORE_LOGOS.getValue()
                 + "/"
                 + file;
 

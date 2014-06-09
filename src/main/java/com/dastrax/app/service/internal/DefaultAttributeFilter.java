@@ -10,7 +10,6 @@ import com.dastrax.app.exception.ExceptionUtil;
 import com.dastrax.app.security.SessionUser;
 import com.dastrax.per.dap.CrudService;
 import com.dastrax.per.entity.Company;
-import com.dastrax.per.entity.Filter;
 import com.dastrax.per.entity.DAS;
 import com.dastrax.per.entity.User;
 import java.util.ArrayList;
@@ -55,12 +54,12 @@ public class DefaultAttributeFilter implements AttributeFilter {
      * @param filterId The database index of the filter
      * @return An OOR representation of the JSON filter.
      */
-    @Override
-    public Map<String, List<String>> optionalTableFilter(String filterId) {
-        // Get the filter from the DB
-        Filter filter = (Filter) dap.find(Filter.class, filterId);
-        return filter.getExpression();
-    }
+//    @Override
+//    public Map<String, List<String>> optionalTableFilter(String filterId) {
+//        // Get the filter from the DB
+//        Filter filter = (Filter) dap.find(Filter.class, filterId);
+//        return filter.getExpression();
+//    }
 
     /**
      * Determines all the companies that the current user has access to.

@@ -32,6 +32,7 @@ public class Settings implements Serializable {
     private static final long serialVersionUID = 1L;
     
     private User user;
+    private boolean render;
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Constructors">
@@ -46,12 +47,32 @@ public class Settings implements Serializable {
 //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="Getters">
+    /**
+     * Get the value of version. Unique storage version
+     *
+     * @return the value of version
+     */
     public User getUser() {
         return user;
     }
+
+    /**
+     * Get the value of render.
+     *
+     * @return the value of render
+     */
+    public boolean isRender() {
+        return render;
+    }
+    
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Setters">
+    /**
+     * Set the value of user.
+     *
+     * @param user new value of user
+     */
     public void setUser(User user) {
         this.user = user;
     }
@@ -63,6 +84,7 @@ public class Settings implements Serializable {
      */
     public void init() {
         user = (User) dap.find(User.class, SessionUser.getCurrentUser().getId());
+        render = true;
     }
 
 }

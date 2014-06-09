@@ -13,8 +13,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
-import javax.ejb.EJB;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -44,8 +48,9 @@ import javax.persistence.Transient;
     @NamedQuery(name = "IncidentEvent.findByID", query = "SELECT e FROM IncidentEvent e WHERE e.id = :id")})
 @Entity
 public class IncidentEvent implements Serializable {
-
+    
     //<editor-fold defaultstate="collapsed" desc="Properties">
+    private static final Logger LOG = Logger.getLogger(IncidentEvent.class.getName());
     private static final long serialVersionUID = 1L;
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -68,19 +73,22 @@ public class IncidentEvent implements Serializable {
 
     //<editor-fold defaultstate="collapsed" desc="Transient Properties">
     @Transient
+    private CrudService dap;
+    @Transient
     private boolean active;
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Constructors">
     public IncidentEvent() {
         this.logs = new ArrayList<>();
+        
+        try {
+            dap = (CrudService) InitialContext.doLookup(
+                    ResourceBundle.getBundle("config").getString("CRUD"));
+        } catch (NamingException ex) {
+            LOG.log(Level.SEVERE, null, ex);
+        }
     }
-//</editor-fold>
-    
-    //<editor-fold defaultstate="collapsed" desc="EJB">
-    @Transient
-    @EJB
-    private CrudService dap;
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Getters">

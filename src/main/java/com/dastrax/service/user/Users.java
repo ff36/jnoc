@@ -7,8 +7,7 @@ package com.dastrax.service.user;
 
 import com.dastrax.app.model.DataTable;
 import com.dastrax.app.model.ModelQuery;
-import com.dastrax.app.model.ModelQueryQualifier;
-import com.dastrax.app.model.ModelQueryType;
+import com.dastrax.app.model.UserModelQuery;
 import java.io.Serializable;
 import java.util.logging.Logger;
 import javax.faces.view.ViewScoped;
@@ -34,17 +33,12 @@ public class Users implements Serializable {
     private static final long serialVersionUID = 1L;
     
     private DataTable dataTable;
-//</editor-fold>
-    
-    //<editor-fold defaultstate="collapsed" desc="CDI">
-    @Inject
-    @ModelQueryQualifier
-    @ModelQueryType(ModelQueryType.ModelQueries.USER)
     private ModelQuery model;
 //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="Constructors">
     public Users() {
+        this.model = new UserModelQuery();
     }
 
 //</editor-fold>

@@ -5,11 +5,14 @@
  */
 package com.dastrax.per.entity;
 
+import com.dastrax.app.misc.Countries;
 import com.dastrax.per.project.DTX.TelephoneType;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 import java.io.Serializable;
+import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.ResourceBundle;
 import javax.persistence.Entity;
@@ -55,15 +58,21 @@ public class Telephone implements Serializable {
     //<editor-fold defaultstate="collapsed" desc="Transient Properties">
     @Transient
     private final String defaultPhoneCountry = ResourceBundle.getBundle("config").getString("DefaultPhoneCountry");
+    @Transient
+    private final List<Locale> countries;
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Constructors">
     public Telephone() {
         this.country = defaultPhoneCountry;
+        this.type = TelephoneType.DESK;
+        this.countries = Countries.getWorldCountries();
     }
 
     public Telephone(String country) {
         this.country = country;
+        this.type = TelephoneType.DESK;
+        this.countries = Countries.getWorldCountries();
     }
 //</editor-fold>
 
@@ -103,6 +112,16 @@ public class Telephone implements Serializable {
     public String getNumber() {
         return number;
     }
+
+    /**
+     * Get the value of countries
+     *
+     * @return the value of countries
+     */
+    public List<Locale> getCountries() {
+        return countries;
+    }
+    
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Setters">
@@ -138,7 +157,7 @@ public class Telephone implements Serializable {
      *
      * @param number new value of number
      */
-    public void setLocalNumber(String number) {
+    public void setNumber(String number) {
         this.number = number;
     }
 //</editor-fold>
@@ -150,43 +169,45 @@ public class Telephone implements Serializable {
      * This method does not check if the number is registered. It only attempts
      * to determine if the number format is correct.
      *
-     * @param telephone
      * @return true if the number format is valid, otherwise false
      */
-    public boolean validFormat(Telephone telephone) {
+    public boolean validFormat() {
 
-        boolean numberIsValid = false;
         try {
-            if (telephone.getNumber() != null && telephone.getNumber().length() > 3) {
+            if (number.length() > 3) {
                 PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
                 Phonenumber.PhoneNumber phoneNumber;
-                phoneNumber = phoneUtil.parse(telephone.getNumber(), telephone.getCountry());
-                numberIsValid = phoneUtil.isValidNumber(phoneNumber);
+                phoneNumber = phoneUtil.parse(number, country);
+                return phoneUtil.isValidNumber(phoneNumber);
             }
+            return false;
         } catch (NumberParseException npe) {
             System.err.println("NumberParseException was thrown: " + npe.toString());
+            return false;
+        } catch (NullPointerException npe) {
+            // Number is null
+            return false;
         }
-        return numberIsValid;
+
     }
 
     /**
      * Attempts to convert the local phone number into a valid international 
      * format based on the number and country.
      *
-     * @param telephone
      * @return If the number is in a valid format the telephone number in 
      * international format is returned. If the number is not in a valid format
      * null is returned.
      */
-    public String internationalFormat(Telephone telephone) {
+    public String internationalFormat() {
 
         String result = null;
 
         try {
-            if (validFormat(telephone)) {
+            if (validFormat()) {
                 PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
                 Phonenumber.PhoneNumber phoneNumber;
-                phoneNumber = phoneUtil.parse(telephone.getNumber(), telephone.getCountry());
+                phoneNumber = phoneUtil.parse(number, country);
                 result = phoneUtil.format(phoneNumber, PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL);
             }
 

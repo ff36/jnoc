@@ -8,9 +8,12 @@ package com.dastrax.per.entity;
 import com.dastrax.app.security.SessionUser;
 import com.dastrax.per.dap.CrudService;
 import com.dastrax.per.project.DTX;
-import com.dastrax.app.misc.JsfUtil;
 import java.io.Serializable;
-import javax.ejb.EJB;
+import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -37,8 +40,9 @@ import javax.persistence.Transient;
     @NamedQuery(name = "Comment.findByID", query = "SELECT e FROM Comment e WHERE e.id = :id"),})
 @Entity
 public class Comment implements Serializable {
-
+    
     //<editor-fold defaultstate="collapsed" desc="Properties">
+    private static final Logger LOG = Logger.getLogger(Comment.class.getName());
     private static final long serialVersionUID = 1L;
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -53,17 +57,22 @@ public class Comment implements Serializable {
     private Nexus nexus;
 //</editor-fold>
 
-    //<editor-fold defaultstate="collapsed" desc="Constructors">
-    public Comment() {
-    }
-//</editor-fold>
-
-    //<editor-fold defaultstate="collapsed" desc="EJB">
+    //<editor-fold defaultstate="collapsed" desc="Transient Properties">
     @Transient
-    @EJB
     private CrudService dap;
 //</editor-fold>
     
+    //<editor-fold defaultstate="collapsed" desc="Constructors">
+    public Comment() {
+        try {
+            dap = (CrudService) InitialContext.doLookup(
+                    ResourceBundle.getBundle("config").getString("CRUD"));
+        } catch (NamingException ex) {
+            LOG.log(Level.SEVERE, null, ex);
+        }
+    }
+//</editor-fold>
+
     //<editor-fold defaultstate="collapsed" desc="Getters">
     /**
      * Get the value of id
