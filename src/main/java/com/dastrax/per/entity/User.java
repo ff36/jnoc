@@ -440,6 +440,7 @@ public class User implements Serializable {
         AttributeFilter af = new DefaultAttributeFilter();
         availableCompanies
                 = (List<Company>) af.authorizedCompanies(true).get("company");
+        metiers = dap.findWithNamedQuery("Metier.findAll");
     }
 
     /**

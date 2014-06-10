@@ -40,12 +40,11 @@ public class UserJSFCvt implements Converter {
     
     @Override
     public String getAsString(FacesContext fc, UIComponent uic, Object o) {
-        if (o != null) {
+        try {
             return ((User) o).getId().toString();
-        } else {
+        } catch (NullPointerException npe) {
             return null;
         }
-        
     }
 //</editor-fold>
 

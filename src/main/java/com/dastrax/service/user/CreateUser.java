@@ -28,24 +28,25 @@ public class CreateUser implements Serializable {
     private static final Logger LOG = Logger.getLogger(CreateUser.class.getName());
     private static final long serialVersionUID = 1L;
     
-    private User subject = new User();
+    private User user;
     private boolean render;
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Constructors">
     public CreateUser() {
+        this.user = new User();
     }
 
 //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="Getters">
     /**
-     * Get the value of subject
+     * Get the value of user
      *
-     * @return the value of subject
+     * @return the value of user
      */
-    public User getSubject() {
-        return subject;
+    public User getUser() {
+        return user;
     }
     
     /**
@@ -61,12 +62,12 @@ public class CreateUser implements Serializable {
 
     //<editor-fold defaultstate="collapsed" desc="Setters">
     /**
-     * Set the value of subject.
+     * Set the value of user.
      *
-     * @param subject new value of subject
+     * @param user new value of user
      */
-    public void setSubject(User subject) {
-        this.subject = subject;
+    public void setUser(User user) {
+        this.user = user;
     }
 //</editor-fold>
 
@@ -75,7 +76,7 @@ public class CreateUser implements Serializable {
      * and data after the page has loaded.
      */
     public void init() {
-        subject.lazyLoad();
+        user.lazyLoad();
         render = true;
     }
 

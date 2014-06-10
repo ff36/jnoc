@@ -92,7 +92,8 @@ public class DefaultAttributeFilter implements AttributeFilter {
             boolean includeOwnCompany) {
 
         Map<String, List<Long>> filters = new HashMap<>();
-        User user = (User) dap.find(User.class, SessionUser.getCurrentUser().getId());
+        User user = (User) dap.find(User.class, 
+                SessionUser.getCurrentUser().getId());
 
         if (SessionUser.getCurrentUser().isVAR()) {
             List<Long> companies = new ArrayList<>();

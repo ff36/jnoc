@@ -58,7 +58,7 @@
                                 <ui:fragment rendered="#{jsfSessionUser.currentUser.hasPermission('account:create')}">
                                     <td>
                                         <p:commandLink value="Create New Account" 
-                                                       action="access-create-account-page" 
+                                                       action="/a/accounts/create.xhtml?faces-redirect=true" 
                                                        process="@this" 
                                                        type="button"/>
                                     </td>

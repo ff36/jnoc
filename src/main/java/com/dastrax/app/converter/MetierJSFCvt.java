@@ -40,12 +40,11 @@ public class MetierJSFCvt implements Converter  {
     
     @Override
     public String getAsString(FacesContext fc, UIComponent uic, Object o) {
-        if (o != null) {
+        try {
             return ((Metier) o).getId().toString();
-        } else {
+        } catch (NullPointerException npe) {
             return null;
         }
-        
     }
 //</editor-fold>
 

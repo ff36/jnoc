@@ -309,6 +309,7 @@ TABLE.page-container
 .table-field-spacer TD
 {
 	padding-right: 20px !important;
+	padding-left: 0 !important;
 }
 .page-container .ui-selectonemenu-trigger .ui-icon
 {
