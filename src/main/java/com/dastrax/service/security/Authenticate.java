@@ -387,8 +387,8 @@ public class Authenticate implements Serializable {
                                 dap.update(user.getAccount());
 
                                 // Audit the authentication
-//                                new Audit().log("Signed in from "
-//                                        + request.getRemoteAddr());
+                                new Audit().log("Signed in from "
+                                        + request.getRemoteAddr());
 
                                 /*
                                  If the original request was for a protected 

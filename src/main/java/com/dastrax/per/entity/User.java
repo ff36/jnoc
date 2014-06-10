@@ -648,8 +648,8 @@ public class User implements Serializable {
     }
 
     /**
-     * Saves the user profile image from its temporary location to its permanent
-     * storage location.
+     * Saves the newly cropped version user profile image over the original in 
+     * the temporary storage location.
      */
     public void cropProfileImage() {
         UploadManager uploader = new DefaultUploadManager();

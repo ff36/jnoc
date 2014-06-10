@@ -6,6 +6,7 @@
 package com.dastrax.per.entity;
 
 import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.dastrax.app.misc.JsfUtil;
 import com.dastrax.app.service.internal.DefaultDNSManager;
 import com.dastrax.app.service.internal.DefaultStorageManager;
 import com.dastrax.app.services.DNSManager;
@@ -17,7 +18,6 @@ import com.dastrax.per.dap.CrudService;
 import com.dastrax.per.dap.QueryParameter;
 import com.dastrax.per.project.DTX;
 import com.dastrax.per.project.DTX.CompanyType;
-import com.dastrax.app.misc.JsfUtil;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +37,7 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 import javax.persistence.Version;
 import org.primefaces.event.FileUploadEvent;
@@ -78,8 +79,8 @@ public class Company implements Serializable {
     private CompanyType type;
     // VAR have subdomains
     private String subdomain;
-    @OneToMany(cascade = {CascadeType.ALL})
-    private List<Contact> contacts;
+    @OneToOne(cascade = {CascadeType.ALL})
+    private Contact contact;
     @OneToMany
     private List<DAS> das;
     // VAR have children CLIENT
@@ -102,7 +103,7 @@ public class Company implements Serializable {
     public Company() {
         this.clients = new ArrayList<>();
         this.das = new ArrayList<>();
-        this.contacts = new ArrayList<>();
+        this.contact = new Contact();
         this.uploadFile = new UploadFile();
         
         try {
@@ -152,12 +153,12 @@ public class Company implements Serializable {
     }
 
     /**
-     * Get the value of contacts
+     * Get the value of contact
      *
-     * @return the value of contacts
+     * @return the value of contact
      */
-    public List<Contact> getContacts() {
-        return contacts;
+    public Contact getContact() {
+        return contact;
     }
 
     /**
@@ -214,6 +215,15 @@ public class Company implements Serializable {
         return linkedAndAvailableClientCompanies;
     }
 
+    /**
+     * Get the value of uploadFile
+     *
+     * @return the value of uploadFile
+     */
+    public UploadFile getUploadFile() {
+        return uploadFile;
+    }
+
 
 //</editor-fold>
     
@@ -255,12 +265,12 @@ public class Company implements Serializable {
     }
 
     /**
-     * Set the value of contacts. CascadeType.ALL
+     * Set the value of contact. CascadeType.ALL
      *
-     * @param contacts new value of contacts
+     * @param contact new value of contact
      */
-    public void setContacts(List<Contact> contacts) {
-        this.contacts = contacts;
+    public void setContact(Contact contact) {
+        this.contact = contact;
     }
 
     /**
@@ -602,9 +612,11 @@ public class Company implements Serializable {
      * Saves the logo from its temporary location to its permanent
      * storage location.
      */
-    private void saveLogo() {
+    public void saveLogo() {
         UploadManager uploader = new DefaultUploadManager();
-        uploader.save(uploadFile, this);
+        if (uploadFile.isUploaded()) {
+            uploader.save(uploadFile, this);
+        }
     }
     
     /**
@@ -619,6 +631,15 @@ public class Company implements Serializable {
         uploadFile.getImage().getImageCrop().setY(event.getY1());
         uploadFile.getImage().getImageCrop().setWidth(event.getWidth());
         uploadFile.getImage().getImageCrop().setHeight(event.getHeight());
+    }
+    
+    /**
+     * Saves the newly cropped version user logo over the original in 
+     * the temporary storage location.
+     */
+    public void cropLogo() {
+        UploadManager uploader = new DefaultUploadManager();
+        uploader.crop(uploadFile, DTX.CroppableType.COMPANY_LOGO);
     }
     
     //<editor-fold defaultstate="collapsed" desc="Overrides">
