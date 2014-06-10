@@ -16,8 +16,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.ejb.EJB;
+import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.inject.Inject;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
 /**
  * This class contains executable filter methods. In contrast to using SHIRO or
@@ -30,10 +34,22 @@ import javax.inject.Inject;
  * @author <tarka@solid.com>
  */
 public class DefaultAttributeFilter implements AttributeFilter {
-
-    //<editor-fold defaultstate="collapsed" desc="EJB">
-    @EJB
+    
+    //<editor-fold defaultstate="collapsed" desc="Properties">
+    private static final Logger LOG = Logger.getLogger(DefaultAttributeFilter.class.getName());
     private CrudService dap;
+
+//</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="Constructors">
+    public DefaultAttributeFilter() {
+        try {
+            dap = (CrudService) InitialContext.doLookup(
+                    ResourceBundle.getBundle("config").getString("CRUD"));
+        } catch (NamingException ex) {
+            LOG.log(Level.SEVERE, null, ex);
+        }
+    }
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="CDI">

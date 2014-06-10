@@ -96,16 +96,17 @@ public class AuditModelQuery implements ModelQuery {
         // Implement the Root Filter
         if (!rootFilter.isEmpty()) {
             for (String key : (Set<String>) rootFilter.keySet()) {
-                List<Long> values = (List<Long>) rootFilter.get(key);
+                List<?> values = (List<?>) rootFilter.get(key);
 
                 List<Predicate> rootPredicate = new ArrayList<>();
-                for (Long value : values) {
-                    // Search term
-                    Expression literal = builder.literal(value);
+                for (Object value : values) {
+                    
                     // Predicate
                     switch (key) {
                         case "author":
-                            rootPredicate.add(builder.equal(audit.join(Audit_.author, JoinType.LEFT).get(User_.contact).get(Contact_.id), literal));
+                            // Search term
+                            Expression literalID = builder.literal((Long) value);
+                            rootPredicate.add(builder.equal(audit.join(Audit_.author, JoinType.LEFT).get(User_.contact).get(Contact_.id), literalID));
                             break;
                         default:
                             // Don't add any predicate by default
@@ -119,17 +120,18 @@ public class AuditModelQuery implements ModelQuery {
         // Implement the Optional Specified Filter
         if (!optionalFilter.isEmpty()) {
             for (String key : (Set<String>) optionalFilter.keySet()) {
-                List<String> values = (List<String>) optionalFilter.get(key);
+                List<?> values = (List<?>) optionalFilter.get(key);
 
                 List<Predicate> optionalPredicate = new ArrayList<>();
-                for (String value : values) {
-                    // Search term
-                    Expression literal = builder.literal((String) value);
+                for (Object value : values) {
+                    
                     // Predicate
                     switch (key) {
                         case "author":
-                            optionalPredicate.add(builder.like(audit.join(Audit_.author, JoinType.LEFT).get(User_.contact).get(Contact_.firstName), literal));
-                            optionalPredicate.add(builder.like(audit.join(Audit_.author, JoinType.LEFT).get(User_.contact).get(Contact_.lastName), literal));
+                            // Search term
+                            Expression literalName = builder.literal((String) value);
+                            optionalPredicate.add(builder.like(audit.join(Audit_.author, JoinType.LEFT).get(User_.contact).get(Contact_.firstName), literalName));
+                            optionalPredicate.add(builder.like(audit.join(Audit_.author, JoinType.LEFT).get(User_.contact).get(Contact_.lastName), literalName));
                             break;
                         default:
                             // Don't add any predicate by default
@@ -171,4 +173,26 @@ public class AuditModelQuery implements ModelQuery {
         return query;
     }
 
+    /**
+     * Determines the class type to associate with the query.
+     * 
+     * @return Returns the class type to associate with the query.
+     */
+    @Override
+    public Class clazz() {
+        return Audit.class;
+    }
+    
+    /**
+     * Determines the class type to associate with the query.
+     * 
+     * @param object
+     * @return Returns the class type to associate with the query.
+     */
+    @Override
+    public Long rowKey(Object object) {
+        Audit audit = (Audit) object;
+        return audit.getId();
+    }
+    
 }

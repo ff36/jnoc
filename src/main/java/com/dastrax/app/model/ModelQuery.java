@@ -51,4 +51,19 @@ public interface ModelQuery {
             Map optionalFilter
     );
     
+    /**
+     * Determines the class type to associate with the query.
+     * 
+     * @return Returns the class type to associate with the query.
+     */
+    public Class clazz();
+    
+    /**
+     * Determines the class type to associate with the query.
+     * 
+     * @param object
+     * @return Returns the class type to associate with the query.
+     */
+    public Long rowKey(Object object);
+    
 }

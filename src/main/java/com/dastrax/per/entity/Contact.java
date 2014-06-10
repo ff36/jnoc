@@ -79,6 +79,7 @@ public class Contact implements Serializable {
         this.telephones = new ArrayList<>();
         
         this.newTelephone = new Telephone();
+        this.newAddress = new Address();
         
         try {
             dap = (CrudService) InitialContext.doLookup(

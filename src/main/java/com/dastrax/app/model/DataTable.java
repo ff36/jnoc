@@ -8,6 +8,7 @@ package com.dastrax.app.model;
 import com.dastrax.app.service.internal.DefaultAttributeFilter;
 import com.dastrax.app.services.AttributeFilter;
 import com.dastrax.per.dap.CrudService;
+import com.dastrax.per.entity.User;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +51,7 @@ public class DataTable {
     public DataTable(ModelQuery modelQuery) {
         this.modelQuery = modelQuery;
         this.table = new ArrayList<>();
+        this.selected = new Object[]{};
     }
 //</editor-fold>
 
@@ -150,6 +152,7 @@ public class DataTable {
      * page first and subsequently loading the data by using an ajax remote
      * command call. Once the data has loaded we set the render property to
      * true.
+     *
      * @param parameters
      */
     public void initTable(Map<String, List<String>> parameters) {
@@ -189,6 +192,7 @@ public class DataTable {
         private final ModelQuery modelQuery;
         private final Map<String, List<String>> rootFilter;
         private final Map<String, List<String>> optionalFilter;
+        private CrudService dap;
 //</editor-fold>
 
         //<editor-fold defaultstate="collapsed" desc="Constructors">
@@ -199,6 +203,13 @@ public class DataTable {
             this.modelQuery = modelQuery;
             this.rootFilter = rootFilter;
             this.optionalFilter = optionalFilter;
+
+            try {
+                dap = (CrudService) InitialContext.doLookup(
+                        ResourceBundle.getBundle("config").getString("CRUD"));
+            } catch (NamingException ex) {
+                LOG.log(Level.SEVERE, null, ex);
+            }
         }
 //</editor-fold>
 
@@ -222,33 +233,47 @@ public class DataTable {
                 SortOrder sortOrder,
                 Map filters) {
 
-            try {
-                CrudService dap = (CrudService) InitialContext.doLookup(
-                        ResourceBundle.getBundle("config").getString("CRUD"));
+            CriteriaQuery query = modelQuery.query(
+                    first,
+                    pageSize,
+                    sortField,
+                    sortOrder,
+                    dap.getCriteriaBuilder(),
+                    filters,
+                    rootFilter,
+                    optionalFilter);
 
-                CriteriaQuery query = modelQuery.query(
-                        first,
-                        pageSize,
-                        sortField,
-                        sortOrder,
-                        dap.getCriteriaBuilder(),
-                        filters,
-                        rootFilter,
-                        optionalFilter);
+            // Get the full query row count
+            int rowCount = dap.findWithCriteriaQuery(query).size();
 
-                // Get the full query row count
-                int rowCount = dap.findWithCriteriaQuery(query).size();
+            // Paginate the query
+            List data = dap.findWithCriteriaQuery(query, first, pageSize);
 
-                // Paginate the query
-                List data = dap.findWithCriteriaQuery(query, first, pageSize);
+            setRowCount(rowCount);
 
-                setRowCount(rowCount);
+            return data;
+        }
 
-                return data;
-            } catch (NamingException ex) {
-                LOG.log(Level.SEVERE, null, ex);
-            }
-            return new ArrayList();
+        /**
+         * Given the rowKey this method will lookup the object in the
+         * persistence layer.
+         * 
+         * @param rowKey
+         * @return The object associated with the rowKey.
+         */
+        @Override
+        public Object getRowData(String rowKey) {
+            return dap.find(modelQuery.clazz(), Long.valueOf(rowKey));
+        }
+
+        /**
+         * Given the object the identifying rowKey can be obtained.
+         * @param object
+         * @return The rowKey associated with the object.
+         */
+        @Override
+        public Object getRowKey(Object object) {
+            return modelQuery.rowKey(object);
         }
 //</editor-fold>
 

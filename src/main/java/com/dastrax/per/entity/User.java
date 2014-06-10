@@ -467,7 +467,8 @@ public class User implements Serializable {
      * Update the persistence layer with a new version of the user.
      */
     public void update() {
-        dap.update(this);
+        User user = (User) dap.update(this);
+        this.version = user.version;
     }
 
     /**

@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -102,19 +103,19 @@ public class UserModelQuery implements ModelQuery {
         
         // Implement the Root Filter
         if (!rootFilter.isEmpty()) {
-            for (String key : (List<String>) rootFilter.keySet()) {
-                List<String> values = (List<String>) rootFilter.get(key);
+            for (String key : (Set<String>) rootFilter.keySet()) {
+                List<?> values = (List<?>) rootFilter.get(key);
 
                 List<Predicate> rootPredicate = new ArrayList<>();
 
                 // Process the root Filter passed in from the database
-                for (String value : values) {
-                    // Search term
-                    Expression literal = builder.literal((String) value);
+                for (Object value : values) {
                     // Predicate
                     switch (key) {
-                        case "company":                         
-                            rootPredicate.add(builder.equal(user.join(User_.company).get(Company_.id), literal));
+                        case "company":     
+                            // Search term
+                            Expression literalID = builder.literal((Long) value);
+                            rootPredicate.add(builder.equal(user.join(User_.company).get(Company_.id), literalID));
                             break;
                         default:
                             // Don't add any predicate by default
@@ -127,20 +128,23 @@ public class UserModelQuery implements ModelQuery {
 
         // Implement the Optional Specified Filter
         if (!optionalFilter.isEmpty()) {
-            for (String key : (List<String>) optionalFilter.keySet()) {
-                List<String> values = (List<String>) optionalFilter.get(key);
+            for (String key : (Set<String>) optionalFilter.keySet()) {
+                List<?> values = (List<?>) optionalFilter.get(key);
 
                 List<Predicate> optionalPredicate = new ArrayList<>();
-                for (String value : values) {
-                    // Search term
-                    Expression literal = builder.literal((String) value);
+                for (Object value : values) {
+                    
                     // Predicate
                     switch (key) {
                         case "company":
-                            optionalPredicate.add(builder.equal(user.join(User_.company).get(Company_.id), literal));
+                            // Search term
+                            Expression literalID = builder.literal((Long) value);
+                            optionalPredicate.add(builder.equal(user.join(User_.company).get(Company_.id), literalID));
                             break;
                         case "metier":
-                            optionalPredicate.add(builder.equal(user.join(User_.metier).get(Metier_.name), literal));
+                            // Search term
+                            Expression literalMetier = builder.literal((String) value);
+                            optionalPredicate.add(builder.equal(user.join(User_.metier).get(Metier_.name), literalMetier));
                             break;
                         default:
                             // Don't add any predicate by default
@@ -181,6 +185,28 @@ public class UserModelQuery implements ModelQuery {
         }
 
         return query;
+    }
+    
+    /**
+     * Determines the class type to associate with the query.
+     * 
+     * @return Returns the class type to associate with the query.
+     */
+    @Override
+    public Class clazz() {
+        return User.class;
+    }
+    
+    /**
+     * Determines the class type to associate with the query.
+     * 
+     * @param object
+     * @return Returns the class type to associate with the query.
+     */
+    @Override
+    public Long rowKey(Object object) {
+        User user = (User) object;
+        return user.getId();
     }
     
 }

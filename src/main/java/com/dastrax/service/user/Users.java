@@ -37,6 +37,7 @@ public class Users implements Serializable {
     private DataTable dataTable;
     private final ModelQuery model;
     private final Map<String, List<String>> parameters;
+
 //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="Constructors">
@@ -56,6 +57,7 @@ public class Users implements Serializable {
     public DataTable getDataTable() {
         return dataTable;
     }
+ 
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Setters">

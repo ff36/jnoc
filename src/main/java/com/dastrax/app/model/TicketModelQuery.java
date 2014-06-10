@@ -213,4 +213,26 @@ public class TicketModelQuery implements ModelQuery {
         return true;
     }
     
+    /**
+     * Determines the class type to associate with the query.
+     * 
+     * @return Returns the class type to associate with the query.
+     */
+    @Override
+    public Class clazz() {
+        return Ticket.class;
+    }
+    
+    /**
+     * Determines the class type to associate with the query.
+     * 
+     * @param object
+     * @return Returns the class type to associate with the query.
+     */
+    @Override
+    public Long rowKey(Object object) {
+        Ticket ticket = (Ticket) object;
+        return ticket.getId();
+    }
+    
 }

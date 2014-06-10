@@ -5,6 +5,7 @@
  */
 package com.dastrax.per.entity;
 
+import com.dastrax.app.misc.TemporalUtil;
 import java.io.Serializable;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -101,6 +102,15 @@ public class Account implements Serializable {
     }
     
     /**
+     * Get the value of creationEpoch as a string
+     *
+     * @return the value of creationEpoch as a system formatted string
+     */ 
+    public String getCreationDate() {
+        return TemporalUtil.epochToStringDate(creationEpoch);
+    }
+    
+    /**
      * Get the value of lastSessionEpoch
      *
      * @return the value of lastSessionEpoch
@@ -116,6 +126,15 @@ public class Account implements Serializable {
      */ 
     public Long getCurrentSessionEpoch() {
         return currentSessionEpoch;
+    }
+    
+    /**
+     * Get the value of currentSessionEpoch as a string
+     *
+     * @return the value of currentSessionEpoch as a system formatted string
+     */ 
+    public String getCurrentSessionTimeStamp() {
+        return TemporalUtil.epochToStringDateTime(currentSessionEpoch);
     }
     
     /**

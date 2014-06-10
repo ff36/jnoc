@@ -450,7 +450,7 @@ TABLE.navigation-sidebar
 	margin-left: 142px;
 	padding: 10px;
 	border: 2px dotted #434343;
-	background-color: #C5D817;
+	background-color: #FFFFFF;
 }
 .expanded-row-wrapper-2
 {
@@ -482,8 +482,8 @@ TABLE.navigation-sidebar
 }
 .expanded-row-datatable TR TD
 {
-	background-color: #C5D817;
-	border: 1px solid #C5D817 !important;
+	background-color: transparent;
+	border: 1px solid transparent !important;
 }
 .expanded-row-datatable TH
 {

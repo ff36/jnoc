@@ -5,7 +5,8 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:pe="http://primefaces.org/ui/extensions"
       xmlns:ez="http://xmlns.jcp.org/jsf/composite/ezcomp"
-      xmlns:f="http://java.sun.com/jsf/core">
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
     <h:head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -17,11 +18,7 @@
 
     <h:body>
 
-        #{permissionUtil.hasPagePermission('account:access')}
-
-        <f:metadata>
-            <f:viewParam name="filter" value="#{users.filter}"/>
-        </f:metadata>
+        #{jsfSessionUser.currentUser.hasPagePermission('account:access')}
 
         <h:form id="form">
 
@@ -34,11 +31,19 @@
 
             <ez:navigation-a/>
 
-            <pe:layout stateCookie="#{config.ProjectStage ne 'DEV'}" widgetVar="layoutWgt" >
+            <pe:layout stateCookie="#{config.ProjectStage ne 'DEV'}" 
+                       widgetVar="layoutWgt" >
 
-                <pe:layoutPane id="north" position="north" closable="false" resizable="false" size="40"/>
+                <pe:layoutPane id="north" 
+                               position="north" 
+                               closable="false" 
+                               resizable="false" 
+                               size="40"/>
 
-                <pe:layoutPane id="west" position="west" resizeWhileDragging="true" size="220">     
+                <pe:layoutPane id="west" 
+                               position="west" 
+                               resizeWhileDragging="true" 
+                               size="220">     
 
                     <table class="navigation-sidebar">
                         <thead>
@@ -50,7 +55,14 @@
                                 <td class="active">Accounts</td>
                             </tr>
                             <tr>
-                                <td><p:commandLink value="Create New Account" action="access-create-account-page" process="@this" type="button" rendered="#{permissionUtil.hasPermission('account:create')}"/></td>
+                                <ui:fragment rendered="#{jsfSessionUser.currentUser.hasPermission('account:create')}">
+                                    <td>
+                                        <p:commandLink value="Create New Account" 
+                                                       action="access-create-account-page" 
+                                                       process="@this" 
+                                                       type="button"/>
+                                    </td>
+                                </ui:fragment>
                             </tr>
                         </tbody>
                     </table>
@@ -64,23 +76,38 @@
                         <tfoot><tr><td></td></tr></tfoot>
                         <tbody>
                             <tr>
-                                <td><p:commandLink value="Administrator Only" action="#{subjects.applyFilter(9)}" process="@this" type="button"/></td>
+                                <td><p:commandLink value="Administrator Only" 
+                                                   action="#{navigator.navigate('LIST_ACCOUNTS_WITH_PARAM', 'metier=ADMIN')}" 
+                                                   process="@this" 
+                                                   type="button"/></td>
                             </tr>
                             <tr>
-                                <td><p:commandLink value="VAR Only" action="#{subjects.applyFilter(10)}" process="@this" type="button"/></td>
+                                <td><p:commandLink value="VAR Only" 
+                                                   action="#{navigator.navigate('LIST_ACCOUNTS_WITH_PARAM', 'metier=VAR')}" 
+                                                   process="@this" 
+                                                   type="button"/></td>
                             </tr>
                             <tr>
-                                <td><p:commandLink value="Client Only" action="#{subjects.applyFilter(11)}" process="@this" type="button"/></td>
+                                <td><p:commandLink value="Client Only" 
+                                                   action="#{navigator.navigate('LIST_ACCOUNTS_WITH_PARAM', 'metier=CLIENT')}" 
+                                                   process="@this" 
+                                                   type="button"/></td>
                             </tr>
                             <tr>
-                                <td><p:commandLink value="Clear Filters" action="#{subjects.applyFilter(0)}" process="@this" type="button"/></td>
+                                <td><p:commandLink value="Clear Filters" 
+                                                   action="#{navigator.navigate('LIST_ACCOUNTS')}" 
+                                                   process="@this" 
+                                                   type="button"/></td>
                             </tr>
                         </tbody>
                     </table>
 
                 </pe:layoutPane>
 
-                <pe:layoutPane id="center" position="center" resizeWhileDragging="true" styleClassHeader="layout-header">
+                <pe:layoutPane id="center" 
+                               position="center" 
+                               resizeWhileDragging="true" 
+                               styleClassHeader="layout-header">
 
                     <table class="page-container">
                         <thead>
@@ -90,548 +117,625 @@
                             <tr>
                                 <td>
 
-                                    <p:remoteCommand autoRun="true" async="true" actionListener="#{subjects.retrieveAccounts()}" update=":form:lazy-group-1"/>
-                                    <p:remoteCommand autoRun="true" async="true" actionListener="#{subjects.populateMetiers()}"/>
-
+                                    <p:remoteCommand autoRun="true" 
+                                                     async="true" 
+                                                     actionListener="#{users.init()}" 
+                                                     update=":form:lazy-update-class"/>
 
                                     <p:spacer width="100%" height="20px"/>
 
-                                    <h:panelGroup id="lazy-group-1">
+                                    <h:panelGroup id="lazy-update-class">
 
-                                        <p:graphicImage name="images/ajax-loader.gif" rendered="#{!subjects.pageInit}" styleClass="ajax-lazy-loader"/>
+                                        <p:graphicImage name="images/ajax-loader.gif" 
+                                                        rendered="#{!users.dataTable.render}" 
+                                                        styleClass="ajax-lazy-loader"/>
 
-                                        <p:dataTable id="accounts-table"
-                                                     widgetVar="accountsTable"
-                                                     var="account"
-                                                     emptyMessage="#{msgs['empty.datatable']}"
-                                                     selection="#{subjects.selectedSubjects}"
-                                                     value="#{subjects.subjectModel}"
-                                                     filteredValue="#{subjects.filtered}"
-                                                     styleClass="type1-table"
-                                                     lazy="true"
-                                                     paginator="true"
-                                                     rows="20"
-                                                     rowsPerPageTemplate="20,50"
-                                                     paginatorAlwaysVisible="false"
-                                                     paginatorPosition="bottom"
-                                                     rendered="#{subjects.pageInit}"> 
+                                        <ui:fragment rendered="#{users.dataTable.render}">
 
-                                            <f:facet name="header">   
-                                                <p:inputText id="globalFilter" styleClass="align-left" onkeyup="accountsTable.filter()" style="width:200px" />  
-                                                <p:watermark for="globalFilter" value="Search"/>
-                                            </f:facet> 
+                                            <p:dataTable id="accounts-table"
+                                                         widgetVar="accountsTable"
+                                                         var="user"
+                                                         emptyMessage="#{msgs['empty.datatable']}"
+                                                         selection="#{users.dataTable.selected}"
+                                                         value="#{users.dataTable.model}"
+                                                         filteredValue="#{users.dataTable.filtered}"
+                                                         styleClass="type1-table"
+                                                         lazy="true"
+                                                         paginator="true"
+                                                         rows="20"
+                                                         rowsPerPageTemplate="20,50"
+                                                         paginatorAlwaysVisible="false"
+                                                         paginatorPosition="bottom"> 
 
-                                            <p:ajax event="rowSelectCheckbox"/>  
-                                            <p:ajax event="rowUnselectCheckbox"/>
-                                            <p:ajax event="rowSelect"/>  
-                                            <p:ajax event="rowUnselect"/>
-                                            <p:ajax event="rowToggle"/>
+                                                <f:facet name="header">   
+                                                    <p:inputText id="globalFilter" 
+                                                                 styleClass="align-left" 
+                                                                 onkeyup="accountsTable.filter()" 
+                                                                 style="width:200px" />  
+                                                    <p:watermark for="globalFilter" 
+                                                                 value="Search"/>
+                                                </f:facet> 
 
-                                            <p:column id="acl" style="width:18px">
-                                                <p:graphicImage value="#{URIUtil().s3Icon('black/padlock_closed_icon_16.png')}"
-                                                                title="Account Locked"
-                                                                rendered="#{account.account.locked}"/>  
-                                            </p:column>
+                                                <p:ajax event="rowSelectCheckbox"/>  
+                                                <p:ajax event="rowUnselectCheckbox"/>
+                                                <p:ajax event="rowSelect"/>  
+                                                <p:ajax event="rowUnselect"/>
+                                                <p:ajax event="rowToggle"/>
 
-                                            <p:column selectionMode="multiple" style="width:18px" />
+                                                <p:column id="acl" style="width:18px">
+                                                    <p:graphicImage value="#{uriUtil.icon('black/padlock_closed_icon_16.png', true)}"
+                                                                    title="Account Locked"
+                                                                    rendered="#{user.account.locked}"/>  
+                                                </p:column>
 
-                                            <p:column style="width:18px">  
-                                                <p:rowToggler />  
-                                            </p:column>
+                                                <p:column selectionMode="multiple" style="width:18px" />
 
-                                            <p:column headerText="Name"
-                                                      filterBy="#{account.contact.buildFullName()}"
-                                                      filterStyle="display:none"
-                                                      sortBy="#{account.contact.buildFullName()}">
-                                                #{account.contact.buildFullName()}
-                                            </p:column>
+                                                <p:column style="width:18px">  
+                                                    <p:rowToggler />  
+                                                </p:column>
 
-                                            <p:column headerText="Email"
-                                                      filterBy="#{account.email}"
-                                                      filterStyle="display:none"
-                                                      sortBy="#{account.email}">
-                                                #{account.email}
-                                            </p:column>
+                                                <p:column headerText="Name"
+                                                          filterBy="#{user.contact.firstName}"
+                                                          filterStyle="display:none"
+                                                          sortBy="#{user.contact.buildFullName()}">
+                                                    #{user.contact.buildFullName()}
+                                                </p:column>
 
-                                            <p:column headerText="Company"
-                                                      filterBy="#{account.company.name}"
-                                                      filterStyle="display:none"
-                                                      sortBy="#{account.company.name}">
-                                                #{account.company.name}
-                                            </p:column>
+                                                <p:column headerText="Email"
+                                                          filterBy="#{user.email}"
+                                                          filterStyle="display:none"
+                                                          sortBy="#{user.email}">
+                                                    #{user.email}
+                                                </p:column>
 
-                                            <p:column headerText="Type"
-                                                      filterBy="#{account.metier.name}"
-                                                      filterStyle="display:none"
-                                                      sortBy="#{account.metier.name}">
-                                                #{account.metier.name}
-                                            </p:column>
+                                                <p:column headerText="Company"
+                                                          filterBy="#{user.company.name}"
+                                                          filterStyle="display:none"
+                                                          sortBy="#{user.company.name}">
+                                                    #{user.company.name}
+                                                </p:column>
 
-                                            <p:column id="verified" style="width:18px">
-                                                <p:graphicImage value="#{URIUtil().s3Icon('black/checkbox_checked_icon_16.png')}"
-                                                                title="Verified"
-                                                                rendered="#{account.account.confirmed}"/>   
-                                            </p:column>
+                                                <p:column headerText="Type"
+                                                          filterBy="#{user.metier.name}"
+                                                          filterStyle="display:none"
+                                                          sortBy="#{user.metier.name}">
+                                                    #{user.metier.name}
+                                                </p:column>
 
-                                            <p:rowExpansion>  
+                                                <p:column id="verified" style="width:18px">
+                                                    <p:graphicImage value="#{uriUtil.icon('black/checkbox_checked_icon_16.png', true)}"
+                                                                    title="Verified"
+                                                                    rendered="#{user.account.confirmed}"/>   
+                                                </p:column>
 
-                                                <div class="expanded-row-wrapper-1">
-                                                    
-                                                    <p:graphicImage styleClass="expanded-row-arrow" value="#{URIUtil().s3Image('arrow_down_right.png')}" height="160px"/>
-                                                    
-                                                    <table class="expanded-row-table">
-                                                        <tr>
-                                                            <td width="50px">
-                                                                <p:graphicImage styleClass="profile-image circular-clip-60" value="#{URIUtil().profileImage(account.uid)}" height="60px"/>
-                                                            </td>
-                                                            <td>
-                                                                <table>
-                                                                    <tr>
-                                                                        <td>
-                                                                            <p:inplace id="nameAIP" styleClass="inplace" editor="true" label="#{account.contact.buildFullName()}" disabled="#{!permissionUtil.hasPermission('account:edit')}">  
-                                                                                <p:ajax event="save" listener="#{subjects.updateName(account)}" update=":form:accounts-table :form:growl" oncomplete="accountsTable.filter();"/>
-                                                                                <p:inputText id="editFirstName" value="#{account.contact.firstName}"/> 
-                                                                                <p:inputText id="editLastName" value="#{account.contact.lastName}"/>
-                                                                                <p:watermark value="First Name" for="editFirstName"/>
-                                                                                <p:watermark value="Last Name" for="editLastName"/>
-                                                                            </p:inplace>
-                                                                        </td>
-                                                                        <td width="20px">
-                                                                            <h:outputLink type="button" value="mailto:#{account.email}" title="Send email to #{account.email}">
-                                                                                <p:graphicImage value="#{URIUtil().s3Icon('black/mail_2_icon_16.png')}"/>
-                                                                            </h:outputLink>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td>
-                                                                            <h:outputText value="SOLiD" rendered="#{account.metier.name eq 'ADMIN'}"/>
-                                                                            <h:outputText id="account-company-name" 
-                                                                                          value="#{account.company ne null ? account.company.name : 'No Company'}" 
-                                                                                          rendered="#{account.metier.name ne 'ADMIN'}"
-                                                                                          styleClass="company-update-class"/>
-                                                                        </td>
-                                                                        <td></td>
-                                                                    </tr>
-                                                                </table>
-                                                            </td>
-                                                        </tr>
-                                                    </table>
+                                                <p:rowExpansion>  
 
-                                                    <table class="expanded-row-table">
-                                                        <tr>
-                                                            <td>
-                                                                <table>
-                                                                    <tr class="expanded-row-table-title">
-                                                                        <td colspan="2">
-                                                                            <h:outputText value="Contact"/>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td class="field-label-4" width="100px">Address:</td>
-                                                                        <td class="field-value-4">
-                                                                            <p:dataTable value="#{account.contact.addresses}"
-                                                                                         var="address"
-                                                                                         styleClass="expanded-row-datatable address-update-class">
+                                                    <div class="expanded-row-wrapper-1">
 
-                                                                                <p:column>
-                                                                                    <h:outputText value="#{address.buildCompleteAddress()}"/>
-                                                                                </p:column>
-
-                                                                            </p:dataTable>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td class="field-label-4" width="100px">Telephone:</td>
-                                                                        <td  class="field-value-4">
-                                                                            <p:dataTable value="#{account.contact.telephones}"
-                                                                                         var="telephone"
-                                                                                         styleClass="expanded-row-datatable telephone-update-class">
-
-                                                                                <p:column>
-                                                                                    <h:outputText value="#{subjects.phoneUtil.internationalFormat(telephone)} (#{telephone.type})"/>
-                                                                                </p:column>
-
-                                                                            </p:dataTable>
-                                                                        </td>
-                                                                    </tr>
-                                                                </table>
-                                                            </td>
-                                                            <td>
-                                                                <table>
-                                                                    <tr class="expanded-row-table-title">
-                                                                        <td colspan="2">
-                                                                            <h:outputText value="Overview"/>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td class="field-label-4" width="100px">Joined:</td>
-                                                                        <td class="field-value-4">
-                                                                            #{subjects.temporalUtil.epochDateTimeFmt(account.account.creationEpoch)}
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td class="field-label-4" width="100px">Last Activity:</td>
-                                                                        <td class="field-value-4">
-                                                                            #{subjects.temporalUtil.epochDateTimeFmt(account.account.currentSessionEpoch)}
-                                                                        </td>
-                                                                    </tr>
-                                                                </table>
-                                                            </td>
-                                                            <td>
-                                                                <table>
-                                                                    <tr class="expanded-row-table-title">
-                                                                        <td colspan="2">
-                                                                            <h:outputText value="Security"/>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td class="field-label-4" width="100px">ACL:</td>
-                                                                        <td class="field-value-4">
-                                                                            <p:inplace id="aclAIP" styleClass="inplace" editor="true" label="#{account.account.locked ? 'Locked' : 'Unlocked'}" disabled="#{!permissionUtil.hasPermission('account:edit')}">  
-                                                                                <p:ajax event="save" listener="#{subjects.updateACL(account)}" update=":form:accounts-table :form:growl" oncomplete="accountsTable.filter();"/>
-                                                                                <p:selectBooleanButton value="#{account.account.locked}" onLabel="Locked" offLabel="Unlocked" />
-                                                                            </p:inplace>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td class="field-label-4">Permissions:</td>
-                                                                        <td class="field-value-4">
-                                                                            <p:dataTable value="#{account.permissions}"
-                                                                                         var="perm"
-                                                                                         styleClass="expanded-row-datatable permission-update-class">
-                                                                                <p:column>
-                                                                                    <h:outputText value="#{perm.name}"/>
-                                                                                </p:column>
-
-                                                                            </p:dataTable>
-
-                                                                        </td>
-                                                                    </tr>
-                                                                </table>
-                                                            </td>
-                                                        </tr>
-                                                    </table>
-
-                                                    <hr></hr>
-
-                                                    <p:splitButton value="Account Actions" styleClass="dark-menu">  
-                                                        <p:menuitem value="Create Support Ticket" action="#{subjects.createTicketWithRequester(account)}" process="@this"/>
-                                                        <p:separator />
-                                                        <p:menuitem value="Edit Permission" onclick="PF('permission-dlg').show();" actionListener="#{subjects.resetPermission()}" disabled="#{!permissionUtil.hasPermission('permission,account:edit')}"/> 
-                                                        <p:menuitem value="Edit Address" onclick="PF('address-dlg').show();" actionListener="#{subjects.resetAddress()}" disabled="#{!permissionUtil.hasPermission('account:edit')}"/>
-                                                        <p:menuitem value="Edit Telephone"  onclick="PF('telephone-dlg').show();" actionListener="#{subjects.resetTelephone()}" disabled="#{!permissionUtil.hasPermission('account:edit')}"/> 
-                                                        <p:menuitem value="Edit Company"  onclick="PF('company-dlg').show();" disabled="#{!permissionUtil.hasPermission('account:edit')}"/>                                    
-                                                        <p:separator />
-                                                        <p:menuitem value="Close Account" 
-                                                                    actionListener="#{subjects.closeAccount(account)}" 
-                                                                    update=":form:accounts-table :form:growl" 
-                                                                    ajax="true" 
-                                                                    disabled="#{!permissionUtil.hasPermission('account:delete')}"/>
-                                                    </p:splitButton>
-
-                                                    <p:commandButton value="Support Tickets" style="margin-right: 7px"/>
-
-                                                    <p:commandButton value="Activity Logs"/>
-                                                    
-                                                    
-
-                                                    <p:dialog header="Edit Address" widgetVar="address-dlg" dynamic="true" resizable="false" width="810px">  
-
-                                                        <h:outputText value="Current Addresses" style="font-weight: bold"/>
-
-                                                        <p:dataTable value="#{account.contact.addresses}"
-                                                                     var="address"
-                                                                     styleClass="blank-table dlg-address-update-class">
-
-                                                            <p:column>
-                                                                <h:outputText value="#{address.buildCompleteAddress()}"/>
-                                                            </p:column>
-
-                                                            <p:column width="20">
-                                                                <p:commandLink update="@(.dlg-address-update-class)" title="Remove Address" process="@(.dlg-address-update-class)">
-                                                                    <p:graphicImage value="#{URIUtil().s3Icon('black/trash_icon_16.png')}"/>
-                                                                    <p:collector value="#{address}" removeFrom="#{account.contact.addresses}" unique="true"/> 
-                                                                </p:commandLink>
-                                                            </p:column>
-
-                                                        </p:dataTable>
-
-                                                        <hr></hr>
-
-                                                        <h:outputText value="Add New Address" style="font-weight: bold"/>
-
-                                                        <table class="blank-table">
+                                                        <p:graphicImage styleClass="expanded-row-arrow" 
+                                                                        value="#{uriUtil.image('arrow_down_right.png', true)}" 
+                                                                        height="160px"/>
+                                                        
+                                                        <table class="expanded-row-table ">
                                                             <tr>
+                                                                <td width="50px">
+                                                                    <p:graphicImage styleClass="profile-image circular-clip-60" 
+                                                                                    value="#{uriUtil.profileImage(user, false)}" 
+                                                                                    height="60px"/>
+                                                                </td>
                                                                 <td>
-                                                                    <p:inputText id="add-1" value="#{subjects.newAddress.lineOne}" styleClass="dlg-address-update-class">
-                                                                        <p:ajax event="keyup" update="add-address-button" />
-                                                                    </p:inputText>
-                                                                    <p:watermark value="Street" for="add-1"/>
+                                                                    <table>
+                                                                        <tr>
+                                                                            <td>
+                                                                                <h:outputText value="#{user.contact.buildFullName()}" style="font-weight: bold"/>
+                                                                            </td>
+                                                                            <td width="20px">
+                                                                                <h:outputLink type="button" 
+                                                                                              value="mailto:#{user.email}" 
+                                                                                              title="Send email to #{user.email}">
+                                                                                    <p:graphicImage value="#{uriUtil.icon('black/mail_2_icon_16.png', true)}"/>
+                                                                                </h:outputLink>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td>
+                                                                                <h:outputText value="SOLiD" 
+                                                                                              rendered="#{user.metier.name eq 'ADMIN'}"/>
+                                                                                <h:outputText id="account-company-name" 
+                                                                                              value="#{user.company ne null ? user.company.name : 'No Company'}" 
+                                                                                              rendered="#{user.metier.name ne 'ADMIN'}"
+                                                                                              styleClass="company-update-class"/>
+                                                                            </td>
+                                                                            <td></td>
+                                                                        </tr>
+                                                                    </table>
                                                                 </td>
                                                             </tr>
-                                                            <tr>
-                                                                <td>
-                                                                    <p:inputText id="add-2" value="#{subjects.newAddress.lineThree}" styleClass="dlg-address-update-class">
-                                                                        <p:ajax event="keyup" update="add-address-button" />
-                                                                    </p:inputText>
-                                                                    <p:watermark value="City" for="add-2"/>
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>
-                                                                    <p:inputText id="add-3" value="#{subjects.newAddress.lineFour}" styleClass="dlg-address-update-class">
-                                                                        <p:ajax event="keyup" update="add-address-button" />
-                                                                    </p:inputText>
-                                                                    <p:watermark value="State" for="add-3"/>
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>
-                                                                    <p:inputText id="add-4" value="#{subjects.newAddress.lineFive}" styleClass="dlg-address-update-class">
-                                                                        <p:ajax event="keyup" update="add-address-button" />
-                                                                    </p:inputText>
-                                                                    <p:watermark value="Zip Code" for="add-4"/>
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>
-                                                                    <p:commandButton id="add-address-button"
-                                                                                     value="Add Address"
-                                                                                     action="#{subjects.resetAddress()}"
-                                                                                     disabled="#{subjects.newAddress.buildCompleteAddress() eq 'Unavailable'}"
-                                                                                     update="@this @(.dlg-address-update-class)">
-                                                                        <p:collector value="#{subjects.newAddress}" addTo="#{account.contact.addresses}" unique="true"/>
-                                                                    </p:commandButton>
+                                                        </table>
 
+                                                        <table class="expanded-row-table">
+                                                            <tr>
+                                                                <td>
+                                                                    <table>
+                                                                        <tr class="expanded-row-table-title">
+                                                                            <td colspan="2">
+                                                                                <h:outputText value="Contact"/>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td class="field-label-4">Address:</td>
+                                                                            <td class="field-value-4">
+                                                                                <p:dataTable value="#{user.contact.addresses}"
+                                                                                             var="address"
+                                                                                             styleClass="expanded-row-datatable address-update-class"
+                                                                                             style="padding-top: 5px">
+
+                                                                                    <p:column>
+                                                                                        <h:outputText value="#{address.buildCompleteAddress()}"/>
+                                                                                    </p:column>
+
+                                                                                </p:dataTable>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td class="field-label-4" width="100px">Telephone:</td>
+                                                                            <td  class="field-value-4">
+                                                                                <p:dataTable value="#{user.contact.telephones}"
+                                                                                             var="telephone"
+                                                                                             styleClass="expanded-row-datatable telephone-update-class">
+
+                                                                                    <p:column>
+                                                                                        <h:outputText value="#{telephone.internationalFormat()} (#{telephone.type})"/>
+                                                                                    </p:column>
+
+                                                                                </p:dataTable>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </table>
+                                                                </td>
+                                                                <td>
+                                                                    <table>
+                                                                        <tr class="expanded-row-table-title">
+                                                                            <td colspan="2">
+                                                                                <h:outputText value="Overview"/>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td class="field-label-4" width="100px">Joined:</td>
+                                                                            <td class="field-value-4">
+                                                                                #{user.account.getCreationDate()}
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td class="field-label-4" width="100px">Last Activity:</td>
+                                                                            <td class="field-value-4">
+                                                                                #{user.account.getCurrentSessionTimeStamp()}
+                                                                            </td>
+                                                                        </tr>
+                                                                    </table>
+                                                                </td>
+                                                                <td>
+                                                                    <table>
+                                                                        <tr class="expanded-row-table-title">
+                                                                            <td colspan="2">
+                                                                                <h:outputText value="Security"/>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td class="field-label-4" width="100px">ACL:</td>
+                                                                            <td class="field-value-4">
+                                                                                <p:inplace id="aclAIP" 
+                                                                                           styleClass="inplace" 
+                                                                                           editor="true" 
+                                                                                           label="#{user.account.locked ? 'Locked' : 'Unlocked'}" 
+                                                                                           disabled="#{!jsfSessionUser.currentUser.hasPermission('account:edit')}">  
+                                                                                    <p:ajax event="save" 
+                                                                                            listener="#{user.update()}" 
+                                                                                            update=":form:accounts-table :form:growl" 
+                                                                                            oncomplete="accountsTable.filter();"/>
+                                                                                    <p:selectBooleanButton value="#{user.account.locked}" 
+                                                                                                           onLabel="Locked" 
+                                                                                                           offLabel="Unlocked" />
+                                                                                </p:inplace>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td class="field-label-4">Permissions:</td>
+                                                                            <td class="field-value-4">
+                                                                                <p:dataTable value="#{user.permissions}"
+                                                                                             var="perm"
+                                                                                             styleClass="expanded-row-datatable permission-update-class">
+                                                                                    <p:column>
+                                                                                        <h:outputText value="#{perm.expression}"/>
+                                                                                    </p:column>
+
+                                                                                </p:dataTable>
+
+                                                                            </td>
+                                                                        </tr>
+                                                                    </table>
                                                                 </td>
                                                             </tr>
                                                         </table>
 
                                                         <hr></hr>
 
-                                                        <p:commandButton id="add-save-button" 
-                                                                         styleClass="green-button address-save-button-update-class" 
-                                                                         actionListener="#{subjects.updateAddresses(account)}" 
-                                                                         value="Save" 
-                                                                         process="@this" 
-                                                                         update="@(.address-update-class) :form:growl"
-                                                                         onclick="PF('blockui1').block();"
-                                                                         oncomplete="PF('blockui1').unblock();"
-                                                                         onsuccess="PF('address-dlg').hide()"/>
+                                                        <p:splitButton value="Account Actions" styleClass="dark-menu">  
+                                                            <p:menuitem value="Create Support Ticket" 
+                                                                        action="#{navigator.navigate('CREATE_TICKET_WITH_PARAM', 'requester=' + user.email)}" 
+                                                                        process="@this"/>
+                                                            <p:separator />
+                                                            <p:menuitem value="Edit Permission" 
+                                                                        onclick="PF('permission-dlg').show();" 
+                                                                        actionListener="#{user.resetPermission()}" 
+                                                                        disabled="#{!jsfSessionUser.currentUser.hasPermission('permission,account:edit')}"/> 
+                                                            <p:menuitem value="Edit Address" 
+                                                                        onclick="PF('address-dlg').show();" 
+                                                                        actionListener="#{user.resetPermission()}" 
+                                                                        disabled="#{!jsfSessionUser.currentUser.hasPermission('account:edit')}"/>
+                                                            <p:menuitem value="Edit Telephone"  
+                                                                        onclick="PF('telephone-dlg').show();" 
+                                                                        actionListener="#{user.resetPermission()}" 
+                                                                        disabled="#{!jsfSessionUser.currentUser.hasPermission('account:edit')}"/> 
+                                                            <p:menuitem value="Edit Company" 
+                                                                        actionListener="#{user.lazyLoad()}"
+                                                                        onclick="PF('company-dlg').show();" 
+                                                                        disabled="#{!jsfSessionUser.currentUser.hasPermission('account:edit') or user.isAdministrator()}"/>                                    
+                                                            <p:separator />
+                                                            <p:menuitem value="Close Account" 
+                                                                        actionListener="#{user.close()}" 
+                                                                        update=":form:accounts-table :form:growl" 
+                                                                        ajax="true" 
+                                                                        disabled="#{!jsfSessionUser.currentUser.hasPermission('account:delete')}"/>
+                                                        </p:splitButton>
 
-                                                        <ez:blockUI target="@(.address-save-button-update-class)" widgetVar="blockui1"/> 
+                                                        <p:commandButton value="Support Tickets" style="margin-right: 7px"/>
 
-                                                    </p:dialog>
+                                                        <p:commandButton value="Activity Logs"/>
 
-                                                    <p:dialog header="Edit Telephone" widgetVar="telephone-dlg" dynamic="true" resizable="false" width="810px">  
 
-                                                        <h:outputText value="Current Phone Numbers" style="font-weight: bold"/>
 
-                                                        <p:dataTable value="#{account.contact.telephones}"
-                                                                     var="telephone"
-                                                                     styleClass="blank-table dlg-telephone-update-class">
+                                                        <p:dialog header="Edit Address" 
+                                                                  widgetVar="address-dlg" 
+                                                                  dynamic="true" 
+                                                                  resizable="false" 
+                                                                  width="810px">  
 
-                                                            <p:column>
-                                                                <h:outputText value="#{telephone.type}: #{subjects.phoneUtil.internationalFormat(telephone)}"/>
-                                                            </p:column>
+                                                            <h:outputText value="Current Addresses" style="font-weight: bold"/>
 
-                                                            <p:column width="20">
-                                                                <p:commandLink update="@(.dlg-telephone-update-class)" title="Remove Telephone" process="@(.dlg-telephone-update-class)">
-                                                                    <p:graphicImage value="#{URIUtil().s3Icon('black/trash_icon_16.png')}"/>
-                                                                    <p:collector value="#{telephone}" removeFrom="#{account.contact.telephones}" unique="true"/> 
-                                                                </p:commandLink>
-                                                            </p:column>
+                                                            <p:dataTable value="#{user.contact.addresses}"
+                                                                         var="address"
+                                                                         styleClass="blank-table dlg-address-update-class">
 
-                                                        </p:dataTable>
+                                                                <p:column>
+                                                                    <h:outputText value="#{address.buildCompleteAddress()}"/>
+                                                                </p:column>
 
-                                                        <hr></hr>
+                                                                <p:column width="20">
+                                                                    <p:commandLink update="@(.dlg-address-update-class)" 
+                                                                                   title="Remove Address" 
+                                                                                   process="@(.dlg-address-update-class)">
+                                                                        <p:graphicImage value="#{uriUtil.icon('black/trash_icon_16.png', true)}"/>
+                                                                        <p:collector value="#{address}" 
+                                                                                     removeFrom="#{user.contact.addresses}" 
+                                                                                     unique="true"/> 
+                                                                    </p:commandLink>
+                                                                </p:column>
 
-                                                        <h:outputText value="Add New Phone Number" style="font-weight: bold"/>
+                                                            </p:dataTable>
 
-                                                        <table class="blank-table">
-                                                            <tr>
-                                                                <td class="telephone-number-type" width="100px">
-                                                                    <p:selectOneMenu value="#{subjects.newTelephone.type}" 
-                                                                                     style="width: 70px"
+                                                            <hr></hr>
+
+                                                            <h:outputText value="Add New Address" style="font-weight: bold"/>
+
+                                                            <table class="blank-table">
+                                                                <tr>
+                                                                    <td>
+                                                                        <p:inputText id="add-1" 
+                                                                                     value="#{user.contact.newAddress.lineOne}" 
+                                                                                     styleClass="dlg-address-update-class">
+                                                                            <p:ajax event="keyup" 
+                                                                                    update="add-address-button" />
+                                                                        </p:inputText>
+                                                                        <p:watermark value="Street" 
+                                                                                     for="add-1"/>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>
+                                                                        <p:inputText id="add-2" 
+                                                                                     value="#{user.contact.newAddress.lineThree}" 
+                                                                                     styleClass="dlg-address-update-class">
+                                                                            <p:ajax event="keyup" 
+                                                                                    update="add-address-button" />
+                                                                        </p:inputText>
+                                                                        <p:watermark value="City" 
+                                                                                     for="add-2"/>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>
+                                                                        <p:inputText id="add-3" 
+                                                                                     value="#{user.contact.newAddress.lineFour}" 
+                                                                                     styleClass="dlg-address-update-class">
+                                                                            <p:ajax event="keyup" 
+                                                                                    update="add-address-button" />
+                                                                        </p:inputText>
+                                                                        <p:watermark value="State" for="add-3"/>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>
+                                                                        <p:inputText id="add-4" 
+                                                                                     value="#{user.contact.newAddress.lineFive}" 
+                                                                                     styleClass="dlg-address-update-class">
+                                                                            <p:ajax event="keyup" 
+                                                                                    update="add-address-button" />
+                                                                        </p:inputText>
+                                                                        <p:watermark value="Zip Code" 
+                                                                                     for="add-4"/>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>
+                                                                        <p:commandButton id="add-address-button"
+                                                                                         value="Add Address"
+                                                                                         action="#{user.contact.resetAddress()}"
+                                                                                         disabled="#{user.contact.newAddress.buildCompleteAddress() eq 'Unavailable'}"
+                                                                                         update="@this @(.dlg-address-update-class)">
+                                                                            <p:collector value="#{user.contact.newAddress}" 
+                                                                                         addTo="#{user.contact.addresses}" 
+                                                                                         unique="true"/>
+                                                                        </p:commandButton>
+
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+
+                                                            <hr></hr>
+
+                                                            <p:commandButton id="add-save-button" 
+                                                                             styleClass="green-button address-save-button-update-class" 
+                                                                             actionListener="#{user.update()}" 
+                                                                             value="Save" 
+                                                                             process="@this" 
+                                                                             update="@(.address-update-class) :form:growl"
+                                                                             onclick="PF('blockui1').block();"
+                                                                             oncomplete="PF('blockui1').unblock();"
+                                                                             onsuccess="PF('address-dlg').hide()"/>
+
+                                                            <ez:blockUI target="@(.address-save-button-update-class)" 
+                                                                        widgetVar="blockui1"/> 
+
+                                                        </p:dialog>
+
+                                                        <p:dialog header="Edit Telephone" 
+                                                                  widgetVar="telephone-dlg" 
+                                                                  dynamic="true" 
+                                                                  resizable="false" 
+                                                                  width="810px">  
+
+                                                            <h:outputText value="Current Phone Numbers" 
+                                                                          style="font-weight: bold"/>
+
+                                                            <p:dataTable value="#{user.contact.telephones}"
+                                                                         var="telephone"
+                                                                         styleClass="blank-table dlg-telephone-update-class">
+
+                                                                <p:column>
+                                                                    <h:outputText value="#{telephone.type}: #{telephone.internationalFormat()}"/>
+                                                                </p:column>
+
+                                                                <p:column width="20">
+                                                                    <p:commandLink update="@(.dlg-telephone-update-class)" 
+                                                                                   title="Remove Telephone" 
+                                                                                   process="@(.dlg-telephone-update-class)">
+                                                                        <p:graphicImage value="#{uriUtil.icon('black/trash_icon_16.png', true)}"/>
+                                                                        <p:collector value="#{telephone}" 
+                                                                                     removeFrom="#{user.contact.telephones}" 
+                                                                                     unique="true"/> 
+                                                                    </p:commandLink>
+                                                                </p:column>
+
+                                                            </p:dataTable>
+
+                                                            <hr></hr>
+
+                                                            <h:outputText value="Add New Phone Number" style="font-weight: bold"/>
+
+                                                            <table class="blank-table">
+                                                                <tr>
+                                                                    <td class="telephone-number-type" width="100px">
+                                                                        <p:selectOneMenu value="#{user.contact.newTelephone.type}" 
+                                                                                         style="width: 70px"
+                                                                                         styleClass="dlg-telephone-update-class">
+                                                                            <f:selectItems value="#{enumController.telephoneTypes}" 
+                                                                                           var="tel" 
+                                                                                           itemLabel="#{tel.label}" 
+                                                                                           itemValue="#{tel}" />
+                                                                            <p:ajax event="change" update="add-telephone-button" />
+                                                                        </p:selectOneMenu>  
+                                                                    </td>
+                                                                    <td width="200px">
+                                                                        <p:selectOneMenu value="#{user.contact.newTelephone.country}" 
+                                                                                         effect="fade"
+                                                                                         style="width: 180px"
+                                                                                         styleClass="dlg-telephone-update-class"> 
+                                                                            <f:selectItems value="#{user.contact.newTelephone.countries}"
+                                                                                           var="country"
+                                                                                           itemLabel="#{country.displayCountry}"
+                                                                                            itemValue="#{country.country}"/>
+                                                                            <p:ajax event="change" update="add-telephone-button" />
+                                                                        </p:selectOneMenu>
+                                                                    </td>
+                                                                    <td>
+                                                                        <p:inputText value="#{user.contact.newTelephone.number}"
+                                                                                     style="margin-left: 10px"
                                                                                      styleClass="dlg-telephone-update-class">
-                                                                        <f:selectItems value="#{enumController.telephoneTypes}" 
-                                                                                       var="tel" 
-                                                                                       itemLabel="#{tel.label}" 
-                                                                                       itemValue="#{tel}" />
-                                                                        <p:ajax event="change" update="add-telephone-button" />
-                                                                    </p:selectOneMenu>  
-                                                                </td>
-                                                                <td width="200px">
-                                                                    <p:selectOneMenu value="#{subjects.newTelephone.country}" 
-                                                                                     effect="fade"
-                                                                                     style="width: 180px"
-                                                                                     styleClass="dlg-telephone-update-class"> 
-                                                                        <f:selectItems value="#{settings.geoUtil.worldCountries}"/> 
-                                                                        <p:ajax event="change" update="add-telephone-button" />
-                                                                    </p:selectOneMenu>
-                                                                </td>
-                                                                <td>
-                                                                    <p:inputText value="#{subjects.newTelephone.localNumber}"
-                                                                                 style="margin-left: 10px"
-                                                                                 styleClass="dlg-telephone-update-class">
-                                                                        <p:ajax event="keyup" update="add-telephone-button" />
-                                                                    </p:inputText>
-                                                                </td>
-                                                                <td>
-                                                                    <p:commandButton id="add-telephone-button"
-                                                                                     value="Add Telephone"
-                                                                                     action="#{subjects.resetTelephone()}"
-                                                                                     disabled="#{!subjects.phoneUtil.validFormat(subjects.newTelephone)}"
-                                                                                     update="@this @(.dlg-telephone-update-class)"
-                                                                                     process="@this @(.dlg-telephone-update-class)">
-                                                                        <p:collector value="#{subjects.newTelephone}" addTo="#{account.contact.telephones}" unique="true"/>
-                                                                    </p:commandButton>
-                                                                </td>
+                                                                            <p:ajax event="keyup" update="add-telephone-button" />
+                                                                        </p:inputText>
+                                                                    </td>
+                                                                    <td>
+                                                                        <p:commandButton id="add-telephone-button"
+                                                                                         value="Add Telephone"
+                                                                                         action="#{user.contact.resetTelephone()}"
+                                                                                         disabled="#{!user.contact.newTelephone.validFormat()}"
+                                                                                         update="@this @(.dlg-telephone-update-class)"
+                                                                                         process="@this @(.dlg-telephone-update-class)">
+                                                                            <p:collector value="#{user.contact.newTelephone}" 
+                                                                                         addTo="#{user.contact.telephones}" 
+                                                                                         unique="true"/>
+                                                                        </p:commandButton>
+                                                                    </td>
 
-                                                            </tr>
-                                                        </table>
+                                                                </tr>
+                                                            </table>
 
-                                                        <hr></hr>
+                                                            <hr></hr>
 
-                                                        <p:commandButton id="tel-save-button" 
-                                                                         styleClass="green-button address-save-button-update-class" 
-                                                                         action="#{subjects.updateTelephones(account)}" 
-                                                                         value="Save" 
-                                                                         process="@this" 
-                                                                         update="@(.telephone-update-class) :form:growl"
-                                                                         onclick="PF('blockui2').block();"
-                                                                         oncomplete="PF('blockui2').unblock();"
-                                                                         onsuccess="PF('telephone-dlg').hide()"/>
+                                                            <p:commandButton id="tel-save-button" 
+                                                                             styleClass="green-button address-save-button-update-class" 
+                                                                             action="#{user.update()}" 
+                                                                             value="Save" 
+                                                                             process="@this" 
+                                                                             update="@(.telephone-update-class) :form:growl"
+                                                                             onclick="PF('blockui2').block();"
+                                                                             oncomplete="PF('blockui2').unblock();"
+                                                                             onsuccess="PF('telephone-dlg').hide()"/>
 
-                                                        <ez:blockUI target="@(.address-save-button-update-class)" widgetVar="blockui2"/>
+                                                            <ez:blockUI target="@(.address-save-button-update-class)" widgetVar="blockui2"/>
 
-                                                    </p:dialog>
+                                                        </p:dialog>
 
-                                                    <p:dialog header="Edit Permissions" widgetVar="permission-dlg" dynamic="true" resizable="false" width="810px">  
+                                                        <p:dialog header="Edit Permissions" 
+                                                                  widgetVar="permission-dlg" 
+                                                                  dynamic="true" 
+                                                                  resizable="false" 
+                                                                  width="810px">  
 
-                                                        <h:outputText value="Current Permissions" style="font-weight: bold"/>
+                                                            <h:outputText value="Current Permissions" style="font-weight: bold"/>
 
-                                                        <p:dataTable value="#{account.permissions}"
-                                                                     var="permission"
-                                                                     styleClass="blank-table dlg-permission-update-class">
+                                                            <p:dataTable value="#{user.permissions}"
+                                                                         var="permission"
+                                                                         styleClass="blank-table dlg-permission-update-class">
 
-                                                            <p:column>
-                                                                <h:outputText value="#{permission.name}"/>
-                                                            </p:column>
+                                                                <p:column>
+                                                                    <h:outputText value="#{permission.expression}"/>
+                                                                </p:column>
 
-                                                            <p:column width="20">
-                                                                <p:commandLink update="@(.dlg-permission-update-class)" title="Remove Permission" process="@(.dlg-permission-update-class)">
-                                                                    <p:graphicImage value="#{URIUtil().s3Icon('black/trash_icon_16.png')}"/>
-                                                                    <p:collector value="#{permission}" removeFrom="#{account.permissions}" unique="true"/> 
-                                                                </p:commandLink>
-                                                            </p:column>
+                                                                <p:column width="20">
+                                                                    <p:commandLink update="@(.dlg-permission-update-class)" 
+                                                                                   title="Remove Permission" 
+                                                                                   process="@(.dlg-permission-update-class)">
+                                                                        <p:graphicImage value="#{uriUtil.icon('black/trash_icon_16.png', true)}"/>
+                                                                        <p:collector value="#{permission}" 
+                                                                                     removeFrom="#{user.permissions}" 
+                                                                                     unique="true"/> 
+                                                                    </p:commandLink>
+                                                                </p:column>
 
-                                                        </p:dataTable>
+                                                            </p:dataTable>
 
-                                                        <hr></hr>
+                                                            <hr></hr>
 
-                                                        <h:outputText value="Add New Permission" style="font-weight: bold"/>
+                                                            <h:outputText value="Add New Permission" style="font-weight: bold"/>
 
-                                                        <table class="blank-table">
-                                                            <tr>
-                                                                <td>
-                                                                    <p:inputText value="#{subjects.newPermission.name}"
-                                                                                 styleClass="dlg-permission-update-class dlg-permission-process-class"/>
-                                                                </td>
-                                                                <td>
-                                                                    <p:commandButton id="add-per-button"
-                                                                                     value="Add Permission"
-                                                                                     action="#{subjects.resetPermission()}"
-                                                                                     update="@(.dlg-permission-update-class)">
-                                                                        <p:collector value="#{subjects.newPermission}" addTo="#{account.permissions}" unique="true"/>
-                                                                    </p:commandButton>
+                                                            <table class="blank-table">
+                                                                <tr>
+                                                                    <td>
+                                                                        <p:inputText value="#{user.newPermission.expression}"
+                                                                                     styleClass="dlg-permission-update-class dlg-permission-process-class"/>
+                                                                    </td>
+                                                                    <td>
+                                                                        <p:commandButton id="add-per-button"
+                                                                                         value="Add Permission"
+                                                                                         action="#{user.resetPermission()}"
+                                                                                         update="@(.dlg-permission-update-class)">
+                                                                            <p:collector value="#{user.newPermission}" 
+                                                                                         addTo="#{user.permissions}" 
+                                                                                         unique="true"/>
+                                                                        </p:commandButton>
 
-                                                                </td>
-                                                            </tr>
-                                                        </table>
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
 
-                                                        <hr></hr>
+                                                            <hr></hr>
 
-                                                        <p:commandButton id="per-save-button" 
-                                                                         styleClass="green-button permission-save-button-update-class" 
-                                                                         actionListener="#{subjects.updatePermissions(account)}" 
-                                                                         value="Save" 
-                                                                         process="@this" 
-                                                                         update="@(.permission-update-class) :form:growl"
-                                                                         onclick="PF('blockui3').block();"
-                                                                         oncomplete="PF('blockui3').unblock();"
-                                                                         onsuccess="PF('permission-dlg').hide()"/>
+                                                            <p:commandButton id="per-save-button" 
+                                                                             styleClass="green-button permission-save-button-update-class" 
+                                                                             actionListener="#{user.update()}" 
+                                                                             value="Save" 
+                                                                             process="@this" 
+                                                                             update="@(.permission-update-class) :form:growl"
+                                                                             onclick="PF('blockui3').block();"
+                                                                             oncomplete="PF('blockui3').unblock();"
+                                                                             onsuccess="PF('permission-dlg').hide()"/>
 
-                                                        <ez:blockUI target="@(.permission-save-button-update-class)" widgetVar="blockui3"/>
+                                                            <ez:blockUI target="@(.permission-save-button-update-class)" 
+                                                                        widgetVar="blockui3"/>
 
-                                                    </p:dialog>
+                                                        </p:dialog>
 
-                                                    <p:dialog header="Edit Company" widgetVar="company-dlg" dynamic="true" resizable="false" width="810px">  
+                                                        <p:dialog header="Edit Company" 
+                                                                  widgetVar="company-dlg" 
+                                                                  dynamic="true" 
+                                                                  resizable="false" 
+                                                                  width="810px">  
 
-                                                        <h:outputText value="Current Company" style="font-weight: bold"/>
+                                                            <h:outputText value="Current Company" 
+                                                                          style="font-weight: bold"/>
 
-                                                        <p:spacer width="100%" height="2px"/>
+                                                            <p:spacer width="100%" height="2px"/>
 
-                                                        <h:outputText value="#{account.company ne null ? account.company.name : 'No Company'}"/>
+                                                            <h:outputText value="#{user.company ne null ? user.company.name : 'No Company'}"/>
 
-                                                        <hr></hr>
+                                                            <hr></hr>
 
-                                                        <h:outputText value="Change Company" style="font-weight: bold"/>
+                                                            <h:outputText value="Change Company" 
+                                                                          style="font-weight: bold"/>
 
-                                                        <table class="blank-table">
-                                                            <tr>
-                                                                <td>
-                                                                    <p:selectOneMenu value="#{account.company}" 
-                                                                                     converter="companyCvt"
-                                                                                     effect="fade"
-                                                                                     rendered="#{account.metier.name eq 'VAR'}" 
-                                                                                     disabled="#{!permissionUtil.hasPermission('account:edit') or subjects.nullCompany}"
-                                                                                     style="width: 180px"
-                                                                                     styleClass="dlg-company-update-class dlg-company-process-class">
-                                                                        <f:selectItems value="#{subjects.vars}" var="v" itemLabel="#{v.name}" itemValue="#{v}"/>
-                                                                    </p:selectOneMenu>
+                                                            <table class="blank-table">
+                                                                <tr>
+                                                                    <td>
+                                                                        <p:selectOneMenu value="#{user.company}" 
+                                                                                         converter="companyCvt"
+                                                                                         effect="fade"
+                                                                                         disabled="#{!jsfSessionUser.currentUser.hasPermission('account:edit')}"
+                                                                                         style="width: 180px"
+                                                                                         styleClass="dlg-company-update-class dlg-company-process-class">
+                                                                            <f:selectItems value="#{user.availableCompanies}" 
+                                                                                           var="v" 
+                                                                                           itemLabel="#{v.name}" 
+                                                                                           itemValue="#{v}"/>
+                                                                        </p:selectOneMenu>
 
-                                                                    <p:selectOneMenu value="#{account.company}" 
-                                                                                     converter="companyCvt"
-                                                                                     effect="fade"
-                                                                                     rendered="#{account.metier.name eq 'CLIENT'}" 
-                                                                                     disabled="#{!permissionUtil.hasPermission('account:edit') or subjects.nullCompany}"
-                                                                                     style="width: 180px"
-                                                                                     styleClass="dlg-company-update-class dlg-company-process-class">
-                                                                        <f:selectItems value="#{subjects.clients}" var="v" itemLabel="#{v.name}" itemValue="#{v}"/>
-                                                                    </p:selectOneMenu>
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>
-                                                                    <h:outputText value="Unlink from all companies: " />  
-                                                                    <p:selectBooleanButton value="#{subjects.nullCompany}" onLabel="Yes" offLabel="No" onIcon="ui-icon-check" offIcon="ui-icon-close">  
-                                                                        <p:ajax event="change" update="@(.dlg-company-update-class)"/>  
-                                                                    </p:selectBooleanButton>
-                                                                </td>
-                                                            </tr>
-                                                        </table>
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
 
-                                                        <hr></hr>
+                                                            <hr></hr>
 
-                                                        <p:commandButton id="com-save-button" 
-                                                                         styleClass="green-button company-save-button-update-class" 
-                                                                         actionListener="#{subjects.updateCompany(account)}" 
-                                                                         value="Save" 
-                                                                         process="@this @(.dlg-company-process-class)" 
-                                                                         update="@(.company-update-class) :form:growl"
-                                                                         onclick="PF('blockui4').block();"
-                                                                         oncomplete="PF('blockui4').unblock();"
-                                                                         onsuccess="PF('company-dlg').hide()"/>
+                                                            <p:commandButton id="com-save-button" 
+                                                                             styleClass="green-button company-save-button-update-class" 
+                                                                             actionListener="#{user.update()}" 
+                                                                             value="Save" 
+                                                                             process="@this @(.dlg-company-process-class)" 
+                                                                             update="@(.company-update-class) :form:growl"
+                                                                             onclick="PF('blockui4').block();"
+                                                                             oncomplete="PF('blockui4').unblock();"
+                                                                             onsuccess="PF('company-dlg').hide()"/>
 
-                                                        <ez:blockUI target="@(.company-save-button-update-class)" widgetVar="blockui4"/>
+                                                            <ez:blockUI target="@(.company-save-button-update-class)" widgetVar="blockui4"/>
 
-                                                    </p:dialog>
+                                                        </p:dialog>
 
-                                                </div>
-                                            </p:rowExpansion> 
+                                                    </div>
+                                                </p:rowExpansion> 
 
-                                        </p:dataTable>
+                                            </p:dataTable>
+
+                                        </ui:fragment>
 
                                     </h:panelGroup>
 
@@ -642,7 +746,13 @@
 
                 </pe:layoutPane>
 
-                <pe:layoutPane id="south" position="south" closable="false" resizable="false" size="40"><ez:footer/></pe:layoutPane>
+                <pe:layoutPane id="south" 
+                               position="south" 
+                               closable="false" 
+                               resizable="false" 
+                               size="40">
+                    <ez:footer/>
+                </pe:layoutPane>
 
             </pe:layout>
 

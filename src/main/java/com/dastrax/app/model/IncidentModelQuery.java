@@ -189,4 +189,26 @@ public class IncidentModelQuery implements ModelQuery {
         return query;
     }
     
+    /**
+     * Determines the class type to associate with the query.
+     * 
+     * @return Returns the class type to associate with the query.
+     */
+    @Override
+    public Class clazz() {
+        return Incident.class;
+    }
+    
+    /**
+     * Determines the class type to associate with the query.
+     * 
+     * @param object
+     * @return Returns the class type to associate with the query.
+     */
+    @Override
+    public Long rowKey(Object object) {
+        Incident incident = (Incident) object;
+        return incident.getId();
+    }
+    
 }

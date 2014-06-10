@@ -167,4 +167,26 @@ public class CompanyModelQuery implements ModelQuery {
         return query;
     }
 
+    /**
+     * Determines the class type to associate with the query.
+     * 
+     * @return Returns the class type to associate with the query.
+     */
+    @Override
+    public Class clazz() {
+        return Company.class;
+    }
+    
+    /**
+     * Determines the class type to associate with the query.
+     * 
+     * @param object
+     * @return Returns the class type to associate with the query.
+     */
+    @Override
+    public Long rowKey(Object object) {
+        Company company = (Company) object;
+        return company.getId();
+    }
+    
 }
