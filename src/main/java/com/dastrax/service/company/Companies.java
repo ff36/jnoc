@@ -9,12 +9,12 @@ import com.dastrax.app.misc.JsfUtil;
 import com.dastrax.app.model.CompanyModelQuery;
 import com.dastrax.app.model.DataTable;
 import com.dastrax.app.model.ModelQuery;
-import com.dastrax.service.navigation.Navigator;
+import com.dastrax.app.service.internal.DefaultAttributeFilter;
+import com.dastrax.app.services.AttributeFilter;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import javax.faces.view.ViewScoped;
-import javax.inject.Inject;
 import javax.inject.Named;
 
 /**
@@ -37,12 +37,6 @@ public class Companies implements Serializable {
     private final ModelQuery model;
     private final Map<String, List<String>> parameters;
 //</editor-fold>
-
-    //<editor-fold defaultstate="collapsed" desc="CDI">
-    @Inject
-    private Navigator navigator;
-
-//</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="Constructors">
     public Companies() {
@@ -61,14 +55,6 @@ public class Companies implements Serializable {
         return dataTable;
     }
     
-    /**
-     * Get the value of navigator.
-     *
-     * @return the value of navigator
-     */
-    public Navigator getNavigator() {
-        return navigator;
-    }
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Setters">
@@ -88,7 +74,9 @@ public class Companies implements Serializable {
      */
     public void init() {
         dataTable = new DataTable(model);
-        dataTable.initTable(parameters);
+        dataTable.initTable(
+                parameters, 
+                new DefaultAttributeFilter().authorizedCompanies(true));
     }
 
 }

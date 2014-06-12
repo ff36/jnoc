@@ -9,6 +9,7 @@ import com.dastrax.app.misc.JsfUtil;
 import com.dastrax.app.model.AuditModelQuery;
 import com.dastrax.app.model.DataTable;
 import com.dastrax.app.model.ModelQuery;
+import com.dastrax.app.service.internal.DefaultAttributeFilter;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
@@ -81,7 +82,9 @@ public class Audits implements Serializable {
      */
     public void init() {
         dataTable = new DataTable(model);
-        dataTable.initTable(parameters);
+        dataTable.initTable(
+                parameters, 
+                new DefaultAttributeFilter().authorizedAuthors());
         render = true;
     }
 

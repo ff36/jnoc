@@ -5,12 +5,12 @@
  */
 package com.dastrax.app.service.internal;
 
-import com.dastrax.app.services.AttributeFilter;
-import com.dastrax.app.exception.ExceptionUtil;
 import com.dastrax.app.security.SessionUser;
+import com.dastrax.app.services.AttributeFilter;
 import com.dastrax.per.dap.CrudService;
 import com.dastrax.per.entity.Company;
 import com.dastrax.per.entity.DAS;
+import com.dastrax.per.entity.Ticket;
 import com.dastrax.per.entity.User;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.inject.Inject;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
@@ -51,31 +50,6 @@ public class DefaultAttributeFilter implements AttributeFilter {
         }
     }
 //</editor-fold>
-
-    //<editor-fold defaultstate="collapsed" desc="CDI">
-    @Inject
-    private ExceptionUtil exu;
-//</editor-fold>
-
-    /**
-     * Data tables have the option of implemented optional filters to help
-     * reduce the amount of data returned from the original search. The filters
-     * are stored in the database in JSON format.
-     *
-     * Example JSON filter: {"status":["OPEN","SOLVED"],"assignee":["UID"]}
-     *
-     * Additionally the unique place holder 'UID' in the filters is replaced
-     * with the current users UID. (Authenticated via SHIRO)
-     *
-     * @param filterId The database index of the filter
-     * @return An OOR representation of the JSON filter.
-     */
-//    @Override
-//    public Map<String, List<String>> optionalTableFilter(String filterId) {
-//        // Get the filter from the DB
-//        Filter filter = (Filter) dap.find(Filter.class, filterId);
-//        return filter.getExpression();
-//    }
 
     /**
      * Determines all the companies that the current user has access to.
@@ -142,11 +116,11 @@ public class DefaultAttributeFilter implements AttributeFilter {
     }
 
     /**
-     * Determines all the users that the current user has access to.
+     * Determines all the audit users that the current user has access to.
      * (Authenticated via SHIRO)
      *
      * @return a complete Map of users that the current user is authorized to
-     * access. The map key is "author" and the value is a list of user UID's
+     * access. The map key is "author" and the value is a list of user ID's
      */
     @Override
     public Map<String, List<Long>> authorizedAuthors() {
@@ -157,4 +131,46 @@ public class DefaultAttributeFilter implements AttributeFilter {
         return filters;
     }
 
+    /**
+     * Determines all the tickets that the current user has access to.
+     * (Authenticated via SHIRO)
+     *
+     * @return a complete Map of users that the current user is authorized to
+     * access. The map key is "author" and the value is a list of user ID's
+     */
+    @Override
+    public Map<String, List<Long>> authorizedTickets() {
+        Map<String, List<Long>> filters = new HashMap<>();
+        // TODO
+        return filters;
+    }
+    
+    /**
+     * Determines all the incidents that the current user has access to.
+     * (Authenticated via SHIRO)
+     *
+     * @return a complete Map of users that the current user is authorized to
+     * access. The map key is "author" and the value is a list of user ID's
+     */
+    @Override
+    public Map<String, List<Long>> authorizedIncidents() {
+        Map<String, List<Long>> filters = new HashMap<>();
+        // TODO
+        return filters;
+    }
+    
+    /**
+     * Determines all the users that the current user has access to.
+     * (Authenticated via SHIRO)
+     *
+     * @return a complete Map of users that the current user is authorized to
+     * access. The map key is "author" and the value is a list of user ID's
+     */
+    @Override
+    public Map<String, List<Long>> authorizedUsers() {
+        Map<String, List<Long>> filters = new HashMap<>();
+        // TODO
+        return filters;
+    }
+    
 }

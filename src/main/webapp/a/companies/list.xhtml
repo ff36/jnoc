@@ -20,10 +20,6 @@
 
         #{permissionUtil.hasPagePermission('company:access')}
 
-        <f:metadata>
-            <f:viewParam name="filter" value="#{companies.filter}"/>
-        </f:metadata>
-
         <h:form id="form">
 
             <pe:ajaxErrorHandler />
@@ -35,11 +31,19 @@
 
             <ez:navigation-a/>
 
-            <pe:layout stateCookie="#{config.ProjectStage ne 'DEV'}" widgetVar="layoutWgt" >
+            <pe:layout stateCookie="#{config.ProjectStage ne 'DEV'}" 
+                       widgetVar="layoutWgt" >
 
-                <pe:layoutPane id="north" position="north" closable="false" resizable="false" size="40"/>
+                <pe:layoutPane id="north" 
+                               position="north" 
+                               closable="false" 
+                               resizable="false" 
+                               size="40"/>
 
-                <pe:layoutPane id="west" position="west" resizeWhileDragging="true" size="220">
+                <pe:layoutPane id="west" 
+                               position="west" 
+                               resizeWhileDragging="true" 
+                               size="220">
 
                     <table class="navigation-sidebar">
                         <thead>
@@ -51,10 +55,10 @@
                                 <td class="active">Companies</td>
                             </tr>
                             <tr>
-                                <td><p:commandLink value="Create New VAR" action="#{navigator.navigate('CREATE_VAR_COMPANY')}" process="@this" type="button"/></td>
-                            </tr>
-                            <tr>
-                                <td><p:commandLink value="Create New Client" action="#{navigator.navigate('CREATE_CLIENT_COMPANY')}" process="@this" type="button"/></td>
+                                <td><p:commandLink value="Create New Company" 
+                                                   action="/a/companies/create.xhtml?faces-redirect=true" 
+                                                   process="@this" 
+                                                   type="button"/></td>
                             </tr>
                         </tbody>
                     </table>
@@ -68,20 +72,31 @@
                         <tfoot><tr><td></td></tr></tfoot>
                         <tbody>
                             <tr>
-                                <td><p:commandLink value="VAR Only" action="#{companies.tempFilterApply(12)}" process="@this" type="button"/></td>
+                                <td><p:commandLink value="VAR Only" 
+                                                   action="#{navigator.navigate('LIST_COMPANIES_WITH_PARAM', 'type=VAR')}" 
+                                                   process="@this" 
+                                                   type="button"/></td>
                             </tr>
                             <tr>
-                                <td><p:commandLink value="Client Only" action="#{companies.tempFilterApply(13)}" process="@this" type="button"/></td>
+                                <td><p:commandLink value="Client Only" 
+                                                   action="#{navigator.navigate('LIST_COMPANIES_WITH_PARAM', 'type=CLIENT')}" 
+                                                   process="@this" 
+                                                   type="button"/></td>
                             </tr>
                             <tr>
-                                <td><p:commandLink value="Clear Filters" action="#{companies.tempFilterApply(0)}" process="@this" type="button"/></td>
+                                <td><p:commandLink value="Clear Filters" 
+                                                   action="#{navigator.navigate('LIST_COMPANIES')}" 
+                                                   process="@this" 
+                                                   type="button"/></td>
                             </tr>
                         </tbody>
                     </table>
 
                 </pe:layoutPane>
 
-                <pe:layoutPane id="center" position="center" resizeWhileDragging="true">
+                <pe:layoutPane id="center" 
+                               position="center" 
+                               resizeWhileDragging="true">
 
 
                     <table class="page-container">
@@ -92,398 +107,354 @@
                             <tr>
                                 <td>
 
-                                    <p:remoteCommand autoRun="true" async="true" actionListener="#{companies.retrieveCompanies()}" update=":form:lazy-group-1"/>
+                                    <p:remoteCommand autoRun="true" 
+                                                     async="true" 
+                                                     actionListener="#{companies.init()}" 
+                                                     update=":form:lazy-update-class"/>
 
                                     <p:spacer width="100%" height="20px"/>
 
-                                    <h:panelGroup id="lazy-group-1">
+                                    <h:panelGroup id="lazy-update-class">
 
-                                        <p:graphicImage name="images/ajax-loader.gif" rendered="#{!companies.pageInit}" styleClass="ajax-lazy-loader"/>
+                                        <p:graphicImage name="images/ajax-loader.gif" 
+                                                        rendered="#{!companies.dataTable.render}" 
+                                                        styleClass="ajax-lazy-loader"/>
 
-                                        <p:dataTable id="companies-table"
-                                                     widgetVar="companiesTable"
-                                                     var="company"
-                                                     emptyMessage="#{msgs['empty.datatable']}"
-                                                     selection="#{companies.selectedCompanies}"
-                                                     value="#{companies.companyModel}"
-                                                     filteredValue="#{companies.filtered}"
-                                                     styleClass="type1-table"
-                                                     lazy="true"
-                                                     paginator="true"
-                                                     rows="20"
-                                                     rowsPerPageTemplate="20,50"
-                                                     paginatorAlwaysVisible="false"
-                                                     paginatorPosition="bottom"
-                                                     rendered="#{companies.pageInit}"> 
+                                        <ui:fragment rendered="#{companies.dataTable.render}">
 
-                                            <f:facet name="header">   
-                                                <p:inputText id="globalFilter" styleClass="align-left" onkeyup="companiesTable.filter()" style="width:200px" />  
-                                                <p:watermark for="globalFilter" value="Search"/>
-                                            </f:facet> 
+                                            <p:dataTable id="companies-table"
+                                                         widgetVar="companiesTable"
+                                                         var="company"
+                                                         emptyMessage="#{msgs['empty.datatable']}"
+                                                         selection="#{companies.dataTable.selected}"
+                                                         value="#{companies.dataTable.model}"
+                                                         filteredValue="#{companies.dataTable.filtered}"
+                                                         styleClass="type1-table"
+                                                         lazy="true"
+                                                         paginator="true"
+                                                         rows="20"
+                                                         rowsPerPageTemplate="20,50"
+                                                         paginatorAlwaysVisible="false"
+                                                         paginatorPosition="bottom"> 
 
-                                            <p:ajax event="rowSelectCheckbox"/>  
-                                            <p:ajax event="rowUnselectCheckbox"/>
-                                            <p:ajax event="rowSelect"/>  
-                                            <p:ajax event="rowUnselect"/>
+                                                <f:facet name="header">   
+                                                    <p:inputText id="globalFilter" 
+                                                                 styleClass="align-left" 
+                                                                 onkeyup="companiesTable.filter()" 
+                                                                 style="width:200px" />  
+                                                    <p:watermark for="globalFilter" 
+                                                                 value="Search"/>
+                                                </f:facet> 
 
-                                            <p:column selectionMode="multiple" style="width:18px" />
+                                                <p:ajax event="rowSelectCheckbox"/>  
+                                                <p:ajax event="rowUnselectCheckbox"/>
+                                                <p:ajax event="rowSelect"/>  
+                                                <p:ajax event="rowUnselect"/>
 
-                                            <p:column style="width:18px">  
-                                                <p:rowToggler />  
-                                            </p:column>
+                                                <p:column selectionMode="multiple" style="width:18px" />
 
-                                            <p:column headerText="Name"
-                                                      filterBy="#{company.name}"
-                                                      filterStyle="display:none"
-                                                      sortBy="#{company.name}">
-                                                #{company.name}
-                                            </p:column>
+                                                <p:column style="width:18px">  
+                                                    <p:rowToggler />  
+                                                </p:column>
 
-                                            <p:column headerText="Type"
-                                                      filterBy="#{company.type}"
-                                                      filterStyle="display:none"
-                                                      sortBy="#{company.type}">
-                                                #{company.type}
-                                            </p:column>
+                                                <p:column headerText="Name"
+                                                          filterBy="#{company.name}"
+                                                          filterStyle="display:none"
+                                                          sortBy="#{company.name}">
+                                                    #{company.name}
+                                                </p:column>
 
-                                            <p:column headerText="# Members"
-                                                      filterBy="#{company.members.size()}"
-                                                      filterStyle="display:none">
-                                                #{company.members.size()}
-                                            </p:column>
+                                                <p:column headerText="Type"
+                                                          filterBy="#{company.type}"
+                                                          filterStyle="display:none"
+                                                          sortBy="#{company.type}">
+                                                    #{company.type}
+                                                </p:column>
 
-                                            <p:column headerText="Subdomain"
-                                                      filterBy="#{company.subdomain}"
-                                                      filterStyle="display:none"
-                                                      sortBy="#{company.subdomain}">
-                                                #{company.subdomain}
-                                            </p:column>
+                                                <p:column headerText="Members">
+                                                    TODO - Link to Users with company filter
+                                                </p:column>
 
-                                            <p:column headerText="# Sites">
-                                                <h:outputText value="#{company.clientSites.size()}" rendered="#{company.type eq 'CLIENT'}"/>
-                                                <h:outputText value="#{company.varSites.size()}" rendered="#{company.type eq 'VAR'}"/>
-                                            </p:column>
+                                                <p:column headerText="Subdomain"
+                                                          filterBy="#{company.subdomain}"
+                                                          filterStyle="display:none"
+                                                          sortBy="#{company.subdomain}">
+                                                    #{company.subdomain}
+                                                </p:column>
 
-                                            <p:rowExpansion>  
+                                                <p:column headerText="DAS">
+                                                    TODO - Link to DAS with company filter
+                                                </p:column>
 
-                                                <div class="expanded-row-wrapper-2">
+                                                <p:rowExpansion>  
 
-                                                    <p:graphicImage styleClass="expanded-row-arrow" value="#{URIUtil().s3Image('arrow_down_right.png')}" height="160px"/>
+                                                    <div class="expanded-row-wrapper-2">
 
-                                                    <table class="expanded-row-table">
-                                                        <tr>
-                                                            <td width="50px">
-                                                                <p:graphicImage styleClass="profile-image" value="#{URIUtil().companyLogo3P(company.id)}" height="60px"/>
-                                                            </td>
-                                                            <td>
-                                                                <table>
-                                                                    <tr>
-                                                                        <td>
-                                                                            <p:inplace id="nameAIP" styleClass="inplace" editor="true" label="#{company.name}" disabled="#{!permissionUtil.hasPermission('company:edit')}">  
-                                                                                <p:ajax event="save" listener="#{companies.updateName(company)}" update=":form:companies-table :form:growl" oncomplete="companiesTable.filter();"/>
-                                                                                <p:inputText id="editName" value="#{company.name}"/> 
-                                                                                <p:watermark value="Name" for="editName"/>
-                                                                            </p:inplace> 
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td>
-                                                                            #{company.type}
-                                                                        </td>
-                                                                    </tr>
-                                                                </table>
-                                                            </td>
-                                                        </tr>
-                                                    </table>
+                                                        <p:graphicImage styleClass="expanded-row-arrow" 
+                                                                        value="#{uriUtil.image('arrow_down_right.png', true)}" 
+                                                                        height="160px"/>
 
-                                                    <table class="expanded-row-table">
-                                                        <tr>
-                                                            <td>
-                                                                <table>
-                                                                    <tr class="expanded-row-table-title">
-                                                                        <td>
-                                                                            <h:outputText value="Contact"/>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td class="field-value-4">
-                                                                            <p:dataTable value="#{company.contacts}"
-                                                                                         var="contact"
-                                                                                         styleClass="type4-table table-align-top"
-                                                                                         emptyMessage="No contacts.">
+                                                        <table class="expanded-row-table">
+                                                            <tr>
 
-                                                                                <p:column>
-                                                                                    <h:outputText value="#{contact.type}"/>
-                                                                                </p:column>
+                                                                <td>
+                                                                    <table>
+                                                                        <tr>
+                                                                            <td>
+                                                                                <p:inplace id="nameAIP" 
+                                                                                           styleClass="inplace" 
+                                                                                           editor="true" 
+                                                                                           label="#{company.name}" 
+                                                                                           disabled="#{!jsfSessionUser.currentUser.hasPermission('company:edit')}">  
+                                                                                    <p:ajax event="save" 
+                                                                                            listener="#{company.update(false, false)}" 
+                                                                                            update=":form:companies-table :form:growl" 
+                                                                                            oncomplete="companiesTable.filter();"/>
+                                                                                    <p:inputText id="editName" 
+                                                                                                 value="#{company.name}"/> 
+                                                                                    <p:watermark value="Name" 
+                                                                                                 for="editName"/>
+                                                                                </p:inplace> 
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td>
+                                                                                #{company.type}
+                                                                            </td>
+                                                                        </tr>
+                                                                    </table>
+                                                                </td>
+                                                                <td >
+                                                                    <p:graphicImage styleClass="company-logo" 
+                                                                                    value="#{uriUtil.companyLogo(company, false)}" 
+                                                                                    height="60px"/>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
 
-                                                                                <p:column>
-                                                                                    <h:outputText value="#{contact.buildFullName()}"/>
-                                                                                </p:column>
+                                                        <table class="expanded-row-table">
+                                                            <tr>
+                                                                <td>
+                                                                    <table>
+                                                                        <tr>
+                                                                            <td>
+                                                                                <table>
+                                                                                    <tr class="expanded-row-table-title">
+                                                                                        <td colspan="2">
+                                                                                            <h:outputText value="Contact"/>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td class="field-label-4">Address:</td>
+                                                                                        <td class="field-value-4">
+                                                                                            <p:dataTable value="#{company.contact.addresses}"
+                                                                                                         var="address"
+                                                                                                         styleClass="expanded-row-datatable address-update-class"
+                                                                                                         style="padding-top: 5px">
 
-                                                                                <p:column>
-                                                                                    <h:outputText value="#{contact.email}"/>
-                                                                                </p:column>
+                                                                                                <p:column>
+                                                                                                    <h:outputText value="#{address.buildCompleteAddress()}"/>
+                                                                                                </p:column>
 
-                                                                                <p:column>
-                                                                                    <p:dataTable value="#{contact.addresses}"
-                                                                                                 var="address"
-                                                                                                 styleClass="type4-table"
-                                                                                                 emptyMessage="You do not have any addresses.">
+                                                                                            </p:dataTable>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td class="field-label-4" width="100px">Telephone:</td>
+                                                                                        <td  class="field-value-4">
+                                                                                            <p:dataTable value="#{company.contact.telephones}"
+                                                                                                         var="telephone"
+                                                                                                         styleClass="expanded-row-datatable telephone-update-class">
+
+                                                                                                <p:column>
+                                                                                                    <h:outputText value="#{telephone.internationalFormat()} (#{telephone.type})"/>
+                                                                                                </p:column>
+
+                                                                                            </p:dataTable>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                </table>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </table>
+                                                                </td>
+                                                                <td>
+                                                                    <table>
+                                                                        <tr class="expanded-row-table-title">
+                                                                            <td colspan="2">
+                                                                                <h:outputText value="Overview"/>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <h:panelGroup rendered="#{company.type eq 'VAR'}">
+                                                                            <tr>
+                                                                                <td class="field-label-4" width="100px">Sub-domain:</td>
+                                                                                <td>#{company.subdomain}</td>
+                                                                            </tr>
+                                                                        </h:panelGroup>
+                                                                    </table>
+                                                                </td>
+                                                                <td>
+                                                                    <table>
+                                                                        <tr class="expanded-row-table-title">
+                                                                            <td colspan="2">
+                                                                                <h:outputText value="Association"/>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <h:panelGroup rendered="#{company.type eq 'CLIENT'}">
+                                                                            <tr>
+                                                                                <td class="field-label-2">Parent VAR:</td>
+                                                                                <td>
+                                                                                    TODO - Link to parent company 
+                                                                                </td>
+                                                                            </tr>
+                                                                        </h:panelGroup>
+                                                                        <h:panelGroup rendered="#{company.type eq 'VAR'}">
+                                                                            <tr>
+                                                                                <td class="field-label-2">Clients:</td>
+                                                                                <td>
+                                                                                    <p:dataTable value="#{company.clients}"
+                                                                                                 var="client"
+                                                                                                 styleClass="type4-table table-align-top"
+                                                                                                 emptyMessage="No clients.">
 
                                                                                         <p:column>
-                                                                                            <h:outputText value="#{address.buildCompleteAddress()}"/>
+                                                                                            <h:outputText value="#{client.name}"/>
                                                                                         </p:column>
 
                                                                                     </p:dataTable>
-                                                                                </p:column>
 
-                                                                                <p:column>
-                                                                                    <p:dataTable value="#{contact.telephones}"
-                                                                                                 var="telephone"
-                                                                                                 styleClass="type4-table"
-                                                                                                 emptyMessage="You do not have any telephone numbers.">
-
-                                                                                        <p:column>
-                                                                                            <h:outputText value="#{telephone.type.label} : #{companies.phoneUtil.internationalFormat(telephone)}"/>
-                                                                                        </p:column>
-
-                                                                                    </p:dataTable>
-                                                                                </p:column>
-
-                                                                            </p:dataTable>
-                                                                        </td>
-                                                                    </tr>
-                                                                </table>
-                                                            </td>
-                                                            <td>
-                                                                <table>
-                                                                    <tr class="expanded-row-table-title">
-                                                                        <td colspan="2">
-                                                                            <h:outputText value="Overview"/>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <h:panelGroup rendered="#{company.type eq 'VAR'}">
+                                                                                </td>
+                                                                            </tr>
+                                                                        </h:panelGroup>
                                                                         <tr>
-                                                                            <td class="field-label-4" width="100px">Sub-domain:</td>
-                                                                            <td>#{company.subdomain}</td>
-                                                                        </tr>
-                                                                    </h:panelGroup>
-                                                                </table>
-                                                            </td>
-                                                            <td>
-                                                                <table>
-                                                                    <tr class="expanded-row-table-title">
-                                                                        <td colspan="2">
-                                                                            <h:outputText value="Association"/>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <h:panelGroup rendered="#{company.type eq 'CLIENT'}">
-                                                                        <tr>
-                                                                            <td class="field-label-2">Parent VAR:</td>
-                                                                            <td>
-                                                                                #{company.parentVAR.name} 
-                                                                            </td>
-                                                                        </tr>
-                                                                    </h:panelGroup>
-                                                                    <h:panelGroup rendered="#{company.type eq 'VAR'}">
-                                                                        <tr>
-                                                                            <td class="field-label-2">Clients:</td>
-                                                                            <td>
-                                                                                <p:dataTable value="#{company.clients}"
-                                                                                             var="client"
-                                                                                             styleClass="type4-table table-align-top"
-                                                                                             emptyMessage="No clients.">
-
-                                                                                    <p:column>
-                                                                                        <h:outputText value="#{client.name}"/>
-                                                                                    </p:column>
-
-                                                                                </p:dataTable>
-                                                                                
-                                                                            </td>
-                                                                        </tr>
-                                                                    </h:panelGroup>
-                                                                    <h:panelGroup rendered="#{company.type eq 'VAR'}">
-                                                                        <tr>
-                                                                            <td class="field-label-2">Sites:</td>
+                                                                            <td class="field-label-2">DAS:</td>
                                                                             <td>
 
-                                                                                <p:dataTable value="#{company.varSites}"
-                                                                                             var="site"
+                                                                                <p:dataTable value="#{company.das}"
+                                                                                             var="das"
                                                                                              styleClass="type4-table table-align-top"
                                                                                              emptyMessage="No sites.">
 
                                                                                     <p:column>
-                                                                                        <h:outputText value="#{site.name}"/>
+                                                                                        <h:outputText value="#{das.name}"/>
                                                                                     </p:column>
 
                                                                                 </p:dataTable>
 
                                                                             </td>
                                                                         </tr>
-                                                                    </h:panelGroup>
-                                                                    <h:panelGroup rendered="#{company.type eq 'CLIENT'}">
-                                                                        <tr>
-                                                                            <td class="field-label-2">Sites:</td>
-                                                                            <td>
-                                                                                <p:dataTable value="#{company.clientSites}"
-                                                                                             var="site"
-                                                                                             styleClass="type4-table table-align-top"
-                                                                                             emptyMessage="No sites.">
-
-                                                                                    <p:column>
-                                                                                        <h:outputText value="#{site.name}"/>
-                                                                                    </p:column>
-
-                                                                                </p:dataTable>
-                                                                                
-                                                                            </td>
-                                                                        </tr>
-                                                                    </h:panelGroup>
-                                                                </table>
-                                                            </td>
-                                                        </tr>
-                                                    </table>
-
-                                                    <hr></hr>
-
-                                                    <p:splitButton value="Company Actions" styleClass="dark-menu">
-                                                        <p:menuitem value="Edit Sites" oncomplete="PF('client-sites-dlg').show();" actionListener="#{company.generateLinkedAndAvailableSites()}" rendered="#{company.type eq 'CLIENT'}" disabled="#{!permissionUtil.hasPermission('permission,account:edit')}"/> 
-                                                        <p:menuitem value="Edit Sites" oncomplete="PF('var-sites-dlg').show();" actionListener="#{company.generateLinkedAndAvailableSites()}" rendered="#{company.type eq 'VAR'}" disabled="#{!permissionUtil.hasPermission('account:edit')}"/>
-                                                        <p:menuitem value="Edit Clients"  oncomplete="PF('var-clients-dlg').show();" actionListener="#{company.generateLinkedAndAvailableClientCompanies()}" rendered="#{company.type eq 'VAR'}" disabled="#{!permissionUtil.hasPermission('account:edit')}"/> 
-                                                        <p:separator />
-                                                        <p:menuitem value="Delete Company" 
-                                                                    actionListener="#{companies.deleteCompany(company)}" 
-                                                                    update=":form:companies-table :form:growl" 
-                                                                    ajax="true" 
-                                                                    disabled="#{!permissionUtil.hasPermission('account:delete')}">
-                                                        </p:menuitem>
-                                                    </p:splitButton>
-
-                                                    <p:commandButton value="Support Tickets" style="margin-right: 7px"/>
-
-
-                                                    <p:dialog id="var-sites-dlg" header="Sites" widgetVar="var-sites-dlg" dynamic="true">  
-                                                        
-                                                        You can grant this company access to sites by linking them. <br></br>
-                                                        This VAR can only grant their clients access to sites that they are linked to.<br></br>
-                                                        You can drag sites back and forth. <br></br>
-                                                        
-                                                        <p:spacer width="100%" height="5px"/>
-                                                        
-                                                        <p:pickList id="var-sites" 
-                                                                    value="#{company.linkedAndAvailableVarSites}" 
-                                                                    var="site"  
-                                                                    itemValue="#{site}" 
-                                                                    itemLabel="#{site.id}" 
-                                                                    converter="siteCvt"
-                                                                    styleClass="type1-picklist">  
-
-                                                            <f:facet name="sourceCaption">Available</f:facet>  
-                                                            <f:facet name="targetCaption">Linked</f:facet> 
-
-                                                            <p:column style="width:75%;">  
-                                                                #{site.name}  
-                                                            </p:column>  
-
-                                                        </p:pickList>
+                                                                    </table>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
 
                                                         <hr></hr>
-                                                        
-                                                        <p:commandButton id="save-var-sites-btn" 
-                                                                         widgetVar="savevarwv"
-                                                                         action="#{companies.updateVarSites(company)}" 
-                                                                         value="Save" 
-                                                                         styleClass="green-button"
-                                                                         process="@this,var-sites" 
-                                                                         update=":form:companies-table :form:growl"
-                                                                         onclick="PF('blockui2').block();"
-                                                                         oncomplete="PF('blockui2').unblock(); PF('var-sites-dlg').hide(); companiesTable.filter();"/>
 
-                                                        <ez:blockUI target="@widgetVar(savevarwv)" widgetVar="blockui2"/>
+                                                        <p:splitButton value="Company Actions" 
+                                                                       styleClass="dark-menu">
+                                                            <p:menuitem value="Edit DAS" 
+                                                                        oncomplete="PF('das-dlg').show();" 
+                                                                        actionListener="#{company.lazyLoad()}"
+                                                                        disabled="#{!jsfSessionUser.currentUser.hasPermission('account:edit')}"/>
+                                                            <p:menuitem value="Edit Clients"  
+                                                                        oncomplete="PF('var-clients-dlg').show();" 
+                                                                        actionListener="#{company.lazyLoad()}" 
+                                                                        rendered="#{company.type eq 'VAR'}" 
+                                                                        disabled="#{!jsfSessionUser.currentUser.hasPermission('account:edit')}"/> 
+                                                            <p:separator />
+                                                            <p:menuitem value="Delete Company" 
+                                                                        actionListener="#{company.delete()}" 
+                                                                        update=":form:companies-table :form:growl" 
+                                                                        ajax="true" 
+                                                                        disabled="#{!jsfSessionUser.currentUser.hasPermission('account:delete')}">
+                                                            </p:menuitem>
+                                                        </p:splitButton>
 
-                                                    </p:dialog>
+                                                        <p:commandButton value="Support Tickets" style="margin-right: 7px"/>
 
-                                                    <p:dialog id="client-sites-dlg" header="Client Sites" widgetVar="client-sites-dlg" dynamic="true">  
-                                                        
-                                                        You can grant this company access to sites by linking them. <br></br>
-                                                        This client can only gain access to sites linked to their VAR.<br></br>
-                                                        You can drag sites back and forth. <br></br>
-                                                        
-                                                        <p:spacer width="100%" height="5px"/>
-                                                        
-                                                        <p:pickList id="client-sites" 
-                                                                    value="#{company.linkedAndAvailableClientSites}" 
-                                                                    var="site"  
-                                                                    itemValue="#{site}" 
-                                                                    itemLabel="#{site.id}" 
-                                                                    converter="siteCvt"
-                                                                    styleClass="type1-picklist">  
 
-                                                            <f:facet name="sourceCaption">Available</f:facet>  
-                                                            <f:facet name="targetCaption">Linked</f:facet> 
+                                                        <p:dialog id="das-dlg" header="DAS" widgetVar="das-dlg" dynamic="true">  
 
-                                                            <p:column style="width:75%;">  
-                                                                #{site.name}  
-                                                            </p:column>  
+                                                            You can grant this company access to DAS by linking them. <br></br>
+                                                            You can drag sites back and forth. <br></br>
 
-                                                        </p:pickList>
-                                                        
-                                                        <hr></hr>
+                                                            <p:spacer width="100%" height="5px"/>
 
-                                                        <p:commandButton id="save-client-sites-btn" 
-                                                                         widgetVar="saveclientwv"
-                                                                         action="#{companies.updateClientSites(company)}" 
-                                                                         value="Save" 
-                                                                         styleClass="green-button"
-                                                                         process="@this,client-sites" 
-                                                                         update=":form:companies-table :form:growl"
-                                                                         onclick="PF('blockui3').block();"
-                                                                         oncomplete="PF('blockui3').unblock(); PF('client-sites-dlg').hide(); companiesTable.filter();"/>
+                                                            <p:pickList id="var-das" 
+                                                                        value="#{company.linkedAndAvailableDas}" 
+                                                                        var="das"  
+                                                                        itemValue="#{das}" 
+                                                                        itemLabel="#{das.id}" 
+                                                                        converter="dasCvt"
+                                                                        styleClass="type1-picklist">  
 
-                                                        <ez:blockUI target="@widgetVar(saveclientwv)" widgetVar="blockui3"/>
+                                                                <f:facet name="sourceCaption">Available</f:facet>  
+                                                                <f:facet name="targetCaption">Linked</f:facet> 
 
-                                                    </p:dialog>
+                                                                <p:column style="width:75%;">  
+                                                                    #{das.name}  
+                                                                </p:column>  
 
-                                                    <p:dialog id="var-clients-dlg" header="Clients" widgetVar="var-clients-dlg" dynamic="true">  
-                                                        
-                                                        <p:pickList id="var-clients" 
-                                                                    value="#{company.linkedAndAvailableClientCompanies}" 
-                                                                    var="client"  
-                                                                    itemValue="#{client}" 
-                                                                    itemLabel="#{client.id}" 
-                                                                    converter="companyCvt"
-                                                                    styleClass="type1-picklist">  
+                                                            </p:pickList>
 
-                                                            <f:facet name="sourceCaption">Available</f:facet>  
-                                                            <f:facet name="targetCaption">Linked</f:facet> 
+                                                            <hr></hr>
 
-                                                            <p:column style="width:75%;">  
-                                                                #{client.name}  
-                                                            </p:column>  
+                                                            <p:commandButton id="save-var-das-btn" 
+                                                                             widgetVar="savevarwv"
+                                                                             action="#{company.update(true, false)}" 
+                                                                             value="Save" 
+                                                                             styleClass="green-button"
+                                                                             process="@this,var-das" 
+                                                                             update=":form:companies-table :form:growl"
+                                                                             onclick="PF('blockui2').block();"
+                                                                             oncomplete="PF('blockui2').unblock(); PF('das-dlg').hide(); companiesTable.filter();"/>
 
-                                                        </p:pickList>
+                                                            <ez:blockUI target="@widgetVar(savevarwv)" widgetVar="blockui2"/>
 
-                                                        <hr></hr>
-                                                        
-                                                        <p:commandButton id="save-var-clients-btn" 
-                                                                         widgetVar="saveclientswv"
-                                                                         action="#{companies.updateVarClients(company)}" 
-                                                                         value="Save" 
-                                                                         styleClass="green-button"
-                                                                         process="@this,var-clients" 
-                                                                         update=":form:companies-table :form:growl"
-                                                                         onclick="PF('blockui4').block();"
-                                                                         oncomplete="PF('blockui4').unblock(); PF('var-clients-dlg').hide(); companiesTable.filter();"/>
+                                                        </p:dialog>
 
-                                                        <ez:blockUI target="@widgetVar(saveclientswv)" widgetVar="blockui4"/>
 
-                                                    </p:dialog>
+                                                        <p:dialog id="var-clients-dlg" header="Clients" widgetVar="var-clients-dlg" dynamic="true">  
 
-                                                </div>
-                                            </p:rowExpansion> 
+                                                            <p:pickList id="var-clients" 
+                                                                        value="#{company.linkedAndAvailableClientCompanies}" 
+                                                                        var="client"  
+                                                                        itemValue="#{client}" 
+                                                                        itemLabel="#{client.id}" 
+                                                                        converter="companyCvt"
+                                                                        styleClass="type1-picklist">  
 
-                                        </p:dataTable>
+                                                                <f:facet name="sourceCaption">Available</f:facet>  
+                                                                <f:facet name="targetCaption">Linked</f:facet> 
+
+                                                                <p:column style="width:75%;">  
+                                                                    #{client.name}  
+                                                                </p:column>  
+
+                                                            </p:pickList>
+
+                                                            <hr></hr>
+
+                                                            <p:commandButton id="save-var-clients-btn" 
+                                                                             widgetVar="saveclientswv"
+                                                                             action="#{company.update(false, true)}" 
+                                                                             value="Save" 
+                                                                             styleClass="green-button"
+                                                                             process="@this,var-clients" 
+                                                                             update=":form:companies-table :form:growl"
+                                                                             onclick="PF('blockui4').block();"
+                                                                             oncomplete="PF('blockui4').unblock(); PF('var-clients-dlg').hide(); companiesTable.filter();"/>
+
+                                                            <ez:blockUI target="@widgetVar(saveclientswv)" widgetVar="blockui4"/>
+
+                                                        </p:dialog>
+
+                                                    </div>
+                                                </p:rowExpansion> 
+
+                                            </p:dataTable>
+
+                                        </ui:fragment>
 
                                     </h:panelGroup>
 
@@ -494,7 +465,13 @@
 
                 </pe:layoutPane>
 
-                <pe:layoutPane id="south" position="south" closable="false" resizable="false" size="40"><ez:footer/></pe:layoutPane>
+                <pe:layoutPane id="south" 
+                               position="south" 
+                               closable="false" 
+                               resizable="false" 
+                               size="40">
+                    <ez:footer/>
+                </pe:layoutPane>
 
             </pe:layout>
 

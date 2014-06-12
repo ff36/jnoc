@@ -5,10 +5,7 @@
  */
 package com.dastrax.app.model;
 
-import com.dastrax.app.service.internal.DefaultAttributeFilter;
-import com.dastrax.app.services.AttributeFilter;
 import com.dastrax.per.dap.CrudService;
-import com.dastrax.per.entity.User;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -153,14 +150,16 @@ public class DataTable {
      * command call. Once the data has loaded we set the render property to
      * true.
      *
-     * @param parameters
+     * @param parameters. Optional parameter filter map
+     * @param root. Root parameter filter map
      */
-    public void initTable(Map<String, List<String>> parameters) {
-        AttributeFilter attFilter = new DefaultAttributeFilter();
-
+    public void initTable(
+            Map<String, List<String>> parameters, 
+            Map<String, List<Long>> root) {
+        
         this.model = new DataTableModel(
                 this.modelQuery,
-                attFilter.authorizedAuthors(),
+                root,
                 parameters);
 
         this.render = true;
@@ -190,7 +189,7 @@ public class DataTable {
 
         //<editor-fold defaultstate="collapsed" desc="Properties">
         private final ModelQuery modelQuery;
-        private final Map<String, List<String>> rootFilter;
+        private final Map<String, List<Long>> rootFilter;
         private final Map<String, List<String>> optionalFilter;
         private CrudService dap;
 //</editor-fold>
@@ -198,7 +197,7 @@ public class DataTable {
         //<editor-fold defaultstate="collapsed" desc="Constructors">
         public DataTableModel(
                 ModelQuery modelQuery,
-                Map<String, List<String>> rootFilter,
+                Map<String, List<Long>> rootFilter,
                 Map<String, List<String>> optionalFilter) {
             this.modelQuery = modelQuery;
             this.rootFilter = rootFilter;

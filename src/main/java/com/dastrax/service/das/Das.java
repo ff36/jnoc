@@ -10,6 +10,7 @@ import com.dastrax.app.model.DasModelQuery;
 import com.dastrax.app.model.DataTable;
 import com.dastrax.app.model.ModelQuery;
 import com.dastrax.app.security.Password;
+import com.dastrax.app.service.internal.DefaultAttributeFilter;
 import com.dastrax.service.navigation.Navigator;
 import java.io.Serializable;
 import java.util.List;
@@ -111,7 +112,9 @@ public class Das implements Serializable {
      */
     public void init() {
         dataTable = new DataTable(model);
-        dataTable.initTable(parameters);
+        dataTable.initTable(
+                parameters, 
+                new DefaultAttributeFilter().authorizedDAS());
         password = new Password();
     }
 

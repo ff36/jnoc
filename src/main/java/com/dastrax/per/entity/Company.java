@@ -97,6 +97,8 @@ public class Company implements Serializable {
     private DualListModel<Company> linkedAndAvailableClientCompanies;
     @Transient
     private UploadFile uploadFile;
+    @Transient
+    private Company newParent;
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Constructors">
@@ -105,7 +107,7 @@ public class Company implements Serializable {
         this.das = new ArrayList<>();
         this.contact = new Contact();
         this.uploadFile = new UploadFile();
-        
+
         try {
             dap = (CrudService) InitialContext.doLookup(
                     ResourceBundle.getBundle("config").getString("CRUD"));
@@ -224,9 +226,17 @@ public class Company implements Serializable {
         return uploadFile;
     }
 
+    /**
+     * Get the value of newParent. Companies being created of type Client will
+     * set this during registration.
+     *
+     * @return the value of newParent
+     */
+    public Company getNewParent() {
+        return newParent;
+    }
 
 //</editor-fold>
-    
     //<editor-fold defaultstate="collapsed" desc="Setters">
     /**
      * Set the value of version. Auto incremented persistence record version
@@ -328,8 +338,17 @@ public class Company implements Serializable {
         this.linkedAndAvailableClientCompanies = linkedAndAvailableClientCompanies;
     }
 
+    /**
+     * Set the value of newParent. Companies being created of type Client will
+     * set this during registration.
+     *
+     * @param newParent new value of newParent
+     */
+    public void setNewParent(Company newParent) {
+        this.newParent = newParent;
+    }
+
 //</editor-fold>
-    
     /**
      * Loads linkedAndAvailableDas and linkedAndAvailableClientCompanies data
      * from the persistence layer and sets the class level properties. This
@@ -349,10 +368,18 @@ public class Company implements Serializable {
      */
     public void create() {
 
-        das = linkedAndAvailableDas.getTarget();
+        try {
+            das = linkedAndAvailableDas.getTarget();
+        } catch (NullPointerException npe) {
+            // Do nothing. The linkedAndAvailableDas was null
+        }
 
         if (type.equals(DTX.CompanyType.VAR)) {
-            clients = linkedAndAvailableClientCompanies.getTarget();
+            try {
+                clients = linkedAndAvailableClientCompanies.getTarget();
+            } catch (NullPointerException npe) {
+                // Do nothing. The linkedAndAvailableClientCompanies was null
+            }
 
             // Write the new subdomain to route 53
             DNSManager dns = new DefaultDNSManager();
@@ -362,19 +389,19 @@ public class Company implements Serializable {
         // Persist the new company
         Company newCompany = (Company) dap.create(this);
 
+        // If its a company of type client add it to the parent
+        if (DTX.CompanyType.CLIENT.equals(type)) {
+            Company parent = (Company) dap.find(
+                    Company.class,
+                    newParent.getId());
+            parent.clients.add(newCompany);
+            parent.update(false, false);
+        }
+
         if (uploadFile.isUploaded()) {
             // Save the logo
             saveLogo();
         }
-
-        // Add success message
-        JsfUtil.addSuccessMessage(name + " created");
-        // Carry the message over to the page redirect
-        FacesContext
-                .getCurrentInstance()
-                .getExternalContext()
-                .getFlash()
-                .setKeepMessages(true);
 
     }
 
@@ -605,12 +632,12 @@ public class Company implements Serializable {
         uploadFile = uploader.upload(event);
         uploadFile.setType(DTX.UploadType.COMPANY_LOGO);
         uploadFile.isUploaded();
-        
+
     }
 
     /**
-     * Saves the logo from its temporary location to its permanent
-     * storage location.
+     * Saves the logo from its temporary location to its permanent storage
+     * location.
      */
     public void saveLogo() {
         UploadManager uploader = new DefaultUploadManager();
@@ -618,7 +645,7 @@ public class Company implements Serializable {
             uploader.save(uploadFile, this);
         }
     }
-    
+
     /**
      * Uploaded images stored in the temporary storage directory can offer the
      * option to be cropped. This listener method determines the coordinates and
@@ -632,16 +659,16 @@ public class Company implements Serializable {
         uploadFile.getImage().getImageCrop().setWidth(event.getWidth());
         uploadFile.getImage().getImageCrop().setHeight(event.getHeight());
     }
-    
+
     /**
-     * Saves the newly cropped version user logo over the original in 
-     * the temporary storage location.
+     * Saves the newly cropped version user logo over the original in the
+     * temporary storage location.
      */
     public void cropLogo() {
         UploadManager uploader = new DefaultUploadManager();
         uploader.crop(uploadFile, DTX.CroppableType.COMPANY_LOGO);
     }
-    
+
     //<editor-fold defaultstate="collapsed" desc="Overrides">
     @Override
     public int hashCode() {

@@ -5,6 +5,7 @@
  */
 package com.dastrax.per.project;
 
+import com.dastrax.per.project.DTX.CompanyType;
 import com.dastrax.per.project.DTX.DMSType;
 import com.dastrax.per.project.DTX.TelephoneType;
 import com.dastrax.per.project.DTX.TicketSeverity;
@@ -72,6 +73,15 @@ public class EnumController implements Serializable {
      */
     public TicketStatus[] getTicketStatus() {
         return TicketStatus.values();
+    }
+    
+    /**
+     * Get all the values of the ENUM CompanyType
+     * 
+     * @return An array of values from the CompanyType ENUM
+     */
+    public CompanyType[] getCompanyTypes() {
+        return CompanyType.values();
     }
     
 }

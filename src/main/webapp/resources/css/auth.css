@@ -458,7 +458,7 @@ TABLE.navigation-sidebar
 	margin-left: 102px;
 	padding: 10px;
 	border: 2px dotted #434343;
-	background-color: #C5D817;
+	background-color: transparent;
 }
 .expanded-row-table-title TD
 {
@@ -744,12 +744,12 @@ TABLE.navigation-sidebar
 }
 .type4-table TD
 {
-	background: #C5D817;
-	border: #C5D817 !important;
+	background: inherit;
+	border: inherit !important;
 }
 .type4-table .ui-datatable-data
 {
-	border: 1px solid #C5D817;
+	border: inherit;
 }
 /*OVERLAY*/
 .ui-dialog-content
@@ -1100,6 +1100,14 @@ TABLE.dms-sub-table
 .profile-image
 {
 	border: 2px solid #434343;
+}
+.company-logo
+{
+	/*+placement:float-right 0px 0px;*/
+	float: right;
+	position: relative;
+	left: 0px;
+	top: 0px;
 }
 .circular-clip-100
 {

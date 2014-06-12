@@ -6,6 +6,8 @@
 
 package com.dastrax.app.services;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -69,5 +71,32 @@ public interface AttributeFilter {
      * UID's
      */
     public Map authorizedAuthors();
+    
+    /**
+     * Determines all the tickets that the current user has access to.
+     * (Authenticated via SHIRO)
+     *
+     * @return a complete Map of users that the current user is authorized to
+     * access. The map key is "author" and the value is a list of user ID's
+     */
+    public Map<String, List<Long>> authorizedTickets();
+    
+    /**
+     * Determines all the incidents that the current user has access to.
+     * (Authenticated via SHIRO)
+     *
+     * @return a complete Map of users that the current user is authorized to
+     * access. The map key is "author" and the value is a list of user ID's
+     */
+    public Map<String, List<Long>> authorizedIncidents();
+    
+    /**
+     * Determines all the users that the current user has access to.
+     * (Authenticated via SHIRO)
+     *
+     * @return a complete Map of users that the current user is authorized to
+     * access. The map key is "author" and the value is a list of user ID's
+     */
+    public Map<String, List<Long>> authorizedUsers();
     
 }

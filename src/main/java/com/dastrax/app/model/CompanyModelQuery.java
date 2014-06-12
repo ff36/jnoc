@@ -8,10 +8,12 @@ package com.dastrax.app.model;
 
 import com.dastrax.per.entity.Company;
 import com.dastrax.per.entity.Company_;
+import com.dastrax.per.project.DTX.CompanyType;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -93,16 +95,16 @@ public class CompanyModelQuery implements ModelQuery {
 
         // Implement the Root Filter
         if (!rootFilter.isEmpty()) {
-            for (String key : (List<String>) rootFilter.keySet()) {
-                List<String> values = (List<String>) rootFilter.get(key);
+            for (String key : (Set<String>) rootFilter.keySet()) {
+                List<?> values = (List<?>) rootFilter.get(key);
 
                 List<Predicate> rootPredicate = new ArrayList<>();
-                for (String value : values) {
-                    // Search term
-                    Expression literal = builder.literal(value);
+                for (Object value : values) {
                     // Predicate
                     switch (key) {
-                        case "company":                         
+                        case "company":  
+                            // Search term
+                            Expression literal = builder.literal((Long) value);
                             rootPredicate.add(builder.equal(company.get(Company_.id), literal));
                             break;
                         default:
@@ -116,16 +118,17 @@ public class CompanyModelQuery implements ModelQuery {
 
         // Implement the Optional Specified Filter
         if (!optionalFilter.isEmpty()) {
-            for (String key : (List<String>) optionalFilter.keySet()) {
-                List<String> values = (List<String>) optionalFilter.get(key);
+            for (String key : (Set<String>) optionalFilter.keySet()) {
+                List<?> values = (List<?>) optionalFilter.get(key);
 
                 List<Predicate> optionalPredicate = new ArrayList<>();
-                for (String value : values) {
-                    // Search term
-                    Expression literal = builder.literal(value);
+                for (Object value : values) {
                     // Predicate
                     switch (key) {
                         case "type":
+                            // Search term
+                            String companyType = (String) value;
+                            Expression literal = builder.literal(CompanyType.valueOf(companyType));
                             optionalPredicate.add(builder.equal(company.get(Company_.type), literal));
                             break;
                         default:

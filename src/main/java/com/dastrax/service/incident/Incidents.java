@@ -9,6 +9,7 @@ import com.dastrax.app.misc.JsfUtil;
 import com.dastrax.app.model.DataTable;
 import com.dastrax.app.model.IncidentModelQuery;
 import com.dastrax.app.model.ModelQuery;
+import com.dastrax.app.service.internal.DefaultAttributeFilter;
 import com.dastrax.service.navigation.Navigator;
 import java.io.Serializable;
 import java.util.List;
@@ -82,7 +83,9 @@ public class Incidents implements Serializable {
      */
     public void init() {
         dataTable = new DataTable(model);
-        dataTable.initTable(parameters);
+        dataTable.initTable(
+                parameters, 
+                new DefaultAttributeFilter().authorizedIncidents());
     }
 
 }
