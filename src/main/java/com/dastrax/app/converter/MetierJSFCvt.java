@@ -35,7 +35,7 @@ public class MetierJSFCvt implements Converter  {
     //<editor-fold defaultstate="collapsed" desc="Overrides">
     @Override
     public Object getAsObject(FacesContext fc, UIComponent uic, String string) {
-        return (Metier) dap.find(Metier.class, string);
+        return (Metier) dap.find(Metier.class, Long.valueOf(string));
     }
     
     @Override

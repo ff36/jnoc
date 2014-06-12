@@ -466,7 +466,6 @@ public class Company implements Serializable {
             }
         }
         dap.update(this);
-        JsfUtil.addSuccessMessage(name + " has been updated.");
     }
 
     /**

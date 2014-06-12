@@ -35,7 +35,7 @@ public class UserJSFCvt implements Converter {
     //<editor-fold defaultstate="collapsed" desc="Overrides">
     @Override
     public Object getAsObject(FacesContext fc, UIComponent uic, String string) {
-        return (User) dap.find(User.class, string);
+        return (User) dap.find(User.class, Long.valueOf(string));
     }
     
     @Override

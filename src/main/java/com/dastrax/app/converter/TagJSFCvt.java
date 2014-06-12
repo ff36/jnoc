@@ -48,7 +48,7 @@ public class TagJSFCvt implements Converter {
         if (string.startsWith("tempID")) {
             return new Tag(string.substring(string.indexOf("(") +1,string.indexOf(")")));
         } else {
-            return (Tag) dap.find(Tag.class, string);
+            return (Tag) dap.find(Tag.class, Long.valueOf(string));
         }
     }
     

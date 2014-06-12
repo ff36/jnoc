@@ -503,7 +503,7 @@
                                                              update=":form:growl @(.company-update-class)"
                                                              onclick="PF('blockui1').block();"
                                                              oncomplete="PF('blockui1').unblock();"
-                                                             disabled="#{createCompany.company.name.length() gt 1 ? !ajaxValidUtil.subdomainAvailable(createCompany.company.subdomain) : true}"/>
+                                                             disabled="#{createCompany.company.name.length() gt 1 ? createCompany.company.type eq 'VAR' ? !ajaxValidUtil.subdomainAvailable(createCompany.company.subdomain) : false : true}"/>
 
                                             <ez:blockUI target=":form:save-new-company-button" widgetVar="blockui1"/>
 
