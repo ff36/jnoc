@@ -135,13 +135,13 @@
                                                       widgetVar="profile-image-dlg" 
                                                       dynamic="true" 
                                                       resizable="false" 
-                                                      height="#{createCompany.company.uploadFile.image.height}">  
+                                                      height="#{createCompany.company.uploadFile.image.height + 100}">  
 
                                                 <h3>Click and drag on the image to select an area.</h3>
 
                                                 <p:graphicImage id="cropped-image" 
                                                                 value="#{createCompany.company.uploadFile.meta.uri}" 
-                                                                width="600px"/>  
+                                                                width="500px"/>  
                                                 <pe:imageAreaSelect id="image-area-select" 
                                                                     for="cropped-image" 
                                                                     handles="true" 
@@ -175,6 +175,7 @@
                                                 <f:selectItem itemLabel="VAR"
                                                               itemValue="VAR"/>
                                                 <p:ajax event="change" 
+                                                        listener="#{createCompany.company.lazyLoad()}"
                                                         update=":form:lazy-update-class :form:lazy-update-class-2" 
                                                         process="@this"/>
                                             </p:selectOneMenu> 
@@ -196,6 +197,7 @@
                                                                  style="width: 258px"
                                                                  styleClass="parent-var-update-class company-update-class"
                                                                  converter="companyCvt">
+                                                    <f:selectItem itemLabel="-" itemValue="" noSelectionOption="true"/>
                                                     <f:selectItems value="#{createCompany.vars}" 
                                                                    var="company" 
                                                                    itemLabel="#{company.name}" 
@@ -586,7 +588,7 @@
 
                                             <p:spacer width="100%" height="10px"/>
 
-                                            <p:pickList value="#{createCompany.company.newParent.linkedAndAvailableClientCompanies}" 
+                                            <p:pickList value="#{createCompany.company.linkedAndAvailableClientCompanies}" 
                                                         var="client"  
                                                         itemValue="#{client}" 
                                                         itemLabel="#{client.id}" 
@@ -595,6 +597,8 @@
 
                                                 <f:facet name="sourceCaption">Available</f:facet>  
                                                 <f:facet name="targetCaption">Selected</f:facet> 
+                                                
+                                                <p:ajax event="transfer"/>
 
                                                 <p:column style="width:75%;">  
                                                     #{client.name}  

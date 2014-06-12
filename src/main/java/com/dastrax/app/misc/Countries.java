@@ -28,8 +28,7 @@ public class Countries {
      */
     public static List<Locale> getWorldCountries() {
         
-        List<Locale> worldCountries = new ArrayList<>(
-                Locale.getISOCountries().length);
+        List<Locale> worldCountries = new ArrayList<>(8810);
         
         String[] locales = Locale.getISOCountries();
         

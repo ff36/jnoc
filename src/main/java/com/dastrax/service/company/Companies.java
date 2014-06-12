@@ -10,7 +10,6 @@ import com.dastrax.app.model.CompanyModelQuery;
 import com.dastrax.app.model.DataTable;
 import com.dastrax.app.model.ModelQuery;
 import com.dastrax.app.service.internal.DefaultAttributeFilter;
-import com.dastrax.app.services.AttributeFilter;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;

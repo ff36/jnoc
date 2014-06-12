@@ -35,14 +35,18 @@ public class CompanyJSFCvt implements Converter {
     //<editor-fold defaultstate="collapsed" desc="Overrides">
     @Override
     public Object getAsObject(FacesContext fc, UIComponent uic, String string) {
-        return (Company) dap.find(Company.class, Long.valueOf(string));
+        try {
+            return (Company) dap.find(Company.class, Long.valueOf(string));
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
     
     @Override
     public String getAsString(FacesContext fc, UIComponent uic, Object o) {
         try {
             return ((Company) o).getId().toString();
-        } catch (NullPointerException npe) {
+        } catch (NullPointerException | ClassCastException e) {
             return null;
         }
     }

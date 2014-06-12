@@ -35,14 +35,18 @@ public class DASJSFCvt implements Converter {
     //<editor-fold defaultstate="collapsed" desc="Overrides">
     @Override
     public Object getAsObject(FacesContext fc, UIComponent uic, String string) {
-        return (DAS) dap.find(DAS.class, Long.valueOf(string));
+        try {
+            return (DAS) dap.find(DAS.class, Long.valueOf(string));
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
-    
+
     @Override
     public String getAsString(FacesContext fc, UIComponent uic, Object o) {
         try {
             return ((DAS) o).getId().toString();
-        } catch (NullPointerException npe) {
+        } catch (NullPointerException | ClassCastException e) {
             return null;
         }
     }

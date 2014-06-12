@@ -6,7 +6,6 @@
 package com.dastrax.per.entity;
 
 import com.amazonaws.services.s3.model.S3ObjectSummary;
-import com.dastrax.app.misc.JsfUtil;
 import com.dastrax.app.service.internal.DefaultDNSManager;
 import com.dastrax.app.service.internal.DefaultStorageManager;
 import com.dastrax.app.services.DNSManager;
@@ -22,9 +21,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.faces.context.FacesContext;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.CascadeType;
@@ -237,6 +236,7 @@ public class Company implements Serializable {
     }
 
 //</editor-fold>
+    
     //<editor-fold defaultstate="collapsed" desc="Setters">
     /**
      * Set the value of version. Auto incremented persistence record version
@@ -349,6 +349,7 @@ public class Company implements Serializable {
     }
 
 //</editor-fold>
+    
     /**
      * Loads linkedAndAvailableDas and linkedAndAvailableClientCompanies data
      * from the persistence layer and sets the class level properties. This
@@ -356,7 +357,7 @@ public class Company implements Serializable {
      */
     public void lazyLoad() {
         linkedAndAvailableDas = linkedAndAvailableDas();
-        if (type.equals(DTX.CompanyType.VAR)) {
+        if (DTX.CompanyType.VAR.equals(type)) {
             linkedAndAvailableClientCompanies = linkedAndAvailableClientCompanies();
         }
     }
@@ -374,7 +375,7 @@ public class Company implements Serializable {
             // Do nothing. The linkedAndAvailableDas was null
         }
 
-        if (type.equals(DTX.CompanyType.VAR)) {
+        if (DTX.CompanyType.VAR.equals(type)) {
             try {
                 clients = linkedAndAvailableClientCompanies.getTarget();
             } catch (NullPointerException npe) {
@@ -386,16 +387,24 @@ public class Company implements Serializable {
             dns.createCNAME(subdomain);
         }
 
+        // Set the new storage ID
+        this.s3id = UUID.randomUUID().toString();
+
         // Persist the new company
         Company newCompany = (Company) dap.create(this);
 
         // If its a company of type client add it to the parent
         if (DTX.CompanyType.CLIENT.equals(type)) {
-            Company parent = (Company) dap.find(
-                    Company.class,
-                    newParent.getId());
-            parent.clients.add(newCompany);
-            parent.update(false, false);
+            try {
+                Company parent = (Company) dap.find(
+                        Company.class,
+                        newParent.getId());
+                parent.clients.add(newCompany);
+                parent.update(false, false);
+            } catch (NullPointerException npe) {
+                // Do nothing. The parent company is null
+            }
+
         }
 
         if (uploadFile.isUploaded()) {
@@ -415,7 +424,7 @@ public class Company implements Serializable {
 
         if (!stage.equals(DTX.ProjectStage.DEV.toString())) {
             // If its a company of type VAR delete the subdomain
-            if (type.equals(DTX.CompanyType.VAR)) {
+            if (DTX.CompanyType.VAR.equals(type)) {
                 new DefaultDNSManager().deleteCNAME(subdomain);
             }
         }
@@ -439,14 +448,19 @@ public class Company implements Serializable {
             dap.update(user);
         }
 
+        // If its a Client remove its association with the parent VAR
+        if (DTX.CompanyType.CLIENT.equals(type)) {
+            try {
+                Company parent = parent();
+                parent.getClients().remove(this);
+                parent.update(false, false);
+            } catch (NullPointerException npe) {
+                // Do nothing. the parent company is null
+            }
+        }
+
         // Delete the actual company from the persistence layer
         dap.delete(Company.class, id);
-
-        JsfUtil.addSuccessMessage(
-                "Company "
-                + name
-                + " successfully deleted");
-
     }
 
     /**
@@ -461,11 +475,12 @@ public class Company implements Serializable {
             das = linkedAndAvailableDas.getTarget();
         }
         if (updateClients) {
-            if (type.equals(DTX.CompanyType.VAR)) {
+            if (DTX.CompanyType.VAR.equals(type)) {
                 clients = linkedAndAvailableClientCompanies.getTarget();
             }
         }
-        dap.update(this);
+        Company updatedCompany = (Company) dap.update(this);
+        this.version = updatedCompany.getVersion();
     }
 
     /**
@@ -484,7 +499,7 @@ public class Company implements Serializable {
          The Linked Sites List (Target) should be Sites that are already
          linked to the company. (ie. Company.Sites)
          */
-        if (type.equals(DTX.CompanyType.VAR)) {
+        if (DTX.CompanyType.VAR.equals(type)) {
 
             // Only companies hold associations so get all companies
             List<Company> companies
@@ -511,7 +526,7 @@ public class Company implements Serializable {
          Sites List (Target) should be Sites that are already
          linked to the company. (ie. Company.Sites)
          */
-        if (type.equals(DTX.CompanyType.CLIENT)) {
+        if (DTX.CompanyType.CLIENT.equals(type)) {
 
             // Find the parent company
             Company parent = parent();
@@ -589,7 +604,7 @@ public class Company implements Serializable {
      * company is returned. Otherwise null
      */
     public Company parent() {
-        if (this.type.equals(DTX.CompanyType.CLIENT)) {
+        if (DTX.CompanyType.CLIENT.equals(type)) {
 
             // Only companies hold associations so get all companies
             List<Company> companies

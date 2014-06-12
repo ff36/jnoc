@@ -25,7 +25,7 @@ import javax.inject.Named;
  */
 @Named
 @FacesConverter("metierCvt")
-public class MetierJSFCvt implements Converter  {
+public class MetierJSFCvt implements Converter {
 
     //<editor-fold defaultstate="collapsed" desc="Properties">
     @EJB
@@ -35,18 +35,21 @@ public class MetierJSFCvt implements Converter  {
     //<editor-fold defaultstate="collapsed" desc="Overrides">
     @Override
     public Object getAsObject(FacesContext fc, UIComponent uic, String string) {
-        return (Metier) dap.find(Metier.class, Long.valueOf(string));
+        try {
+            return (Metier) dap.find(Metier.class, Long.valueOf(string));
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
-    
+
     @Override
     public String getAsString(FacesContext fc, UIComponent uic, Object o) {
         try {
             return ((Metier) o).getId().toString();
-        } catch (NullPointerException npe) {
+        } catch (NullPointerException | ClassCastException e) {
             return null;
         }
     }
 //</editor-fold>
 
 }
-

@@ -35,28 +35,34 @@ public class TagJSFCvt implements Converter {
     //<editor-fold defaultstate="collapsed" desc="Overrides">
     /**
      * Normally this would just be a straight database lookup. However because
-     * we want to create tags on the fly it is possible to get inputs that 
-     * have no value so we want to retrieve it from the temporary ID and create
-     * a new Tag to be persisted with no ID.
+     * we want to create tags on the fly it is possible to get inputs that have
+     * no value so we want to retrieve it from the temporary ID and create a new
+     * Tag to be persisted with no ID.
+     *
      * @param fc
      * @param uic
      * @param string
-     * @return 
+     * @return
      */
     @Override
     public Object getAsObject(FacesContext fc, UIComponent uic, String string) {
         if (string.startsWith("tempID")) {
-            return new Tag(string.substring(string.indexOf("(") +1,string.indexOf(")")));
+            return new Tag(string.substring(string.indexOf("(") + 1, string.indexOf(")")));
         } else {
-            return (Tag) dap.find(Tag.class, Long.valueOf(string));
+            try {
+                return (Tag) dap.find(Tag.class, Long.valueOf(string));
+            } catch (NumberFormatException e) {
+                return null;
+            }
+
         }
     }
-    
+
     @Override
     public String getAsString(FacesContext fc, UIComponent uic, Object o) {
         try {
             return ((Tag) o).getId().toString();
-        } catch (NullPointerException npe) {
+        } catch (NullPointerException | ClassCastException e) {
             return null;
         }
     }

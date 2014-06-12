@@ -29,7 +29,6 @@ import javax.imageio.ImageIO;
 import net.coobird.thumbnailator.Thumbnails;
 import org.apache.commons.io.IOUtils;
 import org.primefaces.event.FileUploadEvent;
-import org.primefaces.model.UploadedFile;
 
 /**
  * Methods dedicated to handling file uploads. Specifically the transition to
