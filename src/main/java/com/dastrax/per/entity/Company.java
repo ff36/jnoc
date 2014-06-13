@@ -528,18 +528,25 @@ public class Company implements Serializable {
          */
         if (DTX.CompanyType.CLIENT.equals(type)) {
 
+            List<DAS> parentSites = new ArrayList<>();
+
             // Find the parent company
             Company parent = parent();
-            List<DAS> parentSites = new ArrayList<>(parent.getDas());
+            try {
+                parentSites = new ArrayList<>(parent.getDas());
 
-            // Which of the parent sites are already linked
-            List<DAS> linkedSites = new ArrayList<>();
-            for (Company client : parent.getClients()) {
-                linkedSites.addAll(client.getDas());
+                // Which of the parent sites are already linked
+                List<DAS> linkedSites = new ArrayList<>();
+                for (Company client : parent.getClients()) {
+                    linkedSites.addAll(client.getDas());
+                }
+
+                // Cross reference and remove linked ones
+                parentSites.removeAll(linkedSites);
+
+            } catch (NullPointerException npe) {
+                // Do nothing. The Das was null
             }
-
-            // Cross reference and remove linked ones
-            parentSites.removeAll(linkedSites);
 
             linkedAvailableDas.setSource(parentSites);
             linkedAvailableDas.setTarget(das);
