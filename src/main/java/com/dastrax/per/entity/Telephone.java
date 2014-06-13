@@ -66,13 +66,13 @@ public class Telephone implements Serializable {
     public Telephone() {
         this.country = defaultPhoneCountry;
         this.type = TelephoneType.DESK;
-        this.countries = Countries.getWorldCountries();
+        this.countries = new Countries().getWorldCountries();
     }
 
     public Telephone(String country) {
         this.country = country;
         this.type = TelephoneType.DESK;
-        this.countries = Countries.getWorldCountries();
+        this.countries = new Countries().getWorldCountries();
     }
 //</editor-fold>
 

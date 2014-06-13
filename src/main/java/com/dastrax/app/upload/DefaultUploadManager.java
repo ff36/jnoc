@@ -148,12 +148,27 @@ public class DefaultUploadManager implements UploadManager {
             // TODO This should work with try-with-resource but doesn't!
             S3ObjectInputStream objectData = object.getObjectContent();
 
+            /*
+            Crop the scaled image.
+            600 is the display width set in the view for the crop.
+            The lose of presision working in int for upscaled images causes
+            an out of range exception if working close to the right or bottom
+            of the image so we need to work in doubles and by casting back to
+            int rounds down.
+            */
+            double scale, x, y, w, h;
+            scale = (double) 600 / (double) uploadFile.getImage().getWidth();
+            x = uploadFile.getImage().getImageCrop().getX() / scale;
+            y = uploadFile.getImage().getImageCrop().getY() / scale;
+            w = uploadFile.getImage().getImageCrop().getWidth() / scale;
+            h = uploadFile.getImage().getImageCrop().getHeight() / scale;
+            
             BufferedImage cropped = ImageIO.read(objectData)
                     .getSubimage(
-                            uploadFile.getImage().getImageCrop().getX(),
-                            uploadFile.getImage().getImageCrop().getY(),
-                            uploadFile.getImage().getImageCrop().getWidth(),
-                            uploadFile.getImage().getImageCrop().getHeight());
+                            (int) x,
+                            (int) y,
+                            (int) w,
+                            (int) h);
 
             // Crop the image with respect to the type
             switch (type) {

@@ -150,7 +150,7 @@
                                                 <f:facet name="header">   
                                                     <p:inputText id="globalFilter" 
                                                                  styleClass="align-left" 
-                                                                 onkeyup="accountsTable.filter()" 
+                                                                 onkeyup="PF('accountsTable').filter()" 
                                                                  style="width:200px" />  
                                                     <p:watermark for="globalFilter" 
                                                                  value="Search"/>
@@ -215,7 +215,7 @@
                                                         <p:graphicImage styleClass="expanded-row-arrow" 
                                                                         value="#{uriUtil.image('arrow_down_right.png', true)}" 
                                                                         height="160px"/>
-                                                        
+
                                                         <table class="expanded-row-table ">
                                                             <tr>
                                                                 <td width="50px">
@@ -242,7 +242,7 @@
                                                                                 <h:outputText value="SOLiD" 
                                                                                               rendered="#{user.metier.name eq 'ADMIN'}"/>
                                                                                 <h:outputText id="account-company-name" 
-                                                                                              value="#{user.company ne null ? user.company.name : 'No Company'}" 
+                                                                                              value="#{user.company.name ne null ? user.company.name : 'No Company'}" 
                                                                                               rendered="#{user.metier.name ne 'ADMIN'}"
                                                                                               styleClass="company-update-class"/>
                                                                             </td>
@@ -330,9 +330,9 @@
                                                                                            label="#{user.account.locked ? 'Locked' : 'Unlocked'}" 
                                                                                            disabled="#{!jsfSessionUser.currentUser.hasPermission('account:edit')}">  
                                                                                     <p:ajax event="save" 
-                                                                                            listener="#{user.update()}" 
+                                                                                            listener="#{user.account.update()}" 
                                                                                             update=":form:accounts-table :form:growl" 
-                                                                                            oncomplete="accountsTable.filter();"/>
+                                                                                            oncomplete="PF('accountsTable').filter();"/>
                                                                                     <p:selectBooleanButton value="#{user.account.locked}" 
                                                                                                            onLabel="Locked" 
                                                                                                            offLabel="Unlocked" />
@@ -366,20 +366,19 @@
                                                                         process="@this"/>
                                                             <p:separator />
                                                             <p:menuitem value="Edit Permission" 
-                                                                        onclick="PF('permission-dlg').show();" 
+                                                                        oncomplete="PF('permission-dlg').show();" 
                                                                         actionListener="#{user.resetPermission()}" 
                                                                         disabled="#{!jsfSessionUser.currentUser.hasPermission('permission,account:edit')}"/> 
                                                             <p:menuitem value="Edit Address" 
-                                                                        onclick="PF('address-dlg').show();" 
+                                                                        oncomplete="PF('address-dlg').show();" 
                                                                         actionListener="#{user.resetPermission()}" 
                                                                         disabled="#{!jsfSessionUser.currentUser.hasPermission('account:edit')}"/>
                                                             <p:menuitem value="Edit Telephone"  
-                                                                        onclick="PF('telephone-dlg').show();" 
+                                                                        oncomplete="PF('telephone-dlg').show();" 
                                                                         actionListener="#{user.resetPermission()}" 
                                                                         disabled="#{!jsfSessionUser.currentUser.hasPermission('account:edit')}"/> 
-                                                            <p:menuitem value="Edit Company" 
-                                                                        actionListener="#{user.lazyLoad()}"
-                                                                        onclick="PF('company-dlg').show();" 
+                                                            <p:menuitem value="Edit Company"
+                                                                        onclick="PF('company-dlg').show();"
                                                                         disabled="#{!jsfSessionUser.currentUser.hasPermission('account:edit') or user.isAdministrator()}"/>                                    
                                                             <p:separator />
                                                             <p:menuitem value="Close Account" 
@@ -564,7 +563,7 @@
                                                                             <f:selectItems value="#{user.contact.newTelephone.countries}"
                                                                                            var="country"
                                                                                            itemLabel="#{country.displayCountry}"
-                                                                                            itemValue="#{country.country}"/>
+                                                                                           itemValue="#{country.country}"/>
                                                                             <p:ajax event="change" update="add-telephone-button" />
                                                                         </p:selectOneMenu>
                                                                     </td>
@@ -683,12 +682,17 @@
                                                                   resizable="false" 
                                                                   width="810px">  
 
+                                                            <p:remoteCommand autoRun="true" 
+                                                                             async="true" 
+                                                                             actionListener="#{user.lazyLoad()}" 
+                                                                             update="availableCompanies"/>
+
                                                             <h:outputText value="Current Company" 
                                                                           style="font-weight: bold"/>
 
                                                             <p:spacer width="100%" height="2px"/>
 
-                                                            <h:outputText value="#{user.company ne null ? user.company.name : 'No Company'}"/>
+                                                            <h:outputText value="#{user.company.name ne null ? user.company.name : 'No Company'}"/>
 
                                                             <hr></hr>
 
@@ -698,7 +702,8 @@
                                                             <table class="blank-table">
                                                                 <tr>
                                                                     <td>
-                                                                        <p:selectOneMenu value="#{user.company}" 
+                                                                        <p:selectOneMenu id="availableCompanies" 
+                                                                                         value="#{user.company}" 
                                                                                          converter="companyCvt"
                                                                                          effect="fade"
                                                                                          disabled="#{!jsfSessionUser.currentUser.hasPermission('account:edit')}"

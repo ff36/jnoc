@@ -10,14 +10,15 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.dastrax.app.email.DefaultEmailer;
 import com.dastrax.app.email.Email;
 import com.dastrax.app.security.Password;
+import com.dastrax.app.security.SessionUser;
 import com.dastrax.app.service.internal.DefaultAttributeFilter;
 import com.dastrax.app.service.internal.DefaultStorageManager;
-import com.dastrax.app.services.AttributeFilter;
 import com.dastrax.app.services.StorageManager;
 import com.dastrax.app.upload.DefaultUploadManager;
 import com.dastrax.app.upload.UploadFile;
 import com.dastrax.app.upload.UploadManager;
 import com.dastrax.per.dap.CrudService;
+import com.dastrax.per.dap.QueryParameter;
 import com.dastrax.per.project.DTX;
 import java.io.IOException;
 import java.io.Serializable;
@@ -30,7 +31,6 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.ResourceBundle;
 import java.util.UUID;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
@@ -92,7 +92,7 @@ public class User implements Serializable {
     @Column(unique = true)
     private String email;
     private String password;
-    @OneToOne(cascade = {CascadeType.ALL})
+    @OneToOne(cascade = {CascadeType.ALL}, orphanRemoval = true)
     private Contact contact;
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private Account account;
@@ -116,7 +116,7 @@ public class User implements Serializable {
     @Transient
     private Permission newPermission;
     @Transient
-    private List<Company> availableCompanies = new ArrayList<>();
+    private List<Company> availableCompanies;
     @Transient
     private Request request;
     @Transient
@@ -125,6 +125,7 @@ public class User implements Serializable {
 
     //<editor-fold defaultstate="collapsed" desc="Constructors">
     public User() {
+        this.availableCompanies = new ArrayList<>();
         this.newPassword = new Password();
         this.contact = new Contact();
         this.account = new Account();
@@ -134,14 +135,13 @@ public class User implements Serializable {
         this.newPermission = new Permission();
         this.permissions = new ArrayList<>();
         this.uploadFile = new UploadFile();
-        this.availableCompanies = new ArrayList<>();
         this.request = new Request();
         
         try {
             dap = (CrudService) InitialContext.doLookup(
                     ResourceBundle.getBundle("config").getString("CRUD"));
         } catch (NamingException ex) {
-            LOG.log(Level.SEVERE, null, ex);
+//            LOG.log(Level.SEVERE, null, ex);
         }
     }
 //</editor-fold>
@@ -437,9 +437,45 @@ public class User implements Serializable {
      * not loaded by default.
      */
     public void lazyLoad() {
-        AttributeFilter af = new DefaultAttributeFilter();
-        availableCompanies
-                = (List<Company>) af.authorizedCompanies(true).get("company");
+        // Admins can add to any company
+        if (SessionUser.getCurrentUser().isAdministrator()) {
+            // Make sure its the right kind of company
+            if ("CLIENT".equals(metier.getName())) {
+                availableCompanies = dap.findWithNamedQuery(
+                        "Company.findByType", 
+                        QueryParameter
+                                .with("type", DTX.CompanyType.CLIENT)
+                                .parameters());
+            }
+            // Make sure its the right kind of company
+            if ("VAR".equals(metier.getName())) {
+                availableCompanies = dap.findWithNamedQuery(
+                        "Company.findByType", 
+                        QueryParameter
+                                .with("type", DTX.CompanyType.VAR)
+                                .parameters());
+            }
+        }
+        // VAR can only add to their own company and client companies
+        if (SessionUser.getCurrentUser().isVAR()) {
+            List<Long> companies = 
+                (List<Long>) new DefaultAttributeFilter()
+                        .authorizedCompanies(true)
+                        .get("company");
+            if ("CLIENT".equals(metier.getName())) {
+                availableCompanies.addAll(company.getClients());
+            }
+            if ("VAR".equals(metier.getName())) {
+                availableCompanies.add(company);
+            }
+            
+        }
+        // Clients can only add to their own company
+        if (SessionUser.getCurrentUser().isClient()) {
+            availableCompanies.add(company);
+        }
+
+        // Populate all the metiers
         metiers = dap.findWithNamedQuery("Metier.findAll");
     }
 
@@ -452,6 +488,11 @@ public class User implements Serializable {
         // Move the email from transient field to persistent
         email = newEmail;
 
+        // Set the account creation date
+        account.setCreationEpoch(Calendar.getInstance().getTimeInMillis());
+        
+        
+        
         // Persist the user
         dap.create(this);
 
@@ -505,8 +546,11 @@ public class User implements Serializable {
                 + UUID.randomUUID().toString().substring(0, 3);
         contact = null;
 
+        // Update the user
         update();
 
+        // Account is not {CascadeType.MERGE}
+        account.update();
     }
 
     /**
@@ -725,7 +769,7 @@ public class User implements Serializable {
 
         // Retreive the email template from the database.
         Template temp = (Template) dap.find(
-                Template.class, DTX.EmailTemplate.NEW_ACCOUNT);
+                Template.class, DTX.EmailTemplate.NEW_ACCOUNT.getValue());
         em.setTemplate(temp);
 
         // Generate a new pincode
@@ -766,7 +810,7 @@ public class User implements Serializable {
 
         // Retreive the email template from the database.
         Template temp = (Template) dap.find(
-                Template.class, DTX.EmailTemplate.ACCOUNT_REQUEST);
+                Template.class, DTX.EmailTemplate.ACCOUNT_REQUEST.getValue());
         em.setTemplate(temp);
         
         // Set the recipient

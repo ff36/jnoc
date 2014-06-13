@@ -109,6 +109,7 @@ public class Token implements Serializable {
     }
 
 //</editor-fold>
+    
     //<editor-fold defaultstate="collapsed" desc="Setters">
     /**
      * Set the value of id.
@@ -147,6 +148,7 @@ public class Token implements Serializable {
     }
 
 //</editor-fold>
+    
     /**
      * Set the value of parameters.
      *

@@ -140,7 +140,7 @@
                                                 <f:facet name="header">   
                                                     <p:inputText id="globalFilter" 
                                                                  styleClass="align-left" 
-                                                                 onkeyup="companiesTable.filter()" 
+                                                                 onkeyup="PF('companiesTable').filter()" 
                                                                  style="width:200px" />  
                                                     <p:watermark for="globalFilter" 
                                                                  value="Search"/>
@@ -209,7 +209,7 @@
                                                                                     <p:ajax event="save" 
                                                                                             listener="#{company.update(false, false)}" 
                                                                                             update=":form:companies-table :form:growl" 
-                                                                                            oncomplete="companiesTable.filter();"/>
+                                                                                            oncomplete="PF('companiesTable').filter();"/>
                                                                                     <p:inputText id="editName" 
                                                                                                  value="#{company.name}"/> 
                                                                                     <p:watermark value="Name" 
@@ -407,7 +407,7 @@
                                                                              process="@this,var-das" 
                                                                              update=":form:companies-table :form:growl"
                                                                              onclick="PF('blockui2').block();"
-                                                                             oncomplete="PF('blockui2').unblock(); PF('das-dlg').hide(); companiesTable.filter();"/>
+                                                                             oncomplete="PF('blockui2').unblock(); PF('das-dlg').hide(); PF('companiesTable').filter();"/>
 
                                                             <ez:blockUI target="@widgetVar(savevarwv)" widgetVar="blockui2"/>
 
@@ -443,7 +443,7 @@
                                                                              process="@this,var-clients" 
                                                                              update=":form:companies-table :form:growl"
                                                                              onclick="PF('blockui4').block();"
-                                                                             oncomplete="PF('blockui4').unblock(); PF('var-clients-dlg').hide(); companiesTable.filter();"/>
+                                                                             oncomplete="PF('blockui4').unblock(); PF('var-clients-dlg').hide(); PF('companiesTable').filter();"/>
 
                                                             <ez:blockUI target="@widgetVar(saveclientswv)" widgetVar="blockui4"/>
 

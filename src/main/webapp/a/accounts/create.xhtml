@@ -134,7 +134,7 @@
                                                       widgetVar="profile-image-dlg" 
                                                       dynamic="true" 
                                                       resizable="false" 
-                                                      height="#{createUser.user.uploadFile.image.height}">  
+                                                      height="#{((600 / createUser.user.uploadFile.image.width) * createUser.user.uploadFile.image.height) + 100}">  
 
                                                 <h3>Click and drag on the image to select an area.</h3>
 
@@ -144,9 +144,10 @@
                                                 <pe:imageAreaSelect id="image-area-select" 
                                                                     for="cropped-image" 
                                                                     handles="true" 
-                                                                    aspectRatio="4:5" 
+                                                                    aspectRatio="1:1" 
                                                                     show="true" >  
-                                                    <p:ajax event="selectEnd" listener="#{createUser.user.cropListener}"/>  
+                                                    <p:ajax event="selectEnd" 
+                                                            listener="#{createUser.user.cropListener}"/>  
                                                 </pe:imageAreaSelect>
 
                                                 <hr></hr>
@@ -160,21 +161,26 @@
                                                                  onclick="PF('blockui6').block();"
                                                                  oncomplete="PF('profile-image-dlg').hide(); PF('blockui6').unblock();"/>
 
-                                                <ez:blockUI target="@(.crop-profile-image-button-update-class)" widgetVar="blockui6"/>
+                                                <ez:blockUI target="@(.crop-profile-image-button-update-class)" 
+                                                            widgetVar="blockui6"/>
 
                                             </p:dialog>
 
-                                            <h3>Account Type:</h3>
+                                            <h3>Account Type*:</h3>
                                             <p:selectOneMenu value="#{createUser.user.metier}"
                                                              style="width: 258px"
                                                              converter="metierCvt"
-                                                             required="true">
+                                                             required="true"
+                                                             requiredMessage="Please select an account type">
                                                 <f:selectItem itemLabel="-" noSelectionOption="true" />
                                                 <f:selectItems value="#{createUser.user.metiers}" 
                                                                var="metier" 
                                                                itemLabel="#{metier.name}" 
                                                                itemValue="#{metier}" />
-                                                <p:ajax event="change" update="switch" process="@this"/>
+                                                <p:ajax event="change" 
+                                                        listener="#{createUser.user.lazyLoad()}" 
+                                                        update="switch @widgetVar(createbutton)" 
+                                                        process="@this"/>
                                             </p:selectOneMenu> 
 
                                             <pe:switch id="switch" value="#{createUser.user.metier.name}">  
@@ -494,12 +500,12 @@
                                             <p:commandButton widgetVar="createbutton"
                                                              styleClass="green-button" 
                                                              actionListener="#{createUser.user.create()}" 
-                                                             value="Create Administrator" 
+                                                             value="Create Account" 
                                                              process="@this" 
                                                              update=":form:growl"
                                                              onclick="PF('blockui1').block();"
                                                              oncomplete="PF('blockui1').unblock();"
-                                                             disabled="#{!ajaxValidUtil.emailAvailable(createUser.user.newEmail)}"/>
+                                                             disabled="#{!ajaxValidUtil.emailAvailable(createUser.user.newEmail) or createUser.user.metier.name eq null}"/>
 
                                             <ez:blockUI target="@widgetVar(createbutton)" widgetVar="blockui1"/>
 

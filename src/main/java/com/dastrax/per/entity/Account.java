@@ -6,13 +6,20 @@
 package com.dastrax.per.entity;
 
 import com.dastrax.app.misc.TemporalUtil;
+import com.dastrax.per.dap.CrudService;
 import java.io.Serializable;
+import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.Transient;
 import javax.persistence.Version;
 
 /**
@@ -32,8 +39,9 @@ import javax.persistence.Version;
 })
 @Entity
 public class Account implements Serializable {
-
+    
     //<editor-fold defaultstate="collapsed" desc="Properties">
+    private static final Logger LOG = Logger.getLogger(Account.class.getName());
     private static final long serialVersionUID = 1L;
     
     @Version
@@ -50,8 +58,19 @@ public class Account implements Serializable {
     private Long closeEpoch;
 //</editor-fold>
     
+    //<editor-fold defaultstate="collapsed" desc="Transient Properties">
+    @Transient
+    private CrudService dap;
+//</editor-fold>
+    
     //<editor-fold defaultstate="collapsed" desc="Constructors">
     public Account() {
+        try {
+            dap = (CrudService) InitialContext.doLookup(
+                    ResourceBundle.getBundle("config").getString("CRUD"));
+        } catch (NamingException ex) {
+//            LOG.log(Level.SEVERE, null, ex);
+        }
     }
 //</editor-fold>
 
@@ -239,6 +258,14 @@ public class Account implements Serializable {
         this.closeEpoch = closeEpoch;
     }
 //</editor-fold>
+    
+    /**
+     * Update the persistence layer with a new version of the account.
+     */
+    public void update() {
+        Account account = (Account) dap.update(this);
+        this.version = account.version;
+    }
     
     //<editor-fold defaultstate="collapsed" desc="Overrides">
     @Override

@@ -21,21 +21,43 @@ import java.util.Locale;
  */
 public class Countries {
 
+    //<editor-fold defaultstate="collapsed" desc="Properties">
+    private final List<Locale> worldCountries;
+//</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="Constructors">
+    public Countries() {
+        worldCountries = compileWorldCountries();
+    }
+
+//</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="Getters">
+    /**
+     * Get the value of worldCountries.
+     *
+     * @return the value of worldCountries
+     */
+    public List<Locale> getWorldCountries() {
+        return worldCountries;
+    }
+//</editor-fold>
+    
     /**
      * Get a sorted list of world locals
      *
      * @return All Locals registered in Java
      */
-    public static List<Locale> getWorldCountries() {
+    private List<Locale> compileWorldCountries() {
         
-        List<Locale> worldCountries = new ArrayList<>(8810);
+        List<Locale> countries = new ArrayList<>(8810);
         
         String[] locales = Locale.getISOCountries();
         
         for (String countryCode : locales) {
             Locale country = new Locale("", countryCode);
             if (!country.getCountry().isEmpty()) {
-                worldCountries.add(country);
+                countries.add(country);
             }
         }
         
@@ -64,9 +86,9 @@ public class Countries {
             return o1.getDisplayCountry().compareTo(o2.getDisplayCountry());
         };
         // Sort the list
-        Collections.sort(worldCountries, comparator);
+        Collections.sort(countries, comparator);
         
-        return worldCountries;
+        return countries;
     }
 
 
