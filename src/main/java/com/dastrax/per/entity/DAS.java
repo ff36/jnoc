@@ -5,16 +5,12 @@
  */
 package com.dastrax.per.entity;
 
+import com.dastrax.app.misc.IpAddress;
 import com.dastrax.per.dap.CrudService;
 import com.dastrax.per.project.DTX.DMSType;
-import com.dastrax.app.misc.JsfUtil;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.faces.context.FacesContext;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.CascadeType;
@@ -26,7 +22,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 import javax.persistence.Version;
@@ -62,8 +57,8 @@ public class DAS implements Serializable {
     @Id
     private Long id;
     private String name;
-    @OneToMany(cascade = {CascadeType.ALL})
-    private List<Contact> contacts;
+    @OneToOne(cascade = {CascadeType.ALL})
+    private Contact contact;
     @OneToOne(cascade = {CascadeType.ALL})
     private Address address;
     private String installer;
@@ -81,12 +76,14 @@ public class DAS implements Serializable {
     @Transient
     private CrudService dap;
     @Transient
-    private List<Company> companies;
+    private IpAddress ipAddress;
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Constructors">
     public DAS() {
-        this.contacts = new ArrayList<>();
+        this.contact = new Contact();
+        this.address = new Address();
+        this.ipAddress = new IpAddress();
         
         try {
             dap = (CrudService) InitialContext.doLookup(
@@ -127,12 +124,12 @@ public class DAS implements Serializable {
     }
 
     /**
-     * Get the value of contacts.
+     * Get the value of contact.
      *
-     * @return the value of contacts
+     * @return the value of contact
      */
-    public List<Contact> getContacts() {
-        return contacts;
+    public Contact getContact() {
+        return contact;
     }
 
     /**
@@ -207,6 +204,15 @@ public class DAS implements Serializable {
         return reportingEnabled;
     }
 
+    /**
+     * Get the value of ipAddress
+     *
+     * @return the value of ipAddress
+     */
+    public IpAddress getIpAddress() {
+        return ipAddress;
+    }
+    
 //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="Setters">
@@ -238,12 +244,12 @@ public class DAS implements Serializable {
     }
 
     /**
-     * Set the value of contacts. CascadeType.ALL
+     * Set the value of contact. CascadeType.ALL
      *
-     * @param contacts new value of contacts
+     * @param contact new value of contact
      */
-    public void setContacts(List<Contact> contacts) {
-        this.contacts = contacts;
+    public void setContact(Contact contact) {
+        this.contact = contact;
     }
 
     /**
@@ -317,6 +323,16 @@ public class DAS implements Serializable {
     public void setReportingEnabled(boolean reportingEnabled) {
         this.reportingEnabled = reportingEnabled;
     }
+    
+    /**
+     * Set the value of ipAddress.
+     *
+     * @param ipAddress new value of ipAddress
+     */
+    public void setIpAddress(IpAddress ipAddress) {
+        this.ipAddress = ipAddress;
+    }
+    
 //</editor-fold>
 
     /**
@@ -324,19 +340,11 @@ public class DAS implements Serializable {
      * related resources.
      */
     public void create() {
-
+        // Translate the IP
+        this.dmsIp = ipAddress.concatIP();
+        
         // Persist the DAS
         DAS das = (DAS) dap.create(this);
-
-        // Add success message
-        JsfUtil.addSuccessMessage(das.name + " created");
-        // Carry the message over to the page redirect
-        FacesContext
-                .getCurrentInstance()
-                .getExternalContext()
-                .getFlash()
-                .setKeepMessages(true);
-
     }
 
     /**
@@ -351,15 +359,8 @@ public class DAS implements Serializable {
      * Update the persistence layer with a new version of the company.
      */
     public void update() {
-        dap.update(this);
-    }
-
-    /**
-     * Initializes the transient companies list with all the possible companies
-     * that the DAS can belong to.
-     */
-    public void companies() {
-        companies = dap.findWithNamedQuery("Company.findAll");
+        DAS das = (DAS) dap.update(this);
+        this.version = das.getVersion();
     }
     
     //<editor-fold defaultstate="collapsed" desc="Overrides">

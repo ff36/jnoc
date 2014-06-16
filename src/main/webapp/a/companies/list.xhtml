@@ -18,7 +18,7 @@
 
     <h:body>
 
-        #{permissionUtil.hasPagePermission('company:access')}
+        #{jsfSessionUser.currentUser.hasPagePermission('company:access')}
 
         <h:form id="form">
 

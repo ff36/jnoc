@@ -520,10 +520,12 @@ TABLE.navigation-sidebar
 .table-align-bottom TD
 {
 	vertical-align: bottom;
+	padding-left: 0 !important;
 }
 .table-vertical-spacer TD
 {
 	padding-bottom: 10px !important;
+	padding-left: 0 !important;
 }
 /*DATA TABLE 1*/
 .type1-table.ui-datatable .ui-datatable-header
@@ -770,6 +772,8 @@ TABLE.navigation-sidebar
 {
 	padding-bottom: 5px;
 	padding-top: 5px;
+	border: 1px solid transparent !important;
+	padding-left: 0 !important;
 }
 .ui-inputfield.feedback-text-area
 {

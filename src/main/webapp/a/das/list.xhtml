@@ -18,11 +18,7 @@
 
     <h:body>
 
-        #{permissionUtil.hasPagePermission('site:access')}
-
-        <f:metadata>
-            <f:viewParam name="filter" value="#{das.filter}"/>
-        </f:metadata>
+        #{jsfSessionUser.currentUser.hasPagePermission('das:access')}
 
         <h:form id="form">
 
@@ -35,120 +31,386 @@
 
             <ez:navigation-a/>
 
-            <pe:layout stateCookie="#{config.ProjectStage ne 'DEV'}" widgetVar="layourWgt" >
+            <pe:layout stateCookie="#{config.ProjectStage ne 'DEV'}" 
+                       widgetVar="layourWgt" >
 
-                <pe:layoutPane id="north" position="north" closable="false" resizable="false" size="40"/>
+                <pe:layoutPane id="north" 
+                               position="north" 
+                               closable="false" 
+                               resizable="false" 
+                               size="40"/>
 
-                <pe:layoutPane id="west" position="west" resizeWhileDragging="true" size="220">
+                <pe:layoutPane id="west" 
+                               position="west" 
+                               resizeWhileDragging="true" 
+                               size="220">
 
                     <table class="navigation-sidebar">
                         <thead>
-                            <tr><th>Site Dashboard</th></tr>
+                            <tr><th>DAS Dashboard</th></tr>
                         </thead>
                         <tfoot><tr><td></td></tr></tfoot>
                         <tbody>
                             <tr>
-                                <td class="active">Sites</td>
+                                <td class="active">DAS</td>
                             </tr>
                             <tr>
-                                <td><p:commandLink value="Create New Site" action="access-create-site-page" process="@this" type="button" rendered="#{permissionUtil.hasPermission('site:create')}"/></td>
+                                <td><p:commandLink value="Create New DAS" 
+                                                   action="/a/das/create.xhtml?faces-redirect=true" 
+                                                   process="@this" 
+                                                   type="button"/></td>
                             </tr>
                         </tbody>
                     </table>
 
                 </pe:layoutPane>
 
-                <pe:layoutPane id="center" position="center" resizeWhileDragging="true">
+                <pe:layoutPane id="center" 
+                               position="center" 
+                               resizeWhileDragging="true">
 
 
                     <table class="page-container">
                         <thead>
-                            <tr><th>Sites</th></tr>
+                            <tr><th>DAS</th></tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td>
 
-                                    <p:remoteCommand autoRun="true" async="true" actionListener="#{das.retrieveSites()}" update=":form:lazy-group-1"/>
+                                    <p:remoteCommand autoRun="true" 
+                                                     async="true" 
+                                                     actionListener="#{das.init()}" 
+                                                     update=":form:lazy-update-class"/>
 
                                     <p:spacer width="100%" height="20px"/>
-                                    
-                                    <h:panelGroup id="lazy-group-1">
 
-                                        <p:graphicImage name="images/ajax-loader.gif" rendered="#{!das.renderSites}" styleClass="ajax-lazy-loader"/>
+                                    <h:panelGroup id="lazy-update-class">
 
-                                        <p:dataTable id="sites-table"
-                                                     widgetVar="sitesTable"
-                                                     var="site"
-                                                     emptyMessage="#{msgs['empty.datatable']}"
-                                                     selection="#{das.selectedSites}"
-                                                     value="#{das.siteModel}"
-                                                     filteredValue="#{das.filtered}"
-                                                     styleClass="type1-table"
-                                                     lazy="true"
-                                                     paginator="true"
-                                                     rows="20"
-                                                     rowsPerPageTemplate="20,50"
-                                                     paginatorAlwaysVisible="false"
-                                                     paginatorPosition="bottom"
-                                                     rendered="#{das.renderSites}"> 
+                                        <p:graphicImage name="images/ajax-loader.gif" 
+                                                        rendered="#{!das.dataTable.render}" 
+                                                        styleClass="ajax-lazy-loader"/>
 
-                                            <f:facet name="header">   
-                                                <p:inputText id="globalFilter" styleClass="align-left" onkeyup="sitesTable.filter()" style="width:200px" />  
-                                                <p:watermark for="globalFilter" value="Search"/>
-                                            </f:facet> 
+                                        <ui:fragment rendered="#{das.dataTable.render}">
 
-                                            <p:ajax event="rowSelectCheckbox"  
-                                                    update=":form:details"/>  
-                                            <p:ajax event="rowUnselectCheckbox"
-                                                    update=":form:details"/>
-                                            <p:ajax event="rowSelect"  
-                                                    update=":form:details"/>  
-                                            <p:ajax event="rowUnselect"
-                                                    update=":form:details"/>
+                                            <p:dataTable id="sites-table"
+                                                         widgetVar="sitesTable"
+                                                         var="site"
+                                                         emptyMessage="#{msgs['empty.datatable']}"
+                                                         selection="#{das.dataTable.selected}"
+                                                         value="#{das.dataTable.model}"
+                                                         filteredValue="#{das.dataTable.filtered}"
+                                                         styleClass="type1-table"
+                                                         lazy="true"
+                                                         paginator="true"
+                                                         rows="20"
+                                                         rowsPerPageTemplate="20,50"
+                                                         paginatorAlwaysVisible="false"
+                                                         paginatorPosition="bottom"> 
 
-                                            <p:column selectionMode="multiple" style="width:18px" />
+                                                <f:facet name="header">   
+                                                    <p:inputText id="globalFilter" 
+                                                                 styleClass="align-left" 
+                                                                 onkeyup="PF('sitesTable').filter()" 
+                                                                 style="width:200px" />  
+                                                    <p:watermark for="globalFilter" 
+                                                                 value="Search"/>
+                                                </f:facet> 
 
-                                            <p:column headerText="Name"
-                                                      filterBy="#{site.name}"
-                                                      filterStyle="display:none"
-                                                      sortBy="#{site.name}">
-                                                #{site.name}
-                                            </p:column>
+                                                <p:ajax event="rowSelectCheckbox"/>  
+                                                <p:ajax event="rowUnselectCheckbox"/>
+                                                <p:ajax event="rowSelect"/>  
+                                                <p:ajax event="rowUnselect"/>
 
-                                            <p:column headerText="VAR"
-                                                      filterBy="#{site.var.name}"
-                                                      filterStyle="display:none"
-                                                      sortBy="#{site.var.name}">
-                                                #{site.var.name}
-                                            </p:column>
+                                                <p:column selectionMode="multiple" style="width:18px" />
 
-                                            <p:column headerText="Client"
-                                                      filterBy="#{site.client.name}"
-                                                      filterStyle="display:none"
-                                                      sortBy="#{site.client.name}">
-                                                #{site.client.name}
-                                            </p:column>
+                                                <p:column style="width:18px">  
+                                                    <p:rowToggler />  
+                                                </p:column>
 
-                                            <p:column headerText="Support"
-                                                      filterBy="#{site.packageType}"
-                                                      filterStyle="display:none"
-                                                      sortBy="#{site.packageType}">
-                                                #{site.packageType}
-                                            </p:column>
+                                                <p:column headerText="Name"
+                                                          filterBy="#{site.name}"
+                                                          filterStyle="display:none"
+                                                          sortBy="#{site.name}">
+                                                    #{site.name}
+                                                </p:column>
 
-                                            <p:column headerText="IP"
-                                                      filterBy="#{site.dmsIp}"
-                                                      filterStyle="display:none"
-                                                      sortBy="#{site.dmsIp}">
-                                                #{site.dmsIp}
-                                            </p:column>
+                                                <p:column headerText="Support"
+                                                          filterBy="#{site.packageType}"
+                                                          filterStyle="display:none"
+                                                          sortBy="#{site.packageType}">
+                                                    #{site.packageType}
+                                                </p:column>
 
-                                            <p:column headerText="Reporting">
-                                                <p:graphicImage rendered="#{site.reportingEnabled}" value="#{URIUtil().s3Icon('black/chart_line_icon_16.png')}" title="Reporting enabled"/>
-                                            </p:column>
+                                                <p:column headerText="IP"
+                                                          filterBy="#{site.dmsIp}"
+                                                          filterStyle="display:none"
+                                                          sortBy="#{site.dmsIp}">
+                                                    #{site.dmsIp}
+                                                </p:column>
 
-                                        </p:dataTable>
+                                                <p:column headerText="Company"
+                                                          filterStyle="display:none">
+                                                    TODO go to company
+                                                </p:column>
+
+                                                <p:column headerText="Reporting">
+                                                    <p:graphicImage rendered="#{site.reportingEnabled}" 
+                                                                    value="#{uriUtil.icon('black/chart_line_icon_16.png', true)}" 
+                                                                    title="Reporting enabled"/>
+                                                </p:column>
+
+                                                <p:rowExpansion>  
+
+                                                    <div class="expanded-row-wrapper-2">
+
+                                                        <p:graphicImage styleClass="expanded-row-arrow" 
+                                                                        value="#{uriUtil.image('arrow_down_right.png', true)}" 
+                                                                        height="160px"/>
+
+                                                        <table class="expanded-row-table">
+                                                            <tr>
+
+                                                                <td>
+                                                                    <table>
+                                                                        <tr>
+                                                                            <td>
+                                                                                <p:inplace id="nameAIP" 
+                                                                                           styleClass="inplace" 
+                                                                                           editor="true" 
+                                                                                           label="#{site.name}" 
+                                                                                           disabled="#{!jsfSessionUser.currentUser.hasPermission('das:edit')}">  
+                                                                                    <p:ajax event="save" 
+                                                                                            listener="#{site.update()}" 
+                                                                                            update=":form:sites-table :form:growl" 
+                                                                                            oncomplete="PF('sitesTable').filter();"/>
+                                                                                    <p:inputText id="editName" 
+                                                                                                 value="#{site.name}"/> 
+                                                                                    <p:watermark value="Name" 
+                                                                                                 for="editName"/>
+                                                                                </p:inplace> 
+                                                                            </td>
+                                                                        </tr>
+                                                                    </table>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+
+                                                        <table class="expanded-row-table">
+                                                            <tr>
+                                                                <td>
+                                                                    <table>
+                                                                        <tr>
+                                                                            <td>
+                                                                                <table>
+                                                                                    <tr class="expanded-row-table-title">
+                                                                                        <td colspan="2">
+                                                                                            <h:outputText value="Contact"/>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td class="field-label-4">Name:</td>
+                                                                                        <td class="field-value-4">#{site.contact.buildFullName()}</td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td class="field-label-4">Email:</td>
+                                                                                        <td class="field-value-4">#{site.contact.email}</td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td class="field-label-4">Address:</td>
+                                                                                        <td class="field-value-4">#{site.address.buildCompleteAddress()}</td>
+                                                                                    </tr>
+                                                                                    <ui:fragment rendered="#{site.address.latitude.length() gt 0 and site.address.longitude.length() gt 0}">
+                                                                                        <tr>
+                                                                                            <td class="field-label-4">Location:</td>
+                                                                                            <td class="field-value-4">Lat: #{site.address.latitude}, Long: #{site.address.longitude} 
+                                                                                                <a target="_blank" 
+                                                                                                   href="https://www.google.co.uk/maps/place//@#{site.address.latitude},#{site.address.longitude},500m/data=!3m1!1e3!4m2!3m1!1s0x0:0x0">
+                                                                                                    (View on map)
+                                                                                                </a>
+                                                                                            </td>
+                                                                                        </tr>
+                                                                                    </ui:fragment>
+                                                                                </table>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </table>
+                                                                </td>
+                                                                <td>
+                                                                    <table>
+                                                                        <tr class="expanded-row-table-title">
+                                                                            <td colspan="2">
+                                                                                <h:outputText value="Overview"/>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td class="field-label-4" width="100px">DMS Firmware:</td>
+                                                                            <td>#{site.dms.label}</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td class="field-label-4" width="100px">Support Package:</td>
+                                                                            <td>#{site.packageType}</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td class="field-label-4" width="100px">Response Time:</td>
+                                                                            <td>#{site.responseHrs}</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td class="field-label-4" width="100px">Installer:</td>
+                                                                            <td>#{site.installer}</td>
+                                                                        </tr>
+                                                                    </table>
+                                                                </td>
+
+                                                            </tr>
+                                                        </table>
+
+                                                        <hr></hr>
+
+                                                        <p:splitButton value="DAS Actions" 
+                                                                       styleClass="dark-menu">
+                                                            <p:menuitem value="Edit DAS" 
+                                                                        onclick="PF('das-dlg').show();"
+                                                                        disabled="#{!jsfSessionUser.currentUser.hasPermission('das:edit')}"/>
+                                                            <p:separator />
+                                                            <p:menuitem value="Delete DAS" 
+                                                                        actionListener="#{site.delete()}" 
+                                                                        update=":form:sites-table :form:growl" 
+                                                                        process="@this"
+                                                                        disabled="#{!jsfSessionUser.currentUser.hasPermission('das:delete')}">
+                                                            </p:menuitem>
+                                                        </p:splitButton>
+
+                                                        <p:commandButton value="Support Tickets" style="margin-right: 7px"/>
+
+
+                                                        <p:dialog id="das-dlg" 
+                                                                  header="DAS" 
+                                                                  widgetVar="das-dlg" 
+                                                                  dynamic="true"
+                                                                  width="800px">  
+
+                                                            <h3>DMS Firmware *</h3>
+                                                            <p:selectOneMenu value="#{site.dms}" 
+                                                                             effect="fade"
+                                                                             style="width: 258px"
+                                                                             required="true"
+                                                                             requiredMessage="DMS Firmware required"> 
+                                                                <f:selectItems value="#{enumController.DMSTypes}" 
+                                                                               var="dms" 
+                                                                               itemLabel="#{dms.label}" 
+                                                                               itemValue="#{dms}" />
+                                                                <p:ajax event="change" 
+                                                                        update="@this :form:growl"/>
+                                                            </p:selectOneMenu>
+
+                                                            <h3>Contact Name</h3>
+                                                                <p:inputText id="first-name" 
+                                                                             value="#{site.contact.firstName}"/>
+                                                                <p:watermark value="First Name" 
+                                                                             for="first-name"/>
+                                                                
+                                                                <p:spacer width="10px"/>
+
+                                                                <p:inputText id="last-name" 
+                                                                             value="#{site.contact.lastName}"/>
+                                                                <p:watermark value="Last Name" 
+                                                                             for="last-name"/>
+
+                                                            <h3>Contact Email</h3>
+                                                            <p:inputText value="#{site.contact.email}"/>
+
+                                                            <h3>Address</h3>
+
+                                                                <p:inputText id="address-line-two" 
+                                                                             value="#{site.address.lineTwo}"/>
+                                                                <p:watermark value="Street" 
+                                                                             for="address-line-two"/>
+                                                                
+                                                                <p:spacer width="10px"/>
+
+                                                                <p:inputText id="address-line-three" 
+                                                                             value="#{site.address.lineThree}"/>
+                                                                <p:watermark value="City" 
+                                                                             for="address-line-three"/>
+
+                                                                <p:spacer width="100%" height="10px"/>
+                                                                
+                                                                <p:inputText id="address-line-four" 
+                                                                             value="#{site.address.lineFour}"/>
+                                                                <p:watermark value="State" 
+                                                                             for="address-line-four"/>
+
+                                                                <p:spacer width="10px"/>
+                                                                
+                                                                <p:inputText id="address-line-five" 
+                                                                             value="#{site.address.lineFive}"/>
+                                                                <p:watermark value="Zip" 
+                                                                             for="address-line-five"/>
+
+                                                            <h3>Co-ordinates</h3>
+
+                                                                <p:inputText id="latitude" 
+                                                                             value="#{site.address.latitude}"/>
+                                                                <p:watermark value="Latitude" 
+                                                                             for="latitude"/>
+                                                                
+                                                                <p:spacer width="10px"/>
+
+                                                                <p:inputText id="longitude" 
+                                                                             value="#{site.address.longitude}"/>
+                                                                <p:watermark value="Longitude" 
+                                                                             for="longitude"/>
+
+
+                                                            <h3>Installer</h3>
+                                                            <p:inputText id="installer" 
+                                                                         value="#{site.installer}"/>
+
+                                                            <h3>Support Package</h3>
+                                                            <p:selectOneMenu value="#{site.packageType}" 
+                                                                             effect="fade"
+                                                                             style="width: 258px">  
+                                                                <f:selectItem itemLabel="-" 
+                                                                              itemValue="" />
+                                                                <f:selectItem itemLabel="Monitoring" 
+                                                                              itemValue="Monitoring" />  
+                                                                <f:selectItem itemLabel="Maintenance" 
+                                                                              itemValue="Maintenance" />  
+                                                                <f:selectItem itemLabel="Monitoring and Maintenance" 
+                                                                              itemValue="Monitoring and Maintenance" /> 
+                                                            </p:selectOneMenu>
+
+                                                            <h3>Response Time</h3>
+                                                            <p:spinner value="#{site.responseHrs}" min="0"/> 
+
+                                                            <h3>Reporting</h3>
+                                                            <p:selectBooleanButton value="#{site.reportingEnabled}" 
+                                                                                   onLabel="Enabled" 
+                                                                                   offLabel="Disabled" />
+
+                                                            <p:spacer width="100%" 
+                                                                      height="20px"/>
+
+                                                            <p:commandButton widgetVar="update" 
+                                                                             styleClass="green-button"
+                                                                             value="Update"
+                                                                             action="#{site.update()}"
+                                                                             onclick="PF('blockui1').block();"
+                                                                             oncomplete="PF('blockui1').unblock(); PF('das-dlg').hide()"
+                                                                             update=":form:sites-table :form:growl"
+                                                                             process="@parent"/>
+
+                                                            <ez:blockUI target="@widgetVar(update)" widgetVar="blockui1"/>
+
+                                                        </p:dialog>
+
+                                                    </div>
+                                                </p:rowExpansion> 
+
+                                            </p:dataTable>
+
+                                        </ui:fragment>
 
                                     </h:panelGroup>
 
@@ -159,183 +421,13 @@
 
                 </pe:layoutPane>
 
-                <pe:layoutPane id="east" position="east" resizeWhileDragging="true" size="300">
-
-
-                    <p:panel id="details" styleClass="empty-panel">
-
-                        <p:dataList value="#{das.selectedSites}" 
-                                    var="detail"
-                                    itemType="none"
-                                    rendered="#{das.selectedLength eq 1}">
-
-                            <table width="100%">
-                                <tr>
-                                    <td colspan="2">
-                                        <H2>
-                                            <p:inplace id="nameAIP" styleClass="inplace" editor="true" label="#{detail.name}" disabled="#{!permissionUtil.hasPermission('site:edit')}">  
-                                                <p:ajax event="save" listener="#{das.saveName()}" update=":form:sites-table :form:growl" oncomplete="sitesTable.filter();"/>
-                                                <p:inputText id="editName" value="#{detail.name}"/>
-                                                <p:watermark value="Name" for="editName"/>
-                                            </p:inplace> 
-                                        </H2>
-                                    </td>
-                                </tr>
-                                <tr class="detail-divider">
-                                    <td>Relationship</td>
-                                    <td></td>
-                                </tr>
-                                <tr class="table-spacer">
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td class="field-label-2">VAR:</td>
-                                    <td>#{detail.var.name}</td>
-                                </tr>
-                                <tr>
-                                    <td class="field-label-2">Client:</td>
-                                    <td>#{detail.client.name}</td>
-                                </tr>
-                                <tr class="detail-divider">
-                                    <td>Contact</td>
-                                    <td></td>
-                                </tr>
-                                <tr class="table-spacer">
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td class="field-label-2">Address:</td>
-                                    <td>
-                                        <p:inplace id="addressAIP" styleClass="inplace" editor="true" label="#{detail.address.buildCompleteAddress()}" disabled="#{!permissionUtil.hasPermission('site:edit')}">  
-                                            <p:ajax event="save" listener="#{das.saveAddress()}" update=":form:sites-table :form:growl" oncomplete="sitesTable.filter();"/>
-
-                                            <p:inputText id="add-1" value="#{detail.address.lineTwo}"/>
-                                            <p:watermark value="Street" for="add-1"/>
-
-                                            <p:inputText id="add-2" value="#{detail.address.lineThree}"/>
-                                            <p:watermark value="City" for="add-2"/>
-
-                                            <p:inputText id="add-3" value="#{detail.address.lineFour}"/>
-                                            <p:watermark value="State" for="add-3"/>
-
-                                            <p:inputText id="add-4" value="#{detail.address.lineFive}"/>
-                                            <p:watermark value="Zip Code" for="add-4"/>
-                                        </p:inplace>
-                                    </td>
-                                </tr>
-                                <tr class="detail-divider">
-                                    <td>Details</td>
-                                    <td></td>
-                                </tr>
-                                <tr class="table-spacer">
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td class="field-label-2">DMS IP:</td>
-                                    <td>#{detail.dms}</td>
-                                </tr>
-                                <tr>
-                                    <td class="field-label-2">Firmware:</td>
-                                    <td>#{detail.dms}</td>
-                                </tr>
-                                <tr>
-                                    <td class="field-label-2">Support:</td>
-                                    <td>
-                                        <p:inplace id="packageTypeAIP" styleClass="inplace" editor="true" label="#{detail.packageType eq null ? 'None' : detail.packageType}" disabled="#{!permissionUtil.hasPermission('site:edit')}">  
-                                            <p:ajax event="save" listener="#{das.savePackageType()}" update=":form:sites-table :form:growl" oncomplete="sitesTable.filter();"/>
-                                            <p:selectOneMenu value="#{detail.packageType}" 
-                                                             effect="fade"
-                                                             style="width: 180px">  
-                                                <f:selectItem itemLabel="-" itemValue="" />
-                                                <f:selectItem itemLabel="Monitoring" itemValue="Monitoring" />  
-                                                <f:selectItem itemLabel="Maintenance" itemValue="Maintenance" />  
-                                                <f:selectItem itemLabel="Monitoring and Maintenance" itemValue="Monitoring and Maintenance" /> 
-                                            </p:selectOneMenu>
-                                        </p:inplace>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="field-label-2">Response:</td>
-                                    <td>
-                                        <p:inplace id="packageResponseAIP" styleClass="inplace" editor="true" label="#{detail.responseHrs} Hrs" disabled="#{!permissionUtil.hasPermission('site:edit')}">  
-                                            <p:ajax event="save" listener="#{das.savePackageResponse()}" update=":form:sites-table :form:growl" oncomplete="sitesTable.filter();"/>
-                                            <p:spinner value="#{detail.responseHrs}" min="0"/> 
-                                        </p:inplace>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="field-label-2">Reporting:</td>
-                                    <td>
-                                        <p:inplace id="reportingEnabledAIP" styleClass="inplace" editor="true" label="#{detail.reportingEnabled ? 'Enabled' : 'Disabled'}" disabled="#{!permissionUtil.hasPermission('site:edit')}">  
-                                            <p:ajax event="save" listener="#{das.saveReportingEnabled()}" update=":form:sites-table :form:growl" oncomplete="sitesTable.filter();"/>
-                                            <p:selectBooleanButton value="#{detail.reportingEnabled}" onLabel="Enabled" offLabel="Disabled" />
-                                        </p:inplace>
-                                    </td>
-                                </tr>
-                                <ui:fragment rendered="#{permissionUtil.hasPermission('site:delete')}">
-                                    <tr class="detail-divider">
-                                        <td>Delete</td>
-                                        <td></td>
-                                    </tr>
-                                    <tr class="table-spacer">
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Password:</td>
-                                        <td><p:password id="deletePassword"  styleClass="align-right"/></td>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td><p:commandButton id="delete-btn" 
-                                                             action="#{das.deleteSites()}" 
-                                                             value="Delete" 
-                                                             styleClass="align-right"
-                                                             process="@this,deletePassword" 
-                                                             update=":form:sites-table :form:growl :form:details"
-                                                             onclick="PF('blockui1').block();"
-                                                             oncomplete="PF('blockui1').unblock(); sitesTable.filter();"/>
-
-                                            <pe:blockUI target="delete-btn" widgetVar="blockui1">  
-                                                <div class="windows8-18-b">
-                                                    <div class="wBall" id="wBall_1">
-                                                        <div class="wInnerBall">
-                                                        </div>
-                                                    </div>
-                                                    <div class="wBall" id="wBall_2">
-                                                        <div class="wInnerBall">
-                                                        </div>
-                                                    </div>
-                                                    <div class="wBall" id="wBall_3">
-                                                        <div class="wInnerBall">
-                                                        </div>
-                                                    </div>
-                                                    <div class="wBall" id="wBall_4">
-                                                        <div class="wInnerBall">
-                                                        </div>
-                                                    </div>
-                                                    <div class="wBall" id="wBall_5">
-                                                        <div class="wInnerBall">
-                                                        </div>
-                                                    </div>
-                                                </div> 
-                                            </pe:blockUI>
-
-                                        </td>
-                                    </tr>
-                                </ui:fragment>
-                            </table>
-
-                        </p:dataList>
-
-                    </p:panel>
-
+                <pe:layoutPane id="south"
+                               position="south" 
+                               closable="false" 
+                               resizable="false" 
+                               size="40">
+                    <ez:footer/>
                 </pe:layoutPane>
-                
-                <pe:layoutPane id="south" position="south" closable="false" resizable="false" size="40"><ez:footer/></pe:layoutPane>
 
             </pe:layout>
 

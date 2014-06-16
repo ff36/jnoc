@@ -30,153 +30,225 @@
 
             <ez:navigation-a/>
 
-            <pe:layout stateCookie="#{config.ProjectStage ne 'DEV'}" widgetVar="layourWgt" >
+            <pe:layout stateCookie="#{config.ProjectStage ne 'DEV'}" 
+                       widgetVar="layourWgt" >
 
-                <pe:layoutPane id="north" position="north" closable="false" resizable="false" size="40"/>
+                <pe:layoutPane id="north" 
+                               position="north" 
+                               closable="false" 
+                               resizable="false" 
+                               size="40"/>
 
-                <pe:layoutPane id="west" position="west" resizeWhileDragging="true" size="250">
+                <pe:layoutPane id="west" 
+                               position="west" 
+                               resizeWhileDragging="true" 
+                               size="250">
 
                     <table class="navigation-sidebar">
                         <thead>
-                            <tr><th>Site Dashboard</th></tr>
+                            <tr><th>DAS Dashboard</th></tr>
                         </thead>
                         <tfoot><tr><td></td></tr></tfoot>
                         <tbody>
                             <tr>
-                                <td><p:commandLink value="Sites" action="access-list-site-page" process="@this" type="button"/></td>
+                                <td><p:commandLink value="DAS" 
+                                                   action="/a/das/list.xhtml?faces-redirect=true" 
+                                                   process="@this" 
+                                                   type="button"/></td>
                             </tr>
                             <tr>
-                                <td class="active">Create New Site</td>
+                                <td class="active">Create New DAS</td>
                             </tr>
                         </tbody>
                     </table>
 
                 </pe:layoutPane>
 
-                <pe:layoutPane id="center" position="center" resizeWhileDragging="true">
+                <pe:layoutPane id="center" 
+                               position="center" 
+                               resizeWhileDragging="true">
 
 
                     <table class="page-container">
                         <thead>
-                            <tr><th>New Site</th></tr>
+                            <tr><th>New DAS</th></tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td>
 
-                                    <h3>Site Name*</h3>                                    
-                                    <p:inputText value="#{createDas.site.name}" required="true" requiredMessage="Name is required">
-                                        <p:ajax event="keyup" update=":form:create-btn"/>
+                                    <h3>DAS Name*</h3>                                    
+                                    <p:inputText value="#{createDas.das.name}" 
+                                                 required="true" 
+                                                 requiredMessage="Name is required">
+                                        <p:ajax event="keyup" 
+                                                update=":form:create-btn"/>
                                     </p:inputText>
 
                                     <h3>DMS IP*</h3> 
-                                    <h:panelGrid columns="7" styleClass="table-align-bottom">
+                                    <h:panelGrid columns="7" 
+                                                 styleClass="table-align-bottom">
 
-                                        <p:inputText id="ipa" value="#{createDas.ipAddress.ipa}" size="3" styleClass="ip-field">
-                                            <p:ajax event="blur" update=":form:create-btn @this" listener="#{createDas.ipAddress.formatA}"/>
+                                        <p:inputText id="ipa" 
+                                                     value="#{createDas.das.ipAddress.ipa}" 
+                                                     size="3" 
+                                                     styleClass="ip-field">
+                                            <p:ajax event="blur" 
+                                                    update=":form:create-btn @this" 
+                                                    listener="#{createDas.das.ipAddress.formatA}"/>
                                         </p:inputText>
 
-                                        <h:outputText value="." styleClass="ip-field-period"/>
+                                        <h:outputText value="." 
+                                                      styleClass="ip-field-period"/>
 
-                                        <p:inputText id="ipb" value="#{createDas.ipAddress.ipb}" size="3" styleClass="ip-field">
-                                            <p:ajax event="blur" update=":form:create-btn  @this" listener="#{createDas.ipAddress.formatB}"/>
+                                        <p:inputText id="ipb" 
+                                                     value="#{createDas.das.ipAddress.ipb}" 
+                                                     size="3" 
+                                                     styleClass="ip-field">
+                                            <p:ajax event="blur" 
+                                                    update=":form:create-btn  @this" 
+                                                    listener="#{createDas.das.ipAddress.formatB}"/>
                                         </p:inputText>
 
-                                        <h:outputText value="." styleClass="ip-field-period"/>
+                                        <h:outputText value="." 
+                                                      styleClass="ip-field-period"/>
 
-                                        <p:inputText id="ipc" value="#{createDas.ipAddress.ipc}" size="3" styleClass="ip-field">
-                                            <p:ajax event="blur" update=":form:create-btn  @this" listener="#{createDas.ipAddress.formatC}"/>
+                                        <p:inputText id="ipc" 
+                                                     value="#{createDas.das.ipAddress.ipc}" 
+                                                     size="3" 
+                                                     styleClass="ip-field">
+                                            <p:ajax event="blur" 
+                                                    update=":form:create-btn  @this" 
+                                                    listener="#{createDas.das.ipAddress.formatC}"/>
                                         </p:inputText>
 
-                                        <h:outputText value="." styleClass="ip-field-period"/>
+                                        <h:outputText value="." 
+                                                      styleClass="ip-field-period"/>
 
-                                        <p:inputText id="ipd" value="#{createDas.ipAddress.ipd}" size="3" styleClass="ip-field">
-                                            <p:ajax event="blur" update=":form:create-btn  @this" listener="#{createDas.ipAddress.formatD}"/>
+                                        <p:inputText id="ipd" 
+                                                     value="#{createDas.das.ipAddress.ipd}" 
+                                                     size="3" 
+                                                     styleClass="ip-field">
+                                            <p:ajax event="blur" 
+                                                    update=":form:create-btn  @this" 
+                                                    listener="#{createDas.das.ipAddress.formatD}"/>
                                         </p:inputText>
 
                                     </h:panelGrid>
 
-                                    <h3>DMS Firmware</h3>
-                                    <p:selectOneMenu value="#{createDas.site.dms}" 
+                                    <h3>DMS Firmware *</h3>
+                                    <p:selectOneMenu value="#{createDas.das.dms}" 
                                                      effect="fade"
                                                      style="width: 258px"
                                                      required="true"
                                                      requiredMessage="DMS Firmware required"> 
-                                        <f:selectItems value="#{enumController.DMSTypes}" var="dms" itemLabel="#{dms.label}" itemValue="#{dms}" />
-                                        <p:ajax event="change" update="@this :form:growl"/>
+                                        <f:selectItems value="#{enumController.DMSTypes}" 
+                                                       var="dms" 
+                                                       itemLabel="#{dms.label}" 
+                                                       itemValue="#{dms}" />
+                                        <p:ajax event="change" 
+                                                update="@this :form:growl"/>
                                     </p:selectOneMenu>
 
+                                    <h3>Contact Name</h3>
+                                    <h:panelGrid columns="2" 
+                                                 styleClass="table-vertical-spacer">
+
+                                        <p:inputText id="first-name" 
+                                                     value="#{createDas.das.contact.firstName}"/>
+                                        <p:watermark value="First Name" 
+                                                     for="first-name"/>
+
+                                        <p:inputText id="last-name" 
+                                                     value="#{createDas.das.contact.lastName}"/>
+                                        <p:watermark value="Last Name" 
+                                                     for="last-name"/>
+
+                                    </h:panelGrid>
+                                    
+                                    <h3>Contact Email</h3>
+                                    <p:inputText value="#{createDas.das.contact.email}"/>
+                                    
                                     <h3>Address</h3>
-                                    <h:panelGrid columns="2" styleClass="table-vertical-spacer">
+                                    <h:panelGrid columns="2" 
+                                                 styleClass="table-vertical-spacer">
 
-                                        <p:inputText id="address-line-two" value="#{createDas.site.address.lineTwo}"/>
-                                        <p:watermark value="Street" for="address-line-two"/>
+                                        <p:inputText id="address-line-two" 
+                                                     value="#{createDas.das.address.lineTwo}"/>
+                                        <p:watermark value="Street" 
+                                                     for="address-line-two"/>
 
-                                        <p:inputText id="address-line-three" value="#{createDas.site.address.lineThree}"/>
-                                        <p:watermark value="City" for="address-line-three"/>
+                                        <p:inputText id="address-line-three" 
+                                                     value="#{createDas.das.address.lineThree}"/>
+                                        <p:watermark value="City" 
+                                                     for="address-line-three"/>
 
-                                        <p:inputText id="address-line-four" value="#{createDas.site.address.lineFour}"/>
-                                        <p:watermark value="State" for="address-line-four"/>
+                                        <p:inputText id="address-line-four" 
+                                                     value="#{createDas.das.address.lineFour}"/>
+                                        <p:watermark value="State" 
+                                                     for="address-line-four"/>
 
-                                        <p:inputText id="address-line-five" value="#{createDas.site.address.lineFive}"/>
-                                        <p:watermark value="Zip" for="address-line-five"/>
+                                        <p:inputText id="address-line-five" 
+                                                     value="#{createDas.das.address.lineFive}"/>
+                                        <p:watermark value="Zip" 
+                                                     for="address-line-five"/>
 
                                     </h:panelGrid>
 
                                     <h3>Co-ordinates</h3>
-                                    <h:panelGrid columns="2" styleClass="table-vertical-spacer">
+                                    <h:panelGrid columns="2" 
+                                                 styleClass="table-vertical-spacer">
 
-                                        <p:inputText id="latitude" value="#{createDas.site.address.latitude}"/>
-                                        <p:watermark value="Latitude" for="latitude"/>
+                                        <p:inputText id="latitude" 
+                                                     value="#{createDas.das.address.latitude}"/>
+                                        <p:watermark value="Latitude" 
+                                                     for="latitude"/>
 
-                                        <p:inputText id="longitude" value="#{createDas.site.address.longitude}"/>
-                                        <p:watermark value="Longitude" for="longitude"/>
+                                        <p:inputText id="longitude" 
+                                                     value="#{createDas.das.address.longitude}"/>
+                                        <p:watermark value="Longitude" 
+                                                     for="longitude"/>
 
                                     </h:panelGrid>
 
-                                    <h3>Parent VAR</h3>
-                                    <p:selectOneMenu value="#{createDas.site.var}"
-                                                     style="width: 258px"
-                                                     converter="companyCvt"> 
-                                        <f:selectItem itemLabel="-" noSelectionOption="true"/> 
-                                        <f:selectItems value="#{createDas.vars}" var="company" itemLabel="#{company.name}" itemValue="#{company}"/>
-                                    </p:selectOneMenu>
-
                                     <h3>Installer</h3>
-                                    <p:selectOneMenu value="#{createDas.site.installer}"
-                                                     style="width: 258px"
-                                                     converter="companyCvt"> 
-                                        <f:selectItem itemLabel="-" noSelectionOption="true"/> 
-                                        <f:selectItems value="#{createDas.vars}" var="company" itemLabel="#{company.name}" itemValue="#{company}"/>
-                                    </p:selectOneMenu>
+                                    <p:inputText id="installer" 
+                                                 value="#{createDas.das.installer}"/>
 
                                     <h3>Support Package</h3>
-                                    <p:selectOneMenu value="#{createDas.site.packageType}" 
+                                    <p:selectOneMenu value="#{createDas.das.packageType}" 
                                                          effect="fade"
                                                          style="width: 258px">  
-                                            <f:selectItem itemLabel="-" itemValue="" />
-                                            <f:selectItem itemLabel="Monitoring" itemValue="Monitoring" />  
-                                            <f:selectItem itemLabel="Maintenance" itemValue="Maintenance" />  
-                                            <f:selectItem itemLabel="Monitoring and Maintenance" itemValue="Monitoring and Maintenance" /> 
+                                            <f:selectItem itemLabel="-" 
+                                                          itemValue="" />
+                                            <f:selectItem itemLabel="Monitoring" 
+                                                          itemValue="Monitoring" />  
+                                            <f:selectItem itemLabel="Maintenance" 
+                                                          itemValue="Maintenance" />  
+                                            <f:selectItem itemLabel="Monitoring and Maintenance" 
+                                                          itemValue="Monitoring and Maintenance" /> 
                                         </p:selectOneMenu>
                                     
                                     <h3>Response Time</h3>
-                                    <p:spinner value="#{createDas.site.responseHrs}" min="0"/> 
+                                    <p:spinner value="#{createDas.das.responseHrs}" min="0"/> 
                                     
                                     <h3>Reporting</h3>
-                                    <p:selectBooleanButton value="#{createDas.site.reportingEnabled}" onLabel="Enabled" offLabel="Disabled" />
+                                    <p:selectBooleanButton value="#{createDas.das.reportingEnabled}" 
+                                                           onLabel="Enabled" 
+                                                           offLabel="Disabled" />
                                     
-                                    <p:spacer width="100%" height="20px"/>
+                                    <p:spacer width="100%" 
+                                              height="20px"/>
 
                                     <p:commandButton id="create-btn" 
                                                      styleClass="green-button"
-                                                     value="Create Site"
-                                                     action="#{createDas.register()}"
+                                                     value="Create"
+                                                     action="#{createDas.das.create()}"
                                                      onclick="PF('blockui1').block();"
                                                      oncomplete="PF('blockui1').unblock();"
                                                      update=":form:growl"
                                                      process="@(.page-container :input)"
-                                                     disabled="#{createDas.site.name eq null or createDas.site.name.length() eq 0 or !createDas.ipAddress.valid()}"/>
+                                                     disabled="#{createDas.das.name eq null or createDas.das.name.length() eq 0 or !createDas.das.ipAddress.valid()}"/>
 
                                     <ez:blockUI target=":form:create-btn" widgetVar="blockui1"/>
 
@@ -188,7 +260,13 @@
 
                 </pe:layoutPane>
 
-                <pe:layoutPane id="south" position="south" closable="false" resizable="false" size="40"><ez:footer/></pe:layoutPane>
+                <pe:layoutPane id="south" 
+                               position="south" 
+                               closable="false" 
+                               resizable="false" 
+                               size="40">
+                    <ez:footer/>
+                </pe:layoutPane>
 
             </pe:layout>
 

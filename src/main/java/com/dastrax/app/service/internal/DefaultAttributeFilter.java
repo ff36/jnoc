@@ -33,13 +33,12 @@ import javax.naming.NamingException;
  * @author <tarka@solid.com>
  */
 public class DefaultAttributeFilter implements AttributeFilter {
-    
+
     //<editor-fold defaultstate="collapsed" desc="Properties">
     private static final Logger LOG = Logger.getLogger(DefaultAttributeFilter.class.getName());
     private CrudService dap;
 
 //</editor-fold>
-    
     //<editor-fold defaultstate="collapsed" desc="Constructors">
     public DefaultAttributeFilter() {
         try {
@@ -66,7 +65,7 @@ public class DefaultAttributeFilter implements AttributeFilter {
             boolean includeOwnCompany) {
 
         Map<String, List<Long>> filters = new HashMap<>();
-        User user = (User) dap.find(User.class, 
+        User user = (User) dap.find(User.class,
                 SessionUser.getCurrentUser().getId());
 
         if (SessionUser.getCurrentUser().isVAR()) {
@@ -101,16 +100,21 @@ public class DefaultAttributeFilter implements AttributeFilter {
      */
     @Override
     public Map<String, List<Long>> authorizedDAS() {
-        
+
         Map<String, List<Long>> filters = new HashMap<>();
         User user = (User) dap.find(User.class, SessionUser.getCurrentUser().getId());
 
         List<Long> das = new ArrayList<>();
-        // Add the VAR DAS
-        for (DAS d : user.getCompany().getDas()) {
-            das.add(d.getId());
+
+        try {
+            // Add the VAR DAS
+            for (DAS d : user.getCompany().getDas()) {
+                das.add(d.getId());
+            }
+            filters.put("das", das);
+        } catch (NullPointerException npe) {
+            // Do nothing. The User company is null
         }
-        filters.put("das", das);
 
         return filters;
     }
@@ -144,7 +148,7 @@ public class DefaultAttributeFilter implements AttributeFilter {
         // TODO
         return filters;
     }
-    
+
     /**
      * Determines all the incidents that the current user has access to.
      * (Authenticated via SHIRO)
@@ -158,7 +162,7 @@ public class DefaultAttributeFilter implements AttributeFilter {
         // TODO
         return filters;
     }
-    
+
     /**
      * Determines all the users that the current user has access to.
      * (Authenticated via SHIRO)
@@ -172,5 +176,5 @@ public class DefaultAttributeFilter implements AttributeFilter {
         // TODO
         return filters;
     }
-    
+
 }
