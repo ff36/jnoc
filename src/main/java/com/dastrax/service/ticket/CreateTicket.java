@@ -5,16 +5,12 @@
  */
 package com.dastrax.service.ticket;
 
-import com.dastrax.app.security.SessionUser;
-import com.dastrax.per.dap.CrudService;
-import com.dastrax.per.dap.QueryParameter;
-import com.dastrax.per.entity.Company;
+import com.dastrax.app.misc.JsfUtil;
 import com.dastrax.per.entity.Ticket;
-import com.dastrax.per.entity.User;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
-import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
@@ -36,18 +32,15 @@ public class CreateTicket implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private Ticket ticket;
-    private String viewParamRequesterEmail;
+    private final Map<String, List<String>> parameters;
+    private boolean render;
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Constructors">
     public CreateTicket() {
         this.ticket = new Ticket();
+        this.parameters = JsfUtil.getRequestParameters();
     }
-//</editor-fold>
-
-    //<editor-fold defaultstate="collapsed" desc="EJB">
-    @EJB
-    private CrudService dap;
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Getters">
@@ -61,16 +54,15 @@ public class CreateTicket implements Serializable {
     }
 
     /**
-     * Get the value of viewParamRequesterEmail. An email can be specified in
-     * the query parameter of the url to pre-allocate specific user to be
-     * requester.
+     * Get the value of render
      *
-     * @return the value of viewParamRequesterEmail
+     * @return the value of render
      */
-    public String getViewParamRequesterEmail() {
-        return viewParamRequesterEmail;
+    public boolean isRender() {
+        return render;
     }
 
+    
 //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="Setters">
@@ -83,17 +75,6 @@ public class CreateTicket implements Serializable {
         this.ticket = ticket;
     }
 
-    /**
-     * Set the value of viewParamRequesterEmail. An email can be specified in
-     * the query parameter of the url to pre-allocate specific user to be
-     * requester.
-     *
-     * @param viewParamRequesterEmail new value of viewParamRequesterEmail
-     */
-    public void setViewParamRequesterEmail(String viewParamRequesterEmail) {
-        this.viewParamRequesterEmail = viewParamRequesterEmail;
-    }
-
     //</editor-fold>
     
     /**
@@ -101,61 +82,7 @@ public class CreateTicket implements Serializable {
      * and data after the page has loaded.
      */
     public void init() {
-
-        ticket.initAvailableAssignees();
-        ticket.initAvailableRequesters();
-        ticket.initAvailableDAS();
-        ticket.initAvailableTags();
-
-        // Set the requester if they have been passed as a view parameter
-        try {
-            List<User> users = dap.findWithNamedQuery(
-                    "User.findByEmail",
-                    QueryParameter
-                    .with("email", viewParamRequesterEmail)
-                    .parameters());
-
-            // Check the user email is registered and can be set as requester
-            if (!users.isEmpty()) {
-
-                // If the user exists admins can set them as requesters.
-                if (SessionUser.getCurrentUser().isAdministrator()) {
-                    ticket.setRequester(users.get(0));
-                }
-
-                // Can only set other people in their company and clients
-                if (SessionUser.getCurrentUser().isVAR()) {
-                    // Get all the client companies
-                    for (Company client : users.get(0).getCompany().getClients()) {
-                        // Get all the users of that client company
-                        List<User> clients = dap.findWithNamedQuery(
-                                "User.findByCompany",
-                                QueryParameter
-                                .with("id", client.getId())
-                                .parameters());
-                        // Check if they match
-                        if (clients.contains(users.get(0))) {
-                            ticket.setRequester(users.get(0));
-                        }
-                    }
-                    // Can only set other people in their company
-                    if (users.get(0).getCompany().equals(
-                            SessionUser.getCurrentUser().getCompany())) {
-                        ticket.setRequester(users.get(0));
-                    }
-                }
-
-                // Can only set other people in their company
-                if (SessionUser.getCurrentUser().isClient()) {
-                    if (users.get(0).getCompany().equals(
-                            SessionUser.getCurrentUser().getCompany())) {
-                        ticket.setRequester(users.get(0));
-                    }
-                }
-            }
-
-        } catch (NullPointerException npe) {
-            // Do Nothing! The View parameter is null
-        }
+        ticket.initCreator(parameters);
+        this.render = true;
     }
 }

@@ -5,6 +5,7 @@
  */
 package com.dastrax.service.ticket;
 
+import com.dastrax.app.misc.JsfUtil;
 import com.dastrax.per.dap.CrudService;
 import com.dastrax.per.entity.Ticket;
 import com.dastrax.service.navigation.Navigator;
@@ -33,13 +34,15 @@ public class EditTicket implements Serializable {
     private static final long serialVersionUID = 1L;
     
     private Ticket ticket;
-    private String viewParamTicketID;
-    private boolean renderWYSIWYG;
+    private final String viewParamTicketID;
+    private boolean renderEditor;
+    private boolean render;
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Constructors">
     public EditTicket() {
         this.ticket = new Ticket();
+        this.viewParamTicketID = JsfUtil.getRequestParameter("ticket");
     }
 //</editor-fold>
 
@@ -65,21 +68,21 @@ public class EditTicket implements Serializable {
     }
     
     /**
-     * Get the value of viewParamTicketID.
+     * Get the value of render.
      *
-     * @return the value of viewParamTicketID
+     * @return the value of render
      */
-    public String getViewParamTicketID() {
-        return viewParamTicketID;
+    public boolean isRender() {
+        return render;
     }
-    
+
     /**
-     * Get the value of renderWYSIWYG.
+     * Get the value of renderEditor.
      *
-     * @return the value of renderWYSIWYG
+     * @return the value of renderEditor
      */
-    public boolean isRenderWYSIWYG() {
-        return renderWYSIWYG;
+    public boolean isRenderEditor() {
+        return renderEditor;
     }
 //</editor-fold>
 
@@ -94,21 +97,12 @@ public class EditTicket implements Serializable {
     }
     
     /**
-     * Set the value of viewParamTicketID.
+     * Set the value of renderEditor.
      *
-     * @param viewParamTicketID new value of viewParamTicketID
+     * @param renderEditor new value of renderEditor
      */
-    public void setViewParamTicketID(String viewParamTicketID) {
-        this.viewParamTicketID = viewParamTicketID;
-    }
-    
-    /**
-     * Set the value of renderWYSIWYG.
-     *
-     * @param renderWYSIWYG new value of renderWYSIWYG
-     */
-    public void setRenderWYSIWYG(boolean renderWYSIWYG) {
-        this.renderWYSIWYG = renderWYSIWYG;
+    public void setRenderEditor(boolean renderEditor) {
+        this.renderEditor = renderEditor;
     }
 //</editor-fold>
     
@@ -120,20 +114,22 @@ public class EditTicket implements Serializable {
 
         try {
             // Get the ticket from the persistence layer
-            ticket = (Ticket) dap.find(Ticket.class, viewParamTicketID);
+            ticket = (Ticket) dap.find(Ticket.class, Long.valueOf(viewParamTicketID));
 
             // Redirect if the user is not allowed access to the ticket
             if (!ticket.initEditor()) {
                 navigator.navigate("LIST_TICKETS");
             }
 
-        } catch (NullPointerException npe) {
-            // Do Nothing! The ticket was not found in the persistence
+        } catch (NullPointerException | NumberFormatException e) {
+            // The ticket was not found in the persistence
+            navigator.navigate("LIST_TICKETS");
         }
+        render = true;
     }
 
-    public void changeWYSIWYG() {
-        renderWYSIWYG = true;
+    public void changeEditor() {
+        renderEditor = true;
     }
 
     

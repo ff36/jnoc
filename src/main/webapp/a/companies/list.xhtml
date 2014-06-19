@@ -331,12 +331,12 @@
                                                                             <td>
 
                                                                                 <p:dataTable value="#{company.das}"
-                                                                                             var="das"
+                                                                                             var="daz"
                                                                                              styleClass="type4-table table-align-top"
-                                                                                             emptyMessage="No sites.">
+                                                                                             emptyMessage="No DAS.">
 
                                                                                     <p:column>
-                                                                                        <h:outputText value="#{das.name}"/>
+                                                                                        <h:outputText value="#{daz.name}"/>
                                                                                     </p:column>
 
                                                                                 </p:dataTable>
@@ -386,9 +386,9 @@
 
                                                             <p:pickList id="var-das" 
                                                                         value="#{company.linkedAndAvailableDas}" 
-                                                                        var="das"  
-                                                                        itemValue="#{das}" 
-                                                                        itemLabel="#{das.id}" 
+                                                                        var="daz"  
+                                                                        itemValue="#{daz}" 
+                                                                        itemLabel="#{daz.id}" 
                                                                         converter="dasCvt"
                                                                         styleClass="type1-picklist">  
 
@@ -396,7 +396,7 @@
                                                                 <f:facet name="targetCaption">Linked</f:facet> 
 
                                                                 <p:column style="width:75%;">  
-                                                                    #{das.name}  
+                                                                    #{daz.name}  
                                                                 </p:column>  
 
                                                             </p:pickList>
@@ -418,7 +418,10 @@
                                                         </p:dialog>
 
 
-                                                        <p:dialog id="var-clients-dlg" header="Clients" widgetVar="var-clients-dlg" dynamic="true">  
+                                                        <p:dialog id="var-clients-dlg" 
+                                                                  header="Clients" 
+                                                                  widgetVar="var-clients-dlg" 
+                                                                  dynamic="true">  
 
                                                             <p:pickList id="var-clients" 
                                                                         value="#{company.linkedAndAvailableClientCompanies}" 

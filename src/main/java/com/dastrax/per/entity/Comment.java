@@ -5,9 +5,9 @@
  */
 package com.dastrax.per.entity;
 
-import com.dastrax.app.security.SessionUser;
+import com.dastrax.app.misc.TemporalUtil;
 import com.dastrax.per.dap.CrudService;
-import com.dastrax.per.project.DTX;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -23,6 +23,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Transient;
+import org.markdown4j.Markdown4jProcessor;
+import org.primefaces.event.TabChangeEvent;
 
 /**
  * This class is mapped in the persistence layer allowing instances of this
@@ -40,7 +42,7 @@ import javax.persistence.Transient;
     @NamedQuery(name = "Comment.findByID", query = "SELECT e FROM Comment e WHERE e.id = :id"),})
 @Entity
 public class Comment implements Serializable {
-    
+
     //<editor-fold defaultstate="collapsed" desc="Properties">
     private static final Logger LOG = Logger.getLogger(Comment.class.getName());
     private static final long serialVersionUID = 1L;
@@ -60,8 +62,10 @@ public class Comment implements Serializable {
     //<editor-fold defaultstate="collapsed" desc="Transient Properties">
     @Transient
     private CrudService dap;
+    @Transient
+    private String markdown;
 //</editor-fold>
-    
+
     //<editor-fold defaultstate="collapsed" desc="Constructors">
     public Comment() {
         try {
@@ -93,6 +97,15 @@ public class Comment implements Serializable {
     }
 
     /**
+     * Get the value of createEpoch as a time stamp
+     *
+     * @return the value of createEpoch as a time stamp
+     */
+    public String getCreateTimeStamp() {
+        return TemporalUtil.epochToStringDateTime(createEpoch);
+    }
+
+    /**
      * Get the value of comment
      *
      * @return the value of comment
@@ -118,8 +131,18 @@ public class Comment implements Serializable {
     public User getCommenter() {
         return commenter;
     }
-//</editor-fold>
 
+    /**
+     * Get the value of markdown
+     *
+     * @return the value of markdown
+     */
+    public String getMarkdown() {
+        return markdown;
+    }
+
+//</editor-fold>
+    
     //<editor-fold defaultstate="collapsed" desc="Setters">
     /**
      * Set the value of id.
@@ -165,8 +188,58 @@ public class Comment implements Serializable {
     public void setCommenter(User commenter) {
         this.commenter = commenter;
     }
-//</editor-fold>
 
+//</editor-fold>
+    
+    /**
+     * Comments can have their nexus modified
+     *
+     * @param newNexus
+     */
+    public void changeNexus(Long newNexus) {
+        if (newNexus != null) {
+            nexus = (Nexus) dap.find(Nexus.class, newNexus);
+        } else {
+            nexus = null;
+        }
+        
+
+    }
+
+    /**
+     * Update the persistence layer with a new version of the comment.
+     */
+    public void update() {
+        dap.update(this);
+    }
+
+    /**
+     * Renders the markdown for a preview.
+     *
+     * @param event
+     */
+    public void previewListener(TabChangeEvent event) {
+        if ("Preview".equals(event.getTab().getTitle())) {
+            parse();
+        }
+    }
+
+    /**
+     * Renders the comment markdown.
+     * 
+     * @return The comment parsed as markdown 
+     */
+    public String parse() {
+        try {
+            markdown = new Markdown4jProcessor().process(comment);
+            return markdown;
+        } catch (IOException ex) {
+            LOG.log(Level.SEVERE, null, ex);
+            return null;
+        }
+    }
+    
+    
     //<editor-fold defaultstate="collapsed" desc="Overrides">
     @Override
     public int hashCode() {
@@ -190,37 +263,5 @@ public class Comment implements Serializable {
         return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
     }
 //</editor-fold>
-
-    /**
-     * Comments can have their nexus modified
-     *
-     * @param commentACL
-     */
-    public void changeNexus(String commentACL) {
-
-        if (SessionUser.getCurrentUser().isAdministrator()) {
-            if (commentACL.equals("internal")) {
-                nexus = (Nexus) dap.find(Nexus.class, DTX.RootNexus.ADMIN);
-            }
-            if (commentACL.equals("public")) {
-                nexus = null;
-            }
-        }
-        if (SessionUser.getCurrentUser().isVAR()) {
-            if (commentACL.equals("internal")) {
-                nexus = (Nexus) dap.find(Nexus.class, DTX.RootNexus.ADMIN_VAR);
-            }
-            if (commentACL.equals("public")) {
-                nexus = null;
-            }
-        }
-    }
-    
-    /**
-     * Update the persistence layer with a new version of the comment.
-     */
-    public void update() {
-        dap.update(this);
-    }
 
 }

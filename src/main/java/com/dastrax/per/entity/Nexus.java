@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -59,6 +58,7 @@ public class Nexus implements Serializable {
     @Id
     private Long id;
     private String name;
+    private String description;
     @ManyToOne
     private User creator;
     @OneToMany
@@ -104,6 +104,15 @@ public class Nexus implements Serializable {
     }
 
     /**
+     * Get the value of description.
+     *
+     * @return the value of description
+     */
+    public String getDescription() {
+        return description;
+    }
+
+    /**
      * Get the value of creator
      *
      * @return the value of creator
@@ -141,6 +150,15 @@ public class Nexus implements Serializable {
      */
     public void setName(String name) {
         this.name = name;
+    }
+
+    /**
+     * Set the value of description.
+     *
+     * @param description new value of description
+     */
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     /**
@@ -216,13 +234,23 @@ public class Nexus implements Serializable {
      * Evaluates if the currently authenticated subject is mentioned either
      * implicitly or explicitly in the supplied nexus.
      *
-     * @param nexus
      * @return true if he the are otherwise false.
      */
-    public boolean authorised(Nexus nexus) {
-        return evaluate(SessionUser.getCurrentUser(), nexus);
+    public boolean authorised() {
+        return evaluate(SessionUser.getCurrentUser());
     }
 
+    /**
+     * Evaluates if the specified user is mentioned either implicitly or 
+     * explicitly in the supplied nexus.
+     *
+     * @param user
+     * @return true if he the are otherwise false.
+     */
+    public boolean authorised(User user) {
+        return evaluate(user);
+    }
+    
     /**
      * Nexus have both implicit and explicit implications stored in a JSON
      * string. An implicit member is one that is implied by association. The
@@ -241,17 +269,16 @@ public class Nexus implements Serializable {
      * @param nexus
      * @return True if the user has an association to the nexus. Otherwise false
      */
-    private boolean evaluate(User user, Nexus nexus) {
+    private boolean evaluate(User user) {
 
-        if (nexus != null) {
             // Check if the user has an explicitly mentioned association
-            if (nexus.getExplicitMembers().contains(user)) {
+            if (explicitMembers.contains(user)) {
                 return true;
             } else {
                 // Check if the user has an implicitly mentioned association
-                if (nexus.getImplicitMembers() != null) {
+                if (implicitMembers != null) {
                     for (Map.Entry<String, List<String>> entry
-                            : nexus.getImplicitMembers().entrySet()) {
+                            : getImplicitMembers().entrySet()) {
                         // Currently only checks for metier associations
                         if (entry.getKey().equals("metier")) {
                             return entry.getValue()
@@ -269,10 +296,6 @@ public class Nexus implements Serializable {
                     return true;
                 }
             }
-        } else {
-            // Nexus is null
-            return true;
-        }
 
         return false;
     }

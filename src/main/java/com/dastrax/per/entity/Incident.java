@@ -14,7 +14,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -391,7 +390,7 @@ public class Incident implements Serializable {
                 this.status = status;
                 update();
                 break;
-            case SOLVED:
+            case CLOSED:
                 if (activeEvents()) {
                     JsfUtil.addWarningMessage("Incident "
                             + id
@@ -413,7 +412,7 @@ public class Incident implements Serializable {
                     JsfUtil.addWarningMessage("Incident "
                             + id
                             + " cannot be ARCHIVED as it still has active events");
-                } else if (!this.status.equals(DTX.IncidentStatus.SOLVED)) {
+                } else if (!this.status.equals(DTX.IncidentStatus.CLOSED)) {
                     JsfUtil.addWarningMessage("Incident "
                             + id
                             + " needs to be SOLVED before it can be ARCHIVED.");
@@ -437,7 +436,7 @@ public class Incident implements Serializable {
      */
     private boolean solved() {
         // Incident is already marked as solved should be ignored
-        if (!this.status.equals(DTX.IncidentStatus.SOLVED)) {
+        if (!this.status.equals(DTX.IncidentStatus.CLOSED)) {
             closingComment.setCommenter(closer);
             closingComment.setCreateEpoch(closeEpoch);
             comments.add(closingComment);

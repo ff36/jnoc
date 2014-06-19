@@ -7,6 +7,7 @@ package com.dastrax.per.entity;
 
 import com.dastrax.app.email.DefaultEmailer;
 import com.dastrax.app.email.Email;
+import com.dastrax.app.misc.TemporalUtil;
 import com.dastrax.app.security.SessionUser;
 import com.dastrax.per.dap.CrudService;
 import com.dastrax.per.dap.QueryParameter;
@@ -15,8 +16,6 @@ import com.dastrax.per.project.DTX.TicketSatisfaction;
 import com.dastrax.per.project.DTX.TicketSeverity;
 import com.dastrax.per.project.DTX.TicketStatus;
 import com.dastrax.per.project.DTX.TicketTopic;
-import com.dastrax.service.navigation.Navigator;
-import com.dastrax.app.misc.JsfUtil;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -28,12 +27,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Random;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.faces.context.FacesContext;
-import javax.inject.Inject;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.CascadeType;
@@ -50,6 +45,11 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 /**
  * This class is mapped in the persistence layer allowing instances of this
@@ -76,7 +76,7 @@ import javax.persistence.Transient;
     @NamedQuery(name = "Ticket.findAllByCloser", query = "SELECT e FROM Ticket e JOIN e.closer a WHERE a.id = :id"),})
 @Entity
 public class Ticket implements Serializable {
-    
+
     //<editor-fold defaultstate="collapsed" desc="Properties">
     private static final Logger LOG = Logger.getLogger(Ticket.class.getName());
     private static final long serialVersionUID = 1L;
@@ -109,7 +109,7 @@ public class Ticket implements Serializable {
     private DAS das;
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     private List<Comment> comments;
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.MERGE})
     private List<Tag> tags;
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     private List<Attachment> attachments;
@@ -124,9 +124,6 @@ public class Ticket implements Serializable {
     private Attachment attachment;
 
     @Transient
-    private TicketStatus newStatus;
-
-    @Transient
     private boolean sendEmailToAssignee;
     @Transient
     private boolean sendEmailToRequester;
@@ -134,9 +131,8 @@ public class Ticket implements Serializable {
     private List<String> ccEmailRecipients;
 
     @Transient
-    private Map<String, Boolean> render;
-    @Transient
     private Map<String, List> available;
+    
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Constructors">
@@ -149,11 +145,6 @@ public class Ticket implements Serializable {
         this.ccEmailRecipients = new ArrayList<>();
 
         this.available = new HashMap<>();
-        this.render = new HashMap<>();
-        this.render.put("requesters", false);
-        this.render.put("assignees", false);
-        this.render.put("das", false);
-        this.render.put("tags", false);
 
         try {
             dap = (CrudService) InitialContext.doLookup(
@@ -162,12 +153,6 @@ public class Ticket implements Serializable {
 //            LOG.log(Level.SEVERE, null, ex);
         }
     }
-//</editor-fold>
-
-    //<editor-fold defaultstate="collapsed" desc="CDI">
-    @Transient
-    @Inject
-    private Navigator navigator;
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Getters">
@@ -205,6 +190,15 @@ public class Ticket implements Serializable {
      */
     public Long getOpenEpoch() {
         return openEpoch;
+    }
+
+    /**
+     * Get the value of openEpoch as a formated string.
+     *
+     * @return the value of openEpoch as a formated string
+     */
+    public String getOpenTimeStamp() {
+        return TemporalUtil.epochToStringDateTime(openEpoch);
     }
 
     /**
@@ -361,16 +355,6 @@ public class Ticket implements Serializable {
     }
 
     /**
-     * Get the value of render. A map of view objects and their render state.
-     * These include requesters, assignees, das and tags
-     *
-     * @return the value of render
-     */
-    public Map<String, Boolean> getRender() {
-        return render;
-    }
-
-    /**
      * Get the value of available. A map containing lists of helper objects used
      * to populate the ticket. These include requesters, assignees, das and
      * tags.
@@ -382,18 +366,7 @@ public class Ticket implements Serializable {
     }
 
     /**
-     * Get the value of newStatus. When a ticket status wants to be changed it
-     * is held here before being passed to the actual status to determine the
-     * status change.
-     *
-     * @return the value of newStatus
-     */
-    public TicketStatus getNewStatus() {
-        return newStatus;
-    }
-
-    /**
-     * Get the value of attachment. 
+     * Get the value of attachment.
      *
      * @return the value of attachment
      */
@@ -597,16 +570,6 @@ public class Ticket implements Serializable {
     }
 
     /**
-     * Set the value of render. A map of view objects and their render state.
-     * These include requesters, assignees, das and tags
-     *
-     * @param render new value of render
-     */
-    public void setRender(Map<String, Boolean> render) {
-        this.render = render;
-    }
-
-    /**
      * Set the value of available. A map containing lists of helper objects used
      * to populate the ticket. These include requesters, assignees, das and
      * tags.
@@ -615,17 +578,6 @@ public class Ticket implements Serializable {
      */
     public void setAvailable(Map<String, List> available) {
         this.available = available;
-    }
-
-    /**
-     * Set the value of newStatus. When a ticket status wants to be changed it
-     * is held here before being passed to the actual status to determine the
-     * status change.
-     *
-     * @param newStatus new value of newStatus
-     */
-    public void setNewStatus(TicketStatus newStatus) {
-        this.newStatus = newStatus;
     }
 
     /**
@@ -643,26 +595,26 @@ public class Ticket implements Serializable {
      * Creates a new Ticket, adds it to the persistence layer and adds storage
      * related resources.
      *
-     * @param redirectPostCreate After a ticket is created the user has the
-     * option of creating another one or being redirected to the list of
-     * tickets.
+     * @param navigation
+     * @return navigation string
      */
-    public void create(boolean redirectPostCreate) {
+    public String create(String navigation) {
 
         // Set the ticket variables
         creator = (User) dap.find(User.class, SessionUser.getCurrentUser().getId());
 
         // VAR access
-        if (SessionUser.getCurrentUser().isVAR() 
+        if (SessionUser.getCurrentUser().isVAR()
                 || SessionUser.getCurrentUser().isClient()) {
             requester = creator;
         }
 
         // Set the person who closed the ticket if its set to solved
-        if (status.equals(DTX.TicketStatus.SOLVED)) {
+        if (status.equals(DTX.TicketStatus.CLOSED)) {
             closer = creator;
         }
 
+        openEpoch = Calendar.getInstance().getTimeInMillis();
         comment.setCreateEpoch(Calendar.getInstance().getTimeInMillis());
         comment.setCommenter(creator);
         comments.add(comment);
@@ -676,20 +628,7 @@ public class Ticket implements Serializable {
         // send the emails
         email(DTX.EmailTemplate.NEW_TICKET);
 
-        // Add success message
-        JsfUtil.addSuccessMessage("Ticket " + id + " created");
-        // Carry the message over to the page redirect
-        FacesContext
-                .getCurrentInstance()
-                .getExternalContext()
-                .getFlash()
-                .setKeepMessages(true);
-
-        if (redirectPostCreate) {
-            navigator.navigate("CREATE_TICKET");
-        } else {
-            navigator.navigate("LIST_TICKETS");
-        }
+        return navigation;
 
     }
 
@@ -708,21 +647,22 @@ public class Ticket implements Serializable {
         // ADMIN access
         if (SessionUser.getCurrentUser().isAdministrator()) {
             dap.delete(Ticket.class, id);
-            JsfUtil.addSuccessMessage("Ticket " + id + " deleted");
         }
     }
 
     /**
      * When a ticket is edited this method provides all the dependency setting
-     * changes requited to update the ticket.
+     * changes required to update the ticket.
+     * 
+     * @param newStatus
      */
-    public void edit() {
+    public void edit(DTX.TicketStatus newStatus) {
         // Check and manage any changes to the ticket status
         switch (newStatus) {
             case OPEN:
                 newOpenStatus();
                 break;
-            case SOLVED:
+            case CLOSED:
                 newSolveStatus();
                 break;
         }
@@ -730,7 +670,8 @@ public class Ticket implements Serializable {
         comment.setCommenter(SessionUser.getCurrentUser());
         comment.setCreateEpoch(new Date().getTime());
         comments.add(comment);
-        
+        comment = new Comment();
+
         // Sort the tags
         cleanTags();
         // send the emails
@@ -743,49 +684,87 @@ public class Ticket implements Serializable {
      * Converts a ticket status to OPEN.
      */
     private void newOpenStatus() {
-        
+
         switch (status) {
             // Going from SOLVED to OPEN
-            case SOLVED:
+            case CLOSED:
                 closeEpoch = null;
                 status = DTX.TicketStatus.OPEN;
                 break;
         }
     }
-    
+
     /**
      * Converts a ticket status to SOLVED.
      */
     private void newSolveStatus() {
-        
+
         switch (status) {
             // Going from OPEN to SOLVED
             case OPEN:
-                status = DTX.TicketStatus.SOLVED;
+                status = DTX.TicketStatus.CLOSED;
                 closeEpoch = new Date().getTime();
                 break;
         }
     }
-    
+
     /**
      * Prepares the tags for persistence.
      */
     private void cleanTags() {
         // Sort the tags
-        if (!tags.isEmpty()) {
-            Iterator<Tag> i = tags.iterator();
-            while (i.hasNext()) {
-                Tag tag = i.next();
-                Tag existingTag = (Tag) dap.findWithNamedQuery(
-                        "Tag.findByName",
-                        QueryParameter
-                        .with("name", tag.getName())
-                        .parameters())
-                        .get(0);
-                if (existingTag != null) {
-                    tag.setId(existingTag.getId());
+        try {
+            if (!tags.isEmpty()) {
+                Iterator<Tag> i = tags.iterator();
+                while (i.hasNext()) {
+                    Tag tag = i.next();
+                    Tag existingTag = (Tag) dap.findWithNamedQuery(
+                            "Tag.findByName",
+                            QueryParameter
+                            .with("name", tag.getName())
+                            .parameters())
+                            .get(0);
+                    if (existingTag != null) {
+                        tag.setId(existingTag.getId());
+                    }
                 }
             }
+        } catch (Exception e) {
+            // Do nothing tags is null
+        }
+
+    }
+
+    /**
+     * Determines if the ticket can be initialized for creation by the current
+     * user. If it can be initialized it will.
+     *
+     * @param parameters the URI view parameters
+     */
+    public void initCreator(Map<String, List<String>> parameters) {
+
+        initAvailableAssignees();
+        initAvailableRequesters();
+        initAvailableDAS();
+        initAvailableTags();
+
+        this.status = DTX.TicketStatus.OPEN;
+
+        // Set the requester if they have been passed as a view parameter
+        try {
+            List<User> users = dap.findWithNamedQuery(
+                    "User.findByEmail",
+                    QueryParameter
+                    .with("email", parameters.get("requester"))
+                    .parameters());
+
+            // Check the user email is registered and can be set as requester
+            if (!users.isEmpty() && available.get("requester").contains(users.get(0))) {
+                this.requester = users.get(0);
+            }
+
+        } catch (NullPointerException npe) {
+            // Do Nothing! The View parameter is null
         }
     }
 
@@ -869,8 +848,6 @@ public class Ticket implements Serializable {
         // Set the available requesters
         available.put("requesters", ar);
 
-        // Set the render flag to true
-        render.put("requesters", true);
     }
 
     /**
@@ -886,14 +863,15 @@ public class Ticket implements Serializable {
         if (SessionUser.getCurrentUser().isAdministrator()) {
             aa = dap.findWithNamedQuery(
                     "User.findByMetier",
-                    QueryParameter.with("name", DTX.Metier.ADMIN).parameters());
+                    QueryParameter.with(
+                            "name",
+                            DTX.Metier.ADMIN.toString())
+                    .parameters());
         }
 
         // Set the available requesters
         available.put("assignees", aa);
 
-        // Set the render flag to true
-        render.put("assignees", true);
     }
 
     /**
@@ -910,7 +888,7 @@ public class Ticket implements Serializable {
             ad = dap.findWithNamedQuery("DAS.findAll");
         }
         // VAR and CLIENT access can only set das related to their company
-        if (SessionUser.getCurrentUser().isVAR() 
+        if (SessionUser.getCurrentUser().isVAR()
                 || SessionUser.getCurrentUser().isClient()) {
             User user = (User) dap.find(
                     User.class, SessionUser.getCurrentUser().getId());
@@ -920,8 +898,6 @@ public class Ticket implements Serializable {
         // Set the available das
         available.put("das", ad);
 
-        // Set the render flag to true
-        render.put("das", true);
     }
 
     /**
@@ -930,13 +906,11 @@ public class Ticket implements Serializable {
      * list needs to be constructed.
      */
     public void initAvailableTags() {
-        List<Tag> at = dap.findWithNamedQuery("DAS.findAll");
+        List<Tag> at = dap.findWithNamedQuery("Tag.findAll");
 
         // Set the available das
         available.put("tags", at);
 
-        // Set the render flag to true
-        render.put("tags", true);
     }
 
     /**
@@ -1007,11 +981,6 @@ public class Ticket implements Serializable {
      */
     public List<Tag> filterAvailableTags(String query) {
         List<Tag> suggestions = new ArrayList<>();
-        // Add the query suggestion
-        Tag tag = new Tag();
-        tag.setId(new Random().nextLong());
-        tag.setName(query);
-        suggestions.add(tag);
 
         // Add suggestions from the existing list
         for (Tag t : (List<Tag>) available.get("tags")) {
@@ -1042,6 +1011,73 @@ public class Ticket implements Serializable {
         suggestions.add(query);
 
         return suggestions;
+    }
+
+    /**
+     * Retrieves tickets form the persistence layer that are by the same
+     * assignee.
+     *
+     * @param resultLimit
+     * @return a list of tickets by the same assignee
+     */
+    public List<Ticket> relatedTickets(int resultLimit) {
+
+        // Create the CriteriaQuery
+        CriteriaBuilder builder = dap.getCriteriaBuilder();
+        CriteriaQuery query = builder.createQuery(Ticket.class);
+
+        // Set the Root class against which the query is to be performed
+        Root ticket = query.from(Ticket.class);
+
+        // Create a new list of Predicates
+        List<Predicate> predicates = new ArrayList<>();
+
+        Expression literal = builder.literal((String) "%" + this.title + "%");
+
+        // When the globalFilter is deleted it returns ""
+        if (!"".equals(this.title)) {
+            List<Predicate> globalPredicate = new ArrayList<>();
+
+            globalPredicate.add(builder.like(ticket.get(Ticket_.title), literal));
+
+            predicates.add(builder.or(globalPredicate.toArray(new Predicate[globalPredicate.size()])));
+        }
+        
+            // Pass all the predicates into the query
+            if (predicates.isEmpty()) {
+                query.select(ticket);
+            } else {
+                query.where(predicates.toArray(new Predicate[predicates.size()]));
+            }
+
+            return dap.findWithCriteriaQuery(query, resultLimit);
+            
+        }
+    
+        /**
+         * Retrieves tickets form the persistence layer that are by the same
+         * requester.
+         *
+         * @param resultLimit
+         * @return a list of tickets by the same requester
+         */
+    public List<Ticket> relatedRequester(int resultLimit) {
+        return dap.findWithNamedQuery(
+                "Ticket.findAllByRequester",
+                QueryParameter.with("id", requester.getId()).parameters(), resultLimit);
+    }
+
+    /**
+     * Retrieves tickets form the persistence layer that are by the same
+     * assignee.
+     *
+     * @param resultLimit
+     * @return a list of tickets by the same assignee
+     */
+    public List<Ticket> relatedAssignee(int resultLimit) {
+        return dap.findWithNamedQuery(
+                "Ticket.findAllByAssignee",
+                QueryParameter.with("id", assignee.getId()).parameters(), resultLimit);
     }
 
     /**
@@ -1099,24 +1135,24 @@ public class Ticket implements Serializable {
     }
 
     /**
-     * Simply adds the current transient attachment to the ticket. 
+     * Simply adds the current transient attachment to the ticket.
      */
     public void addAttachment() {
         attachments.add(attachment);
         attachment = new Attachment();
     }
-    
+
     /**
      * Removes the specified attachment from the ticket and removes it from
      * storage.
-     * 
-     * @param attachment 
+     *
+     * @param attachment
      */
     public void removeAttachment(Attachment attachment) {
         attachment.remove();
         attachments.remove(attachment);
     }
-    
+
     /**
      * Builds and cleans a list of email recipients to whom an email should be
      * send. It then invokes the sendEmail() to dispatch the email.
@@ -1125,17 +1161,21 @@ public class Ticket implements Serializable {
      */
     private void email(DTX.EmailTemplate template) {
         // Build a list of all the emails
-        if (!ccEmailRecipients.isEmpty()) {
-            // Make sure the email conforms to proper format
-            Iterator<String> i = ccEmailRecipients.iterator();
-            while (i.hasNext()) {
-                String email = i.next();
-                if (!email.matches(DTX.EMAIL_REGEX)) {
-                    i.remove();
+        try {
+            if (!ccEmailRecipients.isEmpty()) {
+                // Make sure the email conforms to proper format
+                Iterator<String> i = ccEmailRecipients.iterator();
+                while (i.hasNext()) {
+                    String email = i.next();
+                    if (!email.matches(DTX.EMAIL_REGEX)) {
+                        i.remove();
+                    }
                 }
             }
+        } catch (NullPointerException npe) {
+            // ccEmailRecipients is null
+            ccEmailRecipients = new ArrayList<>();
         }
-
         if (sendEmailToRequester) {
             ccEmailRecipients.add(requester.getEmail());
         }
@@ -1146,7 +1186,7 @@ public class Ticket implements Serializable {
 
         // Retreive the email template from the database.
         Template temp = (Template) dap.find(
-                Template.class, template);
+                Template.class, template.getValue());
 
         // Send the emails
         for (String email : ccEmailRecipients) {

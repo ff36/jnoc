@@ -65,6 +65,7 @@ Any value defined here will override the pom.xml file value but is only applicab
         <word>MemoryConstrainedCacheManager</word>
         <word>metierRedirect</word>
         <word>metiers</word>
+        <word>Mojarra</word>
         <word>org</word>
         <word>PassThruAuthenticationFilter</word>
         <word>passwordMatcher</word>

@@ -10,13 +10,11 @@ import com.dastrax.app.model.DataTable;
 import com.dastrax.app.model.ModelQuery;
 import com.dastrax.app.model.TicketModelQuery;
 import com.dastrax.app.service.internal.DefaultAttributeFilter;
-import com.dastrax.service.navigation.Navigator;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 import javax.faces.view.ViewScoped;
-import javax.inject.Inject;
 import javax.inject.Named;
 
 /**
@@ -41,17 +39,11 @@ public class Tickets implements Serializable {
     private final ModelQuery model;
     private final Map<String, List<String>> parameters;
 //</editor-fold>
-
-    //<editor-fold defaultstate="collapsed" desc="CDI">
-    @Inject
-    private Navigator navigator;
-
-//</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="Constructors">
     public Tickets() {
         this.model = new TicketModelQuery();
-        parameters = JsfUtil.getRequestParameters();
+        this.parameters = JsfUtil.getRequestParameters();
     }
 //</editor-fold>
 
@@ -63,15 +55,6 @@ public class Tickets implements Serializable {
      */
     public DataTable getDataTable() {
         return dataTable;
-    }
-
-    /**
-     * Get the value of navigator.
-     *
-     * @return the value of navigator
-     */
-    public Navigator getNavigator() {
-        return navigator;
     }
  
 //</editor-fold>

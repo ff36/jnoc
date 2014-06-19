@@ -46,15 +46,10 @@ public class TagJSFCvt implements Converter {
      */
     @Override
     public Object getAsObject(FacesContext fc, UIComponent uic, String string) {
-        if (string.startsWith("tempID")) {
-            return new Tag(string.substring(string.indexOf("(") + 1, string.indexOf(")")));
-        } else {
-            try {
-                return (Tag) dap.find(Tag.class, Long.valueOf(string));
-            } catch (NumberFormatException e) {
-                return null;
-            }
-
+        try {
+            return (Tag) dap.find(Tag.class, Long.valueOf(string));
+        } catch (NumberFormatException e) {
+            return null;
         }
     }
 

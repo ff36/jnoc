@@ -166,7 +166,7 @@ public class DTX {
     public static enum TicketStatus {
 
         OPEN("Open"),
-        SOLVED("Solved");
+        CLOSED("Closed");
         
         private final String label;
 
@@ -290,7 +290,7 @@ public class DTX {
     public static enum IncidentStatus {
 
         OPEN("Open"),
-        SOLVED("Solved"),
+        CLOSED("Closed"),
         ARCHIVED("Archived");
         
         private final String label;
@@ -381,9 +381,7 @@ public class DTX {
     public static enum RootNexus {
 
         ADMIN(1L),
-        VAR(2L),
-        CLIENT(3L),
-        ADMIN_VAR(4L);
+        ADMIN_VAR(2L);
 
         private final Long value;
 
