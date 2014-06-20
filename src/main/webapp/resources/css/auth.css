@@ -1290,7 +1290,6 @@ TD.create-col-3
 /*EDIT TICKET*/
 TR.comment-table-seperator TD
 {
-	border-bottom: 1px dotted #E4E4E4;
 	padding-top: 10px !important;
 	padding-bottom: 20px;
 	vertical-align: top;

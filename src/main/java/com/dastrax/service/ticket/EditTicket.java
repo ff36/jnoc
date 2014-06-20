@@ -7,6 +7,7 @@ package com.dastrax.service.ticket;
 
 import com.dastrax.app.misc.JsfUtil;
 import com.dastrax.per.dap.CrudService;
+import com.dastrax.per.entity.Comment;
 import com.dastrax.per.entity.Ticket;
 import com.dastrax.service.navigation.Navigator;
 import java.io.Serializable;
@@ -54,7 +55,6 @@ public class EditTicket implements Serializable {
     //<editor-fold defaultstate="collapsed" desc="CDI">
     @Inject
     private Navigator navigator;
-
 //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="Getters">
@@ -129,6 +129,7 @@ public class EditTicket implements Serializable {
     }
 
     public void changeEditor() {
+        this.ticket.setComment(new Comment());
         renderEditor = true;
     }
 

@@ -48,7 +48,7 @@
                     <p:remoteCommand autoRun="true" 
                                      async="true" 
                                      actionListener="#{editTicket.init()}" 
-                                     update=":form:lazy-update-class :form:lazy-update-class-2 option-group-5"/>
+                                     update=":form:lazy-update-class :form:lazy-update-class-2 option-group-5 option-group-6"/>
 
                     <h:panelGroup id="lazy-update-class">
 
@@ -275,6 +275,7 @@
                                                                     <div class="bubble">
 
                                                                         <div class="title">
+
                                                                             <b>#{comment.commenter.contact.buildFullName()}</b>
                                                                             <h:outputText value="#{comment.getCreateTimeStamp()}" 
                                                                                           styleClass="comment-date"/>
@@ -316,7 +317,13 @@
 
                                                                         <div class="content">
                                                                             <div class="#{comment.nexus.id eq 1 ? 'admin-comment' : comment.nexus.id eq 2 ? 'var-comment' : 'public-comment'}">
-                                                                                <h:outputText value="#{comment.parse()}" escape="false"/>             
+                                                                                <h:outputText value="#{comment.parse()}" escape="false" rendered="#{comment.comment ne '%CLOSED%' and comment.comment ne '%REOPENED%'}"/>
+                                                                                <p:graphicImage value="#{uriUtil.icon('black/round_delete_icon_24.png', true)}" 
+                                                                                                title="Ticket closed"
+                                                                                                rendered="#{comment.comment eq '%CLOSED%'}"/>
+                                                                                <p:graphicImage value="#{uriUtil.icon('black/round_checkmark_icon_24.png', true)}" 
+                                                                                                title="Ticket reopened"
+                                                                                                rendered="#{comment.comment eq '%REOPENED%'}"/>
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -343,7 +350,7 @@
 
                                                                 <p:inputText widgetVar="comment-reply-holder" 
                                                                              styleClass="comment-reply-holder" 
-                                                                             rendered="#{!editTicket.renderEditor}">
+                                                                             rendered="#{!editTicket.renderEditor and editTicket.ticket.closeEpoch eq null}">
                                                                     <p:ajax event="focus" 
                                                                             update="@parent" 
                                                                             listener="#{editTicket.changeEditor()}"/>
@@ -351,6 +358,19 @@
 
                                                                 <p:watermark for="@widgetVar(comment-reply-holder)" 
                                                                              value="Add a comment or upload a file..."/>
+
+                                                                <p:commandButton widgetVar="reopenBtn"
+                                                                                 styleClass="red-button" 
+                                                                                 style="margin-top: 15px !important"
+                                                                                 value="Reopen Ticket" 
+                                                                                 onclick="PF('blockui3').block();" 
+                                                                                 oncomplete="PF('blockui3').unblock();" 
+                                                                                 update=":form:lazy-update-class-3 :form:growl" 
+                                                                                 actionListener="#{editTicket.ticket.edit('OPEN')}"
+                                                                                 process="@this"
+                                                                                 rendered="#{editTicket.ticket.closeEpoch ne null}"/>
+
+                                                                <ez:blockUI target="@widgetVar(reopenBtn)" widgetVar="blockui3"/>
 
                                                                 <h:panelGroup rendered="#{editTicket.renderEditor}">
 
@@ -361,7 +381,7 @@
 
                                                                             <h:outputText id="cmt-msg" 
                                                                                           styleClass="comment-acl-msg" 
-                                                                                          value="#{editTicket.ticket.comment.nexus eq null ? '(Your comment will be visible by everyone)' : '(Your comment will ONLY be visible to members of your team)'}"/>
+                                                                                          value="#{editTicket.ticket.comment.nexus eq null ? '(Your comment will be visible by everyone who can view this ticket)' : '(Your comment will ONLY be visible to members of your team)'}"/>
 
                                                                             <div class="comment-acl-option-btn">
                                                                                 <p:commandLink id="acl-change-btn" 
@@ -427,8 +447,6 @@
 
                                                                             <p:spacer width="100%" height="10"/>
 
-
-
                                                                             <p:commandButton widgetVar="commentBtn"
                                                                                              styleClass="green-button" 
                                                                                              value="Comment" 
@@ -438,12 +456,14 @@
                                                                                              actionListener="#{editTicket.ticket.edit('OPEN')}"
                                                                                              process="@this @(.edit-ticket :input)"/>
 
+                                                                            <p:spacer width="10"/>
+
                                                                             <p:commandButton widgetVar="commentCloseBtn"
                                                                                              styleClass="red-button" 
                                                                                              value="Comment and Close" 
                                                                                              onclick="PF('blockui2').block();" 
                                                                                              oncomplete="PF('blockui2').unblock();" 
-                                                                                             update=":form:growl" 
+                                                                                             update=":form:lazy-update-class-3 :form:growl" 
                                                                                              actionListener="#{editTicket.ticket.edit('CLOSED')}"
                                                                                              process="@this @(.edit-ticket :input)"/>
 
@@ -488,97 +508,100 @@
                             <tr>
                                 <td>
 
-                                    <p:spacer width="100%" height="20"/>
+                                    <h:panelGroup id="option-group-6">
 
-                                    <table class="table-align-top">
-                                        <tr>
-                                            <td>
-                                                <p:graphicImage id="upload-ajax-spinner" 
-                                                                name="images/ajax-loader.gif" 
-                                                                style="display: none" 
-                                                                styleClass="profile-upload-ajax-spinner"/>
+                                        <p:spacer width="100%" height="20"/>
 
-                                                <p:fileUpload id="uploader"
-                                                              styleClass="profile-uploader"
-                                                              fileUploadListener="#{editTicket.ticket.attachment.upload}"
-                                                              mode="advanced" 
-                                                              dragDropSupport="true" 
-                                                              auto="true"
-                                                              update=":form:growl :form:attachments @this :form:lazy-group-1"
-                                                              onstart="document.getElementById('upload-drag-drop-message').style.display = 'none'; document.getElementById('form:upload-ajax-spinner').style.display = 'block'"
-                                                              oncomplete="document.getElementById('upload-drag-drop-message').style.display = 'block'; document.getElementById('form:upload-ajax-spinner').style.display = 'none'"
-                                                              onerror="PF('blockui2').unblock();"
-                                                              sizeLimit="2097152" 
-                                                              allowTypes="/(\.|\/)(gif|jpe?g|png|tiff|mpeg|mpg|mov|avi|wmv|flv|txt|doc?x|xls?x|ppt?x|pdf|eps|zip)$/"
-                                                              label="Add Attachment"
-                                                              invalidFileMessage="Sorry, this file type is currently not supported."
-                                                              invalidSizeMessage="Sorry, the maximum file size is 2MB."/>
+                                        <table class="table-align-top">
+                                            <tr>
+                                                <td>
+                                                    <p:graphicImage id="upload-ajax-spinner" 
+                                                                    name="images/ajax-loader.gif" 
+                                                                    style="display: none" 
+                                                                    styleClass="profile-upload-ajax-spinner"/>
 
-                                                <div id="upload-drag-drop-message" class="menu-hover-details" style="padding-left: 6px;">
-                                                    <h:outputText value="You can also drag and drop files from your computer."/>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </table>
+                                                    <p:fileUpload id="uploader"
+                                                                  styleClass="profile-uploader"
+                                                                  fileUploadListener="#{editTicket.ticket.attachment.upload}"
+                                                                  mode="advanced" 
+                                                                  dragDropSupport="true" 
+                                                                  auto="true"
+                                                                  update=":form:growl"
+                                                                  onstart="document.getElementById('upload-drag-drop-message').style.display = 'none'; document.getElementById('form:upload-ajax-spinner').style.display = 'block'"
+                                                                  oncomplete="document.getElementById('upload-drag-drop-message').style.display = 'block'; document.getElementById('form:upload-ajax-spinner').style.display = 'none'; addAttachment()"
+                                                                  onerror="PF('blockui2').unblock();"
+                                                                  sizeLimit="2097152" 
+                                                                  allowTypes="/(\.|\/)(gif|jpe?g|png|tiff|mpeg|mpg|mov|avi|wmv|flv|txt|doc?x|xls?x|ppt?x|pdf|eps|zip)$/"
+                                                                  label="Add Attachment"
+                                                                  invalidFileMessage="Sorry, this file type is currently not supported."
+                                                                  invalidSizeMessage="Sorry, the maximum file size is 2MB."
+                                                                  style="width: 400px"/>
 
-                                    <p:spacer width="100%" height="20"/>
+                                                    <div id="upload-drag-drop-message" class="menu-hover-details" style="padding-left: 6px;">
+                                                        <h:outputText value="You can also drag and drop files from your computer."/>
+                                                    </div>
 
-                                    <p:dataTable id="attachments"
-                                                 var="attachment" 
-                                                 value="#{editTicket.ticket.attachments}"  
-                                                 paginator="true"
-                                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
-                                                 paginatorPosition="top"
-                                                 paginatorAlwaysVisible="false"
-                                                 emptyMessage="This ticket currently has no attachments"
-                                                 styleClass="type2-table">
+                                                    <p:remoteCommand name="addAttachment" 
+                                                                     actionListener="#{editTicket.ticket.addAttachment()}"
+                                                                     update=":form:option-group-6"/>
+                                                    
+                                                </td>
+                                            </tr>
+                                        </table>
 
-                                        <p:column style="width: 50px">
-                                            <p:commandLink process="@this"
-                                                           action="#{attachment.viewAttachment()}"
-                                                           target="_blank"
-                                                           title="View"> 
-                                                <p:graphicImage value="#{attachment.fileTypeIcon(true)}" 
-                                                                height="50px"/>
-                                            </p:commandLink>
-                                        </p:column>
+                                        <p:spacer width="100%" height="20"/>
 
-                                        <p:column>
-                                            <h:outputText value="#{attachment.title}"/>
-                                        </p:column>
+                                        <p:dataTable id="attachments"
+                                                     var="attachment" 
+                                                     value="#{editTicket.ticket.attachments}"  
+                                                     paginator="true"
+                                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                                     paginatorPosition="top"
+                                                     paginatorAlwaysVisible="false"
+                                                     emptyMessage="This ticket currently has no attachments"
+                                                     styleClass="type2-table">
 
-                                        <p:column>
-                                            <p:commandLink process="@this"
-                                                           action="#{attachment.viewAttachment()}"
-                                                           target="_blank"
-                                                           title="Edit"> 
-                                                <p:graphicImage value="#{uriUtil().icon('black/doc_edit_icon_16.png', true)}"/>
-                                            </p:commandLink>
-                                        </p:column>
+                                            <p:column style="width: 50px">
+                                                <p:commandLink process="@this"
+                                                               action="#{attachment.viewAttachment()}"
+                                                               target="_blank"
+                                                               title="View"> 
+                                                    <p:graphicImage value="#{attachment.fileTypeIcon(true)}" 
+                                                                    height="50px"/>
+                                                </p:commandLink>
+                                            </p:column>
 
-                                        <p:column>
-                                            <p:commandLink update=":form:telephones" 
-                                                           title="Remove Telephone" 
-                                                           process=":form:telephones">
-                                                <p:graphicImage value="#{uriUtil.icon('black/trash_icon_16.png', true)}"/>
-                                                <p:collector value="#{telephone}" 
-                                                             removeFrom="#{settings.user.contact.telephones}" 
-                                                             unique="true"/> 
-                                            </p:commandLink>
+                                            <p:column>
+                                                <h:outputText value="#{attachment.title}"/>
+                                            </p:column>
 
-                                            <p:commandLink process="@this"
-                                                           update=":form:attachments :form:growl"
-                                                           onclick="PF('blockui2').block();" 
-                                                           oncomplete="PF('blockui2').unblock();"
-                                                           title="Delete"> 
-                                                <p:graphicImage value="#{uriUtil.icon('black/trash_icon_16.png', true)}"/>
-                                                <p:collector value="#{att}" 
-                                                             removeFrom="#{editTicket.ticket.attachments}" 
-                                                             unique="true"/>
-                                            </p:commandLink>
-                                        </p:column>
+                                            <p:column>
+                                                <p:commandLink process="@this"
+                                                               action="#{navigator.navigate('DOCUMENT_WITH_PARAM', 'document='.concat(attachment.id.toString()))}"
+                                                               target="_blank"
+                                                               title="Edit"> 
+                                                    <p:graphicImage value="#{uriUtil.icon('black/doc_edit_icon_16.png', true)}"/>
+                                                </p:commandLink>
+                                            </p:column>
 
-                                    </p:dataTable> 
+                                            <p:column>
+                                                <p:commandLink process="@this"
+                                                               actionListener="#{attachment.remove()}"
+                                                               action="#{editTicket.ticket.update()}"
+                                                               update=":form:attachments :form:growl"
+                                                               onclick="PF('blockui2').block();" 
+                                                               oncomplete="PF('blockui2').unblock();"
+                                                               title="Delete"> 
+                                                    <p:graphicImage value="#{uriUtil.icon('black/trash_icon_16.png', true)}"/>
+                                                    <p:collector value="#{att}" 
+                                                                 removeFrom="#{editTicket.ticket.attachments}" 
+                                                                 unique="true"/>
+                                                </p:commandLink>
+                                            </p:column>
+
+                                        </p:dataTable> 
+
+                                    </h:panelGroup>
 
                                 </td>
                             </tr>

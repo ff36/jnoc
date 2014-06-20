@@ -60,12 +60,6 @@ public class Attachment implements Serializable {
     @Transient
     private UploadFile uploadFile;
 //</editor-fold>
-
-    //<editor-fold defaultstate="collapsed" desc="CDI">
-    @Transient
-    @Inject
-    private Navigator navigator;
-//</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="Constructors">
     public Attachment() {
@@ -207,14 +201,6 @@ public class Attachment implements Serializable {
         List<String> keys = new ArrayList<>();
         keys.add(storage.keyGenerator(DTX.KeyType.TICKET_ATTACHEMENT, s3id));
         storage.delete(keys);
-    }
-
-    /**
-     * Redirects subjects to view the attachment in the document editor
-     *
-     */
-    public void viewAttachment() {
-        navigator.navigate("DOCUMENT_WITH_PARAM", "document=" + id);
     }
 
     /**

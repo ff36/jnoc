@@ -18,6 +18,7 @@ import com.dastrax.per.project.DTX.TicketStatus;
 import com.dastrax.per.project.DTX.TicketTopic;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -111,7 +112,7 @@ public class Ticket implements Serializable {
     private List<Comment> comments;
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.MERGE})
     private List<Tag> tags;
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}, orphanRemoval = true)
     private List<Attachment> attachments;
 //</editor-fold>
 
@@ -132,9 +133,8 @@ public class Ticket implements Serializable {
 
     @Transient
     private Map<String, List> available;
-    
-//</editor-fold>
 
+//</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Constructors">
     public Ticket() {
         this.attachments = new ArrayList<>();
@@ -375,7 +375,6 @@ public class Ticket implements Serializable {
     }
 
 //</editor-fold>
-    
     //<editor-fold defaultstate="collapsed" desc="Setters">
     /**
      * Set the value of id. Unique storage key
@@ -590,7 +589,6 @@ public class Ticket implements Serializable {
     }
 
 //</editor-fold>
-    
     /**
      * Creates a new Ticket, adds it to the persistence layer and adds storage
      * related resources.
@@ -653,10 +651,22 @@ public class Ticket implements Serializable {
     /**
      * When a ticket is edited this method provides all the dependency setting
      * changes required to update the ticket.
-     * 
+     *
      * @param newStatus
      */
     public void edit(DTX.TicketStatus newStatus) {
+        try {
+            if (!comment.getComment().isEmpty()) {
+                // Add the comment
+                comment.setCommenter(SessionUser.getCurrentUser());
+                comment.setCreateEpoch(new Date().getTime());
+                comments.add(comment);
+                comment = new Comment();
+            }
+        } catch (NullPointerException npe) {
+            // Do nothing. The comment is null.
+        }
+
         // Check and manage any changes to the ticket status
         switch (newStatus) {
             case OPEN:
@@ -666,11 +676,6 @@ public class Ticket implements Serializable {
                 newSolveStatus();
                 break;
         }
-        // Add the comment
-        comment.setCommenter(SessionUser.getCurrentUser());
-        comment.setCreateEpoch(new Date().getTime());
-        comments.add(comment);
-        comment = new Comment();
 
         // Sort the tags
         cleanTags();
@@ -690,6 +695,12 @@ public class Ticket implements Serializable {
             case CLOSED:
                 closeEpoch = null;
                 status = DTX.TicketStatus.OPEN;
+
+                Comment closing = new Comment();
+                closing.setCommenter(closer);
+                closing.setComment("%REOPENED%");
+                closing.setCreateEpoch(new Date().getTime());
+                comments.add(closing);
                 break;
         }
     }
@@ -702,8 +713,18 @@ public class Ticket implements Serializable {
         switch (status) {
             // Going from OPEN to SOLVED
             case OPEN:
+                Calendar cal = Calendar.getInstance();
+                cal.add(Calendar.SECOND, 10);
+
                 status = DTX.TicketStatus.CLOSED;
-                closeEpoch = new Date().getTime();
+                closeEpoch = cal.getTimeInMillis();
+                closer = SessionUser.getCurrentUser();
+
+                Comment closing = new Comment();
+                closing.setCommenter(closer);
+                closing.setComment("%CLOSED%");
+                closing.setCreateEpoch(cal.getTimeInMillis());
+                comments.add(closing);
                 break;
         }
     }
@@ -1022,27 +1043,35 @@ public class Ticket implements Serializable {
      */
     public List<Ticket> relatedTickets(int resultLimit) {
 
-        // Create the CriteriaQuery
-        CriteriaBuilder builder = dap.getCriteriaBuilder();
-        CriteriaQuery query = builder.createQuery(Ticket.class);
+        try {
+            // Create the CriteriaQuery
+            CriteriaBuilder builder = dap.getCriteriaBuilder();
+            CriteriaQuery query = builder.createQuery(Ticket.class);
 
-        // Set the Root class against which the query is to be performed
-        Root ticket = query.from(Ticket.class);
+            // Set the Root class against which the query is to be performed
+            Root ticket = query.from(Ticket.class);
 
-        // Create a new list of Predicates
-        List<Predicate> predicates = new ArrayList<>();
+            // Create a new list of Predicates
+            List<Predicate> predicates = new ArrayList<>();
 
-        Expression literal = builder.literal((String) "%" + this.title + "%");
+            // Split the title and remove linking words
+            String[] titleWords = title.split(" ");
 
-        // When the globalFilter is deleted it returns ""
-        if (!"".equals(this.title)) {
-            List<Predicate> globalPredicate = new ArrayList<>();
+            for (String subWord : titleWords) {
+                if (!subWord.matches("(is|are|and|as|for|to|in|that|the|this|a|i)")) {
+                    Expression literal = builder.literal((String) "%" + subWord + "%");
 
-            globalPredicate.add(builder.like(ticket.get(Ticket_.title), literal));
+                    // When the globalFilter is deleted it returns ""
+                    if (!"".equals(subWord)) {
+                        List<Predicate> globalPredicate = new ArrayList<>();
 
-            predicates.add(builder.or(globalPredicate.toArray(new Predicate[globalPredicate.size()])));
-        }
-        
+                        globalPredicate.add(builder.like(ticket.get(Ticket_.title), literal));
+
+                        predicates.add(builder.or(globalPredicate.toArray(new Predicate[globalPredicate.size()])));
+                    }
+                }
+            }
+
             // Pass all the predicates into the query
             if (predicates.isEmpty()) {
                 query.select(ticket);
@@ -1051,16 +1080,20 @@ public class Ticket implements Serializable {
             }
 
             return dap.findWithCriteriaQuery(query, resultLimit);
-            
+        } catch (NullPointerException npe) {
+            // Title was null so return empty list
+            return new ArrayList<>();
         }
-    
-        /**
-         * Retrieves tickets form the persistence layer that are by the same
-         * requester.
-         *
-         * @param resultLimit
-         * @return a list of tickets by the same requester
-         */
+
+    }
+
+    /**
+     * Retrieves tickets form the persistence layer that are by the same
+     * requester.
+     *
+     * @param resultLimit
+     * @return a list of tickets by the same requester
+     */
     public List<Ticket> relatedRequester(int resultLimit) {
         return dap.findWithNamedQuery(
                 "Ticket.findAllByRequester",
@@ -1138,19 +1171,11 @@ public class Ticket implements Serializable {
      * Simply adds the current transient attachment to the ticket.
      */
     public void addAttachment() {
+        attachment.save();
         attachments.add(attachment);
         attachment = new Attachment();
-    }
-
-    /**
-     * Removes the specified attachment from the ticket and removes it from
-     * storage.
-     *
-     * @param attachment
-     */
-    public void removeAttachment(Attachment attachment) {
-        attachment.remove();
-        attachments.remove(attachment);
+        // Persist the ticket
+        update();
     }
 
     /**

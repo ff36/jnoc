@@ -362,9 +362,11 @@ public class DefaultURI implements URI {
         return protocol
                 + origin
                 + "/"
+                + DTX.StorageDirectory.TICKETS.getValue()
+                + "/"
                 + DTX.StorageDirectory.TICKET_ATTACHMENTS.getValue()
                 + "/"
-                + attachment.getId();
+                + attachment.getS3id();
 
     }
 
