@@ -465,6 +465,7 @@
                                                                                              oncomplete="PF('blockui2').unblock();" 
                                                                                              update=":form:lazy-update-class-3 :form:growl" 
                                                                                              actionListener="#{editTicket.ticket.edit('CLOSED')}"
+                                                                                             action="#{editTicket.changeEditor()}"
                                                                                              process="@this @(.edit-ticket :input)"/>
 
                                                                             <ez:blockUI target="@widgetVar(commentBtn)" widgetVar="blockui1"/>

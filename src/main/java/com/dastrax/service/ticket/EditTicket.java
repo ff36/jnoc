@@ -128,9 +128,17 @@ public class EditTicket implements Serializable {
         render = true;
     }
 
+    /**
+     * Inverts the state of renderEditor
+     */
     public void changeEditor() {
-        this.ticket.setComment(new Comment());
-        renderEditor = true;
+        if (renderEditor) {
+            renderEditor = false;
+        } else {
+            this.ticket.setComment(new Comment());
+            renderEditor = true;
+        }
+        
     }
 
     

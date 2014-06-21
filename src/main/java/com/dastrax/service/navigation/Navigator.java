@@ -243,6 +243,13 @@ public class Navigator implements Serializable {
                 role = "c";
             }
 
+            /*
+            JSF RequestParameterMap() doesn't seem to recognise URL encoded
+            %26 => & but the JSF layer won't allow the & character so we need
+            to intercept the %26 and convert it to & here.
+            */
+            parameter = parameter.replaceAll("%26", "&");
+            
             ExternalContext ectx = FacesContext
                     .getCurrentInstance()
                     .getExternalContext();
@@ -275,6 +282,9 @@ public class Navigator implements Serializable {
                     break;
                 case "LIST_COMPANIES_WITH_PARAM":
                     url = url.concat("/" + role + "/companies/list.jsf?" + parameter);
+                    break;
+                case "LIST_TICKETS_WITH_PARAM":
+                    url = url.concat("/" + role + "/tickets/list.jsf?" + parameter);
                     break;
                 case "LIST_TICKETS":
                     url = url.concat("/" + role + "/tickets/list.jsf");

@@ -11,10 +11,12 @@ import com.dastrax.per.entity.Tag_;
 import com.dastrax.per.entity.Ticket;
 import com.dastrax.per.entity.Ticket_;
 import com.dastrax.per.entity.User_;
+import com.dastrax.per.project.DTX.TicketStatus;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -34,11 +36,11 @@ import org.primefaces.model.SortOrder;
  * @author <tarka@solid.com>
  */
 public class TicketModelQuery implements ModelQuery {
-    
+
     //<editor-fold defaultstate="collapsed" desc="Properties">
     private static final Logger LOG = Logger.getLogger(TicketModelQuery.class.getName());
 //</editor-fold>
-    
+
     //<editor-fold defaultstate="collapsed" desc="Constructors">
     /**
      * Creates a new instance of AuditModelService
@@ -48,12 +50,12 @@ public class TicketModelQuery implements ModelQuery {
 //</editor-fold>
 
     /**
-     * A type safe CriteriaQuery dynamically constructed of an optional 
-     * root filter (applied automatically based on the users Metier),
-     * an optional filter that can be set via a URL query parameter, and a 
-     * global filter that is implemented as the user generates a 'keyup' event
-     * in the search field.
-     * 
+     * A type safe CriteriaQuery dynamically constructed of an optional root
+     * filter (applied automatically based on the users Metier), an optional
+     * filter that can be set via a URL query parameter, and a global filter
+     * that is implemented as the user generates a 'keyup' event in the search
+     * field.
+     *
      * @param first
      * @param pageSize
      * @param sortField
@@ -62,7 +64,7 @@ public class TicketModelQuery implements ModelQuery {
      * @param filters
      * @param rootFilter
      * @param optionalFilter
-     * @return A type safe CriteriaQuery that can be queried against the 
+     * @return A type safe CriteriaQuery that can be queried against the
      * persistence layer.
      */
     @Override
@@ -96,7 +98,7 @@ public class TicketModelQuery implements ModelQuery {
 
         // Implement the Root Filter
         if (!rootFilter.isEmpty()) {
-            for (String key : (List<String>) rootFilter.keySet()) {
+            for (String key : (Set<String>) rootFilter.keySet()) {
                 List<String> values = (List<String>) rootFilter.get(key);
 
                 List<Predicate> rootPredicate = new ArrayList<>();
@@ -119,27 +121,33 @@ public class TicketModelQuery implements ModelQuery {
 
         // Implement the Optional Specified Filter
         if (!optionalFilter.isEmpty()) {
-            for (String key : (List<String>) optionalFilter.keySet()) {
+            for (String key : (Set<String>) optionalFilter.keySet()) {
                 List<String> values = (List<String>) optionalFilter.get(key);
 
                 List<Predicate> optionalPredicate = new ArrayList<>();
                 for (String value : values) {
-                    // Search term
-                    Expression literal = builder.literal((String) value);
+
                     // Predicate
                     switch (key) {
                         case "assignee":
-                            if (value.equals("NULL")) {
+                            // Search term
+                            Expression assigneeLiteral = builder.literal((String) value);
+                            if ("null".equals(value.toLowerCase())) {
                                 optionalPredicate.add(ticket.get(Ticket_.assignee).isNull());
                             } else {
-                                optionalPredicate.add(builder.equal(ticket.join(Ticket_.assignee, JoinType.LEFT).get(User_.id), literal));
+                                optionalPredicate.add(builder.equal(ticket.join(Ticket_.assignee, JoinType.LEFT).get(User_.email), assigneeLiteral));
                             }
                             break;
                         case "requester":
-                            optionalPredicate.add(builder.equal(ticket.join(Ticket_.requester, JoinType.LEFT).get(User_.id), literal));
+                            // Search term
+                            Expression requesterLiteral = builder.literal((String) value);
+                            optionalPredicate.add(builder.equal(ticket.join(Ticket_.requester, JoinType.LEFT).get(User_.email), requesterLiteral));
                             break;
                         case "status":
-                            optionalPredicate.add(builder.equal(ticket.get(Ticket_.status), literal));
+                            // Search term
+                            String ticketStatus = (String) value;
+                            Expression statusLiteral = builder.literal(TicketStatus.valueOf(ticketStatus));
+                            optionalPredicate.add(builder.equal(ticket.get(Ticket_.status), statusLiteral));
                             break;
                         default:
                             // Don't add any predicate by default
@@ -189,9 +197,10 @@ public class TicketModelQuery implements ModelQuery {
     }
 
     /**
-     * The global filter fails if the assignee value is 'NULL' so we need to 
+     * The global filter fails if the assignee value is 'NULL' so we need to
      * skip adding the assignee predicator check if the assignee is 'NULL'. This
-     * method simply determines whether the optionalFilter has a 'NULL' assignee.
+     * method simply determines whether the optionalFilter has a 'NULL'
+     * assignee.
      */
     private boolean nullAssignee(Map optionalFilter) {
         if (!optionalFilter.isEmpty()) {
@@ -212,20 +221,20 @@ public class TicketModelQuery implements ModelQuery {
         }
         return true;
     }
-    
+
     /**
      * Determines the class type to associate with the query.
-     * 
+     *
      * @return Returns the class type to associate with the query.
      */
     @Override
     public Class clazz() {
         return Ticket.class;
     }
-    
+
     /**
      * Determines the class type to associate with the query.
-     * 
+     *
      * @param object
      * @return Returns the class type to associate with the query.
      */
@@ -234,5 +243,5 @@ public class TicketModelQuery implements ModelQuery {
         Ticket ticket = (Ticket) object;
         return ticket.getId();
     }
-    
+
 }

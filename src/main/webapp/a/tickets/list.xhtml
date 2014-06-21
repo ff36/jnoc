@@ -78,25 +78,25 @@
                         <tbody>
                             <tr>
                                 <td><p:commandLink value="Unassigned" 
-                                                   action="/a/tickets/list.xhtml?faces-redirect=true" 
+                                                   action="#{navigator.navigate('LIST_TICKETS_WITH_PARAM', 'assignee=null')}" 
                                                    process="@this" 
                                                    type="button"/></td>
                             </tr>
                             <tr>
                                 <td><p:commandLink value="Open" 
-                                                   action="/a/tickets/list.xhtml?faces-redirect=true" 
+                                                   action="#{navigator.navigate('LIST_TICKETS_WITH_PARAM', 'status=OPEN')}" 
                                                    process="@this" 
                                                    type="button"/></td>
                             </tr>
                             <tr>
                                 <td><p:commandLink value="Closed" 
-                                                   action="/a/tickets/list.xhtml?faces-redirect=true" 
+                                                   action="#{navigator.navigate('LIST_TICKETS_WITH_PARAM', 'status=CLOSED')}" 
                                                    process="@this" 
                                                    type="button"/></td>
                             </tr>
                             <tr>
                                 <td><p:commandLink value="My Open" 
-                                                   action="/a/tickets/list.xhtml?faces-redirect=true" 
+                                                   action="#{navigator.navigate('LIST_TICKETS_WITH_PARAM', 'status=OPEN%26assignee='.concat(jsfSessionUser.currentUser.email).concat('%26requester=').concat(jsfSessionUser.currentUser.email))}" 
                                                    process="@this" 
                                                    type="button"/></td>
                             </tr>
