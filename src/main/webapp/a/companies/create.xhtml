@@ -548,9 +548,9 @@
                                             <p:spacer width="100%" height="10px"/>
 
                                             <p:pickList value="#{createCompany.company.newParent.linkedAndAvailableDas}" 
-                                                        var="das"  
-                                                        itemValue="#{das}" 
-                                                        itemLabel="#{das.id}" 
+                                                        var="dass"  
+                                                        itemValue="#{dass}" 
+                                                        itemLabel="#{dass.name}" 
                                                         converter="dasCvt"
                                                         styleClass="type1-picklist">  
 
@@ -558,7 +558,7 @@
                                                 <f:facet name="targetCaption">Selected</f:facet> 
 
                                                 <p:column style="width:75%;">  
-                                                    #{das.name}  
+                                                    #{dass.name}  
                                                 </p:column>  
 
                                             </p:pickList>

@@ -56,6 +56,10 @@
                             </tr>
                             <tr>
                                 <td><p:commandLink value="Create New Company" 
+                                                   action="#{navigator.navigate('CREATE_COMPANY')}" 
+                                                   process="@this" 
+                                                   type="button"/></td>
+                                <td><p:commandLink value="" 
                                                    action="/a/companies/create.xhtml?faces-redirect=true" 
                                                    process="@this" 
                                                    type="button"/></td>

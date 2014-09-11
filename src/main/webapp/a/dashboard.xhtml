@@ -4,7 +4,8 @@
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:p="http://primefaces.org/ui"
       xmlns:pe="http://primefaces.org/ui/extensions"
-      xmlns:ez="http://xmlns.jcp.org/jsf/composite/ezcomp">
+      xmlns:ez="http://xmlns.jcp.org/jsf/composite/ezcomp"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
     <h:head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -55,13 +56,15 @@
                                                 </h:outputLink>
                                             </pe:fluidGridItem>
 
-                                            <pe:fluidGridItem rendered="#{jsfSessionUser.currentUser.hasPermission('knowledge:access')}" >
-                                                <p:commandLink action="access-dashboard-page"
-                                                               type="button" 
-                                                               ajax="false">
-                                                    <p:graphicImage value="#{uriUtil.image('tile_knowledge_active.svg', true)}"/>
-                                                </p:commandLink> 
-                                            </pe:fluidGridItem>
+                                            <ui:remove>
+                                                <pe:fluidGridItem rendered="#{jsfSessionUser.currentUser.hasPermission('knowledge:access')}" >
+                                                    <p:commandLink action="access-dashboard-page"
+                                                                   type="button" 
+                                                                   ajax="false">
+                                                        <p:graphicImage value="#{uriUtil.image('tile_knowledge_active.svg', true)}"/>
+                                                    </p:commandLink> 
+                                                </pe:fluidGridItem>
+                                            </ui:remove>
 
                                             <pe:fluidGridItem rendered="#{jsfSessionUser.currentUser.hasPermission('ticket:access')}" >
                                                 <p:commandLink action="access-dashboard-page"
@@ -71,29 +74,32 @@
                                                 </p:commandLink> 
                                             </pe:fluidGridItem>
 
-                                            <pe:fluidGridItem rendered="#{jsfSessionUser.currentUser.hasPermission('rma:access')}" >
-                                                <p:commandLink action="access-dashboard-page"
-                                                               type="button" 
-                                                               ajax="false">
-                                                    <p:graphicImage value="#{uriUtil.image('tile_rma_active.svg', true)}"/>
-                                                </p:commandLink> 
-                                            </pe:fluidGridItem>
+                                            <ui:remove>
+                                                <pe:fluidGridItem rendered="#{jsfSessionUser.currentUser.hasPermission('rma:access')}" >
+                                                    <p:commandLink action="access-dashboard-page"
+                                                                   type="button" 
+                                                                   ajax="false">
+                                                        <p:graphicImage value="#{uriUtil.image('tile_rma_active.svg', true)}"/>
+                                                    </p:commandLink> 
+                                                </pe:fluidGridItem>
 
-                                            <pe:fluidGridItem rendered="#{jsfSessionUser.currentUser.hasPermission('monitor-basic:access')}" >
-                                                <p:commandLink action="access-dashboard-page"
-                                                               type="button" 
-                                                               ajax="false">
-                                                    <p:graphicImage value="#{uriUtil.image('tile_noc_active.svg', true)}"/>
-                                                </p:commandLink>
-                                            </pe:fluidGridItem>
+                                                <pe:fluidGridItem rendered="#{jsfSessionUser.currentUser.hasPermission('monitor-basic:access')}" >
+                                                    <p:commandLink action="access-dashboard-page"
+                                                                   type="button" 
+                                                                   ajax="false">
+                                                        <p:graphicImage value="#{uriUtil.image('tile_noc_active.svg', true)}"/>
+                                                    </p:commandLink>
+                                                </pe:fluidGridItem>
 
-                                            <pe:fluidGridItem>
-                                                <p:commandLink action="access-dashboard-page"
-                                                               type="button" 
-                                                               ajax="false">
-                                                    <p:graphicImage value="#{uriUtil.image('tile_feedback_active.svg', true)}"/>
-                                                </p:commandLink>
-                                            </pe:fluidGridItem>
+                                                <pe:fluidGridItem>
+                                                    <p:commandLink action="access-dashboard-page"
+                                                                   type="button" 
+                                                                   ajax="false">
+                                                        <p:graphicImage value="#{uriUtil.image('tile_feedback_active.svg', true)}"/>
+                                                    </p:commandLink>
+                                                </pe:fluidGridItem>
+                                            </ui:remove>
+
 
                                             <pe:fluidGridItem>
                                                 <p:commandLink action="access-dashboard-page"
@@ -112,30 +118,33 @@
                     </table>
 
                 </pe:layoutPane>
-                
-                <pe:layoutPane id="east" position="east" resizeWhileDragging="true" size="350">
 
-                    <table class="page-container" style="height:100% ">
-                        <thead>
-                            <tr><th>News</th></tr>
-                        </thead>
-                        <tfoot><tr><td></td></tr></tfoot>
-                        <tbody>
-                            <tr>
-                                <td>
-                                    <p:spacer width="100%" height="20px"/>
-                                    
-                                    <p:feedReader value="http://solid.com/blog/?feed=rss2" var="feed">
-                                        <h:outputText value="#{feed.title}" style="font-weight: bold;display:block"/>
-                                        <h:outputText value="#{feed.description.value}" escape="false"/>
-                                        <hr></hr>
-                                    </p:feedReader>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <ui:remove>
+                    <pe:layoutPane id="east" position="east" resizeWhileDragging="true" size="350">
 
-                </pe:layoutPane>
+                        <table class="page-container" style="height:100% ">
+                            <thead>
+                                <tr><th>News</th></tr>
+                            </thead>
+                            <tfoot><tr><td></td></tr></tfoot>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <p:spacer width="100%" height="20px"/>
+
+                                        <p:feedReader value="http://solid.com/blog/?feed=rss2" var="feed">
+                                            <h:outputText value="#{feed.title}" style="font-weight: bold;display:block"/>
+                                            <h:outputText value="#{feed.description.value}" escape="false"/>
+                                            <hr></hr>
+
+                                        </p:feedReader>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </pe:layoutPane>
+                </ui:remove>
 
                 <pe:layoutPane id="south" position="south" closable="false" resizable="false" size="40"><ez:footer/></pe:layoutPane>
 

@@ -110,21 +110,21 @@ public class Navigator implements Serializable {
         menuItems.add(new MenuItem("1", "Dashboard", "/a/dashboard.xhtml?faces-redirect=true"));
         menuItems.add(new MenuItem("2", "Support Tickets", "/a/tickets/list.xhtml?faces-redirect=true"));
         menuItems.add(new MenuItem("3", "Create Support Ticket", "/a/tickets/create.xhtml?faces-redirect=true"));
-        menuItems.add(new MenuItem("4", "Incidents", "/a/incidents/list.xhtml?faces-redirect=true"));
+        //menuItems.add(new MenuItem("4", "Incidents", "/a/incidents/list.xhtml?faces-redirect=true"));
         menuItems.add(new MenuItem("5", "Accounts", "/a/accounts/list.xhtml?faces-redirect=true"));
         menuItems.add(new MenuItem("6", "Create Account", "/a/accounts/create.xhtml?faces-redirect=true"));
         menuItems.add(new MenuItem("7", "Companies", "/a/companies/list.xhtml?faces-redirect=true"));
         menuItems.add(new MenuItem("8", "Create Company", "/a/companies/create.xhtml?faces-redirect=true"));
         menuItems.add(new MenuItem("9", "DAS", "/a/das/list.xhtml?faces-redirect=true"));
         menuItems.add(new MenuItem("10", "Create DAS", "/a/das/create.xhtml?faces-redirect=true"));
-        menuItems.add(new MenuItem("11", "Create RMA", "/a/rma/create.xhtml?faces-redirect=true"));
-        menuItems.add(new MenuItem("12", "Analytics", "/a/analytics/dashboard.xhtml?faces-redirect=true"));
+        //menuItems.add(new MenuItem("11", "Create RMA", "/a/rma/create.xhtml?faces-redirect=true"));
+        //menuItems.add(new MenuItem("12", "Analytics", "/a/analytics/dashboard.xhtml?faces-redirect=true"));
         menuItems.add(new MenuItem("13", "Profile Settings", "/a/settings/personal/profile.xhtml?faces-redirect=true"));
         menuItems.add(new MenuItem("14", "Account Settings", "/a/settings/personal/admin.xhtml?faces-redirect=true"));
         menuItems.add(new MenuItem("15", "Security Settings", "/a/settings/personal/security.xhtml?faces-redirect=true"));
         menuItems.add(new MenuItem("16", "Navigation Settings", "/a/settings/personal/navigation.xhtml?faces-redirect=true"));
         menuItems.add(new MenuItem("17", "Company Profile Settings", "/a/settings/company/profile.xhtml?faces-redirect=true"));
-        menuItems.add(new MenuItem("18", "Support Tickets", "/a/tickets/analytics.xhtml?faces-redirect=true"));
+        //menuItems.add(new MenuItem("18", "Support Tickets", "/a/tickets/analytics.xhtml?faces-redirect=true"));
 
         menuItemDataModel = new MenuItemDataModel(menuItems);
 
@@ -248,7 +248,7 @@ public class Navigator implements Serializable {
             %26 => & but the JSF layer won't allow the & character so we need
             to intercept the %26 and convert it to & here.
             */
-            parameter = parameter.replaceAll("%26", "&");
+            if (parameter != null) parameter = parameter.replaceAll("%26", "&");
             
             ExternalContext ectx = FacesContext
                     .getCurrentInstance()
@@ -256,11 +256,17 @@ public class Navigator implements Serializable {
             String url = ectx.getRequestContextPath();
 
             switch (navigationCase) {
-                case "CREATE_VAR_COMPANY":
-                    url = url.concat("/" + role + "/companies/create/var.jsf");
+                case "DASHBOARD":
+                    url = url.concat("/" + role + "/dashboard.jsf");
                     break;
-                case "CREATE_CLIENT_COMPANY":
-                    url = url.concat("/" + role + "/companies/create/client.jsf");
+                case "SETTINGS_PERSONAL_NAVIGATION":
+                    url = url.concat("/" + role + "/settings/personal/navigation.jsf");
+                    break;
+                case "SETTINGS_PERSONAL_PROFILE":
+                    url = url.concat("/" + role + "/settings/personal/profile.jsf");
+                    break;
+                case "CREATE_COMPANY":
+                    url = url.concat("/" + role + "/companies/create.jsf");
                     break;
                 case "LIST_COMPANIES":
                     url = url.concat("/" + role + "/companies/list.jsf");
@@ -297,6 +303,9 @@ public class Navigator implements Serializable {
                     break;
                 case "RMA_REQUEST":
                     url = url.concat("/" + role + "/rma/create.jsf");
+                    break;
+                case "LIST_DAS":
+                    url = url.concat("/" + role + "/das/list.jsf");
                     break;
             }
 

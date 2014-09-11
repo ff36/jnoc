@@ -60,10 +60,12 @@
                                                    type="button"/></td>
                             </tr>
                             <tr>
-                                <td><p:commandLink value="Ticket Analytics" 
-                                                   action="/a/tickets/analytics.xhtml?faces-redirect=true" 
-                                                   process="@this" 
-                                                   type="button"/></td>
+                                <ui:remove>
+                                    <td><p:commandLink value="Ticket Analytics" 
+                                                       action="/a/tickets/analytics.xhtml?faces-redirect=true" 
+                                                       process="@this" 
+                                                       type="button"/></td>
+                                </ui:remove>
                             </tr>
                         </tbody>
                     </table>
@@ -196,12 +198,12 @@
                                                           filterBy="#{ticket.title}"
                                                           filterStyle="display:none"
                                                           sortBy="#{ticket.title}">
-                                                    
+
                                                     <p:commandLink id="edit-ticket" 
                                                                    value="#{ticket.title}" 
-                                                                   action="#{navigator.navigate('EDIT_TICKET_WITH_PARAM', 'ticket=' + ticket.id)}" 
+                                                                   action="#{navigator.navigate('EDIT_TICKET_WITH_PARAM', 'ticket='.concat(ticket.id))}" 
                                                                    type="button" 
-                                                                   process="@this,edit-ticket" 
+                                                                   process="@this" 
                                                                    disabled="#{!jsfSessionUser.currentUser.hasPermission('ticket:edit')}"/>
                                                 </p:column>
 
