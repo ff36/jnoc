@@ -37,25 +37,24 @@ import org.primefaces.model.SortOrder;
 public class UserModelQuery implements ModelQuery {
 
     //<editor-fold defaultstate="collapsed" desc="Properties">
-    private static final Logger LOG = Logger.getLogger (UserModelQuery.class.getName());
+    private static final Logger LOG = Logger.getLogger(UserModelQuery.class.getName());
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Constructors">
     /**
      * Creates a new instance of UserModelQuery
      */
-    public UserModelQuery ()
-    {
+    public UserModelQuery() {
     }
 //</editor-fold>
 
     /**
-     * A type safe CriteriaQuery dynamically constructed of an optional 
-     * root filter (applied automatically based on the users Metier),
-     * an optional filter that can be set via a URL query parameter, and a 
-     * global filter that is implemented as the user generates a 'keyup' event
-     * in the search field.
-     * 
+     * A type safe CriteriaQuery dynamically constructed of an optional root
+     * filter (applied automatically based on the users Metier), an optional
+     * filter that can be set via a URL query parameter, and a global filter
+     * that is implemented as the user generates a 'keyup' event in the search
+     * field.
+     *
      * @param first
      * @param pageSize
      * @param sortField
@@ -64,7 +63,7 @@ public class UserModelQuery implements ModelQuery {
      * @param filters
      * @param rootFilter
      * @param optionalFilter
-     * @return A type safe CriteriaQuery that can be queried against the 
+     * @return A type safe CriteriaQuery that can be queried against the
      * persistence layer.
      */
     @Override
@@ -89,10 +88,18 @@ public class UserModelQuery implements ModelQuery {
 
         // If a Sort order is specified this is set
         if (sortField != null) {
-            if (sortOrder == SortOrder.ASCENDING) {
-                query.orderBy(builder.asc(user.get(sortField)));
+            if (sortField.contains("contact.buildFullName")) {
+                if (sortOrder == SortOrder.ASCENDING) {
+                    query.orderBy(builder.asc(user.join(User_.contact).get(Contact_.firstName)));
+                } else {
+                    query.orderBy(builder.desc(user.join(User_.contact).get(Contact_.firstName)));
+                }
             } else {
-                query.orderBy(builder.desc(user.get(sortField)));
+                if (sortOrder == SortOrder.ASCENDING) {
+                    query.orderBy(builder.asc(user.get(sortField)));
+                } else {
+                    query.orderBy(builder.desc(user.get(sortField)));
+                }
             }
         }
 
@@ -100,7 +107,7 @@ public class UserModelQuery implements ModelQuery {
         List<Predicate> closedAccountPredicate = new ArrayList<>();
         closedAccountPredicate.add(builder.isNull(user.join(User_.account).get(Account_.closeEpoch)));
         predicates.add(builder.or(closedAccountPredicate.toArray(new Predicate[closedAccountPredicate.size()])));
-        
+
         // Implement the Root Filter
         if (!rootFilter.isEmpty()) {
             for (String key : (Set<String>) rootFilter.keySet()) {
@@ -112,7 +119,7 @@ public class UserModelQuery implements ModelQuery {
                 for (Object value : values) {
                     // Predicate
                     switch (key) {
-                        case "company":     
+                        case "company":
                             // Search term
                             Expression literalID = builder.literal((Long) value);
                             rootPredicate.add(builder.equal(user.join(User_.company).get(Company_.id), literalID));
@@ -133,12 +140,12 @@ public class UserModelQuery implements ModelQuery {
 
                 List<Predicate> optionalPredicate = new ArrayList<>();
                 for (Object value : values) {
-                    
+
                     // Predicate
                     switch (key) {
                         case "company":
                             // Search term
-                            Expression literalID = builder.literal((Long) value);
+                            Expression literalID = builder.literal(Long.parseLong((String) value));
                             optionalPredicate.add(builder.equal(user.join(User_.company).get(Company_.id), literalID));
                             break;
                         case "metier":
@@ -186,20 +193,20 @@ public class UserModelQuery implements ModelQuery {
 
         return query;
     }
-    
+
     /**
      * Determines the class type to associate with the query.
-     * 
+     *
      * @return Returns the class type to associate with the query.
      */
     @Override
     public Class clazz() {
         return User.class;
     }
-    
+
     /**
      * Determines the class type to associate with the query.
-     * 
+     *
      * @param object
      * @return Returns the class type to associate with the query.
      */
@@ -208,5 +215,5 @@ public class UserModelQuery implements ModelQuery {
         User user = (User) object;
         return user.getId();
     }
-    
+
 }

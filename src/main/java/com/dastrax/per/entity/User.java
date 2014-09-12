@@ -9,6 +9,7 @@ import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.dastrax.app.email.DefaultEmailer;
 import com.dastrax.app.email.Email;
+import com.dastrax.app.misc.JsfUtil;
 import com.dastrax.app.security.Password;
 import com.dastrax.app.security.SessionUser;
 import com.dastrax.app.service.internal.DefaultAttributeFilter;
@@ -491,7 +492,10 @@ public class User implements Serializable {
         // Set the account creation date
         account.setCreationEpoch(Calendar.getInstance().getTimeInMillis());
         
-        
+        // If the new user is an admin we want to reset the company to null
+        if (isAdministrator()) {
+            company = null;
+        }
         
         // Persist the user
         dap.create(this);
@@ -501,8 +505,8 @@ public class User implements Serializable {
             saveProfileImage();
         }
 
-        // Send a welcome confirmation email
-        newUserEmail();
+        // Send a welcome confirmation email and write the Token
+        newUserEmail().create();
     }
 
     /**
@@ -511,6 +515,7 @@ public class User implements Serializable {
     public void update() {
         User user = (User) dap.update(this);
         this.version = user.version;
+        JsfUtil.addSuccessMessage("Saved");
     }
 
     /**

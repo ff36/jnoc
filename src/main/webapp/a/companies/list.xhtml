@@ -59,10 +59,6 @@
                                                    action="#{navigator.navigate('CREATE_COMPANY')}" 
                                                    process="@this" 
                                                    type="button"/></td>
-                                <td><p:commandLink value="" 
-                                                   action="/a/companies/create.xhtml?faces-redirect=true" 
-                                                   process="@this" 
-                                                   type="button"/></td>
                             </tr>
                         </tbody>
                     </table>
@@ -183,11 +179,15 @@
                                                 </p:column>
 
                                                 <p:column headerText="Members">
-                                                    TODO - Link to Users with company filter
+                                                    <p:commandLink value="View" 
+                                                                   actionListener="#{navigator.navigate('LIST_ACCOUNTS_WITH_PARAM', 'company='.concat(company.id))}" 
+                                                                   process="@this"/>
                                                 </p:column>
-                                                
-                                                <p:column headerText="DAS">
-                                                    TODO - Link to DAS with company filter
+
+                                                <p:column headerText="Support Tickets">
+                                                    <p:commandLink value="View" 
+                                                                   actionListener="#{navigator.navigate('LIST_TICKETS_WITH_PARAM', 'company='.concat(company.id))}" 
+                                                                   process="@this"/>
                                                 </p:column>
 
                                                 <p:rowExpansion>  
@@ -374,8 +374,6 @@
                                                             </p:menuitem>
                                                         </p:splitButton>
 
-                                                        <p:commandButton value="Support Tickets" style="margin-right: 7px"/>
-
 
                                                         <p:dialog id="das-dlg" 
                                                                   header="DAS" 
@@ -388,22 +386,22 @@
 
                                                             <p:spacer width="100%" height="5px"/>
 
-                                                            <p:pickList id="var-das" 
-                                                                        value="#{company.linkedAndAvailableDas}" 
-                                                                        var="daz"  
-                                                                        itemValue="#{daz}" 
-                                                                        itemLabel="#{daz.id}" 
-                                                                        converter="dasCvt"
-                                                                        styleClass="type1-picklist">  
+                                                                <p:pickList id="var-das" 
+                                                                            value="#{company.linkedAndAvailableDas}" 
+                                                                            var="daz"  
+                                                                            itemValue="#{daz}" 
+                                                                            itemLabel="#{daz.id}" 
+                                                                            converter="dasCvt"
+                                                                            styleClass="type1-picklist">  
 
-                                                                <f:facet name="sourceCaption">Available</f:facet>  
-                                                                <f:facet name="targetCaption">Linked</f:facet> 
+                                                                    <f:facet name="sourceCaption">Available</f:facet>  
+                                                                    <f:facet name="targetCaption">Linked</f:facet> 
 
-                                                                <p:column style="width:75%;">  
-                                                                    #{daz.name}  
-                                                                </p:column>  
+                                                                    <p:column style="width:200px">  
+                                                                        #{daz.name}  
+                                                                    </p:column>  
 
-                                                            </p:pickList>
+                                                                </p:pickList>
 
                                                             <hr></hr>
 
@@ -425,7 +423,13 @@
                                                         <p:dialog id="var-clients-dlg" 
                                                                   header="Clients" 
                                                                   widgetVar="var-clients-dlg" 
-                                                                  dynamic="true">  
+                                                                  dynamic="true"
+                                                                  width="800px">  
+                                                            
+                                                            You can grant this company access to other client companies by linking them. <br></br>
+                                                            You can drag client companies back and forth. <br></br>
+                                                            
+                                                            <p:spacer width="100%" height="5px"/>
 
                                                             <p:pickList id="var-clients" 
                                                                         value="#{company.linkedAndAvailableClientCompanies}" 

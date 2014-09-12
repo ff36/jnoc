@@ -34,7 +34,7 @@
             <hr></hr>
 
             <p:commandButton styleClass="green-button" 
-                             action="#{feedback.sendFeedback()}"
+                             action="#{feedback.send()}"
                              value="Send Feedback" 
                              process="@this @(.feedback-text-area)" 
                              update=":form:growl"

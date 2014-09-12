@@ -149,9 +149,11 @@
                                                     #{site.dmsIp}
                                                 </p:column>
 
-                                                <p:column headerText="Company"
+                                                <p:column headerText="Support Tickets"
                                                           filterStyle="display:none">
-                                                    TODO go to company
+                                                    <p:commandLink value="View" 
+                                                                   actionListener="#{navigator.navigate('LIST_TICKETS_WITH_PARAM', 'das='.concat(site.id))}" 
+                                                                   process="@this"/>
                                                 </p:column>
 
                                                 <p:column headerText="Reporting">
@@ -281,8 +283,9 @@
                                                             </p:menuitem>
                                                         </p:splitButton>
 
-                                                        <p:commandButton value="Support Tickets" style="margin-right: 7px"/>
-
+                                                        <ui:remove>
+                                                            <p:commandButton value="Support Tickets" style="margin-right: 7px"/>
+                                                        </ui:remove>
 
                                                         <p:dialog id="das-dlg" 
                                                                   header="DAS" 
@@ -305,62 +308,62 @@
                                                             </p:selectOneMenu>
 
                                                             <h3>Contact Name</h3>
-                                                                <p:inputText id="first-name" 
-                                                                             value="#{site.contact.firstName}"/>
-                                                                <p:watermark value="First Name" 
-                                                                             for="first-name"/>
-                                                                
-                                                                <p:spacer width="10px"/>
+                                                            <p:inputText id="first-name" 
+                                                                         value="#{site.contact.firstName}"/>
+                                                            <p:watermark value="First Name" 
+                                                                         for="first-name"/>
 
-                                                                <p:inputText id="last-name" 
-                                                                             value="#{site.contact.lastName}"/>
-                                                                <p:watermark value="Last Name" 
-                                                                             for="last-name"/>
+                                                            <p:spacer width="10px"/>
+
+                                                            <p:inputText id="last-name" 
+                                                                         value="#{site.contact.lastName}"/>
+                                                            <p:watermark value="Last Name" 
+                                                                         for="last-name"/>
 
                                                             <h3>Contact Email</h3>
                                                             <p:inputText value="#{site.contact.email}"/>
 
                                                             <h3>Address</h3>
 
-                                                                <p:inputText id="address-line-two" 
-                                                                             value="#{site.address.lineTwo}"/>
-                                                                <p:watermark value="Street" 
-                                                                             for="address-line-two"/>
-                                                                
-                                                                <p:spacer width="10px"/>
+                                                            <p:inputText id="address-line-two" 
+                                                                         value="#{site.address.lineTwo}"/>
+                                                            <p:watermark value="Street" 
+                                                                         for="address-line-two"/>
 
-                                                                <p:inputText id="address-line-three" 
-                                                                             value="#{site.address.lineThree}"/>
-                                                                <p:watermark value="City" 
-                                                                             for="address-line-three"/>
+                                                            <p:spacer width="10px"/>
 
-                                                                <p:spacer width="100%" height="10px"/>
-                                                                
-                                                                <p:inputText id="address-line-four" 
-                                                                             value="#{site.address.lineFour}"/>
-                                                                <p:watermark value="State" 
-                                                                             for="address-line-four"/>
+                                                            <p:inputText id="address-line-three" 
+                                                                         value="#{site.address.lineThree}"/>
+                                                            <p:watermark value="City" 
+                                                                         for="address-line-three"/>
 
-                                                                <p:spacer width="10px"/>
-                                                                
-                                                                <p:inputText id="address-line-five" 
-                                                                             value="#{site.address.lineFive}"/>
-                                                                <p:watermark value="Zip" 
-                                                                             for="address-line-five"/>
+                                                            <p:spacer width="100%" height="10px"/>
+
+                                                            <p:inputText id="address-line-four" 
+                                                                         value="#{site.address.lineFour}"/>
+                                                            <p:watermark value="State" 
+                                                                         for="address-line-four"/>
+
+                                                            <p:spacer width="10px"/>
+
+                                                            <p:inputText id="address-line-five" 
+                                                                         value="#{site.address.lineFive}"/>
+                                                            <p:watermark value="Zip" 
+                                                                         for="address-line-five"/>
 
                                                             <h3>Co-ordinates</h3>
 
-                                                                <p:inputText id="latitude" 
-                                                                             value="#{site.address.latitude}"/>
-                                                                <p:watermark value="Latitude" 
-                                                                             for="latitude"/>
-                                                                
-                                                                <p:spacer width="10px"/>
+                                                            <p:inputText id="latitude" 
+                                                                         value="#{site.address.latitude}"/>
+                                                            <p:watermark value="Latitude" 
+                                                                         for="latitude"/>
 
-                                                                <p:inputText id="longitude" 
-                                                                             value="#{site.address.longitude}"/>
-                                                                <p:watermark value="Longitude" 
-                                                                             for="longitude"/>
+                                                            <p:spacer width="10px"/>
+
+                                                            <p:inputText id="longitude" 
+                                                                         value="#{site.address.longitude}"/>
+                                                            <p:watermark value="Longitude" 
+                                                                         for="longitude"/>
 
 
                                                             <h3>Installer</h3>

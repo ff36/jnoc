@@ -80,7 +80,7 @@
                                                             required="true" 
                                                             requiredMessage="Requester is required">
                                                 <p:ajax event="itemSelect" 
-                                                        update="@widgetVar(createBtn) @widgetVar(createBtn2) :form:option-group-6" />
+                                                        update="@widgetVar(createBtn) @widgetVar(createBtn2) @widgetVar(createBtn3) :form:option-group-6" />
                                             </p:autoComplete>                                      
 
                                             <h3>Send email</h3>
@@ -252,7 +252,7 @@
                                                              value="#{createTicket.ticket.title}" 
                                                              style="width: 400px">
                                                     <p:ajax event="keyup" 
-                                                            update="@widgetVar(createBtn) @widgetVar(createBtn2) :form:option-group-5" />
+                                                            update="@widgetVar(createBtn) @widgetVar(createBtn2) @widgetVar(createBtn3) :form:option-group-5" />
                                                 </p:inputText>
                                                 <p:watermark for="title" 
                                                              value="TITLE"/>
@@ -303,7 +303,7 @@
                                                                  onclick="PF('blockui1').block();" 
                                                                  oncomplete="PF('blockui1').unblock();" 
                                                                  update=":form:growl" 
-                                                                 action="#{createTicket.ticket.create('/a/tickets/list.xhtml?faces-redirect=true')}" 
+                                                                 action="#{createTicket.ticket.create('/a/tickets/list.xhtml?faces-redirect=true', 'OPEN')}" 
                                                                  process="@this,:form:west :form:center"
                                                                  disabled="#{createTicket.ticket.requester eq null or createTicket.ticket.title.length() lt 5}"/>
 
@@ -315,7 +315,19 @@
                                                                  onclick="PF('blockui2').block();" 
                                                                  oncomplete="PF('blockui2').unblock();" 
                                                                  update=":form:growl" 
-                                                                 action="#{createTicket.ticket.create('/a/tickets/create.xhtml?faces-redirect=true')}" 
+                                                                 action="#{createTicket.ticket.create('/a/tickets/create.xhtml?faces-redirect=true', 'OPEN')}" 
+                                                                 process="@this,:form:west :form:center"
+                                                                 disabled="#{createTicket.ticket.requester eq null or createTicket.ticket.title.length() lt 5}"/>
+                                                
+                                                <p:spacer width="5px"/>
+
+                                                <p:commandButton widgetVar="createBtn3"
+                                                                 styleClass="red-button" 
+                                                                 value="Comment and close" 
+                                                                 onclick="PF('blockui3').block();" 
+                                                                 oncomplete="PF('blockui3').unblock();" 
+                                                                 update=":form:growl" 
+                                                                 action="#{createTicket.ticket.create('/a/tickets/list.xhtml?faces-redirect=true', 'CLOSED')}" 
                                                                  process="@this,:form:west :form:center"
                                                                  disabled="#{createTicket.ticket.requester eq null or createTicket.ticket.title.length() lt 5}"/>
 
@@ -325,6 +337,8 @@
                                                 <ez:blockUI target="@widgetVar(createBtn2)" 
                                                             widgetVar="blockui2"/>
 
+                                                <ez:blockUI target="@widgetVar(createBtn3)" 
+                                                            widgetVar="blockui3"/>
 
                                             </td>
                                         </tr>

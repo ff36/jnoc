@@ -20,12 +20,10 @@
             <f:viewAction action="#{authenticate.init}" />
         </f:metadata>
 
-        <div id="messages">
-            <p:messages redisplay="false"
-                        showDetail="false" 
-                        autoUpdate="true"
-                        closable="true"/>
-        </div>
+        <p:growl id="growl" 
+                 redisplay="false"
+                 showDetail="false" 
+                 sticky="false" />
 
         <!-- Authentication -->
         <h:form id="form"
@@ -79,16 +77,27 @@
 
                         </td>
                     </tr>
+                    <tr>
+                        <td>
+                            <h:commandLink action="#{navigator.navigate('FORGOT_PASSWORD')}"
+                                           value="Forgot password?"
+                                           type="button"/>
+
+                            <br></br>
+
+                            <h:commandLink value="Get an account"
+                                           action="#{navigator.navigate('REQUEST_ACCOUNT')}"
+                                           type="button"/>
+
+                        </td>
+                    </tr>
                 </table>
 
             </div>
 
             <div class="footer">
 
-                <p:commandLink id="forgot-password"
-                               action="access-forgot-pwd-page"
-                               value="#{msgs['login.forgot.password']}"
-                               process="@this,form:forgot-password"/>
+
             </div>
 
         </h:form>
@@ -122,15 +131,12 @@
                                  process="@this,uni-email"/>
 
                 <ez:blockUI target="@(.login-button-update-class)" widgetVar="blockui1"/>
-               
+
             </div>
 
             <div class="footer">
 
-                <p:commandLink id="no-account"
-                               value="Get an account"
-                               action="access-request-account-page"
-                               process="@this,uni-form:no-account"/>
+
 
             </div>
 

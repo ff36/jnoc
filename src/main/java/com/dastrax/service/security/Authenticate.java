@@ -319,6 +319,9 @@ public class Authenticate implements Serializable {
      */
     public void authenticate() {
 
+        // Render the login by default
+        renderLogin = true;
+        
         // Is the user already authenticated
         if (!SecurityUtils.getSubject().isAuthenticated()) {
 

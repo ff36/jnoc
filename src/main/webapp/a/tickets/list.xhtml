@@ -97,14 +97,26 @@
                                                    type="button"/></td>
                             </tr>
                             <tr>
-                                <td><p:commandLink value="My Open" 
-                                                   action="#{navigator.navigate('LIST_TICKETS_WITH_PARAM', 'status=OPEN%26assignee='.concat(jsfSessionUser.currentUser.email).concat('%26requester=').concat(jsfSessionUser.currentUser.email))}" 
+                                <td><p:commandLink value="My Open (Assignee)" 
+                                                   action="#{navigator.navigate('LIST_TICKETS_WITH_PARAM', 'status=OPEN%26assignee='.concat(jsfSessionUser.currentUser.email))}" 
                                                    process="@this" 
                                                    type="button"/></td>
                             </tr>
                             <tr>
-                                <td><p:commandLink value="My Closed" 
-                                                   action="/a/tickets/list.xhtml?faces-redirect=true" 
+                                <td><p:commandLink value="My Open (Requester)" 
+                                                   action="#{navigator.navigate('LIST_TICKETS_WITH_PARAM', 'status=OPEN%26requester='.concat(jsfSessionUser.currentUser.email))}" 
+                                                   process="@this" 
+                                                   type="button"/></td>
+                            </tr>
+                            <tr>
+                                <td><p:commandLink value="My Closed (Assignee)" 
+                                                   action="#{navigator.navigate('LIST_TICKETS_WITH_PARAM', 'status=CLOSED%26assignee='.concat(jsfSessionUser.currentUser.email))}" 
+                                                   process="@this" 
+                                                   type="button"/></td>
+                            </tr>
+                            <tr>
+                                <td><p:commandLink value="My Closed (Requester)" 
+                                                   action="#{navigator.navigate('LIST_TICKETS_WITH_PARAM', 'status=CLOSED%26requester='.concat(jsfSessionUser.currentUser.email))}" 
                                                    process="@this" 
                                                    type="button"/></td>
                             </tr>
@@ -224,7 +236,7 @@
                                                 <p:column headerText="Created"
                                                           filterBy="#{ticket.getOpenTimeStamp()}"
                                                           filterStyle="display:none"
-                                                          sortBy="#{ticket.getOpenTimeStamp()}">
+                                                          sortBy="#{ticket.openEpoch}">
                                                     #{ticket.getOpenTimeStamp()}                        
                                                 </p:column>
 

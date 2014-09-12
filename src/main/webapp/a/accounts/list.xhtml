@@ -190,18 +190,29 @@
 
                                                 <p:column headerText="Company"
                                                           filterBy="#{user.company.name}"
-                                                          filterStyle="display:none"
-                                                          sortBy="#{user.company.name}">
+                                                          filterStyle="display:none">
                                                     #{user.company.name}
                                                 </p:column>
 
                                                 <p:column headerText="Type"
                                                           filterBy="#{user.metier.name}"
-                                                          filterStyle="display:none"
-                                                          sortBy="#{user.metier.name}">
+                                                          filterStyle="display:none">
                                                     #{user.metier.name}
                                                 </p:column>
-
+                                                
+                                                <p:column headerText="Requested Support Tickets">
+                                                    <p:commandLink value="View" 
+                                                                   actionListener="#{navigator.navigate('LIST_TICKETS_WITH_PARAM', 'requester='.concat(user.email))}" 
+                                                                   process="@this"/>
+                                                </p:column>
+                                                
+                                                <p:column headerText="Assigned Support Tickets">
+                                                    <p:commandLink value="View" 
+                                                                   actionListener="#{navigator.navigate('LIST_TICKETS_WITH_PARAM', 'assignee='.concat(user.email))}" 
+                                                                   process="@this"
+                                                                   rendered="#{user.isAdministrator()}"/>
+                                                </p:column>
+                                                
                                                 <p:column id="verified" style="width:18px">
                                                     <p:graphicImage value="#{uriUtil.icon('black/checkbox_checked_icon_16.png', true)}"
                                                                     title="Verified"
@@ -236,17 +247,6 @@
                                                                                     <p:graphicImage value="#{uriUtil.icon('black/mail_2_icon_16.png', true)}"/>
                                                                                 </h:outputLink>
                                                                             </td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td>
-                                                                                <h:outputText value="SOLiD" 
-                                                                                              rendered="#{user.metier.name eq 'ADMIN'}"/>
-                                                                                <h:outputText id="account-company-name" 
-                                                                                              value="#{user.company.name ne null ? user.company.name : 'No Company'}" 
-                                                                                              rendered="#{user.metier.name ne 'ADMIN'}"
-                                                                                              styleClass="company-update-class"/>
-                                                                            </td>
-                                                                            <td></td>
                                                                         </tr>
                                                                     </table>
                                                                 </td>
@@ -362,7 +362,7 @@
 
                                                         <p:splitButton value="Account Actions" styleClass="dark-menu">  
                                                             <p:menuitem value="Create Support Ticket" 
-                                                                        action="#{navigator.navigate('CREATE_TICKET_WITH_PARAM', 'requester=' + user.email)}" 
+                                                                        action="#{navigator.navigate('CREATE_TICKET_WITH_PARAM', 'requester='.concat(user.email))}" 
                                                                         process="@this"/>
                                                             <p:separator />
                                                             <p:menuitem value="Edit Permission" 
@@ -388,10 +388,9 @@
                                                                         disabled="#{!jsfSessionUser.currentUser.hasPermission('account:delete')}"/>
                                                         </p:splitButton>
 
-                                                        <p:commandButton value="Support Tickets" style="margin-right: 7px"/>
-
-                                                        <p:commandButton value="Activity Logs"/>
-
+                                                        <ui:remove>
+                                                            <p:commandButton value="Activity Logs"/>
+                                                        </ui:remove>
 
 
                                                         <p:dialog header="Edit Address" 

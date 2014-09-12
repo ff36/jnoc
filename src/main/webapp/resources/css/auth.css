@@ -295,7 +295,7 @@ TABLE.page-container
 }
 .page-container TD
 {
-	padding: 0px 15px 15px !important;
+	padding: 5px 15px !important;
 }
 .page-container TABLE TD
 {
@@ -1931,8 +1931,8 @@ TR.comment-table-seperator TD
 /*PICKLIST*/
 .ui-picklist.type1-picklist .ui-button
 {
-	margin-left: 5px;
-	margin-right: 5px;
+	margin-left: auto;
+	margin-right: auto;
 }
 .type1-picklist .ui-widget-content
 {
@@ -1940,12 +1940,14 @@ TR.comment-table-seperator TD
 	-webkit-border-radius: 0px;
 	-moz-border-radius: 0px;
 	border-radius: 0px;
+	width: 220px !important;
 }
 .type1-picklist .ui-picklist-caption
 {
 	-webkit-border-radius: 0px;
 	-moz-border-radius: 0px;
 	border-radius: 0px;
+	width: 200px;
 }
 .type1-picklist TD
 {

@@ -307,6 +307,12 @@ public class Navigator implements Serializable {
                 case "LIST_DAS":
                     url = url.concat("/" + role + "/das/list.jsf");
                     break;
+                case "FORGOT_PASSWORD":
+                    url = url.concat("/p/password.jsf");
+                    break;
+                case "REQUEST_ACCOUNT":
+                    url = url.concat("/p/request.jsf");
+                    break;
             }
 
             ectx.redirect(url);

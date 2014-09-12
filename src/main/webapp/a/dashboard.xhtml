@@ -100,11 +100,9 @@
                                                 </pe:fluidGridItem>
                                             </ui:remove>
 
-
                                             <pe:fluidGridItem>
-                                                <p:commandLink action="access-dashboard-page"
-                                                               type="button" 
-                                                               ajax="false">
+                                                <p:commandLink process="@this"
+                                                               onclick="PF('contact-dlg').show();">
                                                     <p:graphicImage value="#{uriUtil.image('tile_contact_active.svg', true)}"/>
                                                 </p:commandLink>
                                             </pe:fluidGridItem>
@@ -145,6 +143,39 @@
 
                     </pe:layoutPane>
                 </ui:remove>
+
+                <p:dialog id="contact-dlg" header="Contact us" widgetVar="contact-dlg" dynamic="true" resizable="false" width="600">  
+
+                    <h3>How can we help you?</h3>
+                    <hr></hr>
+
+                    <h2>SOLiD</h2>
+
+                    HQ / Shipping &amp; Receiving:<br></br>
+                    617 N. Mary Avenue<br></br>
+                    Sunnyvale, CA 94085-2907<br></br>
+
+                    <p:spacer width="100%" height="10px"/>
+                    
+                    <b>W:</b> <a href="http://solid.com">solid.com</a><br></br>
+                    <b>T:</b> 888.409.9997<br></br>
+                    <b>E:</b> <a href="mailto:info@solid.com">info@solid.com</a><br></br>
+                    
+                    <p:spacer width="100%" height="10px"/>
+
+                    <h3>Departments</h3>
+
+                    <a href="mailto:sales@solid.com">sales@solid.com</a><br></br>
+
+                    <a href="mailto:marketing@solid.com">marketing@solid.com</a><br></br>
+
+                    <a href="mailto:support@solid.com">support@solid.com</a><br></br>
+
+                    <a href="mailto:training@solid.com">training@solid.com</a><br></br>
+                    
+                    <p:spacer width="100%" height="10px"/>
+
+                </p:dialog>
 
                 <pe:layoutPane id="south" position="south" closable="false" resizable="false" size="40"><ez:footer/></pe:layoutPane>
 

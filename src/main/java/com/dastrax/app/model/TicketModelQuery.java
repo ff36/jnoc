@@ -7,6 +7,7 @@ package com.dastrax.app.model;
 
 import com.dastrax.per.entity.Company_;
 import com.dastrax.per.entity.Contact_;
+import com.dastrax.per.entity.DAS_;
 import com.dastrax.per.entity.Tag_;
 import com.dastrax.per.entity.Ticket;
 import com.dastrax.per.entity.Ticket_;
@@ -89,10 +90,25 @@ public class TicketModelQuery implements ModelQuery {
 
         // If a Sort order is specified this is set
         if (sortField != null) {
-            if (sortOrder == SortOrder.ASCENDING) {
-                query.orderBy(builder.asc(ticket.get(sortField)));
+            // The sort needs to be customised for requesters and assignees
+            if (sortField.contains("assignee")) {
+                if (sortOrder == SortOrder.ASCENDING) {
+                    query.orderBy(builder.asc(ticket.join(Ticket_.assignee).join(User_.contact).get(Contact_.firstName)));
+                } else {
+                    query.orderBy(builder.desc(ticket.join(Ticket_.assignee).join(User_.contact).get(Contact_.firstName)));
+                }
+            } else if (sortField.contains("requester")) {
+                if (sortOrder == SortOrder.ASCENDING) {
+                    query.orderBy(builder.asc(ticket.join(Ticket_.requester).join(User_.contact).get(Contact_.firstName)));
+                } else {
+                    query.orderBy(builder.desc(ticket.join(Ticket_.requester).join(User_.contact).get(Contact_.firstName)));
+                }
             } else {
-                query.orderBy(builder.desc(ticket.get(sortField)));
+                if (sortOrder == SortOrder.ASCENDING) {
+                    query.orderBy(builder.asc(ticket.get(sortField)));
+                } else {
+                    query.orderBy(builder.desc(ticket.get(sortField)));
+                }
             }
         }
 
@@ -148,6 +164,16 @@ public class TicketModelQuery implements ModelQuery {
                             String ticketStatus = (String) value;
                             Expression statusLiteral = builder.literal(TicketStatus.valueOf(ticketStatus));
                             optionalPredicate.add(builder.equal(ticket.get(Ticket_.status), statusLiteral));
+                            break;
+                        case "company":
+                            // Search term
+                            Expression companyLiteral = builder.literal((String) value);
+                            optionalPredicate.add(builder.equal(ticket.join(Ticket_.requester, JoinType.LEFT).join(User_.company, JoinType.LEFT).get(Company_.id), companyLiteral));
+                            break;
+                        case "das":
+                            // Search term
+                            Expression dasLiteral = builder.literal(Long.parseLong((String) value));
+                            optionalPredicate.add(builder.equal(ticket.join(Ticket_.das, JoinType.LEFT).get(DAS_.id), dasLiteral));
                             break;
                         default:
                             // Don't add any predicate by default

@@ -18,7 +18,6 @@ import com.dastrax.per.project.DTX.TicketStatus;
 import com.dastrax.per.project.DTX.TicketTopic;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -135,6 +134,7 @@ public class Ticket implements Serializable {
     private Map<String, List> available;
 
 //</editor-fold>
+    
     //<editor-fold defaultstate="collapsed" desc="Constructors">
     public Ticket() {
         this.attachments = new ArrayList<>();
@@ -375,6 +375,7 @@ public class Ticket implements Serializable {
     }
 
 //</editor-fold>
+    
     //<editor-fold defaultstate="collapsed" desc="Setters">
     /**
      * Set the value of id. Unique storage key
@@ -589,14 +590,16 @@ public class Ticket implements Serializable {
     }
 
 //</editor-fold>
+    
     /**
      * Creates a new Ticket, adds it to the persistence layer and adds storage
      * related resources.
      *
      * @param navigation
+     * @param newStatus
      * @return navigation string
      */
-    public String create(String navigation) {
+    public String create(String navigation, DTX.TicketStatus newStatus) {
 
         // Set the ticket variables
         creator = (User) dap.find(User.class, SessionUser.getCurrentUser().getId());
@@ -608,8 +611,13 @@ public class Ticket implements Serializable {
         }
 
         // Set the person who closed the ticket if its set to solved
-        if (status.equals(DTX.TicketStatus.CLOSED)) {
-            closer = creator;
+        switch (newStatus) {
+            case OPEN:
+                newOpenStatus();
+                break;
+            case CLOSED:
+                newSolveStatus();
+                break;
         }
 
         openEpoch = Calendar.getInstance().getTimeInMillis();
@@ -776,11 +784,11 @@ public class Ticket implements Serializable {
             List<User> users = dap.findWithNamedQuery(
                     "User.findByEmail",
                     QueryParameter
-                    .with("email", parameters.get("requester"))
+                    .with("email", parameters.get("requester").get(0))
                     .parameters());
 
             // Check the user email is registered and can be set as requester
-            if (!users.isEmpty() && available.get("requester").contains(users.get(0))) {
+            if (!users.isEmpty() && available.get("requesters").contains(users.get(0))) {
                 this.requester = users.get(0);
             }
 

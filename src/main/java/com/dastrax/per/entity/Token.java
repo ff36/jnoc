@@ -28,6 +28,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.Transient;
 
 /**
  * This class is mapped in the persistence layer allowing instances of this
@@ -66,8 +67,19 @@ public class Token implements Serializable {
     private Long createEpoch;
 //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="Transient Properties">
+    @Transient
+    private CrudService dap;
+    //</editor-fold>
+
     //<editor-fold defaultstate="collapsed" desc="Constructors">
     public Token() {
+        try {
+            dap = (CrudService) InitialContext.doLookup(
+                    ResourceBundle.getBundle("config").getString("CRUD"));
+        } catch (NamingException ex) {
+//            LOG.log(Level.SEVERE, null, ex);
+        }
     }
 //</editor-fold>
 
@@ -181,6 +193,19 @@ public class Token implements Serializable {
         return null;
     }
 
+    /**
+     * Creates a new user, adds it to the persistence layer and adds storage
+     * related resources.
+     */
+    public void create() {
+
+        // Persist the user
+        dap.create(this);
+        
+        // Tidy
+        tidy();
+    }
+    
     /**
      * Tidies up the database by deleting any tokens that are over 24 hours old.
      * This method is asynchronous and will return immedietly regardless of
