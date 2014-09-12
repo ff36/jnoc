@@ -280,38 +280,38 @@
                                                                             <h:outputText value="#{comment.getCreateTimeStamp()}" 
                                                                                           styleClass="comment-date"/>
                                                                             <div class="comment-acl-option-btn">
-                                                                                <p:commandLink id="acl-change-btn" 
-                                                                                               type="button" 
-                                                                                               process="@this,acl-change-btn">
-                                                                                    <p:graphicImage value="#{uriUtil.icon('black/cog_icon_16.png', true)}"/>
-                                                                                    <p:graphicImage value="#{uriUtil.icon('black/br_down_icon_16.png', true)}" 
-                                                                                                    width="8px"/>
-                                                                                </p:commandLink>
-                                                                                <p:menu id="acl-change-overlay" 
-                                                                                        overlay="true" 
-                                                                                        trigger="acl-change-btn">   
-                                                                                    <p:menuitem id="change-acl-to-public" 
-                                                                                                actionListener="#{comment.changeNexus(null)}" 
-                                                                                                action="#{comment.update()}"
-                                                                                                value="Make Public" 
-                                                                                                rendered="#{comment.nexus.id eq 1}" 
-                                                                                                process="@this,change-acl-to-public" 
-                                                                                                update="comment-datalist :form:growl"/>
-                                                                                    <p:menuitem id="change-acl-to-internal-admin" 
-                                                                                                actionListener="#{comment.changeNexus(1)}" 
-                                                                                                action="#{comment.update()}"
-                                                                                                value="Make Internal"
-                                                                                                process="@this,change-acl-to-internal-admin" 
-                                                                                                update="comment-datalist :form:growl"
-                                                                                                rendered="#{jsfSessionUser.currentUser.administrator and comment.nexus.id eq null}"/>  
-                                                                                    <p:menuitem id="change-acl-to-internal-var" 
-                                                                                                actionListener="#{comment.changeNexus(2)}" 
-                                                                                                action="#{comment.update()}"
-                                                                                                value="Make Internal" 
-                                                                                                process="@this,change-acl-to-internal-var" 
-                                                                                                update="comment-datalist :form:growl"
-                                                                                                rendered="#{jsfSessionUser.currentUser.VAR and comment.nexus.id eq null}"/>
-                                                                                </p:menu>
+
+                                                                                <p:commandButton id="change-acl-to-public"
+                                                                                                 styleClass="header-button-2 white-button-2"
+                                                                                                 actionListener="#{comment.changeNexus(null)}" 
+                                                                                                 action="#{comment.update()}"
+                                                                                                 value="Make Public" 
+                                                                                                 rendered="#{comment.nexus.id eq 1}" 
+                                                                                                 process="@this,change-acl-to-public" 
+                                                                                                 update="comment-datalist :form:growl"
+                                                                                                 title="Your comment will be visible by everyone who can view this ticket"/>
+
+                                                                                <p:commandButton id="change-acl-to-internal-admin" 
+                                                                                                 styleClass="header-button-2 white-button-2"
+                                                                                                 actionListener="#{comment.changeNexus(1)}" 
+                                                                                                 action="#{comment.update()}"
+                                                                                                 value="Make Internal"
+                                                                                                 process="@this,change-acl-to-internal-admin" 
+                                                                                                 update="comment-datalist :form:growl"
+                                                                                                 rendered="#{jsfSessionUser.currentUser.administrator and comment.nexus.id eq null and comment ne editTicket.ticket.comments[0]}"
+                                                                                                 title="Your comment will ONLY be visible to members of your team"/>  
+                                                                                
+                                                                                <p:commandButton id="change-acl-to-internal-var" 
+                                                                                                 styleClass="header-button-2 white-button-2"
+                                                                                                 actionListener="#{comment.changeNexus(2)}" 
+                                                                                                 action="#{comment.update()}"
+                                                                                                 value="Make Internal" 
+                                                                                                 process="@this,change-acl-to-internal-var" 
+                                                                                                 update="comment-datalist :form:growl"
+                                                                                                 rendered="#{jsfSessionUser.currentUser.VAR and comment.nexus.id eq null}"
+                                                                                                 title="Your comment will ONLY be visible to members of your team"/>
+
+                                                                                
                                                                             </div>
                                                                         </div>
 
@@ -545,7 +545,7 @@
                                                     <p:remoteCommand name="addAttachment" 
                                                                      actionListener="#{editTicket.ticket.addAttachment()}"
                                                                      update=":form:option-group-6"/>
-                                                    
+
                                                 </td>
                                             </tr>
                                         </table>

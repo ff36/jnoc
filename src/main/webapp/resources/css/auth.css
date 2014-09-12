@@ -945,6 +945,41 @@ TABLE.dms-sub-table
 	font-weight: bold;
 	color: #434343;
 }
+.ui-button.header-button-2
+{
+	float: right;
+	position: relative;
+	padding: 0px !important;
+	margin-right: 10px;
+}
+.ui-button.white-button-2
+{
+	background: #FCFCFC;
+	/*Old browsers*/
+	background: -moz-linear-gradient(top, #fcfcfc 0%, #eeeeee 100%);
+	/*FF3.6+*/
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#fcfcfc), color-stop(100%,#eeeeee));
+	/*Chrome,Safari4+*/
+	background: -webkit-linear-gradient(top, #fcfcfc 0%,#eeeeee 100%);
+	/*Chrome10+,Safari5.1+*/
+	background: -o-linear-gradient(top, #fcfcfc 0%,#eeeeee 100%);
+	/*Opera 11.10+*/
+	background: -ms-linear-gradient(top, #fcfcfc 0%,#eeeeee 100%);
+	/*IE10+*/
+	background: linear-gradient(to bottom, #fcfcfc 0%,#eeeeee 100%);
+	/*W3C*/
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcfcfc', endColorstr='#eeeeee',GradientType=0 );
+	/*IE6-9*/
+	border: 1px solid #D5D5D5;
+	padding: 0px;
+}
+.white-button-2 .ui-button-text
+{
+	color: #000000;
+	font-weight: normal;
+	text-shadow: 1px -1px rgba(204, 204, 204, 0.3);
+	font-size: 6.6pt;
+}
 /*DETAIL PANEL*/
 .ui-panel.empty-panel
 {

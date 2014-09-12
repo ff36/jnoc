@@ -116,18 +116,6 @@
 
                                         <ui:fragment rendered="#{settings.render}">
 
-                                            <h3>Old Password</h3>
-                                            <h:panelGrid columns="1" styleClass="table-field-spacer">
-
-                                                <p:password value="#{settings.user.newPassword.current}" 
-                                                            styleClass="password-update-class" 
-                                                            required="true" 
-                                                            requiredMessage="Please enter your current password">
-                                                    <p:ajax event="keyup" update="save-password-button" />
-                                                </p:password>
-
-                                            </h:panelGrid>
-
                                             <h3>New Password</h3>
                                             <h:panelGrid columns="1" styleClass="table-field-spacer">
 
@@ -176,7 +164,7 @@
                                                              update=":form:growl @(.password-update-class) @this"
                                                              onclick="PF('blockui1').block();"
                                                              oncomplete="PF('blockui1').unblock();"
-                                                             disabled="#{!settings.user.newPassword.strengthCheck() or !settings.user.newPassword.matchRequested() or settings.user.newPassword.current eq null or settings.user.newPassword.current eq ''}"/>
+                                                             disabled="#{!settings.user.newPassword.strengthCheck() or !settings.user.newPassword.matchRequested()}"/>
 
                                             <ez:blockUI target=":form:save-password-button" 
                                                         widgetVar="blockui1"/>

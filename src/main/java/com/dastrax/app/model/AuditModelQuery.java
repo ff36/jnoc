@@ -106,7 +106,7 @@ public class AuditModelQuery implements ModelQuery {
                         case "author":
                             // Search term
                             Expression literalID = builder.literal((Long) value);
-                            rootPredicate.add(builder.equal(audit.join(Audit_.author, JoinType.LEFT).get(User_.contact).get(Contact_.id), literalID));
+                            rootPredicate.add(builder.equal(audit.join(Audit_.author, JoinType.LEFT).get(User_.id), literalID));
                             break;
                         default:
                             // Don't add any predicate by default

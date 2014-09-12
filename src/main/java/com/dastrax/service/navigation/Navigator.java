@@ -313,6 +313,9 @@ public class Navigator implements Serializable {
                 case "REQUEST_ACCOUNT":
                     url = url.concat("/p/request.jsf");
                     break;
+                case "LOGIN":
+                    url = url.concat("/login.jsf");
+                    break;
             }
 
             ectx.redirect(url);

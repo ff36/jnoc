@@ -318,7 +318,7 @@
                                                                  action="#{createTicket.ticket.create('/a/tickets/create.xhtml?faces-redirect=true', 'OPEN')}" 
                                                                  process="@this,:form:west :form:center"
                                                                  disabled="#{createTicket.ticket.requester eq null or createTicket.ticket.title.length() lt 5}"/>
-                                                
+
                                                 <p:spacer width="5px"/>
 
                                                 <p:commandButton widgetVar="createBtn3"
@@ -372,7 +372,13 @@
                                                      styleClass="type3-table"
                                                      emptyMessage="Sorry, Can't find any related tickets.">
                                             <p:column>
-                                                <h:outputText value="#{rt.title}" />
+                                                <p:commandLink value="#{rt.title}" 
+                                                               action="#{navigator.navigate('EDIT_TICKET_WITH_PARAM', 'ticket='.concat(rt.id))}" 
+                                                               type="button" 
+                                                               process="@this" 
+                                                               disabled="#{!jsfSessionUser.currentUser.hasPermission('ticket:edit')}"
+                                                               target="blank"/>
+                                                
                                             </p:column>
                                             <p:column>
                                                 <h:outputText value="#{rt.status}" />
@@ -404,7 +410,12 @@
                                                          styleClass="type3-table"
                                                          emptyMessage="Sorry, Can't find any related tickets.">
                                                 <p:column>
-                                                    <h:outputText value="#{rt.title}" />
+                                                    <p:commandLink value="#{rt.title}" 
+                                                               action="#{navigator.navigate('EDIT_TICKET_WITH_PARAM', 'ticket='.concat(rt.id))}" 
+                                                               type="button" 
+                                                               process="@this" 
+                                                               disabled="#{!jsfSessionUser.currentUser.hasPermission('ticket:edit')}"
+                                                               target="blank"/>
                                                 </p:column>
                                                 <p:column>
                                                     <h:outputText value="#{rt.status}" />
@@ -438,7 +449,12 @@
                                                          styleClass="type3-table"
                                                          emptyMessage="Sorry, Can't find any related tickets.">
                                                 <p:column>
-                                                    <h:outputText value="#{rt.title}" />
+                                                    <p:commandLink value="#{rt.title}" 
+                                                               action="#{navigator.navigate('EDIT_TICKET_WITH_PARAM', 'ticket='.concat(rt.id))}" 
+                                                               type="button" 
+                                                               process="@this" 
+                                                               disabled="#{!jsfSessionUser.currentUser.hasPermission('ticket:edit')}"
+                                                               target="blank"/>
                                                 </p:column>
                                                 <p:column>
                                                     <h:outputText value="#{rt.status}" />
