@@ -58,8 +58,7 @@
 
                                             <ui:remove>
                                                 <pe:fluidGridItem rendered="#{jsfSessionUser.currentUser.hasPermission('knowledge:access')}" >
-                                                    <p:commandLink action="access-dashboard-page"
-                                                                   type="button" 
+                                                    <p:commandLink type="button" 
                                                                    ajax="false">
                                                         <p:graphicImage value="#{uriUtil.image('tile_knowledge_active.svg', true)}"/>
                                                     </p:commandLink> 
@@ -67,8 +66,7 @@
                                             </ui:remove>
 
                                             <pe:fluidGridItem rendered="#{jsfSessionUser.currentUser.hasPermission('ticket:access')}" >
-                                                <p:commandLink action="access-dashboard-page"
-                                                               type="button" 
+                                                <p:commandLink type="button" 
                                                                ajax="false">
                                                     <p:graphicImage value="#{uriUtil.image('tile_ticket_active.svg', true)}"/>
                                                 </p:commandLink> 
@@ -76,24 +74,21 @@
 
                                             <ui:remove>
                                                 <pe:fluidGridItem rendered="#{jsfSessionUser.currentUser.hasPermission('rma:access')}" >
-                                                    <p:commandLink action="access-dashboard-page"
-                                                                   type="button" 
+                                                    <p:commandLink type="button" 
                                                                    ajax="false">
                                                         <p:graphicImage value="#{uriUtil.image('tile_rma_active.svg', true)}"/>
                                                     </p:commandLink> 
                                                 </pe:fluidGridItem>
 
                                                 <pe:fluidGridItem rendered="#{jsfSessionUser.currentUser.hasPermission('monitor-basic:access')}" >
-                                                    <p:commandLink action="access-dashboard-page"
-                                                                   type="button" 
+                                                    <p:commandLink type="button" 
                                                                    ajax="false">
                                                         <p:graphicImage value="#{uriUtil.image('tile_noc_active.svg', true)}"/>
                                                     </p:commandLink>
                                                 </pe:fluidGridItem>
 
                                                 <pe:fluidGridItem>
-                                                    <p:commandLink action="access-dashboard-page"
-                                                                   type="button" 
+                                                    <p:commandLink type="button" 
                                                                    ajax="false">
                                                         <p:graphicImage value="#{uriUtil.image('tile_feedback_active.svg', true)}"/>
                                                     </p:commandLink>

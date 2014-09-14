@@ -110,6 +110,8 @@ public class TicketModelQuery implements ModelQuery {
                     query.orderBy(builder.desc(ticket.get(sortField)));
                 }
             }
+        } else {
+            query.orderBy(builder.desc(ticket.get(Ticket_.id)));
         }
 
         // Implement the Root Filter

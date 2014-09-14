@@ -157,7 +157,7 @@ public class Authenticate implements Serializable {
 
         // Set the email
         email = JsfUtil.getRequestParameter("email");
-        
+
         // Are we in DEV mode. If so bypass all this
         if (!stage.equals(DTX.ProjectStage.DEV.toString())) {
 
@@ -321,18 +321,17 @@ public class Authenticate implements Serializable {
 
         // Render the login by default
         renderLogin = true;
-        
+
         // Is the user already authenticated
         if (!SecurityUtils.getSubject().isAuthenticated()) {
 
             // Make sure the email is registered
-            User user = (User) dap.findWithNamedQuery(
-                    "User.findByEmail",
-                    QueryParameter.with("email", email.toLowerCase())
-                    .parameters())
-                    .get(0);
-
-            if (user != null) {
+            try {
+                User user = (User) dap.findWithNamedQuery(
+                        "User.findByEmail",
+                        QueryParameter.with("email", email.toLowerCase())
+                        .parameters())
+                        .get(0);
 
                 // Check user has access to this subdomain
                 boolean isAuthorised = false;
@@ -351,7 +350,7 @@ public class Authenticate implements Serializable {
 
                 if (isAuthorised
                         | ResourceBundle.getBundle("config")
-                                .getString("AdminSubdomain").equals(subdomain)
+                        .getString("AdminSubdomain").equals(subdomain)
                         | stage.equals(DTX.ProjectStage.DEV.toString())) {
 
                     if (user.getAccount().isConfirmed()) {
@@ -464,12 +463,13 @@ public class Authenticate implements Serializable {
                             .getString("error.login.wrongdomain"));
                 }
 
-            } else {
+            } catch (ArrayIndexOutOfBoundsException e) {
                 // Email not registered in the system
                 JsfUtil.addWarningMessage(
                         ResourceBundle
                         .getBundle("messages")
                         .getString("error.login.noemail"));
+
             }
 
         } else {
