@@ -13,8 +13,8 @@
     <cc:implementation>
         <h:panelGrid columns="3" styleClass="footer-table">
             <h:outputText value="© 2012 - 2014 Solid Technologies Inc. or its affiliates. All rights reserved. (#{config['ProjectStage'] eq 'DEV' ? config['Build'] : config['Version']})"/>
-            <p:commandLink value="Privacy Policy"/>
-            <p:commandLink value="Terms of Use"/>
+            <p:commandLink value="Privacy Policy" action="#{navigator.navigate('LEGAL')}"/>
+            <p:commandLink value="Terms of Use" action="#{navigator.navigate('LEGAL')}"/>
         </h:panelGrid>
 
         <p:commandButton styleClass="footer-feedback-button white-button"

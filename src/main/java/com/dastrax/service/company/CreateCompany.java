@@ -117,6 +117,8 @@ public class CreateCompany implements Serializable {
         company.getNewParent().setType(CompanyType.VAR);
         company.getNewParent().lazyLoad();
         
+        company.lazyLoad();
+        
         // Allow the page to render
         render = true;
 

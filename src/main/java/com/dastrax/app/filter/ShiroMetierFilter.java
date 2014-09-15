@@ -90,12 +90,12 @@ public class ShiroMetierFilter implements Filter {
         } 
         
         if (user.isVAR()) {            
-            httpResponse.sendRedirect("b/dashboard.jsf");
+            httpResponse.sendRedirect("a/dashboard.jsf");
             return;
         } 
         
         if (user.isClient()) {            
-            httpResponse.sendRedirect("c/dashboard.jsf");
+            httpResponse.sendRedirect("a/dashboard.jsf");
             return;
         } 
       

@@ -110,19 +110,22 @@ public class TicketModelQuery implements ModelQuery {
                     query.orderBy(builder.desc(ticket.get(sortField)));
                 }
             }
+        } else {
+            query.orderBy(builder.desc(ticket.get(Ticket_.id)));
         }
 
         // Implement the Root Filter
         if (!rootFilter.isEmpty()) {
-            for (String key : (Set<String>) rootFilter.keySet()) {
-                List<String> values = (List<String>) rootFilter.get(key);
+            for (Object key : rootFilter.keySet()) {
+                String k = (String) key;
+                List<Long> values = (List<Long>) rootFilter.get(key);
 
                 List<Predicate> rootPredicate = new ArrayList<>();
-                for (String value : values) {
+                for (Long value : values) {
                     // Search term
-                    Expression literal = builder.literal((String) value);
+                    Expression literal = builder.literal(value);
                     // Predicate
-                    switch (key) {
+                    switch (k) {
                         case "company":
                             rootPredicate.add(builder.equal(ticket.join(Ticket_.requester).join(User_.company).get(Company_.id), literal));
                             break;

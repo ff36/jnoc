@@ -14,19 +14,24 @@
     </h:head>
     <h:body>
 
-        <div id="messages">
-            <p:messages redisplay="false"
-                        showDetail="false" 
-                        autoUpdate="true"
-                        closable="true"/>
-        </div>
+        <p:growl id="growl" 
+                 redisplay="false"
+                 showDetail="false" 
+                 sticky="false" />
 
         <!-- Authentication -->
         <h:form id="form">
 
             <div id="forgot">
-                
+
                 <p:focus/> 
+
+                <!-- Logo -->
+                <p:graphicImage id="logo" 
+                                value="#{uriUtil.logo('solid_logo_v1.jpg', true)}"
+                                width="275"/>
+
+                <p:spacer height="10" width="100%"/>
 
                 <h:panelGrid columns="2">
 
@@ -35,25 +40,25 @@
                                  required="true"
                                  requiredMessage="Name is required"/>
                     <p:watermark for="name" value="Name"/>
-                    
+
                     <p:inputText id="company"
                                  value="#{accountRequest.company}"
                                  required="true"
                                  requiredMessage="Company is required"/>
                     <p:watermark for="company" value="Company"/>
-                    
+
                     <p:inputText id="email"
                                  value="#{accountRequest.email}"
                                  required="true"
                                  requiredMessage="Email is required"/>
                     <p:watermark for="email" value="Email"/>
-                    
+
                     <p:inputText id="phone"
                                  value="#{accountRequest.phone}"
                                  required="true"
                                  requiredMessage="Phone is required"/>
                     <p:watermark for="phone" value="Phone"/>
-                    
+
                     <p:captcha id="captcha" label="Captcha" theme="white"
                                validatorMessage="Sorry the security check does not match the displayed image."/>  
 

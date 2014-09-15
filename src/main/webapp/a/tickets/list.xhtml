@@ -53,12 +53,14 @@
                             <tr>
                                 <td class="active">Tickets</td>
                             </tr>
-                            <tr>
-                                <td><p:commandLink value="Create New Ticket" 
-                                                   action="/a/tickets/create.xhtml?faces-redirect=true" 
-                                                   process="@this" 
-                                                   type="button"/></td>
-                            </tr>
+                            <ui:fragment rendered="#{jsfSessionUser.currentUser.hasPermission('ticket:create')}">
+                                <tr>
+                                    <td><p:commandLink value="Create New Ticket" 
+                                                       action="/a/tickets/create.xhtml?faces-redirect=true" 
+                                                       process="@this" 
+                                                       type="button"/></td>
+                                </tr>
+                            </ui:fragment>
                             <tr>
                                 <ui:remove>
                                     <td><p:commandLink value="Ticket Analytics" 
@@ -192,6 +194,10 @@
                                                 <p:column selectionMode="multiple" 
                                                           style="width:18px" />
 
+                                                <p:column style="width:18px">  
+                                                    <p:rowToggler />  
+                                                </p:column>
+
                                                 <p:column headerText="ID"
                                                           filterBy="#{ticket.id}"
                                                           filterStyle="display:none"
@@ -216,7 +222,8 @@
                                                                    action="#{navigator.navigate('EDIT_TICKET_WITH_PARAM', 'ticket='.concat(ticket.id))}" 
                                                                    type="button" 
                                                                    process="@this" 
-                                                                   disabled="#{!jsfSessionUser.currentUser.hasPermission('ticket:edit')}"/>
+                                                                   disabled="#{!jsfSessionUser.currentUser.hasPermission('ticket:edit')}"
+                                                                   title="View / edit ticket"/>
                                                 </p:column>
 
                                                 <p:column headerText="Requester"
@@ -244,7 +251,7 @@
                                                           filterBy="#{ticket.topic}"
                                                           filterStyle="display:none"
                                                           sortBy="#{ticket.topic}">
-                                                    #{ticket.topic}
+                                                    #{ticket.topic.getLabel()}
                                                 </p:column>
 
                                                 <p:column headerText="Severity"
@@ -253,6 +260,150 @@
                                                           sortBy="#{ticket.severity}">
                                                     #{ticket.severity}
                                                 </p:column>
+
+                                                <p:rowExpansion>  
+
+                                                    <p:remoteCommand autoRun="true" 
+                                                                     action="#{ticket.sortCommentsOldestFirst()}"
+                                                                     update="expandedTicket"/>
+
+                                                    <p:outputPanel id="expandedTicket" class="expanded-row-wrapper-1">
+
+
+                                                        <p:graphicImage styleClass="expanded-row-arrow" 
+                                                                        value="#{uriUtil.image('arrow_down_right.png', true)}" 
+                                                                        height="160px"/>
+
+                                                        <table class="expanded-row-table ">
+                                                            <tr>
+                                                                <td>
+                                                                    <table style="width:100%;position: relative">
+                                                                        <tr class="comment-table-seperator">
+                                                                            <td style="width: 60px">
+                                                                                <p:graphicImage value="#{uriUtil.profileImage(ticket.comments[0].commenter, false)}"
+                                                                                                height="60px"
+                                                                                                styleClass="comment-image circular-clip-60"/>
+
+                                                                            </td>
+                                                                            <td>
+
+                                                                                <div class="bubble">
+
+                                                                                    <div class="title">
+
+                                                                                        <b>OPENING COMMENT: </b>
+                                                                                        <b>#{ticket.comments[0].commenter.contact.buildFullName()}</b>
+                                                                                        <h:outputText value="#{ticket.comments[0].getCreateTimeStamp()}" 
+                                                                                                      styleClass="comment-date"/>
+
+                                                                                    </div>
+
+                                                                                    <div class="content">
+                                                                                        <div class="#{ticket.comments[0].nexus.id eq 1 ? 'admin-comment' : ticket.comments[0].nexus.id eq 2 ? 'var-comment' : 'public-comment'}">
+                                                                                            <h:outputText value="#{ticket.comments[0].parse()}" escape="false" rendered="#{ticket.comments[0].comment ne '%CLOSED%' and ticket.comments[0].comment ne '%REOPENED%'}"/>
+                                                                                            <p:graphicImage value="#{uriUtil.icon('black/round_delete_icon_24.png', true)}" 
+                                                                                                            title="Ticket closed"
+                                                                                                            rendered="#{ticket.comments[0].comment eq '%CLOSED%'}"/>
+                                                                                            <p:graphicImage value="#{uriUtil.icon('black/round_checkmark_icon_24.png', true)}" 
+                                                                                                            title="Ticket reopened"
+                                                                                                            rendered="#{ticket.comments[0].comment eq '%REOPENED%'}"/>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </table>
+                                                                    <p:commandLink value="... #{ticket.comments.size() - 2} other comments" 
+                                                                                   action="#{navigator.navigate('EDIT_TICKET_WITH_PARAM', 'ticket='.concat(ticket.id))}" 
+                                                                                   type="button" 
+                                                                                   process="@this" 
+                                                                                   disabled="#{!jsfSessionUser.currentUser.hasPermission('ticket:edit')}"
+                                                                                   rendered="#{ticket.comments.size() - 2 gt 0}"/>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <ui:fragment rendered="#{ticket.comments[ticket.comments.size() - 1].nexus eq null or ticket.comments[ticket.comments.size() - 1].nexus.authorised()}">
+
+                                                                        <ui:fragment rendered="#{ticket.comments[ticket.comments.size() - 1] ne ticket.comments[0]}">
+
+                                                                            <table style="width:100%;position: relative">
+                                                                                <tr class="comment-table-seperator">
+                                                                                    <td style="width: 60px">
+                                                                                        <p:graphicImage value="#{uriUtil.profileImage(ticket.comments[ticket.comments.size() - 1].commenter, false)}"
+                                                                                                        height="60px"
+                                                                                                        styleClass="comment-image circular-clip-60"/>
+
+                                                                                    </td>
+                                                                                    <td>
+
+                                                                                        <div class="bubble">
+
+                                                                                            <div class="title">
+
+                                                                                                <b>MOST RECENT COMMENT: </b>
+                                                                                                <b>#{ticket.comments[ticket.comments.size() - 1].commenter.contact.buildFullName()}</b>
+                                                                                                <h:outputText value="#{ticket.comments[ticket.comments.size() - 1].getCreateTimeStamp()}" 
+                                                                                                              styleClass="comment-date"/>
+
+
+                                                                                            </div>
+
+                                                                                            <div class="content">
+                                                                                                <div class="#{ticket.comments[ticket.comments.size() - 1].nexus.id eq 1 ? 'admin-comment' : ticket.comments[ticket.comments.size() - 1].nexus.id eq 2 ? 'var-comment' : 'public-comment'}">
+                                                                                                    <h:outputText value="#{ticket.comments[ticket.comments.size() - 1].parse()}" escape="false" rendered="#{ticket.comments[ticket.comments.size() - 1].comment ne '%CLOSED%' and ticket.comments[ticket.comments.size() - 1].comment ne '%REOPENED%'}"/>
+                                                                                                    <p:graphicImage value="#{uriUtil.icon('black/round_delete_icon_24.png', true)}" 
+                                                                                                                    title="Ticket closed"
+                                                                                                                    rendered="#{ticket.comments[ticket.comments.size() - 1].comment eq '%CLOSED%'}"/>
+                                                                                                    <p:graphicImage value="#{uriUtil.icon('black/round_checkmark_icon_24.png', true)}" 
+                                                                                                                    title="Ticket reopened"
+                                                                                                                    rendered="#{ticket.comments[ticket.comments.size() - 1].comment eq '%REOPENED%'}"/>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+
+                                                                                    </td>
+
+                                                                                </tr>
+                                                                            </table>
+
+                                                                        </ui:fragment>
+
+                                                                    </ui:fragment>
+
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+
+                                                        <hr></hr>
+
+                                                        <p:commandButton styleClass="red-button" 
+                                                                         action="#{navigator.navigate('EDIT_TICKET_WITH_PARAM', 'ticket='.concat(ticket.id))}" 
+                                                                         value="Reopen Ticket" 
+                                                                         process="@this"
+                                                                         rendered="#{ticket.status eq 'CLOSED'}"/>
+
+                                                        <p:commandButton styleClass="green-button" 
+                                                                         action="#{navigator.navigate('EDIT_TICKET_WITH_PARAM', 'ticket='.concat(ticket.id))}" 
+                                                                         value="Comment" 
+                                                                         process="@this"
+                                                                         rendered="#{ticket.status ne 'CLOSED'}"/>
+
+                                                        <p:commandButton widgetVar="commentCloseBtn"
+                                                                         styleClass="red-button" 
+                                                                         value="Close" 
+                                                                         onclick="PF('blockui2').block();" 
+                                                                         oncomplete="PF('blockui2').unblock();" 
+                                                                         update=":form:lazy-update-class :form:growl" 
+                                                                         actionListener="#{ticket.edit('CLOSED')}"
+                                                                         process="@this"
+                                                                         rendered="#{ticket.status ne 'CLOSED'}"/>
+
+                                                        <ez:blockUI target="@widgetVar(commentCloseBtn)" widgetVar="blockui2"/>
+
+                                                    </p:outputPanel>
+
+                                                </p:rowExpansion> 
 
                                             </p:dataTable>
 

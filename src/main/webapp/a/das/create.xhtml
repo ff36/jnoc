@@ -18,6 +18,7 @@
     <h:body>
 
         #{permissionUtil.hasPagePermission('site:create')}
+        #{jsfSessionUser.currentUser.hasPageRole('ADMIN')}
 
         <h:form id="form">
 

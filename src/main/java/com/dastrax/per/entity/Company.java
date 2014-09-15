@@ -6,6 +6,7 @@
 package com.dastrax.per.entity;
 
 import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.dastrax.app.misc.JsfUtil;
 import com.dastrax.app.service.internal.DefaultDNSManager;
 import com.dastrax.app.service.internal.DefaultStorageManager;
 import com.dastrax.app.services.DNSManager;
@@ -410,6 +411,8 @@ public class Company implements Serializable {
             // Save the logo
             saveLogo();
         }
+        
+        JsfUtil.addSuccessMessage(newCompany.getName() + " has been created.");
 
     }
 
@@ -612,6 +615,11 @@ public class Company implements Serializable {
     public Company parent() {
         if (DTX.CompanyType.CLIENT.equals(type)) {
 
+            // If the company is being created we want to grab it from the gui
+            if (this.id == null) {
+                return this.newParent;
+            }
+            
             // Only companies hold associations so get all companies
             List<Company> companies
                     = (List<Company>) dap.findWithNamedQuery(

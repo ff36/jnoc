@@ -238,6 +238,14 @@ public class Token implements Serializable {
         }
     }
 
+    /**
+     * Removes the token from the persistence layer and any associated resources
+     * linked to the DAS.
+     */
+    public void delete() {
+        dap.delete(Token.class, id);
+    }
+    
     //<editor-fold defaultstate="collapsed" desc="Overrides">
     @Override
     public int hashCode() {

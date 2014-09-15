@@ -19,7 +19,7 @@
     <h:body>
 
         #{jsfSessionUser.currentUser.hasPagePermission('company:access')}
-
+        #{jsfSessionUser.currentUser.hasPageRole('ADMIN')}
         <h:form id="form">
 
             <pe:ajaxErrorHandler />
@@ -54,12 +54,14 @@
                             <tr>
                                 <td class="active">Companies</td>
                             </tr>
-                            <tr>
-                                <td><p:commandLink value="Create New Company" 
-                                                   action="#{navigator.navigate('CREATE_COMPANY')}" 
-                                                   process="@this" 
-                                                   type="button"/></td>
-                            </tr>
+                            <ui:fragment rendered="#{jsfSessionUser.currentUser.hasPermission('company:create')}">
+                                <tr>
+                                    <td><p:commandLink value="Create New Company" 
+                                                       action="#{navigator.navigate('CREATE_COMPANY')}" 
+                                                       process="@this" 
+                                                       type="button"/></td>
+                                </tr>
+                            </ui:fragment>
                         </tbody>
                     </table>
 
@@ -308,7 +310,7 @@
                                                                             <tr>
                                                                                 <td class="field-label-2">Parent VAR:</td>
                                                                                 <td>
-                                                                                    TODO - Link to parent company 
+                                                                                    #{company.parent().name} 
                                                                                 </td>
                                                                             </tr>
                                                                         </h:panelGroup>
@@ -386,22 +388,22 @@
 
                                                             <p:spacer width="100%" height="5px"/>
 
-                                                                <p:pickList id="var-das" 
-                                                                            value="#{company.linkedAndAvailableDas}" 
-                                                                            var="daz"  
-                                                                            itemValue="#{daz}" 
-                                                                            itemLabel="#{daz.id}" 
-                                                                            converter="dasCvt"
-                                                                            styleClass="type1-picklist">  
+                                                            <p:pickList id="var-das" 
+                                                                        value="#{company.linkedAndAvailableDas}" 
+                                                                        var="daz"  
+                                                                        itemValue="#{daz}" 
+                                                                        itemLabel="#{daz.id}" 
+                                                                        converter="dasCvt"
+                                                                        styleClass="type1-picklist">  
 
-                                                                    <f:facet name="sourceCaption">Available</f:facet>  
-                                                                    <f:facet name="targetCaption">Linked</f:facet> 
+                                                                <f:facet name="sourceCaption">Available</f:facet>  
+                                                                <f:facet name="targetCaption">Linked</f:facet> 
 
-                                                                    <p:column style="width:200px">  
-                                                                        #{daz.name}  
-                                                                    </p:column>  
+                                                                <p:column style="width:200px">  
+                                                                    #{daz.name}  
+                                                                </p:column>  
 
-                                                                </p:pickList>
+                                                            </p:pickList>
 
                                                             <hr></hr>
 
@@ -425,10 +427,10 @@
                                                                   widgetVar="var-clients-dlg" 
                                                                   dynamic="true"
                                                                   width="800px">  
-                                                            
+
                                                             You can grant this company access to other client companies by linking them. <br></br>
                                                             You can drag client companies back and forth. <br></br>
-                                                            
+
                                                             <p:spacer width="100%" height="5px"/>
 
                                                             <p:pickList id="var-clients" 

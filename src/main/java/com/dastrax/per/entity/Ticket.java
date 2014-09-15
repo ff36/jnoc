@@ -869,8 +869,7 @@ public class Ticket implements Serializable {
                             SessionUser
                             .getCurrentUser()
                             .getCompany()
-                            .getId()
-                            .toString())
+                            .getId())
                     .parameters());
         }
 

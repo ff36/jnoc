@@ -8,6 +8,7 @@ package com.dastrax.service.navigation;
 import com.dastrax.per.project.DTX;
 import com.dastrax.app.misc.CookieUtil;
 import com.dastrax.app.misc.JsfUtil;
+import com.dastrax.app.security.SessionUser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
@@ -111,12 +112,30 @@ public class Navigator implements Serializable {
         menuItems.add(new MenuItem("2", "Support Tickets", "/a/tickets/list.xhtml?faces-redirect=true"));
         menuItems.add(new MenuItem("3", "Create Support Ticket", "/a/tickets/create.xhtml?faces-redirect=true"));
         //menuItems.add(new MenuItem("4", "Incidents", "/a/incidents/list.xhtml?faces-redirect=true"));
-        menuItems.add(new MenuItem("5", "Accounts", "/a/accounts/list.xhtml?faces-redirect=true"));
-        menuItems.add(new MenuItem("6", "Create Account", "/a/accounts/create.xhtml?faces-redirect=true"));
-        menuItems.add(new MenuItem("7", "Companies", "/a/companies/list.xhtml?faces-redirect=true"));
-        menuItems.add(new MenuItem("8", "Create Company", "/a/companies/create.xhtml?faces-redirect=true"));
-        menuItems.add(new MenuItem("9", "DAS", "/a/das/list.xhtml?faces-redirect=true"));
-        menuItems.add(new MenuItem("10", "Create DAS", "/a/das/create.xhtml?faces-redirect=true"));
+        if (SessionUser.getCurrentUser().hasPermission("account:access")
+                && SessionUser.getCurrentUser().isAdministrator()) {
+            menuItems.add(new MenuItem("5", "Accounts", "/a/accounts/list.xhtml?faces-redirect=true"));
+        }
+        if (SessionUser.getCurrentUser().hasPermission("account:create")
+                && SessionUser.getCurrentUser().isAdministrator()) {
+            menuItems.add(new MenuItem("6", "Create Account", "/a/accounts/create.xhtml?faces-redirect=true"));
+        }
+        if (SessionUser.getCurrentUser().hasPermission("company:access")
+                && SessionUser.getCurrentUser().isAdministrator()) {
+            menuItems.add(new MenuItem("7", "Companies", "/a/companies/list.xhtml?faces-redirect=true"));
+        }
+        if (SessionUser.getCurrentUser().hasPermission("company:create")
+                && SessionUser.getCurrentUser().isAdministrator()) {
+            menuItems.add(new MenuItem("8", "Create Company", "/a/companies/create.xhtml?faces-redirect=true"));
+        }
+        if (SessionUser.getCurrentUser().hasPermission("das:access")
+                && SessionUser.getCurrentUser().isAdministrator()) {
+            menuItems.add(new MenuItem("9", "DAS", "/a/das/list.xhtml?faces-redirect=true"));
+        }
+        if (SessionUser.getCurrentUser().hasPermission("das:create")
+                && SessionUser.getCurrentUser().isAdministrator()) {
+            menuItems.add(new MenuItem("10", "Create DAS", "/a/das/create.xhtml?faces-redirect=true"));
+        }
         //menuItems.add(new MenuItem("11", "Create RMA", "/a/rma/create.xhtml?faces-redirect=true"));
         //menuItems.add(new MenuItem("12", "Analytics", "/a/analytics/dashboard.xhtml?faces-redirect=true"));
         menuItems.add(new MenuItem("13", "Profile Settings", "/a/settings/personal/profile.xhtml?faces-redirect=true"));
@@ -189,24 +208,24 @@ public class Navigator implements Serializable {
     }
 
     /**
-     * Accepts a string navigation path that redirects the user to that path. 
-     * This is to extend the JSF navigation strings that are found in the 
+     * Accepts a string navigation path that redirects the user to that path.
+     * This is to extend the JSF navigation strings that are found in the
      * faces-config.xml because they do not offer sufficient flexibility.
      *
-     * @param path Should be relative to the root context 
-     * (ie. 'example.com/a/b/index.jsf' should be supplied as '/a/b/index.jsf'
+     * @param path Should be relative to the root context (ie.
+     * 'example.com/a/b/index.jsf' should be supplied as '/a/b/index.jsf'
      */
     public static void redirect(String path) {
         try {
-            ExternalContext ectx = 
-                    FacesContext.getCurrentInstance().getExternalContext();
+            ExternalContext ectx
+                    = FacesContext.getCurrentInstance().getExternalContext();
             String url = ectx.getRequestContextPath() + path;
-            ectx.redirect(url);  
+            ectx.redirect(url);
         } catch (IOException ioe) {
             LOG.log(Level.SEVERE, "IOException: JSFREDIRECT -> REDIRECT", ioe);
         }
     }
-    
+
     /**
      * Accepts a navigation case and redirects the user to the requested page.
      * This is to extend the JSF navigation strings that are found in the
@@ -237,19 +256,21 @@ public class Navigator implements Serializable {
                 role = "a";
             }
             if (SecurityUtils.getSubject().hasRole(DTX.Metier.VAR.toString())) {
-                role = "b";
+                role = "a";
             }
             if (SecurityUtils.getSubject().hasRole(DTX.Metier.CLIENT.toString())) {
-                role = "c";
+                role = "a";
             }
 
             /*
-            JSF RequestParameterMap() doesn't seem to recognise URL encoded
-            %26 => & but the JSF layer won't allow the & character so we need
-            to intercept the %26 and convert it to & here.
-            */
-            if (parameter != null) parameter = parameter.replaceAll("%26", "&");
-            
+             JSF RequestParameterMap() doesn't seem to recognise URL encoded
+             %26 => & but the JSF layer won't allow the & character so we need
+             to intercept the %26 and convert it to & here.
+             */
+            if (parameter != null) {
+                parameter = parameter.replaceAll("%26", "&");
+            }
+
             ExternalContext ectx = FacesContext
                     .getCurrentInstance()
                     .getExternalContext();
@@ -312,6 +333,12 @@ public class Navigator implements Serializable {
                     break;
                 case "REQUEST_ACCOUNT":
                     url = url.concat("/p/request.jsf");
+                    break;
+                case "LOGIN":
+                    url = url.concat("/login.jsf");
+                    break;
+                case "LEGAL":
+                    url = url.concat("/p/legal.jsf");
                     break;
             }
 

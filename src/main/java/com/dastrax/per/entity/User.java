@@ -489,8 +489,9 @@ public class User implements Serializable {
         // Move the email from transient field to persistent
         email = newEmail;
 
-        // Set the account creation date
+        // Set the account creation date and s3id
         account.setCreationEpoch(Calendar.getInstance().getTimeInMillis());
+        account.setS3id(UUID.randomUUID().toString());
         
         // If the new user is an admin we want to reset the company to null
         if (isAdministrator()) {
@@ -498,7 +499,7 @@ public class User implements Serializable {
         }
         
         // Persist the user
-        dap.create(this);
+        User u = (User) dap.create(this);
 
         // Save the profile image if one exists
         if (uploadFile.isUploaded()) {
@@ -507,6 +508,8 @@ public class User implements Serializable {
 
         // Send a welcome confirmation email and write the Token
         newUserEmail().create();
+        
+        JsfUtil.addSuccessMessage("New user created");
     }
 
     /**
@@ -650,6 +653,27 @@ public class User implements Serializable {
     public void hasPagePermission(String permission){
         try {
             if(!SecurityUtils.getSubject().isPermitted(permission)) {
+            ExternalContext ectx = FacesContext.getCurrentInstance().getExternalContext();
+            ectx.redirect(ectx.getRequestContextPath() + "/login.jsf");
+        }
+        } catch (IOException e) {
+            // As a security precaution we should log the user out.
+            SecurityUtils.getSubject().logout();
+        }
+    }
+    
+    /**
+     * Convenience method to determine if this user has the implied page 
+     * permission. If not then the user is redirected to their login page
+     * which in turn redirects then to their specific dashboard.
+     * 
+     * As a security measure if the redirect fails the users session is ended.
+     * 
+     * @param role
+     */
+    public void hasPageRole(String role){
+        try {
+            if(!SecurityUtils.getSubject().hasRole(role)) {
             ExternalContext ectx = FacesContext.getCurrentInstance().getExternalContext();
             ectx.redirect(ectx.getRequestContextPath() + "/login.jsf");
         }
@@ -834,6 +858,54 @@ public class User implements Serializable {
         sendEmail(em);
     }
 
+    /**
+     * Construct an email to the specified address and persist the
+     * Token to confirm the authentication at a later date.
+     *
+     * @return The populated Token object
+     */
+    public Token newAnonymousPassword() {
+
+        // Build an new email
+        Email em = new Email();
+
+        // Retreive the email template from the database.
+        Template temp = (Template) dap.find(
+                Template.class, DTX.EmailTemplate.CHANGE_PASSWORD.getValue());
+        em.setTemplate(temp);
+        
+        // Generate a new pincode
+        Integer pin = new Random().nextInt(9000) + 1000;
+        
+        // Set the recipient
+        em.setRecipientEmail(newEmail.toLowerCase());
+        // Set the persistable params
+        em.getParameters().setEmail(newEmail.toLowerCase());
+        em.getParameters().setUser(id.toString());
+        em.getParameters().setId(new Random().nextLong());
+        em.getParameters().setCreateEpoch(Calendar.getInstance().getTimeInMillis());
+        Map<String, String> params = new HashMap(1);
+        params.put("email", newEmail.toLowerCase());
+        em.getParameters().setParameters(params);
+        
+        // Persist the token
+        dap.create(em.getParameters());
+        
+        // Tidy the tokens
+        em.getParameters().tidy();
+        
+        // Set the variables
+        Map<DTX.EmailVariableKey, String> vars = new HashMap<>();
+        vars.put(DTX.EmailVariableKey.NAME, contact.getFirstName());
+        em.setVariables(vars);
+
+        // Send the email
+        sendEmail(em);
+
+        return em.getParameters();
+    }
+    
+    
     /**
      * Sends asynchronous email.
      *

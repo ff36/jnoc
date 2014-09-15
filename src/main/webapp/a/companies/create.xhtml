@@ -19,6 +19,7 @@
     <h:body>
 
         #{jsfSessionUser.currentUser.hasPagePermission('company:create')}
+        #{jsfSessionUser.currentUser.hasPageRole('ADMIN')}
 
         <h:form id="form">
 
@@ -205,7 +206,7 @@
                                                     <p:ajax event="change" 
                                                             update=":form:lazy-update-class-2" 
                                                             process="@this" 
-                                                            listener="#{createCompany.company.newParent.lazyLoad()}"/>
+                                                            listener="#{createCompany.company.lazyLoad()}"/>
                                                 </p:selectOneMenu>
 
                                             </ui:fragment>
@@ -547,7 +548,7 @@
 
                                             <p:spacer width="100%" height="10px"/>
 
-                                            <p:pickList value="#{createCompany.company.newParent.linkedAndAvailableDas}" 
+                                            <p:pickList value="#{createCompany.company.linkedAndAvailableDas}" 
                                                         var="dass"  
                                                         itemValue="#{dass}" 
                                                         itemLabel="#{dass.name}" 
