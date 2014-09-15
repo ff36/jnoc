@@ -593,18 +593,18 @@
                                             </p:column>
 
                                             <p:column>
-                                                <p:commandLink process="@this"
+                                                <p:commandLink id="remove"
+                                                               process="@this"
                                                                actionListener="#{attachment.remove()}"
                                                                action="#{editTicket.ticket.update()}"
                                                                update=":form:attachments :form:growl"
-                                                               onclick="PF('blockui2').block();" 
-                                                               oncomplete="PF('blockui2').unblock();"
                                                                title="Delete"> 
                                                     <p:graphicImage value="#{uriUtil.icon('black/trash_icon_16.png', true)}"/>
-                                                    <p:collector value="#{att}" 
+                                                    <p:collector value="#{attachment}" 
                                                                  removeFrom="#{editTicket.ticket.attachments}" 
                                                                  unique="true"/>
                                                 </p:commandLink>
+                                                
                                             </p:column>
 
                                         </p:dataTable> 
