@@ -1,0 +1,106 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:ez="http://xmlns.jcp.org/jsf/composite/ezcomp"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <h:outputStylesheet name="css/auth.css"/>
+        <h:outputStylesheet name="css/common.css"/>
+        <link rel="shortcut icon" type="image/png" href="#{request.contextPath}/resources/images/favicon.ico" />
+        <title>#{msgs['default.page.title']} | #{msgs['admin.document.editor.page.title']}</title>
+    </h:head>
+
+    <h:body>
+
+        #{jsfSessionUser.currentUser.hasPagePermission('document:edit')}
+
+        <h:form id="form">
+
+            <pe:ajaxErrorHandler />
+
+            <p:growl id="growl" 
+                     redisplay="false"
+                     showDetail="false" 
+                     sticky="false" />
+
+            <ez:navigation-a/>
+
+            <pe:layout stateCookie="#{config.ProjectStage ne 'DEV'}" 
+                       widgetVar="layoutWgt" 
+                       maskPanesEarly="true">
+
+                <pe:layoutPane id="north" 
+                               position="north" 
+                               closable="false" 
+                               resizable="false" 
+                               size="40"/>
+
+                <pe:layoutPane id="west" 
+                               position="west" 
+                               resizeWhileDragging="true" 
+                               size="250">
+
+
+                </pe:layoutPane>
+
+                <pe:layoutPane id="center" 
+                               position="center" 
+                               resizeWhileDragging="true" 
+                               maskContents="true">
+
+                    <p:remoteCommand autoRun="true" 
+                                     async="true" 
+                                     actionListener="#{documentViewer.init()}" 
+                                     update=":form:lazy-update-class"/>
+
+                    <h:panelGroup id="lazy-update-class">
+
+                        <p:graphicImage name="images/ajax-loader.gif" 
+                                        rendered="#{!documentViewer.render}" 
+                                        styleClass="ajax-lazy-loader"/>
+
+                        <ui:fragment rendered="#{documentViewer.render}">
+
+                            <iframe id="document" 
+                                    src="#{documentViewer.url}" 
+                                    width="100%"  
+                                    height="100%" 
+                                    frameborder="0">  
+                            </iframe> 
+
+                        </ui:fragment>
+                        
+                        <ui:fragment rendered="#{documentViewer.error}">
+
+                            <h2>Sorry, this document is not available.</h2> 
+
+                        </ui:fragment>
+
+                    </h:panelGroup>
+
+                    <p:spacer width="100%" 
+                              height="50px"/>
+
+                </pe:layoutPane>
+
+                <pe:layoutPane id="south" 
+                               position="south" 
+                               closable="false" 
+                               resizable="false" 
+                               size="40">
+                    <ez:footer/>
+                </pe:layoutPane>
+
+            </pe:layout>
+
+        </h:form>
+
+    </h:body>
+
+</html>
+

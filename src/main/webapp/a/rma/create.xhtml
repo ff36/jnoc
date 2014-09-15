@@ -1,0 +1,350 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:ez="http://xmlns.jcp.org/jsf/composite/ezcomp"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <h:outputStylesheet name="css/auth.css"/>
+        <h:outputStylesheet name="css/common.css"/>
+        <link rel="shortcut icon" type="image/png" href="#{request.contextPath}/resources/images/favicon.ico" />
+        <title>#{msgs['default.page.title']} | #{msgs['admin.rma.page.title']}</title>
+    </h:head>
+
+    <h:body>
+
+        #{permissionUtil.hasPagePermission('rma:access')}
+
+        <h:form id="form">
+
+            <pe:ajaxErrorHandler />
+
+            <p:growl id="growl" 
+                     redisplay="false"
+                     showDetail="false" 
+                     sticky="false" />
+
+            <ez:navigation-a/>
+
+            <pe:layout stateCookie="#{config.ProjectStage ne 'DEV'}" widgetVar="layourWgt">
+
+                <pe:layoutPane id="north" position="north" closable="false" resizable="false" size="40"/>
+
+                <pe:layoutPane id="west" position="west" resizeWhileDragging="true" size="220">
+
+                    <table class="navigation-sidebar">
+                        <thead>
+                            <tr><th>R.M.A. Dashboard</th></tr>
+                        </thead>
+                        <tfoot><tr><td></td></tr></tfoot>
+                        <tbody>
+                            <tr>
+                                <td class="active">Create New R.M.A.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+
+                </pe:layoutPane>
+
+                <pe:layoutPane id="center" position="center" resizeWhileDragging="true">
+
+                    <table class="page-container">
+                        <thead>
+                            <tr><th>Return Material Authorization</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+
+                                    <p:spacer width="100%" height="20px"/>
+
+                                    <table class="page-container">
+                                        <thead>
+                                            <tr><th>Project</th></tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>
+
+                                                    <h3>Company Name (on invoice):*</h3>
+                                                    <p:inputText value="#{rmaRequest.companyName}" required="true" requiredMessage="Company name is required"/>
+
+                                                    <h3>Project Name:*</h3>
+                                                    <p:inputText value="#{rmaRequest.projectName}" required="true" requiredMessage="Project name is required"/>
+
+                                                    <h3>Quote/Sales Order/Fulfillment #:</h3>
+                                                    <p:inputText value="#{rmaRequest.orderNumber}"/>
+
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+
+                                    <p:spacer width="100%" height="20px"/>
+
+                                    <table class="page-container">
+                                        <thead>
+                                            <tr><th>R.M.A. Contact (responsible for return of product):</th></tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>
+
+                                                    <h2></h2>
+
+                                                    <h3>Name:*</h3>
+                                                    <p:inputText value="#{rmaRequest.responsibleName}" required="true" requiredMessage="Name is required"/>
+
+                                                    <h3>Company:*</h3>
+                                                    <p:inputText value="#{rmaRequest.responsibleCompany}" required="true" requiredMessage="Company is required"/>
+
+                                                    <h3>Phone:*</h3>
+                                                    <p:inputText value="#{rmaRequest.responsiblePhone}" required="true" requiredMessage="Phone is required"/>
+
+                                                    <h3>Email:*</h3>
+                                                    <p:inputText value="#{rmaRequest.responsibleEmail}" required="true" requiredMessage="Email is required"/>
+
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+
+                                    <p:spacer width="100%" height="20"/>
+
+                                    <table class="page-container">
+                                        <thead>
+                                            <tr><th>Replacement Product Ship To Info:</th></tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>
+
+                                                    <table class="table-align-spacer table-spacer">
+                                                        <tr>
+                                                            <td>
+
+                                                                <h3>Name:*</h3>
+                                                                <p:inputText value="#{rmaRequest.shippingName}" required="true" requiredMessage="Name is required"/>
+
+                                                                <h3>Company:*</h3>
+                                                                <p:inputText value="#{rmaRequest.shippingCompany}" required="true" requiredMessage="Company is required"/>
+
+                                                                <h3>Phone:*</h3>
+                                                                <p:inputText value="#{rmaRequest.shippingPhone}" required="true" requiredMessage="Phone is required"/>
+
+                                                                <h3>Email:*</h3>
+                                                                <p:inputText value="#{rmaRequest.shippingEmail}" required="true" requiredMessage="Email is required"/>
+
+                                                            </td>
+                                                            <td>
+
+                                                                <h3>Address 1:*</h3>
+                                                                <p:inputText value="#{rmaRequest.shippingAddress1}" required="true" requiredMessage="Address 1 is required"/>
+
+                                                                <h3>Address 2:</h3>
+                                                                <p:inputText value="#{rmaRequest.shippingAddress2}"/>
+
+                                                                <h3>City:*</h3>
+                                                                <p:inputText value="#{rmaRequest.shippingCity}" required="true" requiredMessage="City is required"/>
+
+                                                                <h3>State:*</h3>
+                                                                <p:inputText value="#{rmaRequest.shippingState}" required="true" requiredMessage="State is required"/>
+
+                                                                <h3>Zip:*</h3>
+                                                                <p:inputText value="#{rmaRequest.shippingZip}" required="true" requiredMessage="Zip is required"/>
+
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+
+
+
+                                                    <h3>Does this address accepts Saturday deliveries?*</h3>
+                                                    <p:selectBooleanButton value="#{rmaRequest.saturdayDelivery}" onLabel="Yes" offLabel="No" />
+
+                                                    <h3>Date replacement product must be delivered?</h3>
+                                                    <p:calendar value="#{rmaRequest.deliveryDate}" showButtonPanel="true" pattern="MMMM dd, yyy"/>
+
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+
+                                    <p:spacer width="100%" height="20"/>
+
+                                    <table class="page-container">
+                                        <thead>
+                                            <tr><th>
+                                                    Products
+
+                                                    <p:commandButton id="new-product-button" 
+                                                                     styleClass="header-button white-button"
+                                                                     value="Add Product"
+                                                                     process="@this"
+                                                                     onclick="PF('new-product-dlg').show();"
+                                                                     actionListener="#{rmaRequest.resetRmaProduct()}"
+                                                                     update="@(.dlg-product-update-class)"/>
+
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>
+
+                                                    <p:spacer width="100%" height="20"/>
+
+                                                    <p:dataTable id="product-table" 
+                                                                 styleClass="type2-table" 
+                                                                 value="#{rmaRequest.products}" 
+                                                                 var="product"
+                                                                 emptyMessage="No products added">  
+
+                                                        <p:column>  
+                                                            <f:facet name="header">  
+                                                                <h:outputText value="Serial Number" />  
+                                                            </f:facet>  
+                                                            <h:outputText value="#{product.serialNumber}" />  
+                                                        </p:column>  
+
+                                                        <p:column>  
+                                                            <f:facet name="header">  
+                                                                <h:outputText value="Part Number" />  
+                                                            </f:facet>  
+                                                            <h:outputText value="#{product.partNumber}" />  
+                                                        </p:column> 
+
+                                                        <p:column>  
+                                                            <f:facet name="header">  
+                                                                <h:outputText value="Part Name" />  
+                                                            </f:facet>  
+                                                            <h:outputText value="#{product.partName}" />  
+                                                        </p:column> 
+
+                                                        <p:column>  
+                                                            <f:facet name="header">  
+                                                                <h:outputText value="Reason for return" />  
+                                                            </f:facet>  
+                                                            <h:outputText value="#{product.returnReason}" />  
+                                                        </p:column> 
+
+                                                        <p:column>  
+                                                            <f:facet name="header">  
+                                                                <h:outputText value="Failure stage" />  
+                                                            </f:facet>  
+                                                            <h:outputText value="#{product.failureStage}" />  
+                                                        </p:column> 
+
+                                                        <p:column>  
+                                                            <f:facet name="header">  
+                                                                <h:outputText value="Quantity" />  
+                                                            </f:facet>  
+                                                            <h:outputText value="#{product.qty}" />  
+                                                        </p:column> 
+
+                                                        <p:column width="20">
+                                                            <p:commandLink update="product-table" title="Remove Product" process="product-table">
+                                                                <p:graphicImage value="#{URIUtil().s3Icon('black/trash_icon_16.png')}"/>
+                                                                <p:collector value="#{product}" removeFrom="#{rmaRequest.products}" unique="true"/> 
+                                                            </p:commandLink>
+                                                        </p:column>
+
+                                                    </p:dataTable>
+
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+
+                                    <p:dialog id="new-product-dlg" header="Add Product" widgetVar="new-product-dlg" dynamic="true" resizable="false">
+
+                                        <h:panelGroup id="product-group">
+                                            
+                                            <h3>Quantity:*</h3>
+                                            <p:spinner value="#{rmaRequest.newRmaProduct.qty}"/>
+
+                                            <h3>Serial Number:*</h3>
+                                            <p:inputText value="#{rmaRequest.newRmaProduct.serialNumber}" required="true" requiredMessage="Serial Number is required"/>
+
+                                            <h3>Part Number:*</h3>
+                                            <p:inputText value="#{rmaRequest.newRmaProduct.partNumber}"/>
+
+                                            <h3>Part Name:*</h3>
+                                            <p:inputText value="#{rmaRequest.newRmaProduct.partName}" required="true" requiredMessage="Part Name is required"/>
+
+                                            <h3>Reason for return:*</h3>
+                                            <p:selectOneMenu value="#{rmaRequest.newRmaProduct.returnReason}" required="true" requiredMessage="Return reason required" style="width: 150px"> 
+                                                <f:selectItem itemLabel="Not Needed" itemValue="Not Needed" />  
+                                                <f:selectItem itemLabel="Wrong Item" itemValue="Wrong Item" />  
+                                                <f:selectItem itemLabel="Failure" itemValue="Failure" />  
+                                            </p:selectOneMenu>
+
+                                            <h3>Failure Stage:*</h3>
+                                            <p:selectOneMenu value="#{rmaRequest.newRmaProduct.failureStage}" required="true" requiredMessage="Failure stage required"> 
+                                                <f:selectItem itemLabel="Not Applicable" itemValue="Not Applicable" />  
+                                                <f:selectItem itemLabel="In Service" itemValue="In Service" />  
+                                                <f:selectItem itemLabel="During Implementation" itemValue="During Implementation" />  
+                                            </p:selectOneMenu>
+
+                                            <h3>Reported Issue Details:*</h3>
+                                            <p:inputTextarea value="#{rmaRequest.newRmaProduct.issueDetails}" required="true" requiredMessage="Issue Details are required" rows="10" cols="20"/>
+
+                                            <h3>What troubleshooting steps have been taken to resolve this issue?:*</h3>
+                                            <p:inputTextarea value="#{rmaRequest.newRmaProduct.troubleshooting}" required="true" requiredMessage="Troubleshooting is required" rows="10" cols="20"/>
+
+                                        </h:panelGroup>
+
+                                        <hr></hr>
+
+                                        <p:commandButton id="btn_product" 
+                                                         value="Add Product" 
+                                                         styleClass="green-button"
+                                                         update="product-group :form:product-group" 
+                                                         process="@this @parent"
+                                                         action="#{rmaRequest.resetRmaProduct()}"
+                                                         onsuccess="PF('new-product-dlg').hide()">
+
+                                            <p:collector value="#{rmaRequest.newRmaProduct}" addTo="#{rmaRequest.products}" unique="true"/>
+
+                                        </p:commandButton>
+
+
+
+                                    </p:dialog>
+
+                                    <p:spacer width="100%" height="20px"/>
+
+                                    <p:commandButton id="submit-btn" 
+                                                     widgetVar="submit-button-wv"
+                                                     value="Submit"
+                                                     styleClass="green-button"
+                                                     action="#{rmaRequest.request()}"
+                                                     onclick="PF('blockui1').block();"
+                                                     oncomplete="PF('blockui1').unblock();"
+                                                     update=":form:growl"
+                                                     process="@this,:form:center"/>
+
+                                    <ez:blockUI target="@widgetVar(submit-button-wv)" widgetVar="blockui1"/>
+
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </pe:layoutPane>
+
+                <pe:layoutPane id="south" position="south" closable="false" resizable="false" size="40"><ez:footer/></pe:layoutPane>
+
+            </pe:layout>
+
+        </h:form>
+
+    </h:body>
+
+</html>
+

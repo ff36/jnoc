@@ -1,0 +1,667 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:ez="http://xmlns.jcp.org/jsf/composite/ezcomp"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <h:outputStylesheet name="css/auth.css"/>
+        <h:outputStylesheet name="css/common.css"/>
+        <link rel="shortcut icon" type="image/png" href="#{request.contextPath}/resources/images/favicon.ico" />
+        <title>#{msgs['default.page.title']} | #{msgs['admin.ticket.edit.page.title']}</title>
+    </h:head>
+
+    <h:body>
+
+        #{jsfSessionUser.currentUser.hasPagePermission('ticket:edit')}
+
+        <h:form id="form" >
+
+            <pe:ajaxErrorHandler />
+
+            <p:growl id="growl" 
+                     redisplay="false"
+                     showDetail="false" 
+                     sticky="false" />
+
+            <ez:navigation-a/>
+
+            <pe:layout stateCookie="#{config.ProjectStage ne 'DEV'}" 
+                       widgetVar="layoutWgt" >
+
+                <pe:layoutPane id="north" 
+                               position="north" 
+                               closable="false" 
+                               resizable="false" 
+                               size="40"/>
+
+                <pe:layoutPane id="west" 
+                               position="west" 
+                               resizeWhileDragging="true" 
+                               size="280">
+
+                    <p:remoteCommand autoRun="true" 
+                                     async="true" 
+                                     actionListener="#{editTicket.init()}" 
+                                     update=":form:lazy-update-class :form:lazy-update-class-2 option-group-5 option-group-6"/>
+
+                    <h:panelGroup id="lazy-update-class">
+
+                        <div class="edit-ticket">
+
+                            <table class="page-container">
+                                <thead>
+                                    <tr><th>Requester</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+
+                                            <p:spacer width="100%" height="20px"/>
+
+                                            <p:graphicImage name="images/ajax-loader.gif" 
+                                                            rendered="#{!editTicket.render}" 
+                                                            styleClass="ajax-lazy-loader"/>
+
+                                            <ui:fragment rendered="#{editTicket.render}">
+
+                                                <h:outputText value="#{editTicket.ticket.requester.contact.buildFullName()}"/>
+
+                                                <h3>Send email</h3>
+                                                <p:selectBooleanCheckbox value="#{editTicket.ticket.sendEmailToRequester}"/>
+
+                                            </ui:fragment>
+
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <p:spacer width="100%" height="10px"/>
+
+                            <table class="page-container">
+                                <thead>
+                                    <tr><th>Assignee</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+
+                                            <p:spacer width="100%" height="20px"/>
+
+                                            <p:graphicImage name="images/ajax-loader.gif" 
+                                                            rendered="#{!editTicket.render}" 
+                                                            styleClass="ajax-lazy-loader"/>
+
+                                            <ui:fragment rendered="#{editTicket.render}">
+
+                                                <p:inplace id="assigneeAIP" 
+                                                           styleClass="inplace" 
+                                                           editor="true" 
+                                                           label="#{editTicket.ticket.assignee eq null ? 'None' : editTicket.ticket.assignee.contact.buildFullName()}"
+                                                           rendered="#{jsfSessionUser.currentUser.administrator}">  
+                                                    <p:ajax event="save" listener="#{editTicket.ticket.update()}"/>
+                                                    <p:autoComplete id="assignee"
+                                                                    value="#{editTicket.ticket.assignee}" 
+                                                                    completeMethod="#{editTicket.ticket.filterAvailableAssignees}"
+                                                                    var="ass" 
+                                                                    itemLabel="#{ass.contact.buildFullName()}" 
+                                                                    itemValue="#{ass}" 
+                                                                    converter="userCvt" 
+                                                                    forceSelection="true"
+                                                                    style="width: 230px"/>
+                                                </p:inplace>
+
+                                                <h:outputText value="#{editTicket.ticket.assignee eq null ? 'None' : editTicket.ticket.assignee.contact.buildFullName()}"
+                                                              rendered="#{!jsfSessionUser.currentUser.administrator}"/>
+
+                                                <h3>Send email</h3>
+                                                <p:selectBooleanCheckbox value="#{editTicket.ticket.sendEmailToAssignee}"/>
+
+                                            </ui:fragment>
+
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <p:spacer width="100%" height="10px"/>
+
+                            <table class="page-container">
+                                <thead>
+                                    <tr><th>Details</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+
+                                            <p:graphicImage name="images/ajax-loader.gif" 
+                                                            rendered="#{!editTicket.render}" 
+                                                            styleClass="ajax-lazy-loader"/>
+
+                                            <ui:fragment rendered="#{editTicket.render}">
+
+                                                <h3>Topic</h3>
+                                                <p:selectOneMenu value="#{editTicket.ticket.topic}"
+                                                                 effect="fade"
+                                                                 style="width: 230px"
+                                                                 required="true"
+                                                                 requiredMessage="Type required">    
+                                                    <f:selectItems value="#{enumController.ticketTopics}" 
+                                                                   var="topic" 
+                                                                   itemLabel="#{topic.label}" 
+                                                                   itemValue="#{topic}"/>
+                                                </p:selectOneMenu>
+
+                                                <h3>Severity</h3>
+                                                <p:selectOneMenu value="#{editTicket.ticket.severity}" 
+                                                                 effect="fade"
+                                                                 style="width: 230px"
+                                                                 required="true"
+                                                                 requiredMessage="Severity required">  
+                                                    <f:selectItems value="#{enumController.ticketSeverities}" 
+                                                                   var="severity" 
+                                                                   itemLabel="#{severity.label}" 
+                                                                   itemValue="#{severity}"/>
+                                                </p:selectOneMenu>
+
+                                                <h3>DAS</h3>
+                                                <p:selectOneMenu value="#{editTicket.ticket.das}"
+                                                                 style="width: 230px"
+                                                                 converter="dasCvt">
+                                                    <f:selectItem itemLabel="-" noSelectionOption="true" />
+                                                    <f:selectItems value="#{editTicket.ticket.available['das']}" 
+                                                                   var="site" 
+                                                                   itemLabel="#{site.name}" 
+                                                                   itemValue="#{site}"/>
+                                                </p:selectOneMenu>
+
+                                            </ui:fragment>
+
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <p:spacer width="100%" height="10px"/>
+
+                            <table class="page-container">
+                                <thead>
+                                    <tr><th>Email CC</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+
+                                            <p:spacer width="100%" height="20px"/>
+
+                                            <p:graphicImage name="images/ajax-loader.gif" 
+                                                            rendered="#{!editTicket.render}" 
+                                                            styleClass="ajax-lazy-loader"/>
+
+                                            <ui:fragment rendered="#{editTicket.render}">
+
+                                                <p:autoComplete id="cc"
+                                                                value="#{editTicket.ticket.ccEmailRecipients}"
+                                                                completeMethod="#{editTicket.ticket.filterCCEmail}"
+                                                                multiple="true"
+                                                                styleClass="ccemail">
+                                                    <p:ajax event="itemSelect" update="@parent"/>
+                                                </p:autoComplete>
+
+                                            </ui:fragment>
+
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                        </div>
+
+                    </h:panelGroup>
+
+                </pe:layoutPane>
+
+                <pe:layoutPane id="center" 
+                               position="center" 
+                               resizeWhileDragging="true">
+
+
+                    <div id="comment" class="edit-ticket">
+
+                        <h:panelGroup id="lazy-update-class-2">
+
+                            <table class="page-container">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            #{editTicket.ticket.title}
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+
+                                            <p:spacer width="100%" height="20"/>
+
+
+
+                                            <p:graphicImage name="images/ajax-loader.gif" 
+                                                            rendered="#{!editTicket.render}" 
+                                                            styleClass="ajax-lazy-loader"/>
+
+                                            <h:panelGroup id="lazy-update-class-3" rendered="#{editTicket.render}">
+
+                                                <p:dataList id="comment-datalist" 
+                                                            value="#{editTicket.ticket.comments}" 
+                                                            var="comment"
+                                                            itemType="none"
+                                                            styleClass="clear-data-list"
+                                                            rendered="#{editTicket.render}">
+
+                                                    <ui:fragment rendered="#{comment.nexus eq null or comment.nexus.authorised()}">
+
+
+
+                                                        <table style="width:100%;position: relative">
+                                                            <tr class="comment-table-seperator">
+                                                                <td style="width: 60px">
+                                                                    <p:graphicImage value="#{uriUtil.profileImage(comment.commenter, false)}"
+                                                                                    height="60px"
+                                                                                    styleClass="comment-image circular-clip-60"/>
+
+                                                                </td>
+                                                                <td>
+
+                                                                    <div class="bubble">
+
+                                                                        <div class="title">
+
+                                                                            <b>#{comment.commenter.contact.buildFullName()}</b>
+                                                                            <h:outputText value="#{comment.getCreateTimeStamp()}" 
+                                                                                          styleClass="comment-date"/>
+                                                                            <div class="comment-acl-option-btn">
+
+                                                                                <p:commandButton id="change-acl-to-public"
+                                                                                                 styleClass="header-button-2 white-button-2"
+                                                                                                 actionListener="#{comment.changeNexus(null)}" 
+                                                                                                 action="#{comment.update()}"
+                                                                                                 value="Make Public" 
+                                                                                                 rendered="#{comment.nexus.id eq 1}" 
+                                                                                                 process="@this,change-acl-to-public" 
+                                                                                                 update="comment-datalist :form:growl"
+                                                                                                 title="Your comment will be visible by everyone who can view this ticket"/>
+
+                                                                                <p:commandButton id="change-acl-to-internal-admin" 
+                                                                                                 styleClass="header-button-2 white-button-2"
+                                                                                                 actionListener="#{comment.changeNexus(1)}" 
+                                                                                                 action="#{comment.update()}"
+                                                                                                 value="Make Internal"
+                                                                                                 process="@this,change-acl-to-internal-admin" 
+                                                                                                 update="comment-datalist :form:growl"
+                                                                                                 rendered="#{jsfSessionUser.currentUser.administrator and comment.nexus.id eq null and comment ne editTicket.ticket.comments[0]}"
+                                                                                                 title="Your comment will ONLY be visible to members of your team"/>  
+
+                                                                                <p:commandButton id="change-acl-to-internal-var" 
+                                                                                                 styleClass="header-button-2 white-button-2"
+                                                                                                 actionListener="#{comment.changeNexus(2)}" 
+                                                                                                 action="#{comment.update()}"
+                                                                                                 value="Make Internal" 
+                                                                                                 process="@this,change-acl-to-internal-var" 
+                                                                                                 update="comment-datalist :form:growl"
+                                                                                                 rendered="#{jsfSessionUser.currentUser.VAR and comment.nexus.id eq null}"
+                                                                                                 title="Your comment will ONLY be visible to members of your team"/>
+
+
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class="content">
+                                                                            <div class="#{comment.nexus.id eq 1 ? 'admin-comment' : comment.nexus.id eq 2 ? 'var-comment' : 'public-comment'}">
+                                                                                <h:outputText value="#{comment.parse()}" escape="false" rendered="#{comment.comment ne '%CLOSED%' and comment.comment ne '%REOPENED%'}"/>
+                                                                                <p:graphicImage value="#{uriUtil.icon('black/round_delete_icon_24.png', true)}" 
+                                                                                                title="Ticket closed"
+                                                                                                rendered="#{comment.comment eq '%CLOSED%'}"/>
+                                                                                <p:graphicImage value="#{uriUtil.icon('black/round_checkmark_icon_24.png', true)}" 
+                                                                                                title="Ticket reopened"
+                                                                                                rendered="#{comment.comment eq '%REOPENED%'}"/>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+
+                                                    </ui:fragment>
+
+                                                </p:dataList>
+
+
+                                                <table style="width:100%;position: relative">
+                                                    <tr class="comment-table-seperator">
+                                                        <td style="width: 60px">
+                                                            <p:graphicImage value="#{uriUtil.profileImage(false)}"
+                                                                            height="60px"
+                                                                            styleClass="comment-image circular-clip-60"/>
+
+                                                        </td>
+                                                        <td>
+
+                                                            <h:panelGroup id="lazy-group-1">
+
+                                                                <p:inputText widgetVar="comment-reply-holder" 
+                                                                             styleClass="comment-reply-holder" 
+                                                                             rendered="#{!editTicket.renderEditor and editTicket.ticket.closeEpoch eq null}">
+                                                                    <p:ajax event="focus" 
+                                                                            update="@parent" 
+                                                                            listener="#{editTicket.changeEditor()}"/>
+                                                                </p:inputText>
+
+                                                                <p:watermark for="@widgetVar(comment-reply-holder)" 
+                                                                             value="Add a comment or upload a file..."/>
+
+                                                                <p:commandButton widgetVar="reopenBtn"
+                                                                                 styleClass="red-button" 
+                                                                                 style="margin-top: 15px !important"
+                                                                                 value="Reopen Ticket" 
+                                                                                 onclick="PF('blockui3').block();" 
+                                                                                 oncomplete="PF('blockui3').unblock();" 
+                                                                                 update=":form:lazy-update-class-3 :form:growl" 
+                                                                                 actionListener="#{editTicket.ticket.edit('OPEN')}"
+                                                                                 process="@this"
+                                                                                 rendered="#{editTicket.ticket.closeEpoch ne null}"/>
+
+                                                                <ez:blockUI target="@widgetVar(reopenBtn)" widgetVar="blockui3"/>
+
+                                                                <h:panelGroup rendered="#{editTicket.renderEditor}">
+
+                                                                    <div class="bubble">
+
+                                                                        <div class="title">
+
+
+                                                                            <h:outputText id="cmt-msg" 
+                                                                                          styleClass="comment-acl-msg" 
+                                                                                          value="#{editTicket.ticket.comment.nexus eq null ? '(Your comment will be visible by everyone who can view this ticket)' : '(Your comment will ONLY be visible to members of your team)'}"/>
+
+                                                                            <div class="comment-acl-option-btn">
+                                                                                <p:commandLink id="acl-change-btn" 
+                                                                                               type="button" 
+                                                                                               process="@this,acl-change-btn">
+                                                                                    <p:graphicImage value="#{uriUtil.icon('black/cog_icon_16.png', true)}"/>
+                                                                                    <p:graphicImage value="#{uriUtil.icon('black/br_down_icon_16.png', true)}" 
+                                                                                                    width="8px"/>
+                                                                                </p:commandLink>
+                                                                                <p:menu id="acl-change-overlay-2" 
+                                                                                        overlay="true" 
+                                                                                        trigger="acl-change-btn">   
+                                                                                    <p:menuitem id="change-acl-to-public" 
+                                                                                                actionListener="#{editTicket.ticket.comment.changeNexus(null)}"
+                                                                                                value="Make Public" 
+                                                                                                rendered="#{editTicket.ticket.comment.nexus.id eq 1}" 
+                                                                                                process="@this,change-acl-to-public" 
+                                                                                                update="lazy-group-1 :form:growl"/>
+                                                                                    <p:menuitem id="change-acl-to-internal-admin" 
+                                                                                                actionListener="#{editTicket.ticket.comment.changeNexus(1)}"
+                                                                                                value="Make Internal"
+                                                                                                process="@this,change-acl-to-internal-admin" 
+                                                                                                update="lazy-group-1 :form:growl"
+                                                                                                rendered="#{jsfSessionUser.currentUser.administrator and editTicket.ticket.comment.nexus.id eq null}"/>  
+                                                                                    <p:menuitem id="change-acl-to-internal-var" 
+                                                                                                actionListener="#{editTicket.ticket.comment.changeNexus(2)}" 
+                                                                                                value="Make Internal" 
+                                                                                                process="@this,change-acl-to-internal-var" 
+                                                                                                update=":form:growl"
+                                                                                                rendered="#{jsfSessionUser.currentUser.VAR and editTicket.ticket.comment.nexus.id eq null}"/>
+                                                                                </p:menu>
+                                                                            </div>
+
+                                                                        </div>
+
+                                                                        <div class="content">
+
+                                                                            <p:tabView dynamic="true" style="min-height: 200px">
+                                                                                <p:ajax event="tabChange" 
+                                                                                        listener="#{editTicket.ticket.comment.previewListener}"
+                                                                                        update="preview"/>
+
+                                                                                <p:tab title="Write">
+
+                                                                                    <a target="_blank"
+                                                                                       href="http://daringfireball.net/projects/markdown/syntax"
+                                                                                       style="float: right; text-decoration: none; color: #000000; font-size: 10px; margin-bottom: 5px">
+                                                                                        <p:graphicImage value="#{uriUtil.icon('black/markdown_icon_16.png', true)}" 
+                                                                                                        height="10px"/>
+                                                                                        Parsed as Markdown
+                                                                                    </a>
+
+                                                                                    <p:inputTextarea autoResize="true"
+                                                                                                     value="#{editTicket.ticket.comment.comment}"
+                                                                                                     style="width: 100%; min-height: 100px">
+                                                                                        <p:ajax event="keyup" />
+                                                                                    </p:inputTextarea>
+                                                                                </p:tab>
+                                                                                <p:tab title="Preview">
+                                                                                    <h:outputText id="preview" escape="false" value="#{editTicket.ticket.comment.markdown}"/>
+                                                                                </p:tab>
+                                                                            </p:tabView>
+
+                                                                            <p:spacer width="100%" height="10"/>
+
+                                                                            <p:commandButton widgetVar="commentBtn"
+                                                                                             styleClass="green-button" 
+                                                                                             value="Comment" 
+                                                                                             onclick="PF('blockui1').block();" 
+                                                                                             oncomplete="PF('blockui1').unblock();" 
+                                                                                             update=":form:lazy-update-class-3 :form:growl" 
+                                                                                             actionListener="#{editTicket.ticket.edit('OPEN')}"
+                                                                                             process="@this @(.edit-ticket :input)"/>
+
+                                                                            <p:spacer width="10"/>
+
+                                                                            <p:commandButton widgetVar="commentCloseBtn"
+                                                                                             styleClass="red-button" 
+                                                                                             value="Comment and Close" 
+                                                                                             onclick="PF('blockui2').block();" 
+                                                                                             oncomplete="PF('blockui2').unblock();" 
+                                                                                             update=":form:lazy-update-class-3 :form:growl" 
+                                                                                             actionListener="#{editTicket.ticket.edit('CLOSED')}"
+                                                                                             action="#{editTicket.changeEditor()}"
+                                                                                             process="@this @(.edit-ticket :input)"/>
+
+                                                                            <ez:blockUI target="@widgetVar(commentBtn)" widgetVar="blockui1"/>
+
+                                                                            <ez:blockUI target="@widgetVar(commentCloseBtn)" widgetVar="blockui2"/>
+                                                                        </div>
+                                                                    </div>
+
+                                                                </h:panelGroup>
+
+                                                            </h:panelGroup>
+
+                                                        </td>
+                                                    </tr>
+                                                </table>
+
+                                            </h:panelGroup>
+
+
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                        </h:panelGroup>
+
+                    </div>
+
+                </pe:layoutPane>
+
+                <pe:layoutPane id="east" 
+                               position="east" 
+                               resizeWhileDragging="true" 
+                               size="480" >
+
+                    <table class="page-container">
+                        <thead>
+                            <tr><th>Attachments</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+
+                                    <h:panelGroup id="option-group-6">
+
+                                        <p:spacer width="100%" height="20"/>
+
+                                        <table class="table-align-top">
+                                            <tr>
+                                                <td>
+                                                    <p:graphicImage id="upload-ajax-spinner" 
+                                                                    name="images/ajax-loader.gif" 
+                                                                    style="display: none" 
+                                                                    styleClass="profile-upload-ajax-spinner"/>
+
+                                                    <p:fileUpload id="uploader"
+                                                                  styleClass="profile-uploader"
+                                                                  fileUploadListener="#{editTicket.ticket.attachment.upload}"
+                                                                  mode="advanced" 
+                                                                  dragDropSupport="true" 
+                                                                  auto="true"
+                                                                  update=":form:growl"
+                                                                  onstart="document.getElementById('upload-drag-drop-message').style.display = 'none'; document.getElementById('form:upload-ajax-spinner').style.display = 'block'"
+                                                                  oncomplete="document.getElementById('upload-drag-drop-message').style.display = 'block'; document.getElementById('form:upload-ajax-spinner').style.display = 'none'; addAttachment()"
+                                                                  onerror="PF('blockui2').unblock();"
+                                                                  sizeLimit="2097152" 
+                                                                  allowTypes="/(\.|\/)(gif|jpe?g|png|tiff|mpeg|mpg|mov|avi|wmv|flv|txt|doc?x|xls?x|ppt?x|pdf|eps|zip)$/"
+                                                                  label="Add Attachment"
+                                                                  invalidFileMessage="Sorry, this file type is currently not supported."
+                                                                  invalidSizeMessage="Sorry, the maximum file size is 2MB."
+                                                                  style="width: 400px"/>
+
+                                                    <div id="upload-drag-drop-message" class="menu-hover-details" style="padding-left: 6px;">
+                                                        <h:outputText value="You can also drag and drop files from your computer."/>
+                                                    </div>
+
+                                                    <p:remoteCommand name="addAttachment" 
+                                                                     actionListener="#{editTicket.ticket.addAttachment()}"
+                                                                     update=":form:option-group-6"/>
+
+                                                </td>
+                                            </tr>
+                                        </table>
+
+                                        <p:spacer width="100%" height="20"/>
+
+                                        <p:dataTable id="attachments"
+                                                     var="attachment" 
+                                                     value="#{editTicket.ticket.attachments}"  
+                                                     paginator="true"
+                                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                                     paginatorPosition="top"
+                                                     paginatorAlwaysVisible="false"
+                                                     emptyMessage="This ticket currently has no attachments"
+                                                     styleClass="type2-table">
+
+                                            <p:column style="width: 50px">
+                                                <p:commandLink process="@this"
+                                                               action="#{attachment.viewAttachment()}"
+                                                               target="_blank"
+                                                               title="View"> 
+                                                    <p:graphicImage value="#{attachment.fileTypeIcon(true)}" 
+                                                                    height="50px"/>
+                                                </p:commandLink>
+                                            </p:column>
+
+                                            <p:column>
+                                                <h:outputText value="#{attachment.title}"/>
+                                            </p:column>
+
+                                            <p:column>
+                                                <p:commandLink process="@this"
+                                                               action="#{navigator.navigate('DOCUMENT_WITH_PARAM', 'document='.concat(attachment.id.toString()))}"
+                                                               target="_blank"
+                                                               title="Edit"> 
+                                                    <p:graphicImage value="#{uriUtil.icon('black/doc_edit_icon_16.png', true)}"/>
+                                                </p:commandLink>
+                                            </p:column>
+
+                                            <p:column>
+                                                <p:commandLink id="remove"
+                                                               process="@this"
+                                                               actionListener="#{attachment.remove()}"
+                                                               action="#{editTicket.ticket.update()}"
+                                                               update=":form:attachments :form:growl"
+                                                               title="Delete"> 
+                                                    <p:graphicImage value="#{uriUtil.icon('black/trash_icon_16.png', true)}"/>
+                                                    <p:collector value="#{attachment}" 
+                                                                 removeFrom="#{editTicket.ticket.attachments}" 
+                                                                 unique="true"/>
+                                                </p:commandLink>
+                                                
+                                            </p:column>
+
+                                        </p:dataTable> 
+
+                                    </h:panelGroup>
+
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <p:spacer width="100%" height="20"/>
+
+                    <table class="page-container">
+                        <thead>
+                            <tr><th>Possible Related Tickets</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+
+                                    <h:panelGroup id="option-group-5">
+
+                                        <p:dataTable var="rt" 
+                                                     value="#{editTicket.ticket.relatedTickets(10)}"
+                                                     styleClass="type3-table"
+                                                     emptyMessage="Sorry, Can't find any related tickets.">
+                                            <p:column>
+                                                <h:outputText value="#{rt.title}" />
+                                            </p:column>
+                                            <p:column>
+                                                <h:outputText value="#{rt.status}" />
+                                            </p:column>
+                                        </p:dataTable>
+
+                                    </h:panelGroup>
+
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </pe:layoutPane>
+
+                <pe:layoutPane id="south" 
+                               position="south" 
+                               closable="false" 
+                               resizable="false" 
+                               size="40">
+                    <ez:footer/>
+                </pe:layoutPane>
+
+            </pe:layout>
+
+        </h:form>
+
+    </h:body>
+
+</html>
+

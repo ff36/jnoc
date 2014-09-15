@@ -1,0 +1,146 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ez="http://xmlns.jcp.org/jsf/composite/ezcomp"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <h:outputStylesheet name="css/login.css"/>
+        <h:outputStylesheet name="css/common.css"/>
+        <link rel="shortcut icon" type="image/png" href="#{request.contextPath}/resources/images/favicon.ico" />
+        <title>#{msgs['default.page.title']} | #{msgs['login.page.title']}</title>
+    </h:head>
+    <h:body>
+
+        <f:metadata>
+            <f:viewParam name="email" value="#{authenticate.email}"/>
+            <f:viewAction action="#{authenticate.init}" />
+        </f:metadata>
+
+        <p:growl id="growl" 
+                 redisplay="false"
+                 showDetail="false" 
+                 sticky="false" />
+
+        <!-- Authentication -->
+        <h:form id="form"
+                rendered="#{authenticate.renderLogin}">
+
+            <div id="authenticate">
+
+                <p:focus/> 
+
+                <h:panelGrid columns="1">
+                    <!-- Logo -->
+                    <p:graphicImage id="logo"
+                                    styleClass="login-logo"
+                                    value="#{uriUtil.logo('solid_logo_v1.jpg', true)}"
+                                    rendered="#{authenticate.renderLogin or authenticate.renderUniversal}"
+                                    width="275"/>
+                </h:panelGrid> 
+
+                <table>
+                    <tr>
+                        <td>
+                            <h:panelGrid columns="2">
+
+                                <p:inputText id="email"
+                                             value="#{authenticate.email}"
+                                             required="true"
+                                             requiredMessage="#{msgs['error.email.required']}"/>
+                                <p:watermark for="email" value="#{msgs['login.email']}"/>
+
+                                <p:password id="password"
+                                            value="#{authenticate.password}"
+                                            required="true"
+                                            requiredMessage="#{msgs['error.password.required']}"/>
+                                <p:watermark for="password" value="#{msgs['login.password']}"/>
+
+                            </h:panelGrid>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p:commandButton id="login-btn"
+                                             styleClass="login-button-update-class"
+                                             action="#{authenticate.authenticate()}"
+                                             ajax="false" 
+                                             value="#{msgs['login.login.btn']}"
+                                             onclick="PF('blockui1').block();"
+                                             oncomplete="PF('blockui1').unblock();"
+                                             process="@this,email,password,remember-me"/>
+
+                            <ez:blockUI target="@(.login-button-update-class)" widgetVar="blockui1"/>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <h:commandLink action="#{navigator.navigate('FORGOT_PASSWORD')}"
+                                           value="Forgot password?"
+                                           type="button"/>
+
+                            <br></br>
+
+                            <h:commandLink value="Get an account"
+                                           action="#{navigator.navigate('REQUEST_ACCOUNT')}"
+                                           type="button"/>
+
+                        </td>
+                    </tr>
+                </table>
+
+            </div>
+
+            <div class="footer">
+
+
+            </div>
+
+        </h:form>
+
+        <!-- Universal -->
+        <h:form id="uni-form"
+                rendered="#{authenticate.renderUniversal}">
+
+            <div id="universal">
+
+                <p:focus/> 
+
+                <h:panelGrid columns="2">
+
+                    <p:inputText id="uni-email"
+                                 value="#{authenticate.email}"
+                                 required="true"
+                                 requiredMessage="#{msgs['error.email.required']}"/>
+                    <p:watermark for="uni-email" value="#{msgs['login.email']}"/>
+
+                </h:panelGrid>
+
+
+                <p:commandButton id="uni-login-btn"
+                                 styleClass="login-button-update-class"
+                                 action="#{authenticate.redirect()}"
+                                 ajax="false" 
+                                 value="#{msgs['login.login.btn']}"
+                                 onclick="PF('blockui1').block();"
+                                 oncomplete="PF('blockui1').unblock();"
+                                 process="@this,uni-email"/>
+
+                <ez:blockUI target="@(.login-button-update-class)" widgetVar="blockui1"/>
+
+            </div>
+
+            <div class="footer">
+
+
+
+            </div>
+
+        </h:form>
+
+    </h:body>
+</html>

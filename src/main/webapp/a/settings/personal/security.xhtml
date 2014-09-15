@@ -1,0 +1,224 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:ez="http://xmlns.jcp.org/jsf/composite/ezcomp"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <h:outputStylesheet name="css/auth.css"/>
+        <h:outputStylesheet name="css/common.css"/>
+        <link rel="shortcut icon" type="image/png" href="#{request.contextPath}/resources/images/favicon.ico" />
+        <title>#{msgs['default.page.title']} | #{msgs['admin.settings.page.title']}</title>
+    </h:head>
+
+    <h:body>
+
+        <h:form id="form">
+
+            <pe:ajaxErrorHandler />
+
+            <p:growl id="growl" 
+                     redisplay="false"
+                     showDetail="false" 
+                     sticky="false" />
+
+            <ez:navigation-a/>
+
+            <pe:layout stateCookie="#{config.ProjectStage ne 'DEV'}" 
+                       widgetVar="layourWgt" >
+
+                <pe:layoutPane id="north" 
+                               position="north" 
+                               closable="false" 
+                               resizable="false" 
+                               size="40"/>
+
+                <pe:layoutPane id="west" 
+                               position="west" 
+                               resizeWhileDragging="true" 
+                               size="220">
+
+                    <table class="navigation-sidebar">
+                        <thead>
+                            <tr><th>Settings</th></tr>
+                        </thead>
+                        <tfoot><tr><td></td></tr></tfoot>
+                        <tbody>
+                            <tr>
+                                <td><p:commandLink value="Profile" 
+                                                   action="/a/settings/personal/profile.xhtml?faces-redirect=true" 
+                                                   process="@this" 
+                                                   type="button"/></td>
+                            </tr>
+                            <tr>
+                                <td><p:commandLink value="Account settings" 
+                                                   action="/a/settings/personal/admin.xhtml?faces-redirect=true" 
+                                                   process="@this" 
+                                                   type="button"/></td>
+                            </tr>
+                            <tr>
+                                <td class="active">Security</td>
+                            </tr>
+                            <tr>
+                                <td><p:commandLink value="Navigation" 
+                                                   action="/a/settings/personal/navigation.xhtml?faces-redirect=true" 
+                                                   process="@this" 
+                                                   type="button"/></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <p:spacer width="100%" height="10px"/>
+
+                    <table class="navigation-sidebar">
+                        <thead>
+                            <tr><th>Company Settings</th></tr>
+                        </thead>
+                        <tfoot><tr><td></td></tr></tfoot>
+                        <tbody>
+                            <tr>
+                                <td><p:commandLink value="Profile" 
+                                                   action="/a/settings/company/profile.xhtml?faces-redirect=true" 
+                                                   process="@this" 
+                                                   type="button"/></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </pe:layoutPane>
+
+                <pe:layoutPane id="center" 
+                               position="center" 
+                               resizeWhileDragging="true">
+
+                    <p:remoteCommand autoRun="true" 
+                                     async="true" 
+                                     actionListener="#{settings.init()}" 
+                                     update=":form:lazy-update-class"/>
+
+                    <p:remoteCommand autoRun="true" 
+                                     async="true" 
+                                     actionListener="#{audits.init()}" 
+                                     update=":form:lazy-update-class"/>
+
+                    <h:panelGroup id="lazy-update-class">
+
+                        <table class="page-container">
+                            <thead>
+                                <tr><th>Session</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+
+                                        <p:graphicImage name="images/ajax-loader.gif" 
+                                                        rendered="#{!settings.render}" 
+                                                        styleClass="ajax-lazy-loader"/>
+
+                                        <ui:fragment rendered="#{settings.render}">
+
+                                            <table class="table-align-top">
+                                                <tr>
+                                                    <td>
+                                                        <p:spacer width="100%" height="20px"/>
+                                                        <p:graphicImage value="#{uriUtil.icon('black/monitor_icon_32.png', true)}"/>
+                                                    </td>
+
+                                                    <td>
+                                                        <h3>IP:</h3>
+                                                        #{jsfSessionUser.ip}
+
+                                                        <h3>Browser:</h3>
+                                                        #{jsfSessionUser.userAgent.name} (#{jsfSessionUser.userAgent.versionNumber.major}.#{jsfSessionUser.userAgent.versionNumber.minor}.#{jsfSessionUser.userAgent.versionNumber.bugfix})
+
+                                                        <h3>OS:</h3>
+                                                        #{jsfSessionUser.userAgent.operatingSystem.name}
+                                                    </td>
+                                                </tr>
+                                            </table>
+
+                                        </ui:fragment>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <p:spacer width="100%" height="20px"/>
+
+                        <table class="page-container">
+                            <thead>
+                                <tr><th>Security History</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+
+                                        <p:spacer width="100%" height="20px"/>
+
+                                        This is a security log of important events involving your account.
+
+                                        <p:spacer width="100%" height="5px"/>
+
+                                        <p:graphicImage name="images/ajax-loader.gif" 
+                                                        rendered="#{!audits.render}" 
+                                                        styleClass="ajax-lazy-loader"/>
+
+                                        <p:dataTable id="audits-table"
+                                                     widgetVar="auditsTable"
+                                                     var="audit"
+                                                     emptyMessage="#{msgs['empty.datatable']}"
+                                                     value="#{audits.dataTable.model}"
+                                                     filteredValue="#{audits.dataTable.filtered}"
+                                                     styleClass="type3-table"
+                                                     lazy="true"
+                                                     sortBy="createEpoch"
+                                                     sortOrder="descending"
+                                                     rows="50"
+                                                     rendered="#{audits.render}"
+                                                     scrollable="true"
+                                                     liveScroll="true"
+                                                     scrollRows="20"
+                                                     scrollHeight="400">
+
+                                            <p:column>
+                                                <h:outputText value="#{audit.description}" style="font-weight: bold"/>
+                                            </p:column>
+
+                                            <p:column width="150">
+                                                <h:outputText value="#{audit.getCreateTimestamp()}"/>
+                                            </p:column>
+
+                                        </p:dataTable>
+
+                                        
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </h:panelGroup>
+
+                </pe:layoutPane>
+
+                <pe:layoutPane id="south" 
+                               position="south" 
+                               closable="false" 
+                               resizable="false" 
+                               size="40">
+                    <ez:footer/>
+                </pe:layoutPane>
+
+            </pe:layout>
+
+        </h:form>
+
+
+    </h:body>
+
+</html>
+

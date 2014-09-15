@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<faces-config version="2.2"
+              xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_2.xsd">
+
+    <facelet-taglib version="2.2"
+                    xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facelettaglibrary_2_2.xsd">
+    </facelet-taglib>
+    
+    <factory>
+        <exception-handler-factory>
+            com.dastrax.app.exception.DastraxExceptionFactory
+        </exception-handler-factory>
+    </factory>
+    
+    <render-kit>
+        <renderer>
+            <component-family>org.primefaces.component</component-family>
+            <renderer-type>org.primefaces.component.FileUploadRenderer</renderer-type>
+            <renderer-class>com.dastrax.app.upload.PrimeFacesFileUploadRenderer</renderer-class>
+        </renderer>
+    </render-kit>
+    
+    <application>
+        <!-- AWS credentials to grant the application access to resources-->
+        <resource-bundle>
+            <base-name>aws-api</base-name>
+            <var>aws-api</var>
+        </resource-bundle>
+        <!-- Application configuration file -->
+        <resource-bundle>
+            <base-name>config</base-name>
+            <var>config</var>
+        </resource-bundle>
+        <!-- The resource bundle that contains all the application strings -->
+        <resource-bundle>
+            <base-name>messages</base-name>
+            <var>msgs</var>
+        </resource-bundle> 
+        <!-- Supported Languages by the application -->
+        <locale-config>
+            <default-locale>en</default-locale>
+        </locale-config>
+    </application>
+
+</faces-config>

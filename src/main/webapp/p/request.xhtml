@@ -1,0 +1,110 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions">
+
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <h:outputStylesheet name="css/login.css"/>
+        <h:outputStylesheet name="css/common.css"/>
+        <link rel="shortcut icon" type="image/png" href="#{request.contextPath}/resources/images/favicon.ico" />
+        <title>#{msgs['default.page.title']} | #{msgs['request.account.page.title']}</title>
+    </h:head>
+    <h:body>
+
+        <p:growl id="growl" 
+                 redisplay="false"
+                 showDetail="false" 
+                 sticky="false" />
+
+        <!-- Authentication -->
+        <h:form id="form">
+
+            <div id="forgot">
+
+                <p:focus/> 
+
+                <!-- Logo -->
+                <p:graphicImage id="logo" 
+                                value="#{uriUtil.logo('solid_logo_v1.jpg', true)}"
+                                width="275"/>
+
+                <p:spacer height="10" width="100%"/>
+
+                <h:panelGrid columns="2">
+
+                    <p:inputText id="name"
+                                 value="#{accountRequest.name}"
+                                 required="true"
+                                 requiredMessage="Name is required"/>
+                    <p:watermark for="name" value="Name"/>
+
+                    <p:inputText id="company"
+                                 value="#{accountRequest.company}"
+                                 required="true"
+                                 requiredMessage="Company is required"/>
+                    <p:watermark for="company" value="Company"/>
+
+                    <p:inputText id="email"
+                                 value="#{accountRequest.email}"
+                                 required="true"
+                                 requiredMessage="Email is required"/>
+                    <p:watermark for="email" value="Email"/>
+
+                    <p:inputText id="phone"
+                                 value="#{accountRequest.phone}"
+                                 required="true"
+                                 requiredMessage="Phone is required"/>
+                    <p:watermark for="phone" value="Phone"/>
+
+                    <p:captcha id="captcha" label="Captcha" theme="white"
+                               validatorMessage="Sorry the security check does not match the displayed image."/>  
+
+                </h:panelGrid>
+
+
+                <p:commandButton id="request-btn"
+                                 actionListener="#{accountRequest.submit}"
+                                 ajax="false" 
+                                 value="Request Account"
+                                 onclick="PF('blockui1').block();"
+                                 oncomplete="PF('blockui1').unblock();"
+                                 process="@this email name company phone captcha"/>
+
+                <pe:blockUI target="request-btn" widgetVar="blockui1">  
+                    <div class="windows8-25-w">
+                        <div class="wBall" id="wBall_1">
+                            <div class="wInnerBall">
+                            </div>
+                        </div>
+                        <div class="wBall" id="wBall_2">
+                            <div class="wInnerBall">
+                            </div>
+                        </div>
+                        <div class="wBall" id="wBall_3">
+                            <div class="wInnerBall">
+                            </div>
+                        </div>
+                        <div class="wBall" id="wBall_4">
+                            <div class="wInnerBall">
+                            </div>
+                        </div>
+                        <div class="wBall" id="wBall_5">
+                            <div class="wInnerBall">
+                            </div>
+                        </div>
+                    </div> 
+                </pe:blockUI>
+
+            </div>
+
+            <div class="footer">
+
+            </div>
+
+        </h:form>
+
+    </h:body>
+</html>

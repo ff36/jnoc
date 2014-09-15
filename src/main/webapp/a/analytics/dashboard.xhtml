@@ -1,0 +1,112 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:ez="http://xmlns.jcp.org/jsf/composite/ezcomp"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <h:outputStylesheet name="css/auth.css"/>
+        <h:outputStylesheet name="css/common.css"/>
+        <link rel="shortcut icon" type="image/png" href="#{request.contextPath}/resources/images/favicon.ico" />
+        <title>#{msgs['default.page.title']} | #{msgs['admin.settings.page.title']}</title>
+    </h:head>
+
+    <h:body>
+
+        <h:form id="form">
+
+            <pe:ajaxErrorHandler />
+
+            <p:growl id="growl" 
+                     redisplay="false"
+                     showDetail="false" 
+                     sticky="false" />
+
+            <ez:navigation-a/>
+
+            <pe:layout stateCookie="#{config.ProjectStage ne 'DEV'}" widgetVar="layourWgt" >
+
+                <pe:layoutPane id="north" position="north" closable="false" resizable="false" size="40"/>
+
+                <pe:layoutPane id="west" position="west" resizeWhileDragging="true" size="220">
+
+                    <table class="navigation-sidebar">
+                        <thead>
+                            <tr><th>Analytics</th></tr>
+                        </thead>
+                        <tfoot><tr><td></td></tr></tfoot>
+                        <tbody>
+                            <tr>
+                                <td class="active">Request Report</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </pe:layoutPane>
+
+                <pe:layoutPane id="center" position="center" resizeWhileDragging="true">
+
+                    <table class="page-container">
+                        <thead>
+                            <tr><th>Reports</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+
+                                    <h3>Request Report</h3>
+                                    We are working hard to bring you both live analytics and customizable, multi-dimensional reporting. <br></br>
+                                    In the mean time you can request uptime reports using the form below. 
+                                    <p:spacer width="100%" height="10px"/>
+                                    <span style="font-style: italic; color: #cccccc">* Reports are generated every 24 hours and will be sent to your registered account email address.</span>
+                                    
+                                    <h3>For</h3>
+                                    <p:selectOneMenu value="#{requestReport.selectedSite}" 
+                                                     widgetVar=""
+                                                     effect="fade"
+                                                     converter="siteCvt"
+                                                     style="width: 258px">
+                                        <f:selectItems value="#{requestReport.sites}" var="site" itemLabel="#{site.name}" itemValue="#{site}"/>
+                                    </p:selectOneMenu>
+
+                                    <h3>From</h3>
+                                    <p:calendar value="#{settings.subject.contact.dob}" navigator="true" pattern="MMMM dd, yyy" styleClass="profile-update-class"/>  
+
+                                    <h3>To</h3>
+                                    <p:calendar value="#{settings.subject.contact.dob}" navigator="true" pattern="MMMM dd, yyy" styleClass="profile-update-class"/>  
+
+                                    <p:spacer width="100%" height="20px"/>
+
+                                    <p:commandButton id="save-navigation-button" 
+                                                     styleClass="green-button" 
+                                                     actionListener="#{navigator.writeCookie()}" 
+                                                     value="Send Request" 
+                                                     process="@this" 
+                                                     update=":form:growl"
+                                                     onclick="PF('blockui1').block();"
+                                                     oncomplete="PF('blockui1').unblock();"/>
+
+                                    <ez:blockUI target=":form:save-navigation-button" widgetVar="blockui1"/>
+
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </pe:layoutPane>
+
+                <pe:layoutPane id="south" position="south" closable="false" resizable="false" size="40"><ez:footer/></pe:layoutPane>
+
+            </pe:layout>
+
+        </h:form>
+
+
+    </h:body>
+
+</html>
+

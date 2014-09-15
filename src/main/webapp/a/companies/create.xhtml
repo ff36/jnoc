@@ -1,0 +1,636 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:ez="http://xmlns.jcp.org/jsf/composite/ezcomp"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <h:outputStylesheet name="css/auth.css"/>
+        <h:outputStylesheet name="css/common.css"/>
+        <link rel="shortcut icon" type="image/png" href="#{request.contextPath}/resources/images/favicon.ico" />
+        <title>#{msgs['default.page.title']} | #{msgs['admin.company.create.page.title']}</title>
+    </h:head>
+
+    <h:body>
+
+        #{jsfSessionUser.currentUser.hasPagePermission('company:create')}
+        #{jsfSessionUser.currentUser.hasPageRole('ADMIN')}
+
+        <h:form id="form">
+
+            <pe:ajaxErrorHandler />
+
+            <p:growl id="growl" 
+                     redisplay="false"
+                     showDetail="false" 
+                     sticky="false" />
+
+            <ez:navigation-a/>
+
+            <pe:layout stateCookie="#{config.ProjectStage ne 'DEV'}" 
+                       widgetVar="layourWgt" >
+
+                <pe:layoutPane id="north" 
+                               position="north" 
+                               closable="false" 
+                               resizable="false" 
+                               size="40"/>
+
+                <pe:layoutPane id="west" 
+                               position="west" 
+                               resizeWhileDragging="true" 
+                               size="220">
+
+                    <table class="navigation-sidebar">
+                        <thead>
+                            <tr><th>Company Dashboard</th></tr>
+                        </thead>
+                        <tfoot><tr><td></td></tr></tfoot>
+                        <tbody>
+                            <tr>
+                                <td><p:commandLink value="Companies" 
+                                                   action="/a/companies/list.xhtml?faces-redirect=true" 
+                                                   process="@this" 
+                                                   type="button"/></td>
+                            </tr>
+                            <tr>
+                                <td class="active">Create New Company</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </pe:layoutPane>
+
+                <pe:layoutPane id="center" position="center" resizeWhileDragging="true">
+
+                    <table class="page-container">
+                        <thead>
+                            <tr><th>New Company</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+
+                                    <p:remoteCommand autoRun="true" 
+                                                     async="true" 
+                                                     actionListener="#{createCompany.init()}" 
+                                                     update="lazy-update-class :form:lazy-update-class-2"/>
+
+                                    <p:spacer width="100%" height="20px"/>
+
+                                    <h:panelGroup id="lazy-update-class">
+
+                                        <p:graphicImage name="images/ajax-loader.gif" 
+                                                        rendered="#{!createCompany.render}" 
+                                                        styleClass="ajax-lazy-loader"/>
+
+                                        <ui:fragment rendered="#{createCompany.render}">
+
+                                            <h3>Company Logo</h3>
+                                            <table class="table-align-top">
+                                                <tr>
+                                                    <td>
+                                                        <p:graphicImage id="profile-image"
+                                                                        value="#{createCompany.company.uploadFile.uploaded ? createCompany.company.uploadFile.meta.uri : uriUtil.companyLogo(false)}" 
+                                                                        height="100px"
+                                                                        style="#{createCompany.company.uploadFile.uploaded ? '' : 'background: #000000; padding: 2px'}"/>
+
+                                                    </td>
+                                                    <td>
+                                                        <p:graphicImage id="upload-ajax-spinner" 
+                                                                        name="images/ajax-loader.gif" 
+                                                                        style="display: none" 
+                                                                        styleClass="profile-upload-ajax-spinner"/>
+
+                                                        <p:fileUpload id="profile-upload" 
+                                                                      styleClass="profile-uploader" 
+                                                                      widgetVar="profile-upload"
+                                                                      fileUploadListener="#{createCompany.company.uploadLogo}"
+                                                                      mode="advanced" 
+                                                                      multiple="false"
+                                                                      label="Upload new logo"
+                                                                      auto="true"
+                                                                      dragDropSupport="true"
+                                                                      update="profile-image-dlg"
+                                                                      oncomplete="PF('profile-image-dlg').show(); document.getElementById('upload-drag-drop-message').style.display = 'block'; document.getElementById('form:upload-ajax-spinner').style.display = 'none'"
+                                                                      sizeLimit="10000000"
+                                                                      allowTypes="/(\.|\/)(gif|jpe?g|png)$/"
+                                                                      onstart="document.getElementById('upload-drag-drop-message').style.display = 'none'; document.getElementById('form:upload-ajax-spinner').style.display = 'block'"/>
+
+                                                        <div id="upload-drag-drop-message" 
+                                                             class="menu-hover-details" 
+                                                             style="padding-left: 6px;">
+                                                            <h:outputText value="You can also drag and drop a picture from your computer."/>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </table>
+
+                                            <p:dialog id="profile-image-dlg" 
+                                                      header="Crop Profile Image" 
+                                                      widgetVar="profile-image-dlg" 
+                                                      dynamic="true" 
+                                                      resizable="false" 
+                                                      height="#{((600 / createCompany.company.uploadFile.image.width) * createCompany.company.uploadFile.image.height) + 100}">  
+
+                                                <h3>Click and drag on the image to select an area.</h3>
+
+                                                <p:graphicImage id="cropped-image" 
+                                                                value="#{createCompany.company.uploadFile.meta.uri}" 
+                                                                width="600px"/>  
+                                                <pe:imageAreaSelect id="image-area-select" 
+                                                                    for="cropped-image" 
+                                                                    handles="true" 
+                                                                    show="true" >  
+                                                    <p:ajax event="selectEnd" 
+                                                            listener="#{createCompany.company.cropListener}"/>  
+                                                </pe:imageAreaSelect>
+
+                                                <hr></hr>
+
+                                                <p:commandButton id="crop-profile-image-button" 
+                                                                 styleClass="green-button crop-profile-image-button-update-class" 
+                                                                 actionListener="#{createCompany.company.cropLogo()}" 
+                                                                 value="Update Profile Image" 
+                                                                 process="@this" 
+                                                                 update=":form:profile-image"
+                                                                 onclick="PF('blockui6').block();"
+                                                                 oncomplete="PF('profile-image-dlg').hide(); PF('blockui6').unblock();"/>
+
+                                                <ez:blockUI target="@(.crop-profile-image-button-update-class)" 
+                                                            widgetVar="blockui6"/>
+
+                                            </p:dialog>
+
+                                            <h3>Company Type:</h3>
+                                            <p:selectOneMenu value="#{createCompany.company.type}"
+                                                             style="width: 258px"
+                                                             rendered="#{jsfSessionUser.currentUser.isAdministrator()}">
+                                                <f:selectItem itemLabel="Client"
+                                                              itemValue="CLIENT"/>
+                                                <f:selectItem itemLabel="VAR"
+                                                              itemValue="VAR"/>
+                                                <p:ajax event="change" 
+                                                        listener="#{createCompany.company.lazyLoad()}"
+                                                        update=":form:lazy-update-class :form:lazy-update-class-2" 
+                                                        process="@this"/>
+                                            </p:selectOneMenu> 
+
+                                            <h3>Name:*</h3>
+                                            <p:inputText value="#{createCompany.company.name}" 
+                                                         rendered="true" 
+                                                         requiredMessage="Name is required" 
+                                                         styleClass="company-update-class">
+                                                <p:ajax event="keyup" 
+                                                        update=":form:save-new-company-button" />
+                                            </p:inputText>
+
+                                            <ui:fragment rendered="#{jsfSessionUser.currentUser.isAdministrator() and createCompany.company.type eq 'CLIENT'}">
+
+                                                <h3>Parent VAR:*</h3>
+
+                                                <p:selectOneMenu value="#{createCompany.company.newParent}"
+                                                                 style="width: 258px"
+                                                                 styleClass="parent-var-update-class company-update-class"
+                                                                 converter="companyCvt">
+                                                    <f:selectItem itemLabel="-" itemValue="" noSelectionOption="true"/>
+                                                    <f:selectItems value="#{createCompany.vars}" 
+                                                                   var="company" 
+                                                                   itemLabel="#{company.name}" 
+                                                                   itemValue="#{company}"/>
+                                                    <p:ajax event="change" 
+                                                            update=":form:lazy-update-class-2" 
+                                                            process="@this" 
+                                                            listener="#{createCompany.company.lazyLoad()}"/>
+                                                </p:selectOneMenu>
+
+                                            </ui:fragment>
+
+                                            <ui:fragment rendered="#{createCompany.company.type eq 'VAR'}">
+
+                                                <h3>Sub-domain:*</h3>
+                                                <h:panelGrid columns="1" 
+                                                             styleClass="table-field-spacer">
+
+                                                    <p:inputText value="#{createCompany.company.subdomain}" 
+                                                                 styleClass="company-update-class">
+                                                        <p:ajax event="keyup" 
+                                                                update=":form:save-new-company-button subdomain-available-class" />
+                                                    </p:inputText>
+
+                                                    <p:outputPanel id="subdomain-available-class">
+
+                                                        <p:panel rendered="#{!ajaxValidUtil.subdomainAvailable(createCompany.company.subdomain) and createCompany.company.subdomain.length() gt 1}" 
+                                                                 styleClass="field-warning">
+                                                            Sorry, sub-domain is not available
+                                                        </p:panel>
+
+                                                        <p:panel rendered="#{ajaxValidUtil.subdomainAvailable(createCompany.company.subdomain) and createCompany.company.subdomain.length() gt 1}" 
+                                                                 styleClass="field-note">
+                                                            Members will sign in under:<br></br><span style="font-weight: bold"> #{createCompany.company.subdomain}.#{config['BaseUrl']}</span>
+                                                        </p:panel>
+
+                                                    </p:outputPanel>
+
+                                                </h:panelGrid>
+
+                                            </ui:fragment>
+
+                                            <p:spacer width="100%" height="20px"/>
+
+                                            <p:outputPanel id="addresses">
+
+                                                <table class="page-container">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>
+                                                                Address
+
+                                                                <p:commandButton id="new-address-button" 
+                                                                                 styleClass="header-button white-button"
+                                                                                 value="Add Address"
+                                                                                 process="@this"
+                                                                                 onclick="PF('new-address-dlg').show();"
+                                                                                 actionListener="#{createCompany.company.contact.resetAddress()}"
+                                                                                 update="@(.dlg-address-update-class)"/> 
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>
+
+                                                                <p:spacer width="100%" height="10px"/>
+
+                                                                <p:dataTable value="#{createCompany.company.contact.addresses}"
+                                                                             var="address"
+                                                                             styleClass="type2-table"
+                                                                             emptyMessage="You do not have any addresses.">
+
+                                                                    <p:column>
+                                                                        <h:outputText value="#{address.buildCompleteAddress()}"/>
+                                                                    </p:column>
+
+                                                                    <p:column width="20">
+                                                                        <p:commandLink update=":form:addresses" 
+                                                                                       title="Remove Address" 
+                                                                                       process=":form:addresses">
+                                                                            <p:graphicImage value="#{uriUtil.icon('black/trash_icon_16.png', true)}"/>
+                                                                            <p:collector value="#{address}" 
+                                                                                         removeFrom="#{createCompany.company.contact.addresses}" 
+                                                                                         unique="true"/> 
+                                                                        </p:commandLink>
+                                                                    </p:column>
+
+                                                                </p:dataTable>                                  
+
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+
+                                            </p:outputPanel>
+
+                                            <p:dialog id="new-address-dlg" 
+                                                      header="Add Address" 
+                                                      widgetVar="new-address-dlg" 
+                                                      dynamic="true" 
+                                                      resizable="false">  
+
+                                                <table class="blank-table">
+                                                    <tr>
+                                                        <td><h3>Street:</h3></td>
+                                                        <td>
+                                                            <p:inputText id="add-1" 
+                                                                         value="#{createCompany.company.contact.newAddress.lineOne}" 
+                                                                         styleClass="dlg-address-update-class">
+                                                                <p:ajax event="keyup" 
+                                                                        update="add-address-button" />
+                                                            </p:inputText>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><h3>City:</h3></td>
+                                                        <td>
+                                                            <p:inputText id="add-2" 
+                                                                         value="#{createCompany.company.contact.newAddress.lineThree}" 
+                                                                         styleClass="dlg-address-update-class">
+                                                                <p:ajax event="keyup" 
+                                                                        update="add-address-button" />
+                                                            </p:inputText>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><h3>State:</h3></td>
+                                                        <td>
+                                                            <p:inputText id="add-3" 
+                                                                         value="#{createCompany.company.contact.newAddress.lineFour}" 
+                                                                         styleClass="dlg-address-update-class">
+                                                                <p:ajax event="keyup" 
+                                                                        update="add-address-button" />
+                                                            </p:inputText>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><h3>Zip Code:</h3></td>
+                                                        <td>
+                                                            <p:inputText id="add-4" 
+                                                                         value="#{createCompany.company.contact.newAddress.lineFive}" 
+                                                                         styleClass="dlg-address-update-class">
+                                                                <p:ajax event="keyup" 
+                                                                        update="add-address-button" />
+                                                            </p:inputText>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+
+                                                <hr></hr>
+
+                                                <p:commandButton id="add-address-button" 
+                                                                 styleClass="green-button" 
+                                                                 action="#{createCompany.company.contact.resetAddress()}" 
+                                                                 value="Add Address" 
+                                                                 process="@this" 
+                                                                 update=":form:addresses :form:growl"
+                                                                 onclick="PF('blockui3').block();"
+                                                                 oncomplete="PF('blockui3').unblock();"
+                                                                 onsuccess="PF('new-address-dlg').hide()"
+                                                                 disabled="#{createCompany.company.contact.newAddress.buildCompleteAddress() eq 'Unavailable'}">
+
+                                                    <p:collector value="#{createCompany.company.contact.newAddress}" 
+                                                                 addTo="#{createCompany.company.contact.addresses}" 
+                                                                 unique="true"/>  
+
+                                                </p:commandButton> 
+
+
+                                                <ez:blockUI target=":form:add-address-button" 
+                                                            widgetVar="blockui3"/>
+
+                                            </p:dialog>
+
+                                            <p:spacer width="100%" height="20px"/>
+
+                                            <p:outputPanel id="telephones">
+
+                                                <table class="page-container">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>
+                                                                Telephone
+
+                                                                <p:commandButton id="new-telephone-button" 
+                                                                                 styleClass="header-button white-button"
+                                                                                 value="Add Telephone"
+                                                                                 process="@this"
+                                                                                 onclick="PF('new-telephone-dlg').show();"
+                                                                                 actionListener="#{createCompany.company.contact.resetTelephone()}"
+                                                                                 update="@(.dlg-telephone-update-class)"/> 
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>
+
+                                                                <p:spacer width="100%" height="10px"/>
+
+                                                                <p:dataTable value="#{createCompany.company.contact.telephones}"
+                                                                             var="telephone"
+                                                                             styleClass="type2-table"
+                                                                             emptyMessage="You do not have any telephone numbers.">
+
+                                                                    <p:column>
+                                                                        <h:outputText value="#{telephone.type.label} : #{telephone.internationalFormat()}"/>
+                                                                    </p:column>
+
+                                                                    <p:column width="20">
+                                                                        <p:commandLink update=":form:telephones" 
+                                                                                       title="Remove Telephone" 
+                                                                                       process=":form:telephones">
+                                                                            <p:graphicImage value="#{uriUtil.icon('black/trash_icon_16.png', true)}"/>
+                                                                            <p:collector value="#{telephone}" 
+                                                                                         removeFrom="#{createCompany.company.contact.telephones}" 
+                                                                                         unique="true"/> 
+                                                                        </p:commandLink>
+                                                                    </p:column>
+
+                                                                </p:dataTable>
+
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+
+                                            </p:outputPanel>
+
+                                            <p:dialog id="new-telephone-dlg" 
+                                                      header="Add Telephone" 
+                                                      widgetVar="new-telephone-dlg" 
+                                                      dynamic="true" 
+                                                      resizable="false">  
+
+                                                <table>
+                                                    <tr>
+                                                        <td class="telephone-number-type" width="100px">
+                                                            <p:selectOneMenu value="#{createCompany.company.contact.newTelephone.type}" 
+                                                                             style="width: 70px"
+                                                                             styleClass="dlg-telephone-update-class">
+
+                                                                <f:selectItems value="#{enumController.telephoneTypes}" 
+                                                                               var="tel" 
+                                                                               itemLabel="#{tel.label}" 
+                                                                               itemValue="#{tel}" />
+                                                                <p:ajax event="change" update="add-telephone-button" />
+                                                            </p:selectOneMenu>  
+                                                        </td>
+                                                        <td width="200px">
+                                                            <p:selectOneMenu value="#{createCompany.company.contact.newTelephone.country}" 
+                                                                             effect="fade"
+                                                                             style="width: 180px"
+                                                                             styleClass="dlg-telephone-update-class"> 
+                                                                <f:selectItems value="#{createCompany.company.contact.newTelephone.countries}"
+                                                                               var="country"
+                                                                               itemLabel="#{country.displayCountry}"
+                                                                               itemValue="#{country.country}"/> 
+                                                                <p:ajax event="change" update="add-telephone-button" />
+                                                            </p:selectOneMenu>
+                                                        </td>
+                                                        <td>
+                                                            <p:inputText value="#{createCompany.company.contact.newTelephone.number}"
+                                                                         style="margin-left: 10px"
+                                                                         styleClass="dlg-telephone-update-class">
+                                                                <p:ajax event="keyup" update="add-telephone-button" />
+                                                            </p:inputText>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+
+                                                <hr></hr>
+
+                                                <p:commandButton id="add-telephone-button" 
+                                                                 styleClass="green-button" 
+                                                                 action="#{createCompany.company.contact.resetTelephone()}" 
+                                                                 value="Add Telephone" 
+                                                                 process="@this @(.dlg-telephone-update-class)" 
+                                                                 update=":form:telephones :form:growl"
+                                                                 onclick="PF('blockui5').block();"
+                                                                 oncomplete="PF('blockui5').unblock();"
+                                                                 onsuccess="PF('new-telephone-dlg').hide()"
+                                                                 disabled="#{!createCompany.company.contact.newTelephone.validFormat()}">
+
+                                                    <p:collector value="#{createCompany.company.contact.newTelephone}" 
+                                                                 addTo="#{createCompany.company.contact.telephones}" 
+                                                                 unique="true"/>  
+
+                                                </p:commandButton> 
+
+
+                                                <ez:blockUI target=":form:add-telephone-button" 
+                                                            widgetVar="blockui5"/>
+
+                                            </p:dialog>
+
+                                            <p:spacer width="100%" height="20px"/>
+
+                                            <p:commandButton id="save-new-company-button" 
+                                                             styleClass="green-button" 
+                                                             actionListener="#{createCompany.company.create()}" 
+                                                             value="Create Company" 
+                                                             process="@this @(.company-update-class)" 
+                                                             update=":form:growl @(.company-update-class)"
+                                                             onclick="PF('blockui1').block();"
+                                                             oncomplete="PF('blockui1').unblock();"
+                                                             disabled="#{createCompany.company.name.length() gt 1 ? createCompany.company.type eq 'VAR' ? !ajaxValidUtil.subdomainAvailable(createCompany.company.subdomain) : false : true}"/>
+
+                                            <ez:blockUI target=":form:save-new-company-button" widgetVar="blockui1"/>
+
+                                        </ui:fragment>
+
+                                    </h:panelGroup>
+
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </pe:layoutPane>
+
+
+                <pe:layoutPane id="east" position="east" resizeWhileDragging="true" size="590">
+
+                    <h:panelGroup id="lazy-update-class-2">
+
+                        <p:graphicImage name="images/ajax-loader.gif" rendered="#{!createCompany.render}" styleClass="ajax-lazy-loader"/>
+
+                        <ui:fragment rendered="#{createCompany.render}">
+
+                            <table class="page-container">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            DAS
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+
+                                            <p:spacer width="100%" height="20px"/>
+
+                                            <span style="font-style: italic">Select DAS to associate with this new VAR.</span>
+
+                                            <p:spacer width="100%" height="10px"/>
+
+                                            <p:pickList value="#{createCompany.company.linkedAndAvailableDas}" 
+                                                        var="dass"  
+                                                        itemValue="#{dass}" 
+                                                        itemLabel="#{dass.name}" 
+                                                        converter="dasCvt"
+                                                        styleClass="type1-picklist">  
+
+                                                <f:facet name="sourceCaption">Available</f:facet>  
+                                                <f:facet name="targetCaption">Selected</f:facet> 
+
+                                                <p:column style="width:75%;">  
+                                                    #{dass.name}  
+                                                </p:column>  
+
+                                            </p:pickList>
+
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <p:spacer width="100%" height="20px"/>
+
+                        </ui:fragment>
+
+                        <ui:fragment rendered="#{createCompany.company.type eq 'VAR'}">
+
+                            <table class="page-container">
+                                <thead>
+                                    <tr><th>Clients</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+
+                                            <p:spacer width="100%" height="20px"/>
+
+                                            <span style="font-style: italic">Select client companies to associate with this new VAR.</span>
+
+                                            <p:spacer width="100%" height="10px"/>
+
+                                            <p:pickList value="#{createCompany.company.linkedAndAvailableClientCompanies}" 
+                                                        var="client"  
+                                                        itemValue="#{client}" 
+                                                        itemLabel="#{client.id}" 
+                                                        converter="companyCvt"
+                                                        styleClass="type1-picklist">  
+
+                                                <f:facet name="sourceCaption">Available</f:facet>  
+                                                <f:facet name="targetCaption">Selected</f:facet> 
+                                                
+                                                <p:ajax event="transfer"/>
+
+                                                <p:column style="width:75%;">  
+                                                    #{client.name}  
+                                                </p:column>  
+
+                                            </p:pickList>
+
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                        </ui:fragment>
+
+                    </h:panelGroup>
+
+                </pe:layoutPane>
+
+                <pe:layoutPane id="south" 
+                               position="south" 
+                               closable="false" 
+                               resizable="false" 
+                               size="40">
+                    <ez:footer/>
+                </pe:layoutPane>
+
+            </pe:layout>
+
+        </h:form>
+
+    </h:body>
+
+</html>
+

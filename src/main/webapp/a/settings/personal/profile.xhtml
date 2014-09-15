@@ -1,0 +1,526 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:ez="http://xmlns.jcp.org/jsf/composite/ezcomp"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <h:outputStylesheet name="css/auth.css"/>
+        <h:outputStylesheet name="css/common.css"/>
+        <link rel="shortcut icon" type="image/png" href="#{request.contextPath}/resources/images/favicon.ico" />
+        <title>#{msgs['default.page.title']} | #{msgs['admin.settings.page.title']}</title>
+    </h:head>
+
+    <h:body>
+
+        <h:form id="form">
+
+            <pe:ajaxErrorHandler />
+
+            <p:growl id="growl" 
+                     redisplay="false"
+                     showDetail="false" 
+                     sticky="false" />
+
+            <ez:navigation-a/>
+
+            <pe:layout stateCookie="#{config.ProjectStage ne 'DEV'}" 
+                       widgetVar="layourWgt" >
+
+                <pe:layoutPane id="north" 
+                               position="north" 
+                               closable="false" 
+                               resizable="false" 
+                               size="40"/>
+
+                <pe:layoutPane id="west" 
+                               position="west" 
+                               resizeWhileDragging="true" 
+                               size="220">
+
+                    <table class="navigation-sidebar">
+                        <thead>
+                            <tr><th>Personal Settings</th></tr>
+                        </thead>
+                        <tfoot><tr><td></td></tr></tfoot>
+                        <tbody>
+                            <tr>
+                                <td class="active">Profile</td>
+                            </tr>
+                            <tr>
+                                <td><p:commandLink value="Account settings" 
+                                                   action="/a/settings/personal/admin.xhtml?faces-redirect=true" 
+                                                   process="@this" 
+                                                   type="button"/></td>
+                            </tr>
+                            <tr>
+                                <td><p:commandLink value="Security" 
+                                                   action="/a/settings/personal/security.xhtml?faces-redirect=true" 
+                                                   process="@this" 
+                                                   type="button"/></td>
+                            </tr>
+                            <tr>
+                                <td><p:commandLink value="Navigation" 
+                                                   action="/a/settings/personal/navigation.xhtml?faces-redirect=true" 
+                                                   process="@this" 
+                                                   type="button"/></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <p:spacer width="100%" height="10px"/>
+
+                    <table class="navigation-sidebar">
+                        <thead>
+                            <tr><th>Company Settings</th></tr>
+                        </thead>
+                        <tfoot><tr><td></td></tr></tfoot>
+                        <tbody>
+                            <tr>
+                                <td><p:commandLink value="Profile" 
+                                                   action="/a/settings/company/profile.xhtml?faces-redirect=true" 
+                                                   process="@this" 
+                                                   type="button"/></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </pe:layoutPane>
+
+                <pe:layoutPane id="center" 
+                               position="center" 
+                               resizeWhileDragging="true">
+
+                    <table class="page-container">
+                        <thead>
+                            <tr><th>Public Profile</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <p:remoteCommand autoRun="true" 
+                                                     async="true" 
+                                                     actionListener="#{settings.init()}" 
+                                                     update=":form:lazy-update-class"/>
+
+                                    <h:panelGroup id="lazy-update-class">
+
+                                        <p:graphicImage name="images/ajax-loader.gif" 
+                                                        rendered="#{!settings.render}" 
+                                                        styleClass="ajax-lazy-loader"/>
+
+                                        <ui:fragment rendered="#{settings.render}">
+
+                                            <h3>Profile Picture</h3>
+                                            <table class="table-align-top">
+                                                <tr>
+                                                    <td>
+                                                        <p:graphicImage id="profile-image" 
+                                                                        styleClass="circular-clip-100" 
+                                                                        value="#{settings.user.uploadFile.uploaded ? settings.user.uploadFile.meta.uri : uriUtil.profileImage(false)}" 
+                                                                        height="100px"/>
+                                                    </td>
+                                                    <td>
+                                                        <p:graphicImage id="upload-ajax-spinner" 
+                                                                        name="images/ajax-loader.gif" 
+                                                                        style="display: none" 
+                                                                        styleClass="profile-upload-ajax-spinner"/>
+
+                                                        <p:fileUpload id="profile-upload" 
+                                                                      styleClass="profile-uploader" 
+                                                                      widgetVar="profile-upload"
+                                                                      fileUploadListener="#{settings.user.uploadProfileImage}"
+                                                                      mode="advanced" 
+                                                                      multiple="false"
+                                                                      label="Upload new picture"
+                                                                      auto="true"
+                                                                      dragDropSupport="true"
+                                                                      update="profile-image-dlg"
+                                                                      oncomplete="PF('profile-image-dlg').show(); document.getElementById('upload-drag-drop-message').style.display = 'block'; document.getElementById('form:upload-ajax-spinner').style.display = 'none'"
+                                                                      sizeLimit="10000000"
+                                                                      allowTypes="/(\.|\/)(gif|jpe?g|png)$/"
+                                                                      onstart="document.getElementById('upload-drag-drop-message').style.display = 'none'; document.getElementById('form:upload-ajax-spinner').style.display = 'block'"/>
+
+                                                        <div id="upload-drag-drop-message" 
+                                                             class="menu-hover-details" 
+                                                             style="padding-left: 6px;">
+                                                            <h:outputText value="You can also drag and drop a picture from your computer."/>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </table>
+
+                                            <p:dialog id="profile-image-dlg" 
+                                                      header="Crop Profile Image"
+                                                      widgetVar="profile-image-dlg" 
+                                                      dynamic="true" 
+                                                      resizable="false" 
+                                                      height="#{((600 / settings.user.uploadFile.image.width) * settings.user.uploadFile.image.height) + 100}">  
+
+                                                <h3>Click and drag on the image to select an area.</h3>
+
+                                                <p:graphicImage id="cropped-image" 
+                                                                value="#{settings.user.uploadFile.meta.uri}" 
+                                                                width="600px"/>  
+                                                <pe:imageAreaSelect id="image-area-select" 
+                                                                    for="cropped-image" 
+                                                                    handles="true" 
+                                                                    aspectRatio="1:1" 
+                                                                    show="true" >  
+                                                    <p:ajax event="selectEnd" 
+                                                            listener="#{settings.user.cropListener}"/>  
+                                                </pe:imageAreaSelect>
+
+                                                <hr></hr>
+
+                                                <p:commandButton id="crop-profile-image-button" 
+                                                                 styleClass="green-button crop-profile-image-button-update-class" 
+                                                                 actionListener="#{settings.user.cropProfileImage()}" 
+                                                                 value="Update Profile Image" 
+                                                                 process="@this" 
+                                                                 update=":form:profile-image"
+                                                                 onclick="PF('blockui6').block();"
+                                                                 oncomplete="PF('profile-image-dlg').hide(); PF('blockui6').unblock();"/>
+
+                                                <ez:blockUI target="@(.crop-profile-image-button-update-class)" 
+                                                            widgetVar="blockui6"/>
+
+                                            </p:dialog>
+
+                                            <h3>Name</h3>
+                                            <h:panelGrid columns="2" 
+                                                         styleClass="table-field-spacer">
+
+                                                <p:inputText value="#{settings.user.contact.firstName}">
+                                                    <p:ajax event="blur"/>
+                                                </p:inputText>
+
+                                                <p:inputText value="#{settings.user.contact.lastName}">
+                                                    <p:ajax event="blur"/>
+                                                </p:inputText>
+
+                                            </h:panelGrid>
+
+                                            <h3>Email</h3>
+                                            <h:panelGrid columns="2" 
+                                                         styleClass="table-field-spacer">
+
+                                                <p:inputText value="#{settings.user.contact.email}" >
+                                                    <p:ajax event="blur"/>
+                                                </p:inputText>
+
+                                            </h:panelGrid>
+
+                                            <h3>Date of Birth</h3>
+                                            <h:panelGrid columns="2" 
+                                                         styleClass="table-field-spacer">
+
+                                                <p:calendar value="#{settings.user.contact.dob}" 
+                                                            navigator="true" 
+                                                            pattern="MMMM dd, yyy">
+                                                    <p:ajax event="dateSelect"/>
+                                                </p:calendar>
+
+                                            </h:panelGrid>
+
+                                            <p:spacer width="100%" height="20px"/>
+
+                                            <p:outputPanel id="addresses">
+
+                                                <table class="page-container">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>
+                                                                Address
+
+                                                                <p:commandButton id="new-address-button" 
+                                                                                 styleClass="header-button white-button"
+                                                                                 value="Add Address"
+                                                                                 process="@this"
+                                                                                 onclick="PF('new-address-dlg').show();"
+                                                                                 actionListener="#{settings.user.contact.resetAddress()}"
+                                                                                 update="@(.dlg-address-update-class)"/> 
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>
+
+                                                                <p:spacer width="100%" height="10px"/>
+                                                                
+                                                                <p:dataTable value="#{settings.user.contact.addresses}"
+                                                                             var="address"
+                                                                             styleClass="type2-table"
+                                                                             emptyMessage="You do not have any addresses.">
+
+                                                                    <p:column>
+                                                                        <h:outputText value="#{address.buildCompleteAddress()}"/>
+                                                                    </p:column>
+
+                                                                    <p:column width="20">
+                                                                        <p:commandLink update=":form:addresses" 
+                                                                                       title="Remove Address" 
+                                                                                       process=":form:addresses">
+                                                                            <p:graphicImage value="#{uriUtil.icon('black/trash_icon_16.png', true)}"/>
+                                                                            <p:collector value="#{address}" 
+                                                                                         removeFrom="#{settings.user.contact.addresses}" 
+                                                                                         unique="true"/> 
+                                                                        </p:commandLink>
+                                                                    </p:column>
+
+                                                                </p:dataTable>                                  
+
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+
+                                            </p:outputPanel>
+
+                                            <p:dialog id="new-address-dlg" 
+                                                      header="Add Address" 
+                                                      widgetVar="new-address-dlg" 
+                                                      dynamic="true" 
+                                                      resizable="false">  
+
+                                                <table class="blank-table">
+                                                    <tr>
+                                                        <td><h3>Street:</h3></td>
+                                                        <td>
+                                                            <p:inputText id="add-1" 
+                                                                         value="#{settings.user.contact.newAddress.lineOne}" 
+                                                                         styleClass="dlg-address-update-class">
+                                                                <p:ajax event="keyup" 
+                                                                        update="add-address-button" />
+                                                            </p:inputText>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><h3>City:</h3></td>
+                                                        <td>
+                                                            <p:inputText id="add-2" 
+                                                                         value="#{settings.user.contact.newAddress.lineThree}" 
+                                                                         styleClass="dlg-address-update-class">
+                                                                <p:ajax event="keyup" 
+                                                                        update="add-address-button" />
+                                                            </p:inputText>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><h3>State:</h3></td>
+                                                        <td>
+                                                            <p:inputText id="add-3" 
+                                                                         value="#{settings.user.contact.newAddress.lineFour}" 
+                                                                         styleClass="dlg-address-update-class">
+                                                                <p:ajax event="keyup" 
+                                                                        update="add-address-button" />
+                                                            </p:inputText>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><h3>Zip Code:</h3></td>
+                                                        <td>
+                                                            <p:inputText id="add-4" 
+                                                                         value="#{settings.user.contact.newAddress.lineFive}" 
+                                                                         styleClass="dlg-address-update-class">
+                                                                <p:ajax event="keyup" 
+                                                                        update="add-address-button" />
+                                                            </p:inputText>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+
+                                                <hr></hr>
+
+                                                <p:commandButton id="add-address-button" 
+                                                                 styleClass="green-button" 
+                                                                 action="#{settings.user.contact.resetAddress()}" 
+                                                                 value="Add Address" 
+                                                                 process="@this" 
+                                                                 update=":form:addresses :form:growl"
+                                                                 onclick="PF('blockui3').block();"
+                                                                 oncomplete="PF('blockui3').unblock();"
+                                                                 onsuccess="PF('new-address-dlg').hide()"
+                                                                 disabled="#{settings.user.contact.newAddress.buildCompleteAddress() eq 'Unavailable'}">
+
+                                                    <p:collector value="#{settings.user.contact.newAddress}" 
+                                                                 addTo="#{settings.user.contact.addresses}" 
+                                                                 unique="true"/>  
+
+                                                </p:commandButton> 
+
+
+                                                <ez:blockUI target=":form:add-address-button" 
+                                                            widgetVar="blockui3"/>
+
+                                            </p:dialog>
+
+                                            <p:spacer width="100%" height="20px"/>
+
+                                            <p:outputPanel id="telephones">
+
+                                                <table class="page-container">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>
+                                                                Telephone
+
+                                                                <p:commandButton id="new-telephone-button" 
+                                                                                 styleClass="header-button white-button"
+                                                                                 value="Add Telephone"
+                                                                                 process="@this"
+                                                                                 onclick="PF('new-telephone-dlg').show();"
+                                                                                 actionListener="#{settings.user.contact.resetTelephone()}"
+                                                                                 update="@(.dlg-telephone-update-class)"/> 
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>
+
+                                                                <p:spacer width="100%" height="10px"/>
+                                                                
+                                                                <p:dataTable value="#{settings.user.contact.telephones}"
+                                                                             var="telephone"
+                                                                             styleClass="type2-table"
+                                                                             emptyMessage="You do not have any telephone numbers.">
+
+                                                                    <p:column>
+                                                                        <h:outputText value="#{telephone.type.label} : #{telephone.internationalFormat()}"/>
+                                                                    </p:column>
+
+                                                                    <p:column width="20">
+                                                                        <p:commandLink update=":form:telephones" 
+                                                                                       title="Remove Telephone" 
+                                                                                       process=":form:telephones">
+                                                                            <p:graphicImage value="#{uriUtil.icon('black/trash_icon_16.png', true)}"/>
+                                                                            <p:collector value="#{telephone}" 
+                                                                                         removeFrom="#{settings.user.contact.telephones}" 
+                                                                                         unique="true"/> 
+                                                                        </p:commandLink>
+                                                                    </p:column>
+
+                                                                </p:dataTable>
+
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+
+                                            </p:outputPanel>
+
+                                            <p:dialog id="new-telephone-dlg" 
+                                                      header="Add Telephone" 
+                                                      widgetVar="new-telephone-dlg" 
+                                                      dynamic="true" 
+                                                      resizable="false">  
+
+                                                <table>
+                                                    <tr>
+                                                        <td class="telephone-number-type" width="100px">
+                                                            <p:selectOneMenu value="#{settings.user.contact.newTelephone.type}" 
+                                                                             style="width: 70px"
+                                                                             styleClass="dlg-telephone-update-class">
+                                                                
+                                                                <f:selectItems value="#{enumController.telephoneTypes}" 
+                                                                               var="tel" 
+                                                                               itemLabel="#{tel.label}" 
+                                                                               itemValue="#{tel}" />
+                                                                <p:ajax event="change" update="add-telephone-button" />
+                                                            </p:selectOneMenu>  
+                                                        </td>
+                                                        <td width="200px">
+                                                            <p:selectOneMenu value="#{settings.user.contact.newTelephone.country}" 
+                                                                             effect="fade"
+                                                                             style="width: 180px"
+                                                                             styleClass="dlg-telephone-update-class"> 
+                                                                <f:selectItems value="#{settings.user.contact.newTelephone.countries}"
+                                                                               var="country"
+                                                                               itemLabel="#{country.displayCountry}"
+                                                                               itemValue="#{country.country}"/> 
+                                                                <p:ajax event="change" update="add-telephone-button" />
+                                                            </p:selectOneMenu>
+                                                        </td>
+                                                        <td>
+                                                            <p:inputText value="#{settings.user.contact.newTelephone.number}"
+                                                                         style="margin-left: 10px"
+                                                                         styleClass="dlg-telephone-update-class">
+                                                                <p:ajax event="keyup" update="add-telephone-button" />
+                                                            </p:inputText>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+
+                                                <hr></hr>
+
+                                                <p:commandButton id="add-telephone-button" 
+                                                                 styleClass="green-button" 
+                                                                 action="#{settings.user.contact.resetTelephone()}" 
+                                                                 value="Add Telephone" 
+                                                                 process="@this @(.dlg-telephone-update-class)" 
+                                                                 update=":form:telephones :form:growl"
+                                                                 onclick="PF('blockui5').block();"
+                                                                 oncomplete="PF('blockui5').unblock();"
+                                                                 onsuccess="PF('new-telephone-dlg').hide()"
+                                                                 disabled="#{!settings.user.contact.newTelephone.validFormat()}">
+
+                                                    <p:collector value="#{settings.user.contact.newTelephone}" 
+                                                                 addTo="#{settings.user.contact.telephones}" 
+                                                                 unique="true"/>  
+
+                                                </p:commandButton> 
+
+
+                                                <ez:blockUI target=":form:add-telephone-button" 
+                                                            widgetVar="blockui5"/>
+
+                                            </p:dialog>
+
+                                            <p:spacer width="100%" height="20px"/>
+
+                                            <p:commandButton id="save-profile-button" 
+                                                             styleClass="green-button" 
+                                                             actionListener="#{settings.user.saveProfileImage()}"
+                                                             action="#{settings.user.update()}"
+                                                             value="Update Profile" 
+                                                             process="@this" 
+                                                             update=":form:growl"
+                                                             onclick="PF('blockui1').block();"
+                                                             oncomplete="PF('blockui1').unblock();"/>
+
+                                            <ez:blockUI target=":form:save-profile-button" 
+                                                        widgetVar="blockui1"/>
+
+                                        </ui:fragment>
+
+                                    </h:panelGroup>
+
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </pe:layoutPane>
+
+                <pe:layoutPane id="south" 
+                               position="south" 
+                               closable="false" 
+                               resizable="false" 
+                               size="40"><ez:footer/></pe:layoutPane>
+
+            </pe:layout>
+
+        </h:form>
+
+
+    </h:body>
+
+</html>
+

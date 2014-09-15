@@ -1,0 +1,84 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+
+    <body>
+
+        <ui:composition template="./../resources/template/public.xhtml">
+
+            <ui:define name="title">
+                #{msgs['default.page.title']} | #{msgs['error.page.404.title']}
+            </ui:define>
+
+            <ui:define name="content">
+                
+                <h:outputScript library="js" name="inheritance.js" target="body" />
+                <h:outputScript library="js" name="box2d.js" target="body" />
+                <h:outputScript library="js" name="collapse.js" target="body" />
+                
+                <p:spacer width="100%" height="50px"/>
+
+                <table class="error-code-table">
+                    <tr>
+                        <td class="box2d"><h:outputText value="404:" styleClass="error-code"/></td>
+                        <td class="box2d"><h:outputText value="BROKEN" styleClass="error-code"/></td>
+                        <td class="box2d"><h:outputText value="PAGE" styleClass="error-code"/></td>
+                    </tr>
+                </table>
+
+                <table class="error-code-table">
+                    <tr>
+                        <td class="box2d"><h:outputText value="Sorry," styleClass="error-text"/></td>
+                        <td class="box2d"><h:outputText value="this" styleClass="error-text"/></td>
+                        <td class="box2d"><h:outputText value="page" styleClass="error-text"/></td>
+                        <td class="box2d"><h:outputText value="appears" styleClass="error-text"/></td>
+                        <td class="box2d"><h:outputText value="to" styleClass="error-text"/></td>
+                        <td class="box2d"><h:outputText value="be" styleClass="error-text"/></td>
+                        <td class="box2d"><h:outputText value="broken!" styleClass="error-text"/></td>                        
+                    </tr>
+                </table>
+
+                <table class="error-code-table">
+                    <tr>
+                        <td class="box2d"><h:outputText value="Try" styleClass="error-text"/></td>
+                        <td class="box2d"><h:outputText value="checking" styleClass="error-text"/></td>
+                        <td class="box2d"><h:outputText value="the" styleClass="error-text"/></td>
+                        <td class="box2d"><h:outputText value="URL" styleClass="error-text"/></td>
+                        <td class="box2d"><h:outputText value="for" styleClass="error-text"/></td>
+                        <td class="box2d"><h:outputText value="errors." styleClass="error-text"/></td>                       
+                    </tr>
+                </table>
+
+                <p:spacer width="100%" height="50px"/>
+
+                <table class="error-code-table">
+                    <tr>
+                        <td class="box2d"><h:outputText value="If" styleClass="error-text"/></td>
+                        <td class="box2d"><h:outputText value="all" styleClass="error-text"/></td>
+                        <td class="box2d"><h:outputText value="else" styleClass="error-text"/></td>
+                        <td class="box2d"><h:outputText value="fails" styleClass="error-text"/></td>
+                        <td class="box2d"><h:outputText value="the" styleClass="error-text"/></td>
+                        <td class="box2d"><h:outputText value="best" styleClass="error-text"/></td>     
+                        <td class="box2d"><h:outputText value="thing" styleClass="error-text"/></td>
+                        <td class="box2d"><h:outputText value="to" styleClass="error-text"/></td>
+                        <td class="box2d"><h:outputText value="do" styleClass="error-text"/></td>
+                        <td class="box2d"><h:outputText value="is" styleClass="error-text"/></td>
+                        <td class="box2d"><h:outputText value="start" styleClass="error-text"/></td>
+                        <td class="box2d"><h:outputText value="from" styleClass="error-text"/></td>
+                        <td class="box2d"><h:outputText value="the" styleClass="error-text"/></td>
+                        <td class="box2d"><h:outputText value="home" styleClass="error-text"/></td>
+                        <td class="box2d"><h:outputText value="page." styleClass="error-text"/></td>
+                    </tr>
+                </table>
+
+                <p:button value="Home Page" outcome="access-home-page" styleClass="box2d error-btn"/>
+                
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

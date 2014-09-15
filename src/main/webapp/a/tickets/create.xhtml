@@ -1,0 +1,490 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:ez="http://xmlns.jcp.org/jsf/composite/ezcomp"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <h:outputStylesheet name="css/auth.css"/>
+        <h:outputStylesheet name="css/common.css"/>
+        <link rel="shortcut icon" type="image/png" href="#{request.contextPath}/resources/images/favicon.ico" />
+        <title>#{msgs['default.page.title']} | #{msgs['admin.ticket.create.page.title']}</title>
+    </h:head>
+
+    <h:body>
+
+        #{jsfSessionUser.currentUser.hasPagePermission('ticket:create')}
+
+        <h:form id="form">
+
+            <pe:ajaxErrorHandler />
+
+            <p:growl id="growl" 
+                     redisplay="false"
+                     showDetail="false" 
+                     sticky="false" />
+
+            <ez:navigation-a/>
+
+            <pe:layout stateCookie="#{config.ProjectStage ne 'DEV'}" 
+                       widgetVar="layoutWgt" >
+
+                <pe:layoutPane id="north" 
+                               position="north" 
+                               closable="false" 
+                               resizable="false" 
+                               size="40"/>
+
+                <pe:layoutPane id="west" 
+                               position="west" 
+                               resizeWhileDragging="true" 
+                               size="280">
+
+                    <p:remoteCommand autoRun="true" 
+                                     async="true" 
+                                     actionListener="#{createTicket.init()}" 
+                                     update=":form:lazy-update-class"/>
+
+                    <h:panelGroup id="lazy-update-class">
+
+                        <table class="page-container">
+                            <thead>
+                                <tr><th>Requester*</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+
+                                        <p:spacer width="100%" height="20px"/>
+
+                                        <p:graphicImage name="images/ajax-loader.gif" 
+                                                        rendered="#{!createTicket.render}" 
+                                                        styleClass="ajax-lazy-loader"/>
+
+                                        <ui:fragment rendered="#{createTicket.render}">
+
+                                            <p:autoComplete id="requester"
+                                                            value="#{createTicket.ticket.requester}"
+                                                            completeMethod="#{createTicket.ticket.filterAvailableRequesters}"
+                                                            var="requester"
+                                                            converter="userCvt"
+                                                            itemLabel="#{requester.contact.buildFullName()}#{requester.email eq null ? '' : ' (' }#{requester.email}#{requester.email eq null ? '' : ')' }"
+                                                            itemValue="#{requester}" 
+                                                            forceSelection="true"
+                                                            styleClass="requester" 
+                                                            required="true" 
+                                                            requiredMessage="Requester is required">
+                                                <p:ajax event="itemSelect" 
+                                                        update="@widgetVar(createBtn) @widgetVar(createBtn2) @widgetVar(createBtn3) :form:option-group-6" />
+                                            </p:autoComplete>                                      
+
+                                            <h3>Send email</h3>
+                                            <p:selectBooleanCheckbox value="#{createTicket.ticket.sendEmailToRequester}"/>
+
+                                        </ui:fragment>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <p:spacer width="100%" height="10px"/>
+
+                        <ui:fragment rendered="#{jsfSessionUser.currentUser.administrator}">
+                            <table class="page-container">
+                                <thead>
+                                    <tr><th>Assignee</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+
+                                            <p:spacer width="100%" height="20px"/>
+
+                                            <p:graphicImage name="images/ajax-loader.gif" 
+                                                            rendered="#{!createTicket.render}" 
+                                                            styleClass="ajax-lazy-loader"/>
+
+                                            <ui:fragment rendered="#{createTicket.render}">
+
+                                                <p:autoComplete id="assignee"
+                                                                value="#{createTicket.ticket.assignee}"
+                                                                completeMethod="#{createTicket.ticket.filterAvailableAssignees}"
+                                                                var="assignee"
+                                                                converter="userCvt"
+                                                                itemLabel="#{assignee.contact.buildFullName()}#{assignee.email eq null ? '' : ' (' }#{assignee.email}#{assignee.email eq null ? '' : ')' }"
+                                                                itemValue="#{assignee}" 
+                                                                forceSelection="true"
+                                                                styleClass="assignee">
+                                                    <p:ajax event="itemSelect" 
+                                                            update=":form:option-group-7" />
+                                                </p:autoComplete>
+
+                                                <h3>Send email</h3>
+                                                <p:selectBooleanCheckbox value="#{createTicket.ticket.sendEmailToAssignee}"/>
+
+                                            </ui:fragment>
+
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </ui:fragment>
+                        <p:spacer width="100%" height="10px"/>
+
+                        <table class="page-container">
+                            <thead>
+                                <tr><th>Details</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+
+                                        <p:graphicImage name="images/ajax-loader.gif" 
+                                                        rendered="#{!createTicket.render}" 
+                                                        styleClass="ajax-lazy-loader"/>
+
+                                        <ui:fragment rendered="#{createTicket.render}">
+
+                                            <h3>Topic</h3>
+                                            <p:selectOneMenu value="#{createTicket.ticket.topic}"
+                                                             effect="fade"
+                                                             style="width: 230px"
+                                                             required="true"
+                                                             requiredMessage="Type required">    
+                                                <f:selectItems value="#{enumController.ticketTopics}" 
+                                                               var="topic" 
+                                                               itemLabel="#{topic.label}" 
+                                                               itemValue="#{topic}"/>
+                                            </p:selectOneMenu>
+
+                                            <h3>Severity</h3>
+                                            <p:selectOneMenu value="#{createTicket.ticket.severity}" 
+                                                             effect="fade"
+                                                             style="width: 230px"
+                                                             required="true"
+                                                             requiredMessage="Severity required">  
+                                                <f:selectItems value="#{enumController.ticketSeverities}" 
+                                                               var="severity" 
+                                                               itemLabel="#{severity.label}" 
+                                                               itemValue="#{severity}"/>
+                                            </p:selectOneMenu>
+
+                                            <h3>DAS</h3>
+                                            <p:selectOneMenu value="#{createTicket.ticket.das}"
+                                                             style="width: 230px"
+                                                             converter="dasCvt">
+                                                <f:selectItem itemLabel="-" 
+                                                              noSelectionOption="true" />
+                                                <f:selectItems value="#{createTicket.ticket.available['das']}" 
+                                                               var="site" 
+                                                               itemLabel="#{site.name}" 
+                                                               itemValue="#{site}"/>
+                                            </p:selectOneMenu>
+
+                                        </ui:fragment>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <p:spacer width="100%" height="10px"/>
+
+                        <table class="page-container">
+                            <thead>
+                                <tr><th>Email CC</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+
+                                        <p:spacer width="100%" height="20px"/>
+
+                                        <p:graphicImage name="images/ajax-loader.gif" 
+                                                        rendered="#{!createTicket.render}" 
+                                                        styleClass="ajax-lazy-loader"/>
+
+                                        <ui:fragment rendered="#{createTicket.render}">
+
+                                            <p:autoComplete id="cc"
+                                                            value="#{createTicket.ticket.ccEmailRecipients}"
+                                                            completeMethod="#{createTicket.ticket.filterCCEmail}"
+                                                            multiple="true"
+                                                            styleClass="ccemail">
+                                                <p:ajax event="itemSelect" update="@parent"/>
+                                            </p:autoComplete>
+
+                                        </ui:fragment>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </h:panelGroup>
+
+                </pe:layoutPane>
+
+                <pe:layoutPane id="center" 
+                               position="center" 
+                               resizeWhileDragging="true" 
+                               styleClassHeader="layout-header">
+
+                    <table class="page-container">
+                        <thead>
+                            <tr><th>New Support Ticket</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+
+                                    <p:spacer width="100%" height="10"/>
+
+                                    <table width="100%">
+                                        <tr>
+                                            <td>
+                                                <p:inputText id="title" 
+                                                             value="#{createTicket.ticket.title}" 
+                                                             style="width: 400px">
+                                                    <p:ajax event="keyup" 
+                                                            update="@widgetVar(createBtn) @widgetVar(createBtn2) @widgetVar(createBtn3) :form:option-group-5" />
+                                                </p:inputText>
+                                                <p:watermark for="title" 
+                                                             value="TITLE"/>
+                                            </td>
+                                        </tr>
+                                    </table>
+
+                                    <table width="100%">
+                                        <tr>
+                                            <td>
+
+                                                <p:tabView dynamic="true" style="min-height: 200px">
+                                                    <p:ajax event="tabChange" 
+                                                            listener="#{createTicket.ticket.comment.previewListener}"
+                                                            update="preview"/>
+
+                                                    <p:tab title="Write">
+
+                                                        <a target="_blank"
+                                                           href="http://daringfireball.net/projects/markdown/syntax"
+                                                           style="float: right; text-decoration: none; color: #000000; font-size: 10px; margin-bottom: 5px">
+                                                            <p:graphicImage value="#{uriUtil.icon('black/markdown_icon_16.png', true)}" 
+                                                                            height="10px"/>
+                                                            Parsed as Markdown
+                                                        </a>
+
+                                                        <p:inputTextarea autoResize="true"
+                                                                         value="#{createTicket.ticket.comment.comment}"
+                                                                         style="width: 100%; min-height: 200px">
+                                                            <p:ajax event="keyup" />
+                                                        </p:inputTextarea>
+                                                    </p:tab>
+                                                    <p:tab title="Preview">
+                                                        <h:outputText id="preview" escape="false" value="#{createTicket.ticket.comment.markdown}"/>
+                                                    </p:tab>
+                                                </p:tabView>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+
+                                                <hr></hr>
+
+                                                <p:commandButton widgetVar="createBtn"
+                                                                 styleClass="green-button" 
+                                                                 value="Comment" 
+                                                                 onclick="PF('blockui1').block();" 
+                                                                 oncomplete="PF('blockui1').unblock();" 
+                                                                 update=":form:growl" 
+                                                                 action="#{createTicket.ticket.create('/a/tickets/list.xhtml?faces-redirect=true', 'OPEN')}" 
+                                                                 process="@this,:form:west :form:center"
+                                                                 disabled="#{createTicket.ticket.requester eq null or createTicket.ticket.title.length() lt 5}"/>
+
+                                                <p:spacer width="5px"/>
+
+                                                <p:commandButton widgetVar="createBtn2"
+                                                                 styleClass="green-button" 
+                                                                 value="Comment and create another" 
+                                                                 onclick="PF('blockui2').block();" 
+                                                                 oncomplete="PF('blockui2').unblock();" 
+                                                                 update=":form:growl" 
+                                                                 action="#{createTicket.ticket.create('/a/tickets/create.xhtml?faces-redirect=true', 'OPEN')}" 
+                                                                 process="@this,:form:west :form:center"
+                                                                 disabled="#{createTicket.ticket.requester eq null or createTicket.ticket.title.length() lt 5}"/>
+
+                                                <p:spacer width="5px"/>
+
+                                                <p:commandButton widgetVar="createBtn3"
+                                                                 styleClass="red-button" 
+                                                                 value="Comment and close" 
+                                                                 onclick="PF('blockui3').block();" 
+                                                                 oncomplete="PF('blockui3').unblock();" 
+                                                                 update=":form:growl" 
+                                                                 action="#{createTicket.ticket.create('/a/tickets/list.xhtml?faces-redirect=true', 'CLOSED')}" 
+                                                                 process="@this,:form:west :form:center"
+                                                                 disabled="#{createTicket.ticket.requester eq null or createTicket.ticket.title.length() lt 5}"/>
+
+                                                <ez:blockUI target="@widgetVar(createBtn)" 
+                                                            widgetVar="blockui1"/>
+
+                                                <ez:blockUI target="@widgetVar(createBtn2)" 
+                                                            widgetVar="blockui2"/>
+
+                                                <ez:blockUI target="@widgetVar(createBtn3)" 
+                                                            widgetVar="blockui3"/>
+
+                                            </td>
+                                        </tr>
+                                    </table>           
+
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </pe:layoutPane>
+
+                <pe:layoutPane id="east" 
+                               position="east" 
+                               resizable="false" 
+                               size="400">
+
+
+
+                    <table class="page-container">
+                        <thead>
+                            <tr><th>Possible Related Tickets</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <h:panelGroup id="option-group-5">
+
+                                        <p:dataTable var="rt" 
+                                                     value="#{createTicket.ticket.relatedTickets(10)}"
+                                                     styleClass="type3-table"
+                                                     emptyMessage="Sorry, Can't find any related tickets.">
+                                            <p:column>
+                                                <p:commandLink value="#{rt.title}" 
+                                                               action="#{navigator.navigate('EDIT_TICKET_WITH_PARAM', 'ticket='.concat(rt.id))}" 
+                                                               type="button" 
+                                                               process="@this" 
+                                                               disabled="#{!jsfSessionUser.currentUser.hasPermission('ticket:edit')}"
+                                                               target="blank"/>
+
+                                            </p:column>
+                                            <p:column>
+                                                <h:outputText value="#{rt.status}" />
+                                            </p:column>
+                                        </p:dataTable>
+
+                                    </h:panelGroup>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <p:spacer width="100%" height="20px"/>
+
+                    <h:panelGroup id="option-group-6">
+
+                        <h:panelGroup rendered="#{createTicket.ticket.requester ne null}">
+
+                            <table class="page-container">
+                                <thead>
+                                    <tr><th>Other Tickets requested by #{createTicket.ticket.requester.contact.buildFullName()}</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+
+                                            <p:dataTable var="rt" 
+                                                         value="#{createTicket.ticket.relatedRequester(10)}"
+                                                         styleClass="type3-table"
+                                                         emptyMessage="Sorry, Can't find any related tickets.">
+                                                <p:column>
+                                                    <p:commandLink value="#{rt.title}" 
+                                                                   action="#{navigator.navigate('EDIT_TICKET_WITH_PARAM', 'ticket='.concat(rt.id))}" 
+                                                                   type="button" 
+                                                                   process="@this" 
+                                                                   disabled="#{!jsfSessionUser.currentUser.hasPermission('ticket:edit')}"
+                                                                   target="blank"/>
+                                                </p:column>
+                                                <p:column>
+                                                    <h:outputText value="#{rt.status}" />
+                                                </p:column>
+                                            </p:dataTable>
+
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                        </h:panelGroup>
+
+                    </h:panelGroup>
+
+                    <p:spacer width="100%" height="20px"/>
+
+                    <h:panelGroup id="option-group-7">
+
+                        <h:panelGroup rendered="#{createTicket.ticket.assignee ne null}">
+
+                            <table class="page-container">
+                                <thead>
+                                    <tr><th>Other Tickets assigned to #{createTicket.ticket.assignee.contact.buildFullName()}</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <p:dataTable var="rt" 
+                                                         value="#{createTicket.ticket.relatedAssignee(10)}"
+                                                         styleClass="type3-table"
+                                                         emptyMessage="Sorry, Can't find any related tickets.">
+                                                <p:column>
+                                                    <p:commandLink value="#{rt.title}" 
+                                                                   action="#{navigator.navigate('EDIT_TICKET_WITH_PARAM', 'ticket='.concat(rt.id))}" 
+                                                                   type="button" 
+                                                                   process="@this" 
+                                                                   disabled="#{!jsfSessionUser.currentUser.hasPermission('ticket:edit')}"
+                                                                   target="blank"/>
+                                                </p:column>
+                                                <p:column>
+                                                    <h:outputText value="#{rt.status}" />
+                                                </p:column>
+                                            </p:dataTable>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                        </h:panelGroup>
+
+                    </h:panelGroup>
+
+                </pe:layoutPane>
+
+                <pe:layoutPane id="south" 
+                               position="south" 
+                               closable="false" 
+                               resizable="false" 
+                               size="40">
+                    <ez:footer/>
+                </pe:layoutPane>
+
+            </pe:layout>
+
+        </h:form>
+
+    </h:body>
+
+</html>
+

@@ -6,6 +6,72 @@ The configuration is intended to be shared among all the users of project and
 therefore it is assumed to be part of version control checkout.
 Without this configuration present, some functionality in the IDE may be limited or fail altogether.
 -->
+    <spellchecker-wordlist xmlns="http://www.netbeans.org/ns/spellchecker-wordlist/1">
+        <word>abcde</word>
+        <word>acheived</word>
+        <word>ADMIN</word>
+        <word>ajax</word>
+        <word>app</word>
+        <word>auth</word>
+        <word>authc</word>
+        <word>bIxk</word>
+        <word>builtInCacheManager</word>
+        <word>cacheManager</word>
+        <word>cipherKey</word>
+        <word>config</word>
+        <word>credentialsMatcher</word>
+        <word>das</word>
+        <word>dastrax</word>
+        <word>dastraxRealm</word>
+        <word>DefaultPasswordService</word>
+        <word>deZiIxcaaaA</word>
+        <word>dms</word>
+        <word>dob</word>
+        <word>dtx</word>
+        <word>eg</word>
+        <word>Enum</word>
+        <word>Google</word>
+        <word>html</word>
+        <word>https</word>
+        <word>immedietly</word>
+        <word>Init</word>
+        <word>ip</word>
+        <word>JDBC</word>
+        <word>jsf</word>
+        <word>jsf'</word>
+        <word>kPH</word>
+        <word>loginUrl</word>
+        <word>MemoryConstrainedCacheManager</word>
+        <word>metierRedirect</word>
+        <word>metiers</word>
+        <word>Mojarra</word>
+        <word>org</word>
+        <word>PassThruAuthenticationFilter</word>
+        <word>passwordMatcher</word>
+        <word>passwordService</word>
+        <word>Primefaces</word>
+        <word>qty</word>
+        <word>rememberMeManager</word>
+        <word>rma</word>
+        <word>securityManager</word>
+        <word>Servlet</word>
+        <word>Shiro</word>
+        <word>ShiroAjaxFilter</word>
+        <word>ShiroDastraxRealm</word>
+        <word>ShiroMetierFilter</word>
+        <word>ShiroPasswordMatcher</word>
+        <word>subdomain</word>
+        <word>SubdomainFilter</word>
+        <word>subdomainRedirect</word>
+        <word>Testing'</word>
+        <word>unauthorizedUrl</word>
+        <word>uri</word>
+        <word>url</word>
+        <word>urls</word>
+        <word>vars</word>
+        <word>Versioned</word>
+        <word>xml</word>
+    </spellchecker-wordlist>
     <properties xmlns="http://www.netbeans.org/ns/maven-properties-data/1">
         <!--
 Properties that influence various parts of the IDE, especially code formatting and the like. 
@@ -13,7 +79,18 @@ You can copy and paste the single properties, into the pom.xml file and the IDE 
 That way multiple projects can share the same settings (useful for formatting rules for example).
 Any value defined here will override the pom.xml file value but is only applicable to the current project.
 -->
+        <org-netbeans-modules-maven-j2ee.netbeans_2e_hint_2e_j2eeVersion>1.7-web</org-netbeans-modules-maven-j2ee.netbeans_2e_hint_2e_j2eeVersion>
+        <org-netbeans-modules-maven-j2ee.netbeans_2e_hint_2e_deploy_2e_server>gfv3ee6</org-netbeans-modules-maven-j2ee.netbeans_2e_hint_2e_deploy_2e_server>
+        <org-netbeans-modules-css-prep.less_2e_mappings>/less:/css</org-netbeans-modules-css-prep.less_2e_mappings>
+        <org-netbeans-modules-css-prep.less_2e_enabled>false</org-netbeans-modules-css-prep.less_2e_enabled>
+        <org-netbeans-modules-css-prep.sass_2e_enabled>false</org-netbeans-modules-css-prep.sass_2e_enabled>
+        <org-netbeans-modules-css-prep.sass_2e_compiler_2e_options/>
+        <org-netbeans-modules-css-prep.less_2e_compiler_2e_options/>
+        <org-netbeans-modules-css-prep.sass_2e_mappings>/scss:/css</org-netbeans-modules-css-prep.sass_2e_mappings>
+        <org-netbeans-modules-web-clientproject-api.js_2e_libs_2e_folder>js/libs</org-netbeans-modules-web-clientproject-api.js_2e_libs_2e_folder>
         <org-netbeans-modules-whitelist.whitelist-oracle>false</org-netbeans-modules-whitelist.whitelist-oracle>
-        <netbeans.compile.on.save>none</netbeans.compile.on.save>
+        <org-netbeans-modules-projectapi.jsf_2e_language>JSP</org-netbeans-modules-projectapi.jsf_2e_language>
+        <netbeans.compile.on.save>all</netbeans.compile.on.save>
+        <netbeans.hint.license>solid-1.0</netbeans.hint.license>
     </properties>
 </project-shared-configuration>

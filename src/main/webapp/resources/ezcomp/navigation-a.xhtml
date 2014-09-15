@@ -1,0 +1,210 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:cc="http://xmlns.jcp.org/jsf/composite"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <!-- INTERFACE -->
+    <cc:interface>
+    </cc:interface>
+
+    <!-- IMPLEMENTATION -->
+    <cc:implementation>
+
+        <div class="header-background">
+            <table width="100%">
+                <tr>
+                    <td class="nav-1" width="120px">
+                        <!-- LOGO -->
+                        <p:graphicImage id="header-logo" height="30px" value="#{uriUtil.companyLogo(false)}"/>
+                    </td>
+                    <td class="nav-2" width="120px">
+                        <!-- LOGO -->
+
+                        <p:megaMenu autoDisplay="false">  
+                            <p:submenu label="Services">  
+                                <p:column>  
+
+                                    <h:panelGrid columns="1" width="250px" columnClasses="menu-column-link">
+                                        <ui:fragment>
+                                            <p:graphicImage value="#{uriUtil.icon('black/dashboard_icon_16.png', true)}"/>
+                                            <p:commandLink value="Dashboard"
+                                                           action="#{navigator.navigate('DASHBOARD')}"
+                                                           process="@this"
+                                                           type="button"
+                                                           onmouseover="document.getElementById('dashboard-hover-details').style.display = 'block'"
+                                                           onmouseout="document.getElementById('dashboard-hover-details').style.display = 'none'"/>
+                                        </ui:fragment>
+                                        <ui:fragment>
+                                            <p:graphicImage value="#{uriUtil.icon('black/page_layout_icon_16.png', true)}"/>
+                                            <p:commandLink value="Edit Menu"
+                                                           action="#{navigator.navigate('SETTINGS_PERSONAL_NAVIGATION')}"
+                                                           process="@this"
+                                                           type="button"
+                                                           onmouseover="document.getElementById('edit-menu-hover-details').style.display = 'block'"
+                                                           onmouseout="document.getElementById('edit-menu-hover-details').style.display = 'none'"/>
+                                        </ui:fragment>
+                                        <ui:fragment>
+                                            <p:spacer height="80"></p:spacer>
+                                            <p:spacer height="80"></p:spacer>
+                                        </ui:fragment>
+                                    </h:panelGrid>
+
+                                </p:column> 
+
+                                <p:column>  
+                                    <h:panelGrid columns="1" width="200px" columnClasses="menu-column-link">
+                                        <ui:fragment>
+                                            <p:graphicImage value="#{uriUtil.icon('black/doc_lines_stright_icon_16.png', true)}"/>
+                                            <p:commandLink value="Support Tickets"
+                                                           action="#{navigator.navigate('LIST_TICKETS')}"
+                                                           process="@this"
+                                                           type="button"
+                                                           onmouseover="document.getElementById('ticket-hover-details').style.display = 'block'"
+                                                           onmouseout="document.getElementById('ticket-hover-details').style.display = 'none'"/>
+                                        </ui:fragment>
+
+                                        <ui:remove>
+                                            <p:graphicImage value="#{uriUtil.icon('black/flag_icon_16.png', true)}"/>
+                                            <p:commandLink value="Incidents"
+                                                           action="/a/incidents/list.xhtml?faces-redirect=true"
+                                                           onmouseover="document.getElementById('incident-hover-details').style.display = 'block'"
+                                                           onmouseout="document.getElementById('incident-hover-details').style.display = 'none'"/>
+                                        </ui:remove>
+
+                                        <ui:fragment rendered="#{jsfSessionUser.currentUser.hasPermission('account:access') and jsfSessionUser.currentUser.administrator}">
+                                            <p:graphicImage value="#{uriUtil.icon('black/user_icon_16.png', true)}"/>
+                                            <p:commandLink value="Accounts"
+                                                           action="#{navigator.navigate('LIST_ACCOUNTS')}"
+                                                           process="@this"
+                                                           type="button"
+                                                           onmouseover="document.getElementById('account-hover-details').style.display = 'block'"
+                                                           onmouseout="document.getElementById('account-hover-details').style.display = 'none'"/>
+                                        </ui:fragment>
+
+                                        <ui:fragment rendered="#{jsfSessionUser.currentUser.hasPermission('company:access') and jsfSessionUser.currentUser.administrator}">
+                                            <p:graphicImage value="#{uriUtil.icon('black/box_icon_16.png', true)}"/>
+                                            <p:commandLink value="Companies"
+                                                           action="#{navigator.navigate('LIST_COMPANIES')}"
+                                                           process="@this"
+                                                           type="button"
+                                                           onmouseover="document.getElementById('company-hover-details').style.display = 'block'"
+                                                           onmouseout="document.getElementById('company-hover-details').style.display = 'none'"/>
+                                        </ui:fragment>
+
+                                        <ui:fragment rendered="#{jsfSessionUser.currentUser.hasPermission('das:access') and jsfSessionUser.currentUser.administrator}">
+                                            <p:graphicImage value="#{uriUtil.icon('black/air_signal_icon_16.png', true)}"/>
+                                            <p:commandLink value="DAS"
+                                                           action="#{navigator.navigate('LIST_DAS')}"
+                                                           process="@this"
+                                                           type="button"
+                                                           onmouseover="document.getElementById('das-hover-details').style.display = 'block'"
+                                                           onmouseout="document.getElementById('das-hover-details').style.display = 'none'"/>
+                                        </ui:fragment>
+
+                                        <ui:remove>
+                                            <p:graphicImage value="#{uriUtil.icon('black/refresh_icon_16.png', true)}"/>
+                                            <p:commandLink value="RMA"
+                                                           action="/a/rma/create.xhtml?faces-redirect=true"
+                                                           onmouseover="document.getElementById('rma-hover-details').style.display = 'block'"
+                                                           onmouseout="document.getElementById('rma-hover-details').style.display = 'none'"/>
+
+                                            <p:graphicImage value="#{uriUtil.icon('black/chart_bar_icon_16.png', true)}"/>
+                                            <p:commandLink value="Analytics"
+                                                           action="/a/analytics/dashboard.xhtml?faces-redirect=true"
+                                                           onmouseover="document.getElementById('report-hover-details').style.display = 'block'"
+                                                           onmouseout="document.getElementById('report-hover-details').style.display = 'none'"/>
+                                        </ui:remove>
+                                    </h:panelGrid>
+                                </p:column>
+
+
+
+                                <p:column>
+                                    <ui:remove>
+                                        <p:spacer width="100%" height="7px"/>
+                                    </ui:remove>
+
+                                    <div id="dashboard-hover-details" class="menu-hover-details" style="display: none">
+                                        <p:graphicImage value="#{uriUtil.icon('black/dashboard_icon_48.png', true)}"/>
+                                        <br></br>
+                                        <h:outputText value="Dashboard lets you see an overview of your account performance and settings."/>
+                                    </div>
+
+                                    <div id="edit-menu-hover-details" class="menu-hover-details" style="display: none">
+                                        <p:graphicImage value="#{uriUtil.icon('black/page_layout_icon_48.png', true)}"/>
+                                        <br></br>
+                                        <h:outputText value="Customise the navigation menu to make your most used services more accessible."/>
+                                    </div>
+
+                                    <div id="ticket-hover-details" class="menu-hover-details" style="display: none">
+                                        <p:graphicImage value="#{uriUtil.icon('black/doc_lines_stright_icon_48.png', true)}"/>
+                                        <br></br>
+                                        <h:outputText value="Support Tickets let you manage your case ticket cycles. Create, update, and resolve reported issues. "/>
+                                    </div>
+
+                                    <div id="incident-hover-details" class="menu-hover-details" style="display: none">
+                                        <p:graphicImage value="#{uriUtil.icon('black/flag_icon_48.png', true)}"/>
+                                        <br></br>
+                                        <h:outputText value="Incidents are automated events registered when a site encounters a problem."/>
+                                    </div>
+
+                                    <div id="account-hover-details" class="menu-hover-details" style="display: none">
+                                        <p:graphicImage value="#{uriUtil.icon('black/user_icon_48.png', true)}"/>
+                                        <br></br>
+                                        <h:outputText value="Create,edit, and manage permissions, access, and more for related user accounts."/>
+                                    </div>
+
+                                    <div id="company-hover-details" class="menu-hover-details" style="display: none">
+                                        <p:graphicImage value="#{uriUtil.icon('black/box_icon_48.png', true)}"/>
+                                        <br></br>
+                                        <h:outputText value="Companies allow you to group together resources such as sites, accounts, reports etc."/>
+                                    </div>
+
+                                    <div id="das-hover-details" class="menu-hover-details" style="display: none">
+                                        <p:graphicImage value="#{uriUtil.icon('black/air_signal_icon_48.png', true)}"/>
+                                        <br></br>
+                                        <h:outputText value="DAS are managed DAS installations that can generate reporting and monitoring on performance."/>
+                                    </div>
+
+                                    <div id="rma-hover-details" class="menu-hover-details" style="display: none">
+                                        <p:graphicImage value="#{uriUtil.icon('black/refresh_icon_48.png', true)}"/>
+                                        <br></br>
+                                        <h:outputText value="Return Merchandise Authorisation (RMA) lets you generate a return request in order to receive a refund, replacement, or repair."/>
+                                    </div>
+
+                                    <div id="report-hover-details" class="menu-hover-details" style="display: none">
+                                        <p:graphicImage value="#{uriUtil.icon('black/chart_bar_icon_48.png', true)}"/>
+                                        <br></br>
+                                        <h:outputText value="Analytics provides monitoring for DAS resources. Track metrics, gain insight, and react immediately to keep sites running smoothly."/>
+                                    </div>
+
+                                </p:column>
+
+                            </p:submenu>  
+                        </p:megaMenu> 
+                    </td>
+                    <td class="nav-2">
+                        <!-- NAV BAR -->
+                        <p:menubar styleClass="navigation-update-class" autoDisplay="false" model="#{navigator.model}"/>
+                    </td>
+                    <td class="nav-3">
+
+                        <p:commandLink action="#{navigator.navigate('SETTINGS_PERSONAL_PROFILE')}"
+                                       process="@this"
+                                       type="button" >
+                            <p:graphicImage value="#{uriUtil.icon('white/wrench_plus_2_icon_16.png', true)}"/>
+                        </p:commandLink>
+
+                        <p:commandLink action="#{authenticate.logout()}">
+                            <p:graphicImage value="#{uriUtil.icon('white/doc_export_icon_16.png', true)}"/>
+                        </p:commandLink>
+                    </td>
+                </tr>
+            </table>
+
+        </div>
+    </cc:implementation>
+</html>
