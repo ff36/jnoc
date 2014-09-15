@@ -348,10 +348,10 @@ public class Authenticate implements Serializable {
                     isAuthorised = true;
                 }
 
-                if (isAuthorised
-                        | ResourceBundle.getBundle("config")
-                        .getString("AdminSubdomain").equals(subdomain)
-                        | stage.equals(DTX.ProjectStage.DEV.toString())) {
+//                if (isAuthorised
+//                        | ResourceBundle.getBundle("config")
+//                        .getString("AdminSubdomain").equals(subdomain)
+//                        | stage.equals(DTX.ProjectStage.DEV.toString())) {
 
                     if (user.getAccount().isConfirmed()) {
 
@@ -452,16 +452,16 @@ public class Authenticate implements Serializable {
                                 .getString("error.login.unconfirmed"));
                     }
 
-                } else {
-                    /*
-                     Not a member of the company under which they are trying 
-                     to sign in
-                     */
-                    JsfUtil.addWarningMessage(
-                            ResourceBundle
-                            .getBundle("messages")
-                            .getString("error.login.wrongdomain"));
-                }
+//                } else {
+//                    /*
+//                     Not a member of the company under which they are trying 
+//                     to sign in
+//                     */
+//                    JsfUtil.addWarningMessage(
+//                            ResourceBundle
+//                            .getBundle("messages")
+//                            .getString("error.login.wrongdomain"));
+//                }
 
             } catch (ArrayIndexOutOfBoundsException e) {
                 // Email not registered in the system

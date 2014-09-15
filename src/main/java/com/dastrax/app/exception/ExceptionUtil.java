@@ -57,7 +57,8 @@ public class ExceptionUtil {
      */
     public void report(Exception exception) {
         
-        if (stage.equals(ProjectStage.PRO.toString())) {
+        if (stage.equals(ProjectStage.UAT.toString())) {
+            
 
             // Build an new email
             Email email = new Email();

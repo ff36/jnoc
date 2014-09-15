@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.6.20)
 # Database: dastrax_dev
-# Generation Time: 2014-09-14 16:34:49 +0000
+# Generation Time: 2014-09-15 14:02:24 +0000
 # ************************************************************
 
 
@@ -43,7 +43,7 @@ LOCK TABLES `ACCOUNT` WRITE;
 
 INSERT INTO `ACCOUNT` (`ID`, `CLOSEEPOCH`, `CONFIRMED`, `CREATIONEPOCH`, `CURRENTSESSIONEPOCH`, `LASTSESSIONEPOCH`, `LOCKED`, `S3ID`, `VERSION`)
 VALUES
-	(1,NULL,1,1377631184752,1410710076935,1410333039410,0,'bfa70e4e-ceea-4c90-a41b-61b54f1fa0c9',80),
+	(1,NULL,1,1377631184752,1410789132496,1410333039410,0,'bfa70e4e-ceea-4c90-a41b-61b54f1fa0c9',89),
 	(155,NULL,1,1377677446440,1410278621481,1409945263241,0,'b69a0320-68ee-4a52-a6f5-4e062c6a26ad',251),
 	(159,NULL,1,1377677657896,1409083471077,1409083446593,0,'2aa96591-7e97-4534-be1a-e5e3972cc572',73),
 	(163,NULL,1,1377677740180,1380305734191,NULL,0,'3bb9af89-d232-487b-b715-975aa0b9e12f',3),
@@ -216,7 +216,16 @@ VALUES
 	(1,1410709244886,'Signed in from 0:0:0:0:0:0:0:1',1,1),
 	(2,1410709638289,'Signed in from 0:0:0:0:0:0:0:1',1,1),
 	(3,1410710024372,'Signed in from 0:0:0:0:0:0:0:1',1,1),
-	(4,1410710076946,'Signed in from 0:0:0:0:0:0:0:1',1,1);
+	(4,1410710076946,'Signed in from 0:0:0:0:0:0:0:1',1,1),
+	(5,1410713259029,'Signed in from 0:0:0:0:0:0:0:1',1,1),
+	(6,1410732272411,'Signed in from 0:0:0:0:0:0:0:1',1,1),
+	(7,1410780659168,'Signed in from 0:0:0:0:0:0:0:1',1,1),
+	(8,1410781209996,'Signed in from 0:0:0:0:0:0:0:1',1,1),
+	(9,1410782074162,'Signed in from 0:0:0:0:0:0:0:1',1,1),
+	(10,1410782384631,'Signed in from 0:0:0:0:0:0:0:1',1,1),
+	(11,1410782470249,'Signed in from 0:0:0:0:0:0:0:1',1,1),
+	(12,1410782612656,'Signed in from 0:0:0:0:0:0:0:1',1,1),
+	(13,1410789132555,'Signed in from 0:0:0:0:0:0:0:1',1,1);
 
 /*!40000 ALTER TABLE `AUDIT` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -1347,9 +1356,9 @@ LOCK TABLES `DAS` WRITE;
 
 INSERT INTO `DAS` (`ID`, `DMS`, `DMSIP`, `INSTALLEPOCH`, `INSTALLER`, `NAME`, `PACKAGETYPE`, `REPORTINGENABLED`, `RESPONSEHRS`, `VERSION`, `ADDRESS_ID`, `CONTACT_ID`)
 VALUES
-	(2,'TWELVE_HUNDRED','074.115.071.249',NULL,NULL,'Phoenix Childrens Hospital','Monitoring and Maintenance',1,4,4,187,122),
+	(2,'TWELVE_HUNDRED','074.115.071.249',NULL,NULL,'Phoenix Childrens Hospital','Monitoring and Maintenance',1,4,4,187,NULL),
 	(4,'TWELVE_HUNDRED','208.093.135.019',NULL,NULL,'Casino Arizona','Monitoring and Maintenance',1,4,1,195,NULL),
-	(7,'TWELVE_HUNDRED','207.225.247.117',NULL,NULL,'Amazon SEA20','',1,0,4,207,122),
+	(7,'TWELVE_HUNDRED','207.225.247.117',NULL,NULL,'Amazon SEA20','',1,0,4,207,NULL),
 	(8,'TWELVE_HUNDRED','207.225.247.173',NULL,NULL,'Amazon SEA33','',1,0,3,211,NULL),
 	(9,'TWELVE_HUNDRED','173.167.066.185',NULL,NULL,'Reading Hospital','',1,0,1,215,NULL),
 	(51,'TWELVE_HUNDRED','068.163.073.130',NULL,NULL,'USPTO','',1,0,1,355,NULL),
@@ -1357,7 +1366,7 @@ VALUES
 	(101,'TWELVE_HUNDRED','024.221.042.010',NULL,NULL,'JP Morgan Chase','Monitoring and Maintenance',1,4,1,453,NULL),
 	(102,'TWELVE_HUNDRED','075.030.075.113',NULL,NULL,'John Muir Walnut Creek','Monitoring and Maintenance',0,2,2,465,NULL),
 	(103,'TWELVE_HUNDRED','099.069.229.241',NULL,NULL,'John Muir Concord','Monitoring and Maintenance',0,4,2,469,NULL),
-	(151,'TWELVE_HUNDRED','161.225.116.136',NULL,NULL,'Target HQ N. Campus','Monitoring and Maintenance',1,4,2,555,252),
+	(151,'TWELVE_HUNDRED','161.225.116.136',NULL,NULL,'Target HQ N. Campus','Monitoring and Maintenance',1,4,2,555,NULL),
 	(201,'TWELVE_HUNDRED','161.225.116.219',NULL,NULL,'Target Plaza South','',NULL,0,2,605,NULL),
 	(202,'TWELVE_HUNDRED','166.130.040.212',NULL,NULL,'KDC','',NULL,0,2,609,NULL),
 	(203,'TWELVE_HUNDRED','010.050.009.010',NULL,NULL,'Sheraton Hotel','',NULL,0,1,613,NULL),
@@ -1559,41 +1568,41 @@ VALUES
 	(52,'ticket:create,edit',2),
 	(53,'accounts:access,create,edit',2),
 	(54,'ticket:*',2),
-	(55,'company,site:access',2),
+	(55,'company,das:access',2),
 	(56,'account:access',1),
 	(57,'ticket:access,create,edit',1),
-	(58,'company,site:access',1),
+	(58,'company,das:access',1),
 	(59,'account:access',1),
 	(60,'ticket:access,create,edit',1),
-	(61,'company,site:access',1),
+	(61,'company,das:access',1),
 	(62,'account:access',1),
 	(63,'ticket:access,create,edit',1),
-	(64,'company,site:access',1),
+	(64,'company,das:access',1),
 	(65,'account:access',1),
 	(66,'ticket:access,create,edit',1),
-	(67,'company,site:access',1),
+	(67,'company,das:access',1),
 	(68,'account:access',1),
 	(69,'ticket:access,create,edit',1),
-	(70,'company,site:access',1),
+	(70,'company,das:access',1),
 	(71,'account:access',1),
 	(72,'ticket:access,create,edit',1),
-	(73,'dmsticket,company,site,report,monitor:access',1),
+	(73,'dmsticket,company,das,report,monitor:access',1),
 	(74,'account:access,create,edit',1),
 	(75,'ticket:*',1),
-	(76,'account,ticket,dmsticket,company,site:*',3),
-	(77,'account,ticket,dmsticket,company,site:*',2),
+	(76,'account,ticket,dmsticket,company,das:*',3),
+	(77,'account,ticket,dmsticket,company,das:*',2),
 	(100,'*:*',1),
 	(101,'ticket:*',1),
 	(102,'account:access,create,edit',1),
 	(150,'*:*',1),
 	(151,'*:*',1),
-	(152,'rma,account,ticket,dmsticket,company,site,report,monitor:*',2),
-	(153,'account,ticket,dmsticket,company,site,report,monitor:*',1),
-	(155,'account,ticket,dmsticket,company,site,report,monitor:*',1),
-	(156,'account,ticket,dmsticket,company,site,report,monitor:*',1),
+	(152,'rma,account,ticket,dmsticket,company,das,report,monitor:*',2),
+	(153,'account,ticket,dmsticket,company,das,report,monitor:*',1),
+	(155,'account,ticket,dmsticket,company,das,report,monitor:*',1),
+	(156,'account,ticket,dmsticket,company,das,report,monitor:*',1),
 	(200,'*:*',1),
 	(250,'*:*',1),
-	(251,'account,ticket,rma,dmsticket,company,site,report,monitor:*',2),
+	(251,'account,ticket,rma,dmsticket,company,das,report,monitor:*',2),
 	(300,'rma:*',1);
 
 /*!40000 ALTER TABLE `PERMISSION` ENABLE KEYS */;
