@@ -499,7 +499,7 @@ public class User implements Serializable {
         }
         
         // Persist the user
-        dap.create(this);
+        User u = (User) dap.create(this);
 
         // Save the profile image if one exists
         if (uploadFile.isUploaded()) {
@@ -508,6 +508,8 @@ public class User implements Serializable {
 
         // Send a welcome confirmation email and write the Token
         newUserEmail().create();
+        
+        JsfUtil.addSuccessMessage("New user created");
     }
 
     /**
@@ -651,6 +653,27 @@ public class User implements Serializable {
     public void hasPagePermission(String permission){
         try {
             if(!SecurityUtils.getSubject().isPermitted(permission)) {
+            ExternalContext ectx = FacesContext.getCurrentInstance().getExternalContext();
+            ectx.redirect(ectx.getRequestContextPath() + "/login.jsf");
+        }
+        } catch (IOException e) {
+            // As a security precaution we should log the user out.
+            SecurityUtils.getSubject().logout();
+        }
+    }
+    
+    /**
+     * Convenience method to determine if this user has the implied page 
+     * permission. If not then the user is redirected to their login page
+     * which in turn redirects then to their specific dashboard.
+     * 
+     * As a security measure if the redirect fails the users session is ended.
+     * 
+     * @param role
+     */
+    public void hasPageRole(String role){
+        try {
+            if(!SecurityUtils.getSubject().hasRole(role)) {
             ExternalContext ectx = FacesContext.getCurrentInstance().getExternalContext();
             ectx.redirect(ectx.getRequestContextPath() + "/login.jsf");
         }

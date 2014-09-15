@@ -6,6 +6,7 @@
 package com.dastrax.per.entity;
 
 import com.dastrax.app.misc.IpAddress;
+import com.dastrax.app.misc.JsfUtil;
 import com.dastrax.per.dap.CrudService;
 import com.dastrax.per.project.DTX.DMSType;
 import java.io.Serializable;
@@ -345,6 +346,8 @@ public class DAS implements Serializable {
         
         // Persist the DAS
         DAS das = (DAS) dap.create(this);
+        
+        JsfUtil.addSuccessMessage(das.getName() + " has been created.");
     }
 
     /**

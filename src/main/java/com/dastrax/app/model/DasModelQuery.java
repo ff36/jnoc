@@ -33,25 +33,24 @@ import org.primefaces.model.SortOrder;
 public class DasModelQuery implements ModelQuery {
 
     //<editor-fold defaultstate="collapsed" desc="Properties">
-    private static final Logger LOG = Logger.getLogger (DasModelQuery.class.getName());
+    private static final Logger LOG = Logger.getLogger(DasModelQuery.class.getName());
 //</editor-fold>
-    
+
     //<editor-fold defaultstate="collapsed" desc="Constructors">
     /**
      * Creates a new instance of DasModelQuery
      */
-    public DasModelQuery ()
-    {
+    public DasModelQuery() {
     }
 //</editor-fold>
 
     /**
-     * A type safe CriteriaQuery dynamically constructed of an optional 
-     * root filter (applied automatically based on the users Metier),
-     * an optional filter that can be set via a URL query parameter, and a 
-     * global filter that is implemented as the user generates a 'keyup' event
-     * in the search field.
-     * 
+     * A type safe CriteriaQuery dynamically constructed of an optional root
+     * filter (applied automatically based on the users Metier), an optional
+     * filter that can be set via a URL query parameter, and a global filter
+     * that is implemented as the user generates a 'keyup' event in the search
+     * field.
+     *
      * @param first
      * @param pageSize
      * @param sortField
@@ -60,7 +59,7 @@ public class DasModelQuery implements ModelQuery {
      * @param filters
      * @param rootFilter
      * @param optionalFilter
-     * @return A type safe CriteriaQuery that can be queried against the 
+     * @return A type safe CriteriaQuery that can be queried against the
      * persistence layer.
      */
     @Override
@@ -95,16 +94,17 @@ public class DasModelQuery implements ModelQuery {
 
         // Implement the Root Filter
         if (!rootFilter.isEmpty()) {
-            for (String key : (List<String>) rootFilter.keySet()) {
-                List<String> values = (List<String>) rootFilter.get(key);
+            for (Object key : rootFilter.keySet()) {
+                String k = (String) key;
+                List<Long> values = (List<Long>) rootFilter.get((String) key);
 
                 List<Predicate> rootPredicate = new ArrayList<>();
-                for (String value : values) {
+                for (Long value : values) {
                     // Search term
-                    Expression literal = builder.literal((String) value);
+                    Expression literal = builder.literal(value);
                     // Predicate
-                    switch (key) {
-                        case "company":                         
+                    switch (k) {
+                        case "company":
                             rootPredicate.add(builder.equal(company.get(Company_.id), literal));
                             break;
                         default:
@@ -170,20 +170,20 @@ public class DasModelQuery implements ModelQuery {
 
         return query;
     }
-    
+
     /**
      * Determines the class type to associate with the query.
-     * 
+     *
      * @return Returns the class type to associate with the query.
      */
     @Override
     public Class clazz() {
         return DAS.class;
     }
-    
+
     /**
      * Determines the class type to associate with the query.
-     * 
+     *
      * @param object
      * @return Returns the class type to associate with the query.
      */
@@ -192,5 +192,5 @@ public class DasModelQuery implements ModelQuery {
         DAS das = (DAS) object;
         return das.getId();
     }
-    
+
 }

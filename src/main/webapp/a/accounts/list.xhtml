@@ -19,7 +19,8 @@
     <h:body>
 
         #{jsfSessionUser.currentUser.hasPagePermission('account:access')}
-
+        #{jsfSessionUser.currentUser.hasPageRole('ADMIN')}
+        
         <h:form id="form">
 
             <pe:ajaxErrorHandler />
@@ -54,16 +55,16 @@
                             <tr>
                                 <td class="active">Accounts</td>
                             </tr>
-                            <tr>
-                                <ui:fragment rendered="#{jsfSessionUser.currentUser.hasPermission('account:create')}">
+                            <ui:fragment rendered="#{jsfSessionUser.currentUser.hasPermission('account:create')}">
+                                <tr>
                                     <td>
                                         <p:commandLink value="Create New Account" 
                                                        action="/a/accounts/create.xhtml?faces-redirect=true" 
                                                        process="@this" 
                                                        type="button"/>
                                     </td>
-                                </ui:fragment>
-                            </tr>
+                                </tr>
+                            </ui:fragment>
                         </tbody>
                     </table>
 
@@ -199,20 +200,20 @@
                                                           filterStyle="display:none">
                                                     #{user.metier.name}
                                                 </p:column>
-                                                
+
                                                 <p:column headerText="Requested Support Tickets">
                                                     <p:commandLink value="View" 
                                                                    actionListener="#{navigator.navigate('LIST_TICKETS_WITH_PARAM', 'requester='.concat(user.email))}" 
                                                                    process="@this"/>
                                                 </p:column>
-                                                
+
                                                 <p:column headerText="Assigned Support Tickets">
                                                     <p:commandLink value="View" 
                                                                    actionListener="#{navigator.navigate('LIST_TICKETS_WITH_PARAM', 'assignee='.concat(user.email))}" 
                                                                    process="@this"
                                                                    rendered="#{user.isAdministrator()}"/>
                                                 </p:column>
-                                                
+
                                                 <p:column id="verified" style="width:18px">
                                                     <p:graphicImage value="#{uriUtil.icon('black/checkbox_checked_icon_16.png', true)}"
                                                                     title="Verified"

@@ -111,6 +111,7 @@ A:link:hover, A:visited:hover
 	color: #858585;
 	font-size: 9.3pt !important;
 	font-weight: bold;
+        padding-left: 10px;
 }
 .menu-column-link A:hover
 {

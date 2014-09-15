@@ -95,45 +95,46 @@
 
                         <p:spacer width="100%" height="10px"/>
 
-                        <table class="page-container">
-                            <thead>
-                                <tr><th>Assignee</th></tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>
+                        <ui:fragment rendered="#{jsfSessionUser.currentUser.administrator}">
+                            <table class="page-container">
+                                <thead>
+                                    <tr><th>Assignee</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
 
-                                        <p:spacer width="100%" height="20px"/>
+                                            <p:spacer width="100%" height="20px"/>
 
-                                        <p:graphicImage name="images/ajax-loader.gif" 
-                                                        rendered="#{!createTicket.render}" 
-                                                        styleClass="ajax-lazy-loader"/>
+                                            <p:graphicImage name="images/ajax-loader.gif" 
+                                                            rendered="#{!createTicket.render}" 
+                                                            styleClass="ajax-lazy-loader"/>
 
-                                        <ui:fragment rendered="#{createTicket.render}">
+                                            <ui:fragment rendered="#{createTicket.render}">
 
-                                            <p:autoComplete id="assignee"
-                                                            value="#{createTicket.ticket.assignee}"
-                                                            completeMethod="#{createTicket.ticket.filterAvailableAssignees}"
-                                                            var="assignee"
-                                                            converter="userCvt"
-                                                            itemLabel="#{assignee.contact.buildFullName()}#{assignee.email eq null ? '' : ' (' }#{assignee.email}#{assignee.email eq null ? '' : ')' }"
-                                                            itemValue="#{assignee}" 
-                                                            forceSelection="true"
-                                                            styleClass="assignee">
-                                                <p:ajax event="itemSelect" 
-                                                        update=":form:option-group-7" />
-                                            </p:autoComplete>
+                                                <p:autoComplete id="assignee"
+                                                                value="#{createTicket.ticket.assignee}"
+                                                                completeMethod="#{createTicket.ticket.filterAvailableAssignees}"
+                                                                var="assignee"
+                                                                converter="userCvt"
+                                                                itemLabel="#{assignee.contact.buildFullName()}#{assignee.email eq null ? '' : ' (' }#{assignee.email}#{assignee.email eq null ? '' : ')' }"
+                                                                itemValue="#{assignee}" 
+                                                                forceSelection="true"
+                                                                styleClass="assignee">
+                                                    <p:ajax event="itemSelect" 
+                                                            update=":form:option-group-7" />
+                                                </p:autoComplete>
 
-                                            <h3>Send email</h3>
-                                            <p:selectBooleanCheckbox value="#{createTicket.ticket.sendEmailToAssignee}"/>
+                                                <h3>Send email</h3>
+                                                <p:selectBooleanCheckbox value="#{createTicket.ticket.sendEmailToAssignee}"/>
 
-                                        </ui:fragment>
+                                            </ui:fragment>
 
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </ui:fragment>
                         <p:spacer width="100%" height="10px"/>
 
                         <table class="page-container">
@@ -378,7 +379,7 @@
                                                                process="@this" 
                                                                disabled="#{!jsfSessionUser.currentUser.hasPermission('ticket:edit')}"
                                                                target="blank"/>
-                                                
+
                                             </p:column>
                                             <p:column>
                                                 <h:outputText value="#{rt.status}" />
@@ -411,11 +412,11 @@
                                                          emptyMessage="Sorry, Can't find any related tickets.">
                                                 <p:column>
                                                     <p:commandLink value="#{rt.title}" 
-                                                               action="#{navigator.navigate('EDIT_TICKET_WITH_PARAM', 'ticket='.concat(rt.id))}" 
-                                                               type="button" 
-                                                               process="@this" 
-                                                               disabled="#{!jsfSessionUser.currentUser.hasPermission('ticket:edit')}"
-                                                               target="blank"/>
+                                                                   action="#{navigator.navigate('EDIT_TICKET_WITH_PARAM', 'ticket='.concat(rt.id))}" 
+                                                                   type="button" 
+                                                                   process="@this" 
+                                                                   disabled="#{!jsfSessionUser.currentUser.hasPermission('ticket:edit')}"
+                                                                   target="blank"/>
                                                 </p:column>
                                                 <p:column>
                                                     <h:outputText value="#{rt.status}" />
@@ -450,11 +451,11 @@
                                                          emptyMessage="Sorry, Can't find any related tickets.">
                                                 <p:column>
                                                     <p:commandLink value="#{rt.title}" 
-                                                               action="#{navigator.navigate('EDIT_TICKET_WITH_PARAM', 'ticket='.concat(rt.id))}" 
-                                                               type="button" 
-                                                               process="@this" 
-                                                               disabled="#{!jsfSessionUser.currentUser.hasPermission('ticket:edit')}"
-                                                               target="blank"/>
+                                                                   action="#{navigator.navigate('EDIT_TICKET_WITH_PARAM', 'ticket='.concat(rt.id))}" 
+                                                                   type="button" 
+                                                                   process="@this" 
+                                                                   disabled="#{!jsfSessionUser.currentUser.hasPermission('ticket:edit')}"
+                                                                   target="blank"/>
                                                 </p:column>
                                                 <p:column>
                                                     <h:outputText value="#{rt.status}" />

@@ -66,8 +66,9 @@
                                             </ui:remove>
 
                                             <pe:fluidGridItem rendered="#{jsfSessionUser.currentUser.hasPermission('ticket:access')}" >
-                                                <p:commandLink type="button" 
-                                                               ajax="false">
+                                                <p:commandLink  action="#{navigator.navigate('LIST_TICKETS')}"
+                                                                type="button" 
+                                                                ajax="false">
                                                     <p:graphicImage value="#{uriUtil.image('tile_ticket_active.svg', true)}"/>
                                                 </p:commandLink> 
                                             </pe:fluidGridItem>
@@ -151,11 +152,11 @@
                     Sunnyvale, CA 94085-2907<br></br>
 
                     <p:spacer width="100%" height="10px"/>
-                    
+
                     <b>W:</b> <a href="http://solid.com">solid.com</a><br></br>
                     <b>T:</b> 888.409.9997<br></br>
                     <b>E:</b> <a href="mailto:info@solid.com">info@solid.com</a><br></br>
-                    
+
                     <p:spacer width="100%" height="10px"/>
 
                     <h3>Departments</h3>
@@ -167,7 +168,7 @@
                     <a href="mailto:support@solid.com">support@solid.com</a><br></br>
 
                     <a href="mailto:training@solid.com">training@solid.com</a><br></br>
-                    
+
                     <p:spacer width="100%" height="10px"/>
 
                 </p:dialog>

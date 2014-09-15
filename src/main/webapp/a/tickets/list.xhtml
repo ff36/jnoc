@@ -53,12 +53,14 @@
                             <tr>
                                 <td class="active">Tickets</td>
                             </tr>
-                            <tr>
-                                <td><p:commandLink value="Create New Ticket" 
-                                                   action="/a/tickets/create.xhtml?faces-redirect=true" 
-                                                   process="@this" 
-                                                   type="button"/></td>
-                            </tr>
+                            <ui:fragment rendered="#{jsfSessionUser.currentUser.hasPermission('ticket:create')}">
+                                <tr>
+                                    <td><p:commandLink value="Create New Ticket" 
+                                                       action="/a/tickets/create.xhtml?faces-redirect=true" 
+                                                       process="@this" 
+                                                       type="button"/></td>
+                                </tr>
+                            </ui:fragment>
                             <tr>
                                 <ui:remove>
                                     <td><p:commandLink value="Ticket Analytics" 

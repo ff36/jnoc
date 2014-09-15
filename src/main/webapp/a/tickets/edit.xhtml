@@ -100,7 +100,11 @@
 
                                             <ui:fragment rendered="#{editTicket.render}">
 
-                                                <p:inplace id="assigneeAIP" styleClass="inplace" editor="true" label="#{editTicket.ticket.assignee eq null ? 'None' : editTicket.ticket.assignee.contact.buildFullName()}">  
+                                                <p:inplace id="assigneeAIP" 
+                                                           styleClass="inplace" 
+                                                           editor="true" 
+                                                           label="#{editTicket.ticket.assignee eq null ? 'None' : editTicket.ticket.assignee.contact.buildFullName()}"
+                                                           rendered="#{jsfSessionUser.currentUser.administrator}">  
                                                     <p:ajax event="save" listener="#{editTicket.ticket.update()}"/>
                                                     <p:autoComplete id="assignee"
                                                                     value="#{editTicket.ticket.assignee}" 
@@ -112,6 +116,9 @@
                                                                     forceSelection="true"
                                                                     style="width: 230px"/>
                                                 </p:inplace>
+
+                                                <h:outputText value="#{editTicket.ticket.assignee eq null ? 'None' : editTicket.ticket.assignee.contact.buildFullName()}"
+                                                              rendered="#{!jsfSessionUser.currentUser.administrator}"/>
 
                                                 <h3>Send email</h3>
                                                 <p:selectBooleanCheckbox value="#{editTicket.ticket.sendEmailToAssignee}"/>
@@ -300,7 +307,7 @@
                                                                                                  update="comment-datalist :form:growl"
                                                                                                  rendered="#{jsfSessionUser.currentUser.administrator and comment.nexus.id eq null and comment ne editTicket.ticket.comments[0]}"
                                                                                                  title="Your comment will ONLY be visible to members of your team"/>  
-                                                                                
+
                                                                                 <p:commandButton id="change-acl-to-internal-var" 
                                                                                                  styleClass="header-button-2 white-button-2"
                                                                                                  actionListener="#{comment.changeNexus(2)}" 
@@ -311,7 +318,7 @@
                                                                                                  rendered="#{jsfSessionUser.currentUser.VAR and comment.nexus.id eq null}"
                                                                                                  title="Your comment will ONLY be visible to members of your team"/>
 
-                                                                                
+
                                                                             </div>
                                                                         </div>
 

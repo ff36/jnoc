@@ -145,7 +145,20 @@ public class DefaultAttributeFilter implements AttributeFilter {
     @Override
     public Map<String, List<Long>> authorizedTickets() {
         Map<String, List<Long>> filters = new HashMap<>();
-        // TODO
+        // Get the current users company if its a VAR or client
+        if (SessionUser.getCurrentUser().isVAR()) {
+            List<Long> companies = new ArrayList<>();
+            companies.add(SessionUser.getCurrentUser().getCompany().getId());
+            for (Company client : SessionUser.getCurrentUser().getCompany().getClients()) {
+                companies.add(client.getId());
+            }
+            filters.put("company", companies);
+        }
+        if (SessionUser.getCurrentUser().isClient()) {
+            List<Long> companies = new ArrayList<>();
+            companies.add(SessionUser.getCurrentUser().getCompany().getId());
+            filters.put("company", companies);
+        }
         return filters;
     }
 

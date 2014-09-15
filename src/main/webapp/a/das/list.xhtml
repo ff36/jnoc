@@ -19,6 +19,7 @@
     <h:body>
 
         #{jsfSessionUser.currentUser.hasPagePermission('das:access')}
+        #{jsfSessionUser.currentUser.hasPageRole('ADMIN')}
 
         <h:form id="form">
 
@@ -54,12 +55,14 @@
                             <tr>
                                 <td class="active">DAS</td>
                             </tr>
-                            <tr>
-                                <td><p:commandLink value="Create New DAS" 
-                                                   action="/a/das/create.xhtml?faces-redirect=true" 
-                                                   process="@this" 
-                                                   type="button"/></td>
-                            </tr>
+                            <ui:fragment rendered="#{jsfSessionUser.currentUser.hasPermission('das:create')}">
+                                <tr>
+                                    <td><p:commandLink value="Create New DAS" 
+                                                       action="/a/das/create.xhtml?faces-redirect=true" 
+                                                       process="@this" 
+                                                       type="button"/></td>
+                                </tr>
+                            </ui:fragment>
                         </tbody>
                     </table>
 

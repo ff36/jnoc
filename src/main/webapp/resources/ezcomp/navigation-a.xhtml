@@ -27,39 +27,44 @@
                             <p:submenu label="Services">  
                                 <p:column>  
 
-                                    <h:panelGrid columns="2" width="250px" columnClasses="menu-column-icon, menu-column-link">
-                                        <p:graphicImage value="#{uriUtil.icon('black/dashboard_icon_16.png', true)}"/>
-                                        <p:commandLink value="Dashboard"
-                                                       action="#{navigator.navigate('DASHBOARD')}"
-                                                       process="@this"
-                                                       type="button"
-                                                       onmouseover="document.getElementById('dashboard-hover-details').style.display = 'block'"
-                                                       onmouseout="document.getElementById('dashboard-hover-details').style.display = 'none'"/>
-
-
-                                        <p:graphicImage value="#{uriUtil.icon('black/page_layout_icon_16.png', true)}"/>
-                                        <p:commandLink value="Edit Menu"
-                                                       action="#{navigator.navigate('SETTINGS_PERSONAL_NAVIGATION')}"
-                                                       process="@this"
-                                                       type="button"
-                                                       onmouseover="document.getElementById('edit-menu-hover-details').style.display = 'block'"
-                                                       onmouseout="document.getElementById('edit-menu-hover-details').style.display = 'none'"/>
-                                        
-                                        <p:spacer height="80"></p:spacer>
-                                        <p:spacer height="80"></p:spacer>
+                                    <h:panelGrid columns="1" width="250px" columnClasses="menu-column-link">
+                                        <ui:fragment>
+                                            <p:graphicImage value="#{uriUtil.icon('black/dashboard_icon_16.png', true)}"/>
+                                            <p:commandLink value="Dashboard"
+                                                           action="#{navigator.navigate('DASHBOARD')}"
+                                                           process="@this"
+                                                           type="button"
+                                                           onmouseover="document.getElementById('dashboard-hover-details').style.display = 'block'"
+                                                           onmouseout="document.getElementById('dashboard-hover-details').style.display = 'none'"/>
+                                        </ui:fragment>
+                                        <ui:fragment>
+                                            <p:graphicImage value="#{uriUtil.icon('black/page_layout_icon_16.png', true)}"/>
+                                            <p:commandLink value="Edit Menu"
+                                                           action="#{navigator.navigate('SETTINGS_PERSONAL_NAVIGATION')}"
+                                                           process="@this"
+                                                           type="button"
+                                                           onmouseover="document.getElementById('edit-menu-hover-details').style.display = 'block'"
+                                                           onmouseout="document.getElementById('edit-menu-hover-details').style.display = 'none'"/>
+                                        </ui:fragment>
+                                        <ui:fragment>
+                                            <p:spacer height="80"></p:spacer>
+                                            <p:spacer height="80"></p:spacer>
+                                        </ui:fragment>
                                     </h:panelGrid>
 
                                 </p:column> 
 
                                 <p:column>  
-                                    <h:panelGrid columns="2" width="200px" columnClasses="menu-column-icon, menu-column-link">
-                                        <p:graphicImage value="#{uriUtil.icon('black/doc_lines_stright_icon_16.png', true)}"/>
-                                        <p:commandLink value="Support Tickets"
-                                                       action="#{navigator.navigate('LIST_TICKETS')}"
-                                                       process="@this"
-                                                       type="button"
-                                                       onmouseover="document.getElementById('ticket-hover-details').style.display = 'block'"
-                                                       onmouseout="document.getElementById('ticket-hover-details').style.display = 'none'"/>
+                                    <h:panelGrid columns="1" width="200px" columnClasses="menu-column-link">
+                                        <ui:fragment>
+                                            <p:graphicImage value="#{uriUtil.icon('black/doc_lines_stright_icon_16.png', true)}"/>
+                                            <p:commandLink value="Support Tickets"
+                                                           action="#{navigator.navigate('LIST_TICKETS')}"
+                                                           process="@this"
+                                                           type="button"
+                                                           onmouseover="document.getElementById('ticket-hover-details').style.display = 'block'"
+                                                           onmouseout="document.getElementById('ticket-hover-details').style.display = 'none'"/>
+                                        </ui:fragment>
 
                                         <ui:remove>
                                             <p:graphicImage value="#{uriUtil.icon('black/flag_icon_16.png', true)}"/>
@@ -69,30 +74,35 @@
                                                            onmouseout="document.getElementById('incident-hover-details').style.display = 'none'"/>
                                         </ui:remove>
 
+                                        <ui:fragment rendered="#{jsfSessionUser.currentUser.hasPermission('account:access') and jsfSessionUser.currentUser.administrator}">
+                                            <p:graphicImage value="#{uriUtil.icon('black/user_icon_16.png', true)}"/>
+                                            <p:commandLink value="Accounts"
+                                                           action="#{navigator.navigate('LIST_ACCOUNTS')}"
+                                                           process="@this"
+                                                           type="button"
+                                                           onmouseover="document.getElementById('account-hover-details').style.display = 'block'"
+                                                           onmouseout="document.getElementById('account-hover-details').style.display = 'none'"/>
+                                        </ui:fragment>
 
-                                        <p:graphicImage value="#{uriUtil.icon('black/user_icon_16.png', true)}"/>
-                                        <p:commandLink value="Accounts"
-                                                       action="#{navigator.navigate('LIST_ACCOUNTS')}"
-                                                       process="@this"
-                                                       type="button"
-                                                       onmouseover="document.getElementById('account-hover-details').style.display = 'block'"
-                                                       onmouseout="document.getElementById('account-hover-details').style.display = 'none'"/>
+                                        <ui:fragment rendered="#{jsfSessionUser.currentUser.hasPermission('company:access') and jsfSessionUser.currentUser.administrator}">
+                                            <p:graphicImage value="#{uriUtil.icon('black/box_icon_16.png', true)}"/>
+                                            <p:commandLink value="Companies"
+                                                           action="#{navigator.navigate('LIST_COMPANIES')}"
+                                                           process="@this"
+                                                           type="button"
+                                                           onmouseover="document.getElementById('company-hover-details').style.display = 'block'"
+                                                           onmouseout="document.getElementById('company-hover-details').style.display = 'none'"/>
+                                        </ui:fragment>
 
-                                        <p:graphicImage value="#{uriUtil.icon('black/box_icon_16.png', true)}"/>
-                                        <p:commandLink value="Companies"
-                                                       action="#{navigator.navigate('LIST_COMPANIES')}"
-                                                       process="@this"
-                                                       type="button"
-                                                       onmouseover="document.getElementById('company-hover-details').style.display = 'block'"
-                                                       onmouseout="document.getElementById('company-hover-details').style.display = 'none'"/>
-
-                                        <p:graphicImage value="#{uriUtil.icon('black/air_signal_icon_16.png', true)}"/>
-                                        <p:commandLink value="DAS"
-                                                       action="#{navigator.navigate('LIST_DAS')}"
-                                                       process="@this"
-                                                       type="button"
-                                                       onmouseover="document.getElementById('das-hover-details').style.display = 'block'"
-                                                       onmouseout="document.getElementById('das-hover-details').style.display = 'none'"/>
+                                        <ui:fragment rendered="#{jsfSessionUser.currentUser.hasPermission('das:access') and jsfSessionUser.currentUser.administrator}">
+                                            <p:graphicImage value="#{uriUtil.icon('black/air_signal_icon_16.png', true)}"/>
+                                            <p:commandLink value="DAS"
+                                                           action="#{navigator.navigate('LIST_DAS')}"
+                                                           process="@this"
+                                                           type="button"
+                                                           onmouseover="document.getElementById('das-hover-details').style.display = 'block'"
+                                                           onmouseout="document.getElementById('das-hover-details').style.display = 'none'"/>
+                                        </ui:fragment>
 
                                         <ui:remove>
                                             <p:graphicImage value="#{uriUtil.icon('black/refresh_icon_16.png', true)}"/>
