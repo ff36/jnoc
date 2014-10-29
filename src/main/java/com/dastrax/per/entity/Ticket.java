@@ -70,6 +70,7 @@ import javax.persistence.criteria.Root;
     @NamedQuery(name = "Ticket.findAllExceptStatus", query = "SELECT e FROM Ticket e WHERE e.status <> :status"),
     @NamedQuery(name = "Ticket.findAllExceptMultiStatus", query = "SELECT e FROM Ticket e WHERE e.status <> :status1 AND e.status <> :status2"),
     @NamedQuery(name = "Ticket.findAllByType", query = "SELECT e FROM Ticket e WHERE e.topic = :topic"),
+    @NamedQuery(name = "Ticket.findAllByEmail", query = "SELECT e FROM Ticket e WHERE e.email = :email"),
     @NamedQuery(name = "Ticket.findAllByCreator", query = "SELECT e FROM Ticket e JOIN e.creator a WHERE a.id = :id"),
     @NamedQuery(name = "Ticket.findAllByRequester", query = "SELECT e FROM Ticket e JOIN e.requester a WHERE a.id = :id"),
     @NamedQuery(name = "Ticket.findAllByAssignee", query = "SELECT e FROM Ticket e JOIN e.assignee a WHERE a.id = :id"),
@@ -113,6 +114,7 @@ public class Ticket implements Serializable {
     private List<Tag> tags;
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}, orphanRemoval = true)
     private List<Attachment> attachments;
+    private String email;
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Transient Properties">
@@ -374,6 +376,15 @@ public class Ticket implements Serializable {
         return attachment;
     }
 
+    /**
+     * Get the value of email.
+     *
+     * @return the value of email
+     */
+    public String getEmail() {
+        return email;
+    }
+
 //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="Setters">
@@ -588,6 +599,15 @@ public class Ticket implements Serializable {
     public void setAttachment(Attachment attachment) {
         this.attachment = attachment;
     }
+    
+    /**
+     * Set the value of email.
+     *
+     * @param email new value of email
+     */
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
 //</editor-fold>
     
@@ -693,6 +713,44 @@ public class Ticket implements Serializable {
         update();
     }
 
+    /**
+     * When a ticket is edited this method provides all the dependency setting
+     * changes required to update the ticket created by an email.
+     *
+     * @param newStatus
+     * @param commenter
+     */
+    public void edit(DTX.TicketStatus newStatus, User commenter) {
+        try {
+            if (!comment.getComment().isEmpty()) {
+                // Add the comment
+                comment.setCommenter(commenter);
+                comment.setCreateEpoch(new Date().getTime());
+                comments.add(comment);
+                comment = new Comment();
+            }
+        } catch (NullPointerException npe) {
+            // Do nothing. The comment is null.
+        }
+
+        // Check and manage any changes to the ticket status
+        switch (newStatus) {
+            case OPEN:
+                newOpenStatus();
+                break;
+            case CLOSED:
+                newSolveStatus();
+                break;
+        }
+
+        // Sort the tags
+        cleanTags();
+        // send the emails
+        email(DTX.EmailTemplate.TICKET_MODIFIED);
+        // Persist the ticket
+        update();
+    }
+    
     /**
      * Converts a ticket status to OPEN.
      */

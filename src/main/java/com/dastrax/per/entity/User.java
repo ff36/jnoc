@@ -507,9 +507,14 @@ public class User implements Serializable {
         }
 
         // Send a welcome confirmation email and write the Token
-        newUserEmail().create();
+        Token token = newUserEmail();
+        token.create();
         
-        JsfUtil.addSuccessMessage("New user created");
+        try {
+            JsfUtil.addSuccessMessage("New user created");
+        } catch (Exception e) {
+            // Request does not come from JSF
+        }
     }
 
     /**
@@ -585,6 +590,21 @@ public class User implements Serializable {
     public boolean isAdministrator() {
         try {
             return metier.getName().equals(DTX.Metier.ADMIN.toString());
+        } catch (NullPointerException e) {
+            return false;
+        }
+    }
+    
+    /**
+     * Convenience method to determine if this user has a metier of type
+     * Undefined.
+     *
+     * @return True if the current user has a metier of Administrator. Otherwise
+     * false.
+     */
+    public boolean isUndefined() {
+        try {
+            return metier.getName().equals(DTX.Metier.UNDEFINED.toString());
         } catch (NullPointerException e) {
             return false;
         }

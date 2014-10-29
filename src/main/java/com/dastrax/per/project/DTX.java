@@ -126,10 +126,11 @@ public class DTX {
      * Metiers (Roles) that users can be assigned.
      */
     public static enum Metier {
-
+        
         ADMIN,
         VAR,
-        CLIENT
+        CLIENT,
+        UNDEFINED
     };
 
     /**
