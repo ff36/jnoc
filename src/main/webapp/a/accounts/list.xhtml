@@ -198,7 +198,13 @@
                                                 <p:column headerText="Type"
                                                           filterBy="#{user.metier.name}"
                                                           filterStyle="display:none">
+                                                    <p:graphicImage value="#{uriUtil.icon('black/attention_icon_16.png', true)}"
+                                                                    title="Undefined User"
+                                                                    rendered="#{user.metier.name eq 'UNDEFINED'}"/>
                                                     #{user.metier.name}
+                                                    <p:graphicImage value="#{uriUtil.icon('black/attention_icon_16.png', true)}"
+                                                                    title="Undefined User"
+                                                                    rendered="#{user.metier.name eq 'UNDEFINED'}"/>
                                                 </p:column>
 
                                                 <p:column headerText="Requested Support Tickets">
@@ -723,10 +729,10 @@
 
                                                             <p:commandButton id="com-save-button" 
                                                                              styleClass="green-button company-save-button-update-class" 
-                                                                             actionListener="#{user.update()}" 
+                                                                             actionListener="#{user.changeCompany()}" 
                                                                              value="Save" 
                                                                              process="@this @(.dlg-company-process-class)" 
-                                                                             update="@(.company-update-class) :form:growl"
+                                                                             update="@(.company-update-class) :form:growl :form:accounts-table"
                                                                              onclick="PF('blockui4').block();"
                                                                              oncomplete="PF('blockui4').unblock();"
                                                                              onsuccess="PF('company-dlg').hide()"/>

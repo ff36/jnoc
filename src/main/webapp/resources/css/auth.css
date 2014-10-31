@@ -2054,3 +2054,18 @@ DIV.timeline-event-selected
 	background: #BECEFE !important;
 	border-color: #97B0F8 !important;
 }
+
+/*Notification Boxes*/
+.info,.success,.error,.warning,.tip,.secure,.message,.download,.purchase,.print{margin:20px 50px; padding:10px;-webkit-border-radius: 3px;-moz-border-radius: 3px;border-radius: 3px;-moz-box-shadow: 4px 4px #dfe1d8;-webkit-box-shadow: 4px 4px #dfe1d8;box-shadow: 4px 4px #dfe1d8;}
+
+
+.info{border:1px solid #0e7fad;color:#0e7fad;background:#c0e9fa}
+.success{border:1px solid #4f8746;color:#4f8746;background:#d4ffcd}
+.error{border:1px solid #641f1a;color:#641f1a;background:#ffd2d4}
+.warning{border:1px solid #9d9c49;color:#000;background:#fdfdcb}
+.tip{border:1px solid #c77d10;color:#c77d10;background:#f9d69e}
+.secure{border:1px solid #9638f1;color:#9638f1;background:#e5cefc}
+.message{border:1px solid #000;color:#000;background:#efefef}
+.download{border:1px solid #04b5eb;color:#04b5eb;background:#f7f7f7}
+.purchase{border:1px solid #426164;color:#426164;background:#c2e1e3}
+.print{border:1px solid #3c4b5e;color:#3c4b5e;background:#c8d9e3}

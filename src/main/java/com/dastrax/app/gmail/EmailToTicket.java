@@ -35,7 +35,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Root;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.jsoup.Jsoup;
 
 /**
@@ -50,7 +49,6 @@ public class EmailToTicket {
 
     private static final boolean showStructure = true;
     private static final boolean saveAttachments = true;
-    private static int attnum = 1;
     private static String clearTextPart = null;
     private static String htmlTextPart = null;
     private static List<Attachment> attachments;
@@ -241,6 +239,7 @@ public class EmailToTicket {
         CriteriaQuery query = builder.createQuery(User.class);
         Root root = query.from(User.class);
         String[] split = email.split("@");
+        
         // Use the second half of the email to match
         Expression literal = builder.literal((String) "%" + split[1]);
         builder.like(root.get(User_.email), literal);

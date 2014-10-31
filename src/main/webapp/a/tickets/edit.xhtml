@@ -241,7 +241,7 @@
                                     <tr>
                                         <th>
                                             #{editTicket.ticket.title} <h:outputText value="Email ID: (DTX-#{editTicket.ticket.email})" 
-                                                                                          styleClass="comment-date"/>
+                                                          styleClass="comment-date"/>
                                         </th>
                                     </tr>
                                 </thead>
@@ -257,7 +257,7 @@
                                                             rendered="#{!editTicket.render}" 
                                                             styleClass="ajax-lazy-loader"/>
 
-                                            <h:panelGroup id="lazy-update-class-3" rendered="#{editTicket.render}">
+                                            <h:panelGroup id="lazy-update-class-3" rendered="#{editTicket.render and !editTicket.ticket.requester.undefined}">
 
                                                 <p:dataList id="comment-datalist" 
                                                             value="#{editTicket.ticket.comments}" 
@@ -492,6 +492,15 @@
 
                                             </h:panelGroup>
 
+                                            <h:panelGroup id="lazy-update-class-4" rendered="#{editTicket.render and editTicket.ticket.requester.undefined}">
+
+                                                <div class="warning">
+                                                    <h2 style="text-align: center">#{editTicket.ticket.requester.contact.firstName} #{editTicket.ticket.requester.contact.lastName} needs a company before you can edit this ticket!</h2>
+                                                    <p:spacer width="100%" height="5"/>
+                                                    When new accounts are created via a support email we do our best to link the new account to an existing company. If a suitable company can't be found the user is temporary classified as <em>'Undefined'</em>. The ticket was successfully created but until #{editTicket.ticket.requester.contact.firstName} is associated with a company (new or existing) you will be unable to edit or manage the ticket.
+                                                </div>
+                                                <p:spacer width="100%" height="50"/>
+                                            </h:panelGroup>
 
                                         </td>
                                     </tr>
@@ -605,7 +614,7 @@
                                                                  removeFrom="#{editTicket.ticket.attachments}" 
                                                                  unique="true"/>
                                                 </p:commandLink>
-                                                
+
                                             </p:column>
 
                                         </p:dataTable> 

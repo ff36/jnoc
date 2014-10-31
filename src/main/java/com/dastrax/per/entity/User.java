@@ -12,7 +12,6 @@ import com.dastrax.app.email.Email;
 import com.dastrax.app.misc.JsfUtil;
 import com.dastrax.app.security.Password;
 import com.dastrax.app.security.SessionUser;
-import com.dastrax.app.service.internal.DefaultAttributeFilter;
 import com.dastrax.app.service.internal.DefaultStorageManager;
 import com.dastrax.app.services.StorageManager;
 import com.dastrax.app.upload.DefaultUploadManager;
@@ -26,6 +25,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -456,13 +456,28 @@ public class User implements Serializable {
                                 .with("type", DTX.CompanyType.VAR)
                                 .parameters());
             }
+            // Make sure its the right kind of company
+            if ("UNDEFINED".equals(metier.getName())) {
+                List<Company> vs = dap.findWithNamedQuery(
+                        "Company.findByType", 
+                        QueryParameter
+                                .with("type", DTX.CompanyType.VAR)
+                                .parameters());
+                List<Company> cls = dap.findWithNamedQuery(
+                        "Company.findByType", 
+                        QueryParameter
+                                .with("type", DTX.CompanyType.CLIENT)
+                                .parameters());
+                availableCompanies.addAll(vs);
+                availableCompanies.addAll(cls);
+            }
         }
         // VAR can only add to their own company and client companies
         if (SessionUser.getCurrentUser().isVAR()) {
-            List<Long> companies = 
-                (List<Long>) new DefaultAttributeFilter()
-                        .authorizedCompanies(true)
-                        .get("company");
+//            List<Long> companies = 
+//                (List<Long>) new DefaultAttributeFilter()
+//                        .authorizedCompanies(true)
+//                        .get("company");
             if ("CLIENT".equals(metier.getName())) {
                 availableCompanies.addAll(company.getClients());
             }
@@ -478,6 +493,13 @@ public class User implements Serializable {
 
         // Populate all the metiers
         metiers = dap.findWithNamedQuery("Metier.findAll");
+        // Undefined is internal only
+        Iterator<Metier> iterator = metiers.iterator();
+	while (iterator.hasNext()) {
+            if ("UNDEFINED".equals(iterator.next().getName())) {
+                iterator.remove();
+            }
+	}
     }
 
     /**
@@ -526,6 +548,31 @@ public class User implements Serializable {
         JsfUtil.addSuccessMessage("Saved");
     }
 
+    /**
+     * If the users company has been changed we need to match the metier to the
+     * company type. This is for converting undefined to a user type.
+     */
+    public void changeCompany() {
+        if (DTX.CompanyType.CLIENT.equals(this.company.getType())) {
+            this.metier = (Metier) dap.findWithNamedQuery(
+                        "Metier.findByName", 
+                        QueryParameter
+                                .with("name", DTX.Metier.CLIENT.toString())
+                                .parameters())
+                    .get(0);
+        }
+        if (DTX.CompanyType.VAR.equals(this.company.getType())) {
+            this.metier = (Metier) dap.findWithNamedQuery(
+                        "Metier.findByName", 
+                        QueryParameter
+                                .with("name", DTX.Metier.VAR.toString())
+                                .parameters())
+                    .get(0);
+        }
+        
+        update();
+    }
+    
     /**
      * Close a user accounts. We cannot technically delete a user account as it
      * will inevitably have dependencies on tickets etc. Instead we remove any
