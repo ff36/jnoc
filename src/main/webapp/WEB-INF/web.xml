@@ -13,7 +13,7 @@
     <context-param>
         <param-name>primefaces.UPLOADER</param-name>
         <param-value>native</param-value>
-   </context-param>
+    </context-param>
     <!-- END | PRIMEFACES -->
     
     <!-- START | CAPTCHA -->
@@ -29,26 +29,26 @@
     
     <!-- START | QUARTZ -->
     <context-param>
-         <param-name>quartz:config-file</param-name>
-         <param-value>quartz.properties</param-value>
-     </context-param>
-     <context-param>
-         <param-name>quartz:shutdown-on-unload</param-name>
-         <param-value>true</param-value>
-     </context-param>
-     <context-param>
-         <param-name>quartz:wait-on-shutdown</param-name>
-         <param-value>true</param-value>
-     </context-param>
-     <context-param>
-         <param-name>quartz:start-on-load</param-name>
-         <param-value>true</param-value>
-     </context-param>
+        <param-name>quartz:config-file</param-name>
+        <param-value>quartz.properties</param-value>
+    </context-param>
+    <context-param>
+        <param-name>quartz:shutdown-on-unload</param-name>
+        <param-value>true</param-value>
+    </context-param>
+    <context-param>
+        <param-name>quartz:wait-on-shutdown</param-name>
+        <param-value>true</param-value>
+    </context-param>
+    <context-param>
+        <param-name>quartz:start-on-load</param-name>
+        <param-value>true</param-value>
+    </context-param>
 
-     <listener>
-         <listener-class>org.quartz.ee.servlet.QuartzInitializerListener</listener-class>
-     </listener>
-     <!-- END | QUARTZ -->
+    <listener>
+        <listener-class>org.quartz.ee.servlet.QuartzInitializerListener</listener-class>
+    </listener>
+    <!-- END | QUARTZ -->
     
     <!-- START | SHIRO -->
     <listener>

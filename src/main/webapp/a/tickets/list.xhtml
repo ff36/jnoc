@@ -25,6 +25,7 @@
             <pe:ajaxErrorHandler />
 
             <p:growl id="growl" 
+                     widgetVar="growl"
                      redisplay="false"
                      showDetail="false" 
                      sticky="false" />
@@ -259,6 +260,13 @@
                                                           filterStyle="display:none"
                                                           sortBy="#{ticket.severity}">
                                                     #{ticket.severity}
+                                                </p:column>
+                                                
+                                                <p:column headerText="Email ID"
+                                                          filterBy="#{ticket.email}"
+                                                          filterStyle="display:none"
+                                                          sortBy="#{ticket.email}">
+                                                    (DTX-#{ticket.email})
                                                 </p:column>
 
                                                 <p:rowExpansion>  

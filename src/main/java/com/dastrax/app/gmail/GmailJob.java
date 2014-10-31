@@ -15,10 +15,7 @@ import java.util.logging.Logger;
 import javax.mail.*;
 
 /**
- * Implements the Quartz Job interface to schedule UDP datagrams. The datagram
- * is constructed sequentially for each of the 16 BIUs. The datagram is then
- * sent to the BIU and receives a response with all the system attributes. These
- * are subsequently stored in the persistence layer as snapshots.
+ * Implements the Quartz Job interface to schedule Gmail IMAP check.
  *
  * @version 2.0.0
  * @since Build 140929.115744
@@ -37,13 +34,17 @@ public class GmailJob implements Job {
         Folder folder = null;
         Store store = null;
         try {
+
             Properties props = System.getProperties();
             props.setProperty("mail.store.protocol", "imaps");
 
             Session session = Session.getDefaultInstance(props, null);
             // session.setDebug(true);
             store = session.getStore("imaps");
-            store.connect("imap.gmail.com", "support-development-823764@solid.com", "&ehuPMg9x%DQ");
+            store.connect(
+                    "imap.gmail.com",
+                    ResourceBundle.getBundle("config").getString("SenderEmailAddress"),
+                    ResourceBundle.getBundle("config").getString("SenderEmailPassword"));
             folder = store.getFolder("Inbox");
             /* Others GMail folders :
              * [Gmail]/All Mail   This folder contains all of your Gmail messages.
@@ -54,44 +55,27 @@ public class GmailJob implements Job {
              * [Gmail]/Trash      Messages deleted from Gmail.
              */
             folder.open(Folder.READ_WRITE);
-            Message messages[] = folder.getMessages();
-            System.out.println("No of Messages : " + folder.getMessageCount());
+
+            // Attributes & Flags for all messages ..
+            Message[] messages = folder.getMessages();
+
             for (int i = 0; i < messages.length; ++i) {
                 final Message msg = messages[i];
-                /*
-                 We don't want to fetch messages already processed
-                 */
-                //if (!msg.isSet(Flags.Flag.SEEN)) {
 
-                String from = "unknown";
-                if (msg.getReplyTo().length >= 1) {
-                    from = msg.getReplyTo()[0].toString();
-                } else if (msg.getFrom().length >= 1) {
-                    from = msg.getFrom()[0].toString();
+                /* To prevent the same message being reread if a long running
+                 process is actioned we will only pull in messages that have 
+                 been unread. As soon as we take the message into the queue we 
+                 will mark it as read.
+                 */
+                if (!msg.getFlags().contains(Flags.Flag.SEEN)) {
+                    // Set the message as seen
+                    msg.setFlag(Flags.Flag.SEEN, true);
+                    // Process it
+                    new EmailToTicket().processEmail(msg);
+                    // Delete the message
+                    msg.setFlag(Flags.Flag.DELETED, true);
                 }
 
-//                Multipart mp = (Multipart) msg.getContent();
-//                BodyPart bp = mp.getBodyPart(0);
-//                System.out.println("MSG NUMBER: " + msg.getMessageNumber());
-//                System.out.println("SENT DATE: " + msg.getSentDate());
-//                System.out.println("SUBJECT: " + msg.getSubject());
-//                System.out.println("CONTENT: " + bp.getContent());
-//                System.out.println("FROM: " + from);
-//                new Thread(new Runnable() {
-//                    public void run() {
-//                        try {
-//                            new EmailToTicket().processEmail(msg);
-//                        } catch (MessagingException | IOException ex) {
-//                            Logger.getLogger(GmailJob.class.getName()).log(Level.SEVERE, null, ex);
-//                        }
-//                    }
-//                }).start();
-                
-                new EmailToTicket().processEmail(msg);
-
-                // Delete the message
-                msg.setFlag(Flags.Flag.DELETED, true);
- 
             }
         } catch (NoSuchProviderException ex) {
             Logger.getLogger(GmailJob.class.getName()).log(Level.SEVERE, null, ex);

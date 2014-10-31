@@ -6,12 +6,9 @@
 
 package com.dastrax.app.upload;
 
-import com.dastrax.per.entity.Attachment;
-import com.dastrax.per.entity.Company;
-import com.dastrax.per.entity.User;
 import com.dastrax.per.project.DTX;
+import javax.mail.internet.MimeBodyPart;
 import org.primefaces.event.FileUploadEvent;
-import org.primefaces.extensions.event.ImageAreaSelectEvent;
 
 /**
  * Methods dedicated to handling file uploads. Specifically the transition to
@@ -44,6 +41,27 @@ public interface UploadManager {
      * @return An UploadFile containing information about the uploaded file.
      */
     public UploadFile upload(FileUploadEvent event);
+    
+    /**
+     * Transitions email attachments file into external temporary storage. 
+     * During the upload a class level UploadFile.class is created storing all 
+     * the information about the uploaded file.
+     * 
+     * No file type checks are performed in this class. It is expected that the
+     * checks are performed at the point of upload.
+     * 
+     * The uploaded file is stored externally and is not executable. Hence if
+     * the file contains malicious executable code it cannot be implemented once
+     * uploaded.
+     * 
+     * The temporary file will only exist for a maximum of 24 hours before being
+     * deleted. To make the file persistent one of the class 'save' methods
+     * should be invoked.
+     * 
+     * @param part email body part
+     * @return An UploadFile containing information about the uploaded file.
+     */
+    public UploadFile upload(MimeBodyPart part);
     
     /**
      * Uploaded images stored in the temporary storage directory can offer the

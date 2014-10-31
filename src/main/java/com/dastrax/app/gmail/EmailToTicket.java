@@ -7,24 +7,35 @@ package com.dastrax.app.gmail;
 
 import com.dastrax.per.dap.CrudService;
 import com.dastrax.per.dap.QueryParameter;
+import com.dastrax.per.entity.Attachment;
 import com.dastrax.per.entity.Comment;
 import com.dastrax.per.entity.Metier;
 import com.dastrax.per.entity.Ticket;
 import com.dastrax.per.entity.User;
+import com.dastrax.per.entity.User_;
 import com.dastrax.per.project.DTX;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.mail.BodyPart;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
+import javax.mail.Part;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Root;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.jsoup.Jsoup;
 
 /**
@@ -37,11 +48,21 @@ import org.jsoup.Jsoup;
  */
 public class EmailToTicket {
 
+    private static final boolean showStructure = true;
+    private static final boolean saveAttachments = true;
+    private static int attnum = 1;
+    private static String clearTextPart = null;
+    private static String htmlTextPart = null;
+    private static List<Attachment> attachments;
+
+    //<editor-fold defaultstate="collapsed" desc="Properties">
     private static final Logger LOG = Logger.getLogger(EmailToTicket.class.getName());
-
     private CrudService dap;
+//</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="Constructors">
     public EmailToTicket() {
+        attachments = new ArrayList<>();
         try {
             dap = (CrudService) InitialContext.doLookup(
                     ResourceBundle.getBundle("config").getString("CRUD"));
@@ -49,23 +70,29 @@ public class EmailToTicket {
 //            LOG.log(Level.SEVERE, null, ex);
         }
     }
+//</editor-fold>
 
+    /**
+     *
+     * @param msg
+     * @throws MessagingException
+     * @throws IOException
+     */
     public void processEmail(Message msg) throws MessagingException, IOException {
-        // Is this email part of an existing ticket 
-        isPartofExistingTicket(msg);
-
-        // If yes add it to the end of the ticket
-        // If no does the sender have a dastrax account
-        // If yes create a new ticket for that user
-        // If no create a new user account and create a ticket for them
-    }
-
-    private void isPartofExistingTicket(Message msg) throws MessagingException, IOException {
+        // Get the email subject
         String subject = msg.getSubject();
-        if (subject.matches("(.*)((DTX-)(.{10})())(.*)")) {
+        String title = subject;
+
+        // Aquire the user account or create it if not
+        User user = aquireAccount(msg);
+
+        if (subject.matches("(.*)(\\({1})(DTX-)([0-9]*)(\\){1})(.*)")) {
             // Extract the email id
-            String substringBetween = StringUtils.substringBetween(msg.getSubject(), "(", ")");
-            String emailId = substringBetween.substring(4);
+            String fullEmailId = StringUtils.substringBetween(msg.getSubject(), "(", ")");
+            String emailId = fullEmailId.substring(4);
+
+            // Set the title
+            title = title.replace("fullEmailId", "");
 
             // get the ticket
             List<Ticket> tickets = dap.findWithNamedQuery(
@@ -73,9 +100,6 @@ public class EmailToTicket {
                     QueryParameter
                     .with("email", emailId)
                     .parameters());
-
-            // Make sure the user exists
-            User user = aquireAccount(msg);
 
             if (!tickets.isEmpty()) {
                 // The ticket exists
@@ -86,16 +110,62 @@ public class EmailToTicket {
 
                 Ticket ticket = tickets.get(0);
                 ticket.setComment(comment);
+                ticket.setSendEmailToRequester(true);
+                if (ticket.getAssignee() != null) {
+                    ticket.setSendEmailToAssignee(true);
+                }
                 ticket.edit(DTX.TicketStatus.OPEN, user);
+
+                // Take care of the attachements
+                for (Attachment a : attachments) {
+                    ticket.setAttachment(a);
+                    ticket.addAttachment();
+                }
 
             } else {
                 // Create a new ticket
-                System.out.println("Creating New Ticket");
+                Comment comment = new Comment();
+                comment.setCommenter(user);
+                comment.setCreateEpoch(new Date().getTime());
+                comment.setComment(getMessage(msg));
+
+                Ticket ticket = new Ticket();
+                ticket.setStatus(DTX.TicketStatus.OPEN);
+                ticket.setTitle(title);
+                ticket.setSeverity(DTX.TicketSeverity.S3);
+                ticket.setTopic(DTX.TicketTopic.GENERAL);
+                ticket.setSendEmailToRequester(true);
+                ticket.setComment(comment);
+                ticket.create(user, DTX.TicketStatus.OPEN);
+
+                // Take care of the attachements
+                for (Attachment a : attachments) {
+                    ticket.setAttachment(a);
+                    ticket.addAttachment();
+                }
             }
 
         } else {
-            // New ticket
-            System.out.println("New");
+            // Create a new ticket
+            Comment comment = new Comment();
+            comment.setCommenter(user);
+            comment.setCreateEpoch(new Date().getTime());
+            comment.setComment(getMessage(msg));
+
+            Ticket ticket = new Ticket();
+            ticket.setStatus(DTX.TicketStatus.OPEN);
+            ticket.setTitle(title);
+            ticket.setSeverity(DTX.TicketSeverity.S3);
+            ticket.setTopic(DTX.TicketTopic.GENERAL);
+            ticket.setSendEmailToRequester(true);
+            ticket.setComment(comment);
+            ticket.create(user, DTX.TicketStatus.OPEN);
+
+            // Take care of the attachements
+            for (Attachment a : attachments) {
+                ticket.setAttachment(a);
+                ticket.addAttachment();
+            }
         }
     }
 
@@ -106,6 +176,7 @@ public class EmailToTicket {
      * @throws MessagingException
      */
     private User aquireAccount(Message msg) throws MessagingException {
+
         // The user to return
         User user = null;
 
@@ -117,15 +188,16 @@ public class EmailToTicket {
             from = msg.getFrom()[0].toString();
         }
         String email = StringUtils.substringBetween(from, "<", ">");
+
+        // Try to set the users name
         String[] names = from.split(" ");
         String firstName, lastName;
         if (names.length >= 1) {
             firstName = names[0];
         } else {
             firstName = "Unknown";
-            lastName = "Unknown";
         }
-        
+
         if (names.length >= 2) {
             lastName = names[1];
         } else {
@@ -147,7 +219,7 @@ public class EmailToTicket {
                 user = users.get(0);
             } else {
                 // Create a new user
-                user = createUndefinedUser(email, firstName, lastName);
+                user = createUser(email, firstName, lastName);
             }
 
         }
@@ -159,23 +231,51 @@ public class EmailToTicket {
      * @param email
      * @return
      */
-    private User createUndefinedUser(String email, String firstName, String lastName) {
-        // Get the metiers
-        List<Metier> metiers = dap.findWithNamedQuery(
-                "Metier.findByName",
-                QueryParameter
-                .with("name", DTX.Metier.UNDEFINED.toString())
-                .parameters());
+    private User createUser(String email, String firstName, String lastName) {
 
-        // Create the user
+        // New user
         User user = new User();
-        user.setNewEmail(email);
-        user.getContact().setFirstName(firstName);
-        user.getContact().setLastName(lastName);
-        user.setMetier(metiers.get(0));
-        user.setCompany(null);
-        user.getAccount().setLocked(true);
-        user.create();
+
+        // Use the email to see if they belong to a company
+        CriteriaBuilder builder = dap.getCriteriaBuilder();
+        CriteriaQuery query = builder.createQuery(User.class);
+        Root root = query.from(User.class);
+        String[] split = email.split("@");
+        // Use the second half of the email to match
+        Expression literal = builder.literal((String) "%" + split[1]);
+        builder.like(root.get(User_.email), literal);
+        List<User> users = dap.findWithCriteriaQuery(query);
+
+        if (users.isEmpty()) {
+            // No match so create undefined user
+            // Get the metiers
+            List<Metier> metiers = dap.findWithNamedQuery(
+                    "Metier.findByName",
+                    QueryParameter
+                    .with("name", DTX.Metier.UNDEFINED.toString())
+                    .parameters());
+
+            // Create the user
+            user.setNewEmail(email);
+            user.getContact().setFirstName(firstName);
+            user.getContact().setLastName(lastName);
+            user.setMetier(metiers.get(0));
+            user.setCompany(null);
+            user.getAccount().setLocked(true);
+            user.create();
+        } else {
+            // A match was found so associate to the existing company
+            User existing = users.get(0);
+
+            // Create the user
+            user.setNewEmail(email);
+            user.getContact().setFirstName(firstName);
+            user.getContact().setLastName(lastName);
+            user.setMetier(existing.getMetier());
+            user.setCompany(existing.getCompany());
+            user.getAccount().setLocked(false);
+            user.create();
+        }
 
         return user;
     }
@@ -196,34 +296,180 @@ public class EmailToTicket {
             MimeMessage m = (MimeMessage) message;
             Object contentObject = m.getContent();
             if (contentObject instanceof Multipart) {
-                BodyPart clearTextPart = null;
-                BodyPart htmlTextPart = null;
+
                 Multipart content = (Multipart) contentObject;
                 int count = content.getCount();
                 for (int i = 0; i < count; i++) {
                     BodyPart part = content.getBodyPart(i);
-                    if (part.isMimeType("text/plain")) {
-                        clearTextPart = part;
-                        break;
-                    } else if (part.isMimeType("text/html")) {
-                        htmlTextPart = part;
+
+                    try {
+                        dumpPart(part);
+                    } catch (Exception ex) {
+                        Logger.getLogger(EmailToTicket.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
-
-                if (clearTextPart != null) {
-                    result = (String) clearTextPart.getContent();
-                } else if (htmlTextPart != null) {
-                    String html = (String) htmlTextPart.getContent();
-                    result = Jsoup.parse(html).text();
-                }
-
-            } else if (contentObject instanceof String) // a simple text message
-            {
+            } else if (contentObject instanceof String) {
                 result = (String) contentObject;
             } else {
                 result = null;
             }
         }
+
+        if (clearTextPart != null) {
+            result = clearTextPart;
+        } else if (htmlTextPart != null) {
+            String html = htmlTextPart;
+            result = Jsoup.parse(html).text();
+        }
+
+        /*
+         If the email is part of a discussion it will feature our email in the
+         original message header so we can cut the email here so as not to include
+         previouse parts of the email.
+         */
+        String emailAddress = ResourceBundle.getBundle("config").getString("SenderEmailAddress");
+        if (result != null && result.contains(emailAddress)) {
+            result = StringUtils.substringBefore(
+                    result,
+                    ResourceBundle.getBundle("config").getString("SenderEmailAddress"));
+            result = result.substring(0, result.lastIndexOf("\n"));
+        }
+
+        /* 
+         If people have a signature it will have their name in it usually. It is
+         also unlikely that their name will feature in the last 10% section of 
+         the email unless its part of their signature. So we can look for that and 
+         cut off the email at that point.
+         */
+        // Get the name
+        String from = "unknown";
+        if (message.getReplyTo().length >= 1) {
+            from = message.getReplyTo()[0].toString();
+        } else if (message.getFrom().length >= 1) {
+            from = message.getFrom()[0].toString();
+        }
+        
+        String name = StringUtils.substringBefore(from, "<").trim();
+        // Just for my name because of the appostrohe
+        if (name.contains("Tarka")) {
+            name = "Tarka";
+        }
+        if (result != null && result.contains(name)) {
+            result = StringUtils.substringBefore(result, name);
+            result = result.substring(0, result.lastIndexOf("\n"));
+        }
         return result;
+    }
+
+    public void dumpPart(Part p) throws Exception {
+
+        /**
+         * Dump input stream .. * InputStream is = p.getInputStream(); // If
+         * "is" is not already buffered, wrap a BufferedInputStream // around
+         * it. if (!(is instanceof BufferedInputStream)) is = new
+         * BufferedInputStream(is); int c; while ((c = is.read()) != -1)
+         * System.out.write(c);
+         *
+         *
+         */
+//        String ct = p.getContentType();
+//        try {
+//            pr("CONTENT-TYPE: " + (new ContentType(ct)).toString());
+//        } catch (ParseException pex) {
+//            pr("BAD CONTENT-TYPE: " + ct);
+//        }
+        String filename = p.getFileName();
+//        if (filename != null) {
+//            pr("FILENAME: " + filename);
+//        }
+
+        /*
+         * Using isMimeType to determine the content type avoids
+         * fetching the actual content data until we need it.
+         */
+        if (p.isMimeType("text/plain")) {
+            clearTextPart = (String) p.getContent();
+//            System.out.println(clearTextPart);
+        } else if (p.isMimeType("text/html")) {
+            htmlTextPart = (String) p.getContent();
+//            System.out.println(clearTextPart);
+        } else if (p.isMimeType("multipart/*")) {
+//            pr("This is a Multipart");
+//            pr("---------------------------");
+            Multipart mp = (Multipart) p.getContent();
+            level++;
+            int count = mp.getCount();
+            for (int i = 0; i < count; i++) {
+                dumpPart(mp.getBodyPart(i));
+            }
+            level--;
+        } else if (p.isMimeType("message/rfc822")) {
+//            pr("This is a Nested Message");
+//            pr("---------------------------");
+            level++;
+            dumpPart((Part) p.getContent());
+            level--;
+        } else {
+            /*
+             * If we actually want to see the data, and it's not a
+             * MIME type we know, fetch it and check its Java type.
+             */
+//            Object o = p.getContent();
+//            if (o instanceof String) {
+//                pr("This is a string");
+//                pr("---------------------------");
+//                System.out.println((String) o);
+//            } else if (o instanceof InputStream) {
+//                pr("This is just an input stream");
+//                pr("---------------------------");
+//                InputStream is = (InputStream) o;
+//                int c;
+//                while ((c = is.read()) != -1) {
+//                    System.out.write(c);
+//                }
+//            } else {
+//                pr("This is an unknown type");
+//                pr("---------------------------");
+//                pr(o.toString());
+//            }
+        }
+
+        /*
+         * If we're saving attachments, write out anything that
+         * looks like an attachment into an appropriately named
+         * file.  Don't overwrite existing files to prevent
+         * mistakes.
+         */
+        if (saveAttachments && level != 0 && p instanceof MimeBodyPart
+                && !p.isMimeType("multipart/*")) {
+            String disp = p.getDisposition();
+            // many mailers don't include a Content-Disposition
+            if (disp == null
+                    || disp.equalsIgnoreCase(Part.ATTACHMENT)
+                    || disp.equalsIgnoreCase(Part.INLINE)) {
+                // Only save files with named attachements
+                if (filename != null) {
+
+                    //pr("Saving attachment " + filename);
+                    if (p.getSize() > 7000) {
+                        Attachment attachment = new Attachment();
+                        attachment.uploadEmailAttachment((MimeBodyPart) p);
+                        attachments.add(attachment);
+                    }
+                }
+
+            }
+        }
+    }
+
+    static int level = 0;
+
+    /**
+     * Print a, possibly indented, string.
+     *
+     * @param s
+     */
+    public static void pr(String s) {
+        System.out.println(level + ": " + s);
     }
 }

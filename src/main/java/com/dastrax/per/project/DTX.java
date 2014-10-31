@@ -371,7 +371,9 @@ public class DTX {
         AGENT_FAMILY,
         AGENT_OPERATING_SYSTEM,
         AGENT_TYPE,
-        AGENT_VERSION_NUMBER;
+        AGENT_VERSION_NUMBER,
+        TICKET_EMAIL_ID,
+        TICKET_MSG;
     };
 
     /**

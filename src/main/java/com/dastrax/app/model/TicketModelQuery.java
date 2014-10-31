@@ -203,6 +203,7 @@ public class TicketModelQuery implements ModelQuery {
                 globalPredicate.add(builder.like(ticket.get(Ticket_.status), literal));
                 globalPredicate.add(builder.like(ticket.get(Ticket_.title), literal));
                 globalPredicate.add(builder.like(ticket.get(Ticket_.topic), literal));
+                globalPredicate.add(builder.like(ticket.get(Ticket_.email), literal));
                 globalPredicate.add(builder.like(ticket.get(Ticket_.severity), literal));
                 globalPredicate.add(builder.like(ticket.join(Ticket_.requester, JoinType.LEFT).join(User_.contact, JoinType.LEFT).get(Contact_.firstName), literal));
                 globalPredicate.add(builder.like(ticket.join(Ticket_.requester, JoinType.LEFT).join(User_.contact, JoinType.LEFT).get(Contact_.lastName), literal));

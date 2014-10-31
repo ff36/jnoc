@@ -26,8 +26,11 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeBodyPart;
 import net.coobird.thumbnailator.Thumbnails;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.primefaces.event.FileUploadEvent;
 
 /**
@@ -128,6 +131,76 @@ public class DefaultUploadManager implements UploadManager {
     }
 
     /**
+     * Transitions email attachments file into external temporary storage.
+     * During the upload a class level UploadFile.class is created storing all
+     * the information about the uploaded file.
+     *
+     * No file type checks are performed in this class. It is expected that the
+     * checks are performed at the point of upload.
+     *
+     * The uploaded file is stored externally and is not executable. Hence if
+     * the file contains malicious executable code it cannot be implemented once
+     * uploaded.
+     *
+     * The temporary file will only exist for a maximum of 24 hours before being
+     * deleted. To make the file persistent one of the class 'save' methods
+     * should be invoked.
+     *
+     * @param part email body part
+     * @return An UploadFile containing information about the uploaded file.
+     */
+    @Override
+    public UploadFile upload(MimeBodyPart part) {
+
+        try {
+            // Create a storage manager
+            StorageManager storage = new DefaultStorageManager();
+
+            // Create a temporary file name
+            String temporaryFileName, key;
+            temporaryFileName = UUID.randomUUID().toString();
+            key = storage.keyGenerator(
+                    DTX.KeyType.TEMPORARY_FILE,
+                    temporaryFileName);
+
+            // Create a temporary file
+            File file = File.createTempFile(temporaryFileName, ".tmp");
+            FileOutputStream fos = new FileOutputStream(file);
+            InputStream inputstream = part.getInputStream();
+            fos.write(IOUtils.toByteArray(inputstream));
+
+            // Upload the file to the storage temporary file directory
+            storage.put(key, file, CannedAccessControlList.PublicRead);
+
+            // TODO: This should really check the upload was successfull
+            // Create the upload file
+            UploadFile uploadFile = new UploadFile();
+            uploadFile.getMeta().setNewName(temporaryFileName);
+            uploadFile.getMeta().setOriginalName(part.getFileName());
+            uploadFile.getMeta().setUri(
+                    new DefaultURI.Builder(URIType.TEMPORARY_FILE)
+                    .withFile(temporaryFileName)
+                    .create()
+                    .generate());
+            uploadFile.getMeta().setS3Key(
+                    storage.keyGenerator(
+                            DTX.KeyType.TEMPORARY_FILE,
+                            temporaryFileName));
+            String mime = StringUtils.substringBefore(part.getContentType(), ";");
+            uploadFile.getMeta().setContentType(mime.toLowerCase());
+            uploadFile.getMeta().setSize(part.getSize());
+
+            uploadFile.setUploaded(true);
+            return uploadFile;
+        } catch (IOException | MessagingException ex) {
+            LOG.log(Level.SEVERE, null, ex);
+        }
+
+        // If the operation fails return a new empty upload file
+        return new UploadFile();
+    }
+
+    /**
      * Uploaded images stored in the temporary storage directory can offer the
      * option to be cropped. Implementing a crop will overwrite the original
      * uploaded file with a new temporary file.
@@ -149,20 +222,20 @@ public class DefaultUploadManager implements UploadManager {
             S3ObjectInputStream objectData = object.getObjectContent();
 
             /*
-            Crop the scaled image.
-            600 is the display width set in the view for the crop.
-            The lose of presision working in int for upscaled images causes
-            an out of range exception if working close to the right or bottom
-            of the image so we need to work in doubles and by casting back to
-            int rounds down.
-            */
+             Crop the scaled image.
+             600 is the display width set in the view for the crop.
+             The lose of presision working in int for upscaled images causes
+             an out of range exception if working close to the right or bottom
+             of the image so we need to work in doubles and by casting back to
+             int rounds down.
+             */
             double scale, x, y, w, h;
             scale = (double) 600 / (double) uploadFile.getImage().getWidth();
             x = uploadFile.getImage().getImageCrop().getX() / scale;
             y = uploadFile.getImage().getImageCrop().getY() / scale;
             w = uploadFile.getImage().getImageCrop().getWidth() / scale;
             h = uploadFile.getImage().getImageCrop().getHeight() / scale;
-            
+
             BufferedImage cropped = ImageIO.read(objectData)
                     .getSubimage(
                             (int) x,
@@ -177,8 +250,7 @@ public class DefaultUploadManager implements UploadManager {
                             .asBufferedImage();
                     break;
                 case COMPANY_LOGO:
-                    int xValue = (
-                            100 
+                    int xValue = (100
                             / uploadFile.getImage().getImageCrop().getY())
                             * uploadFile.getImage().getImageCrop().getX();
                     cropped = Thumbnails.of(cropped).size(xValue, 100)
@@ -191,8 +263,8 @@ public class DefaultUploadManager implements UploadManager {
             File file = File.createTempFile(
                     uploadFile.getMeta().getNewName(), ".tmp");
             ImageIO.write(
-                    cropped, 
-                    uploadFile.getMeta().getContentType().split("/")[1], 
+                    cropped,
+                    uploadFile.getMeta().getContentType().split("/")[1],
                     file);
 
             // Upload the file to the storage temporary file directory

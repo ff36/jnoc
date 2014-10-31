@@ -640,11 +640,60 @@ public class Ticket implements Serializable {
                 break;
         }
 
+        // Complete the comment
         openEpoch = Calendar.getInstance().getTimeInMillis();
         comment.setCreateEpoch(Calendar.getInstance().getTimeInMillis());
         comment.setCommenter(creator);
         comments.add(comment);
 
+        // Create a time based id for email identification
+        email = String.valueOf(new Date().getTime());
+        
+        // Sort the tags
+        cleanTags();
+
+        // Persist the new ticket
+        dap.create(this);
+
+        // send the emails
+        email(DTX.EmailTemplate.NEW_TICKET);
+
+        return navigation;
+
+    }
+    
+    /**
+     * Creates a new Ticket from email, adds it to the persistence layer and adds storage
+     * related resources.
+     *
+     * @param user
+     * @param newStatus
+     * @return navigation string
+     */
+    public Ticket create(User user, DTX.TicketStatus newStatus) {
+
+        // Set the ticket variables
+        creator = user;
+        requester = user;
+
+        // Set the person who closed the ticket if its set to solved
+        switch (newStatus) {
+            case OPEN:
+                newOpenStatus();
+                break;
+            case CLOSED:
+                newSolveStatus();
+                break;
+        }
+
+        openEpoch = Calendar.getInstance().getTimeInMillis();
+        comment.setCreateEpoch(Calendar.getInstance().getTimeInMillis());
+        comment.setCommenter(creator);
+        comments.add(comment);
+
+        // Create a time based id for email identification
+        email = String.valueOf(new Date().getTime());
+        
         // Sort the tags
         cleanTags();
 
@@ -654,7 +703,7 @@ public class Ticket implements Serializable {
         // send the emails
         email(DTX.EmailTemplate.NEW_TICKET);
 
-        return navigation;
+        return newTicket;
 
     }
 
@@ -689,7 +738,6 @@ public class Ticket implements Serializable {
                 comment.setCommenter(SessionUser.getCurrentUser());
                 comment.setCreateEpoch(new Date().getTime());
                 comments.add(comment);
-                comment = new Comment();
             }
         } catch (NullPointerException npe) {
             // Do nothing. The comment is null.
@@ -709,6 +757,8 @@ public class Ticket implements Serializable {
         cleanTags();
         // send the emails
         email(DTX.EmailTemplate.TICKET_MODIFIED);
+        // reset the comment
+        comment = new Comment();
         // Persist the ticket
         update();
     }
@@ -727,7 +777,6 @@ public class Ticket implements Serializable {
                 comment.setCommenter(commenter);
                 comment.setCreateEpoch(new Date().getTime());
                 comments.add(comment);
-                comment = new Comment();
             }
         } catch (NullPointerException npe) {
             // Do nothing. The comment is null.
@@ -745,8 +794,16 @@ public class Ticket implements Serializable {
 
         // Sort the tags
         cleanTags();
+        
         // send the emails
         email(DTX.EmailTemplate.TICKET_MODIFIED);
+        
+        // reset the comment
+        comment = new Comment();
+        
+        // Reset the CC
+        ccEmailRecipients.clear();
+        
         // Persist the ticket
         update();
     }
@@ -1224,9 +1281,9 @@ public class Ticket implements Serializable {
     public Comment lastComment() {
         Comment last = new Comment();
         last.setCreateEpoch(0L);
-        for (Comment comment : comments) {
-            if (comment.getCreateEpoch() > last.getCreateEpoch()) {
-                last = comment;
+        for (Comment c : comments) {
+            if (c.getCreateEpoch() > last.getCreateEpoch()) {
+                last = c;
             }
         }
         return last;
@@ -1256,8 +1313,8 @@ public class Ticket implements Serializable {
                 // Make sure the email conforms to proper format
                 Iterator<String> i = ccEmailRecipients.iterator();
                 while (i.hasNext()) {
-                    String email = i.next();
-                    if (!email.matches(DTX.EMAIL_REGEX)) {
+                    String ccEmail = i.next();
+                    if (!ccEmail.matches(DTX.EMAIL_REGEX)) {
                         i.remove();
                     }
                 }
@@ -1279,8 +1336,8 @@ public class Ticket implements Serializable {
                 Template.class, template.getValue());
 
         // Send the emails
-        for (String email : ccEmailRecipients) {
-            sendEmail(email, temp);
+        for (String ccEmail : ccEmailRecipients) {
+            sendEmail(ccEmail, temp);
         }
     }
 
@@ -1291,23 +1348,26 @@ public class Ticket implements Serializable {
      */
     private void sendEmail(String recipient, Template template) {
         // Build an new email
-        Email email = new Email();
+        Email e = new Email();
 
         // Set the recipient
-        email.setRecipientEmail(recipient.toLowerCase());
+        e.setRecipientEmail(recipient.toLowerCase());
 
+        // Override the template subject
+        template.setSubject(title + " (DTX-" + email + ")");
+        
         // Set the variables
         Map<DTX.EmailVariableKey, String> vars = new HashMap<>();
         vars.put(DTX.EmailVariableKey.TICKET_ID, id.toString());
+        vars.put(DTX.EmailVariableKey.TICKET_MSG, comment.getComment());
         vars.put(DTX.EmailVariableKey.TICKET_TITLE, title);
-        vars.put(DTX.EmailVariableKey.TICKET_STATUS, status.getLabel());
-        email.setVariables(vars);
+        e.setVariables(vars);
 
         // Set the template
-        email.setTemplate(template);
+        e.setTemplate(template);
 
         // Send the email
-        new DefaultEmailer().send(email);
+        new DefaultEmailer().send(e);
     }
 
     //<editor-fold defaultstate="collapsed" desc="Overrides">

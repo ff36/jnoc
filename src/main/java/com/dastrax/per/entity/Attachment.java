@@ -12,12 +12,11 @@ import com.dastrax.app.upload.DefaultUploadManager;
 import com.dastrax.app.upload.UploadFile;
 import com.dastrax.app.upload.UploadManager;
 import com.dastrax.per.project.DTX;
-import com.dastrax.service.navigation.Navigator;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import javax.inject.Inject;
+import javax.mail.internet.MimeBodyPart;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -183,6 +182,29 @@ public class Attachment implements Serializable {
 
     }
 
+    /**
+     * Uploads the file to the default storage and sets the attachment
+     * properties based on the uploaded file.
+     *
+     * @param part
+     */
+    public void uploadEmailAttachment(MimeBodyPart part) {
+
+        UploadManager uploader = new DefaultUploadManager();
+        uploadFile = uploader.upload(part);
+        uploadFile.setType(DTX.UploadType.ATTACHMENT);
+
+        // If the upload was successfull then set the properties
+        if (uploadFile.isUploaded()) {
+            // Set the properties based on the uploaded file
+            s3id = uploadFile.getMeta().getNewName();
+            mime = uploadFile.getMeta().getContentType();
+            title = uploadFile.getMeta().getOriginalName();
+            uploadEpoch = Calendar.getInstance().getTimeInMillis();
+        }
+
+    }
+    
     /**
      * Saves the attachment from its temporary location to its permanent
      * storage location.
