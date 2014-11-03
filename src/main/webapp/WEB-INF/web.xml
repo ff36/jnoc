@@ -57,6 +57,7 @@
     <filter>
         <filter-name>ShiroFilter</filter-name>
         <filter-class>org.apache.shiro.web.servlet.ShiroFilter</filter-class>
+        <async-supported>true</async-supported>
     </filter>
     <filter-mapping>
         <filter-name>ShiroFilter</filter-name>
@@ -79,6 +80,18 @@
         <url-pattern>*.jsf</url-pattern>
     </servlet-mapping>
     <!-- END | JSF -->
+    
+    <!-- START | PUSH -->
+    <servlet>
+        <servlet-name>Push Servlet</servlet-name>
+        <servlet-class>org.primefaces.push.PushServlet</servlet-class>
+        <async-supported>true</async-supported>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Push Servlet</servlet-name>
+        <url-pattern>/primepush/*</url-pattern>
+    </servlet-mapping>
+    <!-- END | PUSH -->
     
     <!-- START | TIMEOUT -->
     <session-config>

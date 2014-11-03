@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.faces.application.FacesMessage;
 import javax.mail.BodyPart;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -33,9 +34,13 @@ import javax.naming.NamingException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jsoup.Jsoup;
+import org.primefaces.push.EventBus;
+import org.primefaces.push.EventBusFactory;
 
 /**
  * Converts an email into a ticket.
@@ -47,11 +52,13 @@ import org.jsoup.Jsoup;
  */
 public class EmailToTicket {
 
+    //<editor-fold defaultstate="collapsed" desc="Properties">
     private static final boolean showStructure = true;
     private static final boolean saveAttachments = true;
     private static String clearTextPart = null;
     private static String htmlTextPart = null;
     private static List<Attachment> attachments;
+//</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Properties">
     private static final Logger LOG = Logger.getLogger(EmailToTicket.class.getName());
@@ -120,6 +127,20 @@ public class EmailToTicket {
                     ticket.addAttachment();
                 }
 
+                // Push
+                String pushMsgDetail;
+                if (comment.getComment().length() > 100) {
+                    pushMsgDetail = comment.getComment().substring(0, 100);
+                } else {
+                    pushMsgDetail = comment.getComment();
+                }
+                EventBus eventBus = EventBusFactory.getDefault().eventBus();
+                eventBus.publish("ticket", new FacesMessage(
+                        StringEscapeUtils.escapeHtml(ticket.getTitle()),
+                        StringEscapeUtils.escapeHtml(
+                                pushMsgDetail
+                                + "...")));
+
             } else {
                 // Create a new ticket
                 Comment comment = new Comment();
@@ -141,6 +162,18 @@ public class EmailToTicket {
                     ticket.setAttachment(a);
                     ticket.addAttachment();
                 }
+
+                // Push
+                EventBus eventBus = EventBusFactory.getDefault().eventBus();
+                eventBus.publish("ticket", new FacesMessage(
+                        StringEscapeUtils.escapeHtml("New Unassigned Ticket"),
+                        StringEscapeUtils.escapeHtml(
+                                ticket.getTitle()
+                                + " requested by "
+                                + ticket.getRequester().getContact().buildFullName()
+                                + " ("
+                                + ticket.getRequester().getEmail()
+                                + ")")));
             }
 
         } else {
@@ -164,6 +197,18 @@ public class EmailToTicket {
                 ticket.setAttachment(a);
                 ticket.addAttachment();
             }
+
+            // Push
+            EventBus eventBus = EventBusFactory.getDefault().eventBus();
+            eventBus.publish("ticket", new FacesMessage(
+                    StringEscapeUtils.escapeHtml("New Unassigned Ticket"),
+                    StringEscapeUtils.escapeHtml(
+                            ticket.getTitle()
+                            + " requested by "
+                            + ticket.getRequester().getContact().buildFullName()
+                            + " ("
+                            + ticket.getRequester().getEmail()
+                            + ")")));
         }
     }
 
@@ -239,10 +284,11 @@ public class EmailToTicket {
         CriteriaQuery query = builder.createQuery(User.class);
         Root root = query.from(User.class);
         String[] split = email.split("@");
-        
+
         // Use the second half of the email to match
         Expression literal = builder.literal((String) "%" + split[1]);
-        builder.like(root.get(User_.email), literal);
+        Predicate predicate = builder.like(root.get(User_.email), literal);
+        query.where(predicate);
         List<User> users = dap.findWithCriteriaQuery(query);
 
         if (users.isEmpty()) {
@@ -347,7 +393,7 @@ public class EmailToTicket {
         } else if (message.getFrom().length >= 1) {
             from = message.getFrom()[0].toString();
         }
-        
+
         String name = StringUtils.substringBefore(from, "<").trim();
         // Just for my name because of the appostrohe
         if (name.contains("Tarka")) {
@@ -357,9 +403,21 @@ public class EmailToTicket {
             result = StringUtils.substringBefore(result, name);
             result = result.substring(0, result.lastIndexOf("\n"));
         }
+
+        // Remove any embedded image strings.
+        if (result != null) {
+            result = result.replaceAll("\\[image:.*", "");
+        }
+
         return result;
     }
 
+    /**
+     * Iterate over the email parts and extract the required sections.
+     *
+     * @param p
+     * @throws Exception
+     */
     public void dumpPart(Part p) throws Exception {
 
         /**
@@ -439,7 +497,7 @@ public class EmailToTicket {
          * file.  Don't overwrite existing files to prevent
          * mistakes.
          */
-        if (saveAttachments && level != 0 && p instanceof MimeBodyPart
+        if (saveAttachments && p instanceof MimeBodyPart
                 && !p.isMimeType("multipart/*")) {
             String disp = p.getDisposition();
             // many mailers don't include a Content-Disposition

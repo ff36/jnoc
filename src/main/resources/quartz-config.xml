@@ -21,7 +21,7 @@
                 <job-name>GmailJob</job-name>
                 <job-group>GmailGroup</job-group>
                 <!-- It will run every 30 secs -->
-                <cron-expression>*/50 * * * * ?</cron-expression>
+                <cron-expression>*/30 * * * * ?</cron-expression>
             </cron>
         </trigger>
     </schedule>

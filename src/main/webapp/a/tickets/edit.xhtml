@@ -23,6 +23,9 @@
         <h:form id="form" >
 
             <pe:ajaxErrorHandler />
+            
+            <p:socket onMessage="pushUpdateList" channel="/ticket" />
+            <p:remoteCommand name="pushUpdateList" actionListener="#{editTicket.updateComments()}" update="@widgetVar(commentsList) @widgetVar(attachmentTable)" />
 
             <p:growl id="growl" 
                      redisplay="false"
@@ -261,6 +264,7 @@
 
                                                 <p:dataList id="comment-datalist" 
                                                             value="#{editTicket.ticket.comments}" 
+                                                            widgetVar="commentsList"
                                                             var="comment"
                                                             itemType="none"
                                                             styleClass="clear-data-list"
@@ -498,8 +502,49 @@
                                                     <h2 style="text-align: center">#{editTicket.ticket.requester.contact.firstName} #{editTicket.ticket.requester.contact.lastName} needs a company before you can edit this ticket!</h2>
                                                     <p:spacer width="100%" height="5"/>
                                                     When new accounts are created via a support email we do our best to link the new account to an existing company. If a suitable company can't be found the user is temporary classified as <em>'Undefined'</em>. The ticket was successfully created but until #{editTicket.ticket.requester.contact.firstName} is associated with a company (new or existing) you will be unable to edit or manage the ticket.
+
+                                                    <p:spacer width="100%" height="10"/>
+                                                    
+                                                    <p:remoteCommand autoRun="true" 
+                                                                     async="true" 
+                                                                     actionListener="#{editTicket.ticket.requester.lazyLoad()}" 
+                                                                     update="availableCompanies"/>
+
+                                                    <table class="blank-table">
+                                                        <tr>
+                                                            <td>
+                                                                <p:selectOneMenu id="availableCompanies" 
+                                                                                 value="#{editTicket.ticket.requester.company}" 
+                                                                                 converter="companyCvt"
+                                                                                 effect="fade"
+                                                                                 disabled="#{!jsfSessionUser.currentUser.hasPermission('account:edit')}"
+                                                                                 style="width: 180px"
+                                                                                 styleClass="dlg-company-update-class dlg-company-process-class">
+                                                                    <f:selectItems value="#{editTicket.ticket.requester.availableCompanies}" 
+                                                                                   var="v" 
+                                                                                   itemLabel="#{v.name}" 
+                                                                                   itemValue="#{v}"/>
+                                                                </p:selectOneMenu>
+
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+
+                                                    <hr></hr>
+
+                                                    <p:commandButton id="com-save-button" 
+                                                                     styleClass="green-button company-save-button-update-class" 
+                                                                     actionListener="#{editTicket.ticket.requester.changeCompany()}" 
+                                                                     value="Save" 
+                                                                     process="@this @(.dlg-company-process-class)" 
+                                                                     update=":form:lazy-update-class :form:growl"
+                                                                     onclick="PF('blockui4').block();"
+                                                                     oncomplete="window.location.reload()"/>
+
+                                                    <ez:blockUI target="@(.company-save-button-update-class)" widgetVar="blockui4"/>
                                                 </div>
-                                                <p:spacer width="100%" height="50"/>
+                                                <p:spacer width="100%" height="10"/>
+
                                             </h:panelGroup>
 
                                         </td>
@@ -570,6 +615,7 @@
                                         <p:spacer width="100%" height="20"/>
 
                                         <p:dataTable id="attachments"
+                                                     widgetVar="attachmentTable"
                                                      var="attachment" 
                                                      value="#{editTicket.ticket.attachments}"  
                                                      paginator="true"

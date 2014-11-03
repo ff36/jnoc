@@ -136,7 +136,6 @@ public class Ticket implements Serializable {
     private Map<String, List> available;
 
 //</editor-fold>
-    
     //<editor-fold defaultstate="collapsed" desc="Constructors">
     public Ticket() {
         this.attachments = new ArrayList<>();
@@ -386,7 +385,6 @@ public class Ticket implements Serializable {
     }
 
 //</editor-fold>
-    
     //<editor-fold defaultstate="collapsed" desc="Setters">
     /**
      * Set the value of id. Unique storage key
@@ -599,7 +597,7 @@ public class Ticket implements Serializable {
     public void setAttachment(Attachment attachment) {
         this.attachment = attachment;
     }
-    
+
     /**
      * Set the value of email.
      *
@@ -610,7 +608,6 @@ public class Ticket implements Serializable {
     }
 
 //</editor-fold>
-    
     /**
      * Creates a new Ticket, adds it to the persistence layer and adds storage
      * related resources.
@@ -633,22 +630,19 @@ public class Ticket implements Serializable {
         // Set the person who closed the ticket if its set to solved
         switch (newStatus) {
             case OPEN:
-                newOpenStatus();
+                newOpenStatus(creator);
                 break;
             case CLOSED:
-                newSolveStatus();
+                newSolveStatus(creator);
                 break;
         }
 
-        // Complete the comment
+        // Set the ticket creation
         openEpoch = Calendar.getInstance().getTimeInMillis();
-        comment.setCreateEpoch(Calendar.getInstance().getTimeInMillis());
-        comment.setCommenter(creator);
-        comments.add(comment);
 
         // Create a time based id for email identification
         email = String.valueOf(new Date().getTime());
-        
+
         // Sort the tags
         cleanTags();
 
@@ -661,10 +655,10 @@ public class Ticket implements Serializable {
         return navigation;
 
     }
-    
+
     /**
-     * Creates a new Ticket from email, adds it to the persistence layer and adds storage
-     * related resources.
+     * Creates a new Ticket from email, adds it to the persistence layer and
+     * adds storage related resources.
      *
      * @param user
      * @param newStatus
@@ -679,21 +673,18 @@ public class Ticket implements Serializable {
         // Set the person who closed the ticket if its set to solved
         switch (newStatus) {
             case OPEN:
-                newOpenStatus();
+                newOpenStatus(creator);
                 break;
             case CLOSED:
-                newSolveStatus();
+                newSolveStatus(creator);
                 break;
         }
-
+        // Set the ticket creation
         openEpoch = Calendar.getInstance().getTimeInMillis();
-        comment.setCreateEpoch(Calendar.getInstance().getTimeInMillis());
-        comment.setCommenter(creator);
-        comments.add(comment);
 
         // Create a time based id for email identification
         email = String.valueOf(new Date().getTime());
-        
+
         // Sort the tags
         cleanTags();
 
@@ -732,24 +723,14 @@ public class Ticket implements Serializable {
      * @param newStatus
      */
     public void edit(DTX.TicketStatus newStatus) {
-        try {
-            if (!comment.getComment().isEmpty()) {
-                // Add the comment
-                comment.setCommenter(SessionUser.getCurrentUser());
-                comment.setCreateEpoch(new Date().getTime());
-                comments.add(comment);
-            }
-        } catch (NullPointerException npe) {
-            // Do nothing. The comment is null.
-        }
 
         // Check and manage any changes to the ticket status
         switch (newStatus) {
             case OPEN:
-                newOpenStatus();
+                newOpenStatus(SessionUser.getCurrentUser());
                 break;
             case CLOSED:
-                newSolveStatus();
+                newSolveStatus(SessionUser.getCurrentUser());
                 break;
         }
 
@@ -771,47 +752,37 @@ public class Ticket implements Serializable {
      * @param commenter
      */
     public void edit(DTX.TicketStatus newStatus, User commenter) {
-        try {
-            if (!comment.getComment().isEmpty()) {
-                // Add the comment
-                comment.setCommenter(commenter);
-                comment.setCreateEpoch(new Date().getTime());
-                comments.add(comment);
-            }
-        } catch (NullPointerException npe) {
-            // Do nothing. The comment is null.
-        }
 
         // Check and manage any changes to the ticket status
         switch (newStatus) {
             case OPEN:
-                newOpenStatus();
+                newOpenStatus(commenter);
                 break;
             case CLOSED:
-                newSolveStatus();
+                newSolveStatus(commenter);
                 break;
         }
 
         // Sort the tags
         cleanTags();
-        
+
         // send the emails
         email(DTX.EmailTemplate.TICKET_MODIFIED);
-        
+
         // reset the comment
         comment = new Comment();
-        
+
         // Reset the CC
         ccEmailRecipients.clear();
-        
+
         // Persist the ticket
         update();
     }
-    
+
     /**
      * Converts a ticket status to OPEN.
      */
-    private void newOpenStatus() {
+    private void newOpenStatus(User commenter) {
 
         switch (status) {
             // Going from SOLVED to OPEN
@@ -826,12 +797,39 @@ public class Ticket implements Serializable {
                 comments.add(closing);
                 break;
         }
+
+        try {
+            if (!comment.getComment().isEmpty()) {
+                // Add the comment
+                comment.setCommenter(commenter);
+                comment.setCreateEpoch(new Date().getTime());
+                comments.add(comment);
+            }
+        } catch (NullPointerException npe) {
+            // Do nothing. The comment is null.
+        }
     }
 
     /**
      * Converts a ticket status to SOLVED.
      */
-    private void newSolveStatus() {
+    private void newSolveStatus(User commenter) {
+
+        try {
+            if (!comment.getComment().isEmpty()) {
+                // Add the comment
+                comment.setCommenter(commenter);
+                comment.setCreateEpoch(new Date().getTime());
+                comments.add(comment);
+            }
+        } catch (NullPointerException npe) {
+            // The comment is null.
+            comment = new Comment();
+            // Add the comment
+            comment.setCommenter(commenter);
+            comment.setCreateEpoch(new Date().getTime());
+            comments.add(comment);
+        }
 
         switch (status) {
             // Going from OPEN to SOLVED
@@ -848,6 +846,9 @@ public class Ticket implements Serializable {
                 closing.setComment("%CLOSED%");
                 closing.setCreateEpoch(cal.getTimeInMillis());
                 comments.add(closing);
+                if (comment.getComment() == null || comment.getComment().isEmpty()) {
+                    comment.setComment("TICKET CLOSED.");
+                }
                 break;
         }
     }
@@ -1355,7 +1356,7 @@ public class Ticket implements Serializable {
 
         // Override the template subject
         template.setSubject(title + " (DTX-" + email + ")");
-        
+
         // Set the variables
         Map<DTX.EmailVariableKey, String> vars = new HashMap<>();
         vars.put(DTX.EmailVariableKey.TICKET_ID, id.toString());

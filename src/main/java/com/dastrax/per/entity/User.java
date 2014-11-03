@@ -595,6 +595,10 @@ public class User implements Serializable {
          * We cannot just delete a subject from the db when we close their
          * account as they might have relationships
          */
+        Contact holder = new Contact();
+        holder.setFirstName(contact.getFirstName() + " " + contact.getLastName() + " (Closed)");
+        contact = holder;
+        
         account.setCloseEpoch(Calendar.getInstance().getTimeInMillis());
         account.setS3id(null);
         company = null;
@@ -604,7 +608,6 @@ public class User implements Serializable {
                 + UUID.randomUUID().toString().substring(0, 7)
                 + "."
                 + UUID.randomUUID().toString().substring(0, 3);
-        contact = null;
 
         // Update the user
         update();

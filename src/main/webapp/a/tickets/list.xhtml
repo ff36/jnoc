@@ -23,6 +23,9 @@
         <h:form id="form">
 
             <pe:ajaxErrorHandler />
+            
+            <p:socket onMessage="pushUpdateTable" channel="/ticket" />
+            <p:remoteCommand name="pushUpdateTable" update="@widgetVar(ticketsTable)" />
 
             <p:growl id="growl" 
                      widgetVar="growl"
@@ -435,7 +438,7 @@
                 </pe:layoutPane>
 
             </pe:layout>
-
+            
         </h:form>
 
     </h:body>
