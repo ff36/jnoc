@@ -127,20 +127,6 @@ public class EmailToTicket {
                     ticket.addAttachment();
                 }
 
-                // Push
-                String pushMsgDetail;
-                if (comment.getComment().length() > 100) {
-                    pushMsgDetail = comment.getComment().substring(0, 100);
-                } else {
-                    pushMsgDetail = comment.getComment();
-                }
-                EventBus eventBus = EventBusFactory.getDefault().eventBus();
-                eventBus.publish("ticket", new FacesMessage(
-                        StringEscapeUtils.escapeHtml(ticket.getTitle()),
-                        StringEscapeUtils.escapeHtml(
-                                pushMsgDetail
-                                + "...")));
-
             } else {
                 // Create a new ticket
                 Comment comment = new Comment();
@@ -162,18 +148,7 @@ public class EmailToTicket {
                     ticket.setAttachment(a);
                     ticket.addAttachment();
                 }
-
-                // Push
-                EventBus eventBus = EventBusFactory.getDefault().eventBus();
-                eventBus.publish("ticket", new FacesMessage(
-                        StringEscapeUtils.escapeHtml("New Unassigned Ticket"),
-                        StringEscapeUtils.escapeHtml(
-                                ticket.getTitle()
-                                + " requested by "
-                                + ticket.getRequester().getContact().buildFullName()
-                                + " ("
-                                + ticket.getRequester().getEmail()
-                                + ")")));
+                
             }
 
         } else {
@@ -198,17 +173,6 @@ public class EmailToTicket {
                 ticket.addAttachment();
             }
 
-            // Push
-            EventBus eventBus = EventBusFactory.getDefault().eventBus();
-            eventBus.publish("ticket", new FacesMessage(
-                    StringEscapeUtils.escapeHtml("New Unassigned Ticket"),
-                    StringEscapeUtils.escapeHtml(
-                            ticket.getTitle()
-                            + " requested by "
-                            + ticket.getRequester().getContact().buildFullName()
-                            + " ("
-                            + ticket.getRequester().getEmail()
-                            + ")")));
         }
     }
 

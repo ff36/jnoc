@@ -23,9 +23,6 @@
         <h:form id="form" >
 
             <pe:ajaxErrorHandler />
-            
-            <p:socket onMessage="pushUpdateList" channel="/ticket" />
-            <p:remoteCommand name="pushUpdateList" actionListener="#{editTicket.updateComments()}" update="@widgetVar(commentsList) @widgetVar(attachmentTable)" />
 
             <p:growl id="growl" 
                      redisplay="false"

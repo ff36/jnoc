@@ -78,7 +78,7 @@ public class TicketModelQuery implements ModelQuery {
             Map filters,
             Map rootFilter,
             Map optionalFilter) {
-
+        
         // Create the CriteriaQuery
         CriteriaQuery query = builder.createQuery(Ticket.class);
 
@@ -273,5 +273,5 @@ public class TicketModelQuery implements ModelQuery {
         Ticket ticket = (Ticket) object;
         return ticket.getId();
     }
-
+    
 }

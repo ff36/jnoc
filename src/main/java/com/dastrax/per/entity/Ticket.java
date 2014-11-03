@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
+import javax.faces.application.FacesMessage;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.CascadeType;
@@ -50,6 +51,9 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.primefaces.push.EventBus;
+import org.primefaces.push.EventBusFactory;
 
 /**
  * This class is mapped in the persistence layer allowing instances of this
@@ -652,6 +656,11 @@ public class Ticket implements Serializable {
         // send the emails
         email(DTX.EmailTemplate.NEW_TICKET);
 
+        // Push
+        if (this.requester != null) {
+            push();
+        }
+
         return navigation;
 
     }
@@ -694,7 +703,30 @@ public class Ticket implements Serializable {
         // send the emails
         email(DTX.EmailTemplate.NEW_TICKET);
 
+        // Push
+        if (this.requester != null) {
+            push();
+        }
+
         return newTicket;
+
+    }
+
+    /**
+     * Push notifications
+     */
+    private void push() {
+            // Push
+            EventBus eventBus = EventBusFactory.getDefault().eventBus();
+            eventBus.publish("ticket", new FacesMessage(
+                    StringEscapeUtils.escapeHtml("New Unassigned Ticket"),
+                    StringEscapeUtils.escapeHtml(
+                            this.getTitle()
+                            + " requested by "
+                            + this.getRequester().getContact().buildFullName()
+                            + " ("
+                            + this.getRequester().getEmail()
+                            + ")")));
 
     }
 
@@ -736,12 +768,16 @@ public class Ticket implements Serializable {
 
         // Sort the tags
         cleanTags();
+        
         // send the emails
         email(DTX.EmailTemplate.TICKET_MODIFIED);
+        
         // reset the comment
         comment = new Comment();
+        
         // Persist the ticket
         update();
+
     }
 
     /**
@@ -768,7 +804,7 @@ public class Ticket implements Serializable {
 
         // send the emails
         email(DTX.EmailTemplate.TICKET_MODIFIED);
-
+        
         // reset the comment
         comment = new Comment();
 
