@@ -14,6 +14,21 @@
         <h:outputStylesheet name="css/dc.css"/>
         <link rel="shortcut icon" type="image/png" href="#{request.contextPath}/resources/images/favicon.ico" />
         <title>#{msgs['default.page.title']} | #{msgs['admin.dashboad.page.title']}</title>
+
+        <style>
+            .average-time {
+                background: #3182bd;
+                color: #ffffff;
+                width: 100%;
+                font-size: 26px;
+                text-align: center;
+                padding-top: 30px;
+                padding-bottom: 30px;
+                margin-top: 5px;
+                margin-bottom: 20px
+            }
+            .dc-chart g.row text {fill: black;}
+        </style>
     </h:head>
 
     <h:body>
@@ -37,43 +52,27 @@
 
                     <table class="navigation-sidebar">
                         <thead>
-                            <tr><th>Dashboard</th></tr>
+                            <tr><th>Ticket Dashboard</th></tr>
                         </thead>
                         <tfoot><tr><td></td></tr></tfoot>
                         <tbody>
-                            <ui:fragment rendered="#{permissionUtil.hasPermission('ticket:access')}">
+                            <tr>
+                                <td><p:commandLink value="Tickets" 
+                                                   action="#{navigator.navigate('LIST_TICKETS')}" 
+                                                   process="@this" 
+                                                   type="button"/></td>
+                            </tr>
+                            <ui:fragment rendered="#{jsfSessionUser.currentUser.hasPermission('ticket:create')}">
                                 <tr>
-                                    <td><p:commandLink value="Support Tickets" action="access-list-tickets-page" process="@this" type="button"/></td>
-                                </tr>
-                            </ui:fragment>
-                            <ui:fragment rendered="#{permissionUtil.hasPermission('incident:access')}">
-                                <tr>
-                                    <td><p:commandLink value="Incidents" action="access-list-incidents-page" process="@this" type="button"/></td>
-                                </tr>
-                            </ui:fragment>
-                            <ui:fragment rendered="#{permissionUtil.hasPermission('account:access')}">
-                                <tr>
-                                    <td><p:commandLink value="Accounts" action="access-accounts-list-page" process="@this" type="button"/></td>
-                                </tr>
-                            </ui:fragment>
-                            <ui:fragment rendered="#{permissionUtil.hasPermission('company:access')}">
-                                <tr>
-                                    <td><p:commandLink value="Companies" action="access-list-companies-page" process="@this" type="button"/></td>
-                                </tr>
-                            </ui:fragment>
-                            <ui:fragment rendered="#{permissionUtil.hasPermission('site:access')}">
-                                <tr>
-                                    <td><p:commandLink value="Sites" action="access-list-sites-page" process="@this" type="button"/></td>
+                                    <td><p:commandLink value="Create New Ticket" 
+                                                       action="/a/tickets/create.xhtml?faces-redirect=true" 
+                                                       process="@this" 
+                                                       type="button"/></td>
                                 </tr>
                             </ui:fragment>
                             <tr>
-                                <td><p:commandLink value="RMA" action="access-create-rma-page" process="@this" type="button"/></td>
+                                <td class="active">Ticket Analytics</td>
                             </tr>
-                            <ui:fragment rendered="#{permissionUtil.hasPermission('report-basic:access')}">
-                                <tr>
-                                    <td><p:commandLink value="Analytics" action="access-analytics-page" process="@this" type="button"/></td>
-                                </tr>
-                            </ui:fragment>
                         </tbody>
                     </table>
 
@@ -157,7 +156,8 @@
                                                      styleClass="header-button white-button"
                                                      value="Reset"
                                                      process="@this"
-                                                     onclick="dc.filterAll();dc.renderAll();"/> 
+                                                     onclick="dc.filterAll();
+                                                             dc.renderAll();"/> 
                                 </th>
                             </tr>
                         </thead>
@@ -165,70 +165,137 @@
                             <tr>
                                 <td>
 
-                                    <p:remoteCommand autoRun="true" async="true" actionListener="#{supportTickets.init()}" update=":form:lazy-group-1 :form:csv-file-path"/>
+                                    <p:remoteCommand autoRun="true" 
+                                                     async="true" 
+                                                     actionListener="#{ticketAnalytics.init()}" 
+                                                     update=":form:lazy-group-1 :form:json-data"
+                                                     onsuccess="loadScript('/resources/js/ticket-analytics.js')"/>
+
+                                    <script>
+                                        // Load the dc.js dynamically to make its variables available
+                                        function loadScript(url) {
+
+                                            var script = document.createElement("script")
+                                            script.type = "text/javascript";
+
+                                            if (script.readyState) {  //IE
+                                                script.onreadystatechange = function () {
+                                                    if (script.readyState == "loaded" ||
+                                                            script.readyState == "complete") {
+                                                        script.onreadystatechange = null;
+                                                        //callback();
+                                                    }
+                                                };
+                                            } else {  //Others
+                                                script.onload = function () {
+                                                    //callback();
+                                                };
+                                            }
+
+                                            script.src = url;
+                                            document.getElementsByTagName("head")[0].appendChild(script);
+                                        }
+                                    </script>
 
                                     <h:panelGroup id="lazy-group-1">
 
-                                        <p:graphicImage name="images/ajax-loader.gif" rendered="#{!supportTickets.pageInit}" styleClass="ajax-lazy-loader"/>
-                                        
-                                        <h:panelGroup rendered="#{supportTickets.pageInit}">
-                                            
-                                            <h:inputHidden id="csv-file-path" value="#{supportTickets.temporaryFilePath}"/>
+                                        <p:graphicImage name="images/ajax-loader.gif" 
+                                                        rendered="#{!ticketAnalytics.render}" 
+                                                        styleClass="ajax-lazy-loader"/>
+
+                                        <h:panelGroup rendered="#{ticketAnalytics.render}">
+
+                                            <h:inputHidden id="json-data" value="#{ticketAnalytics.data}"/>
 
                                             <h:outputScript library="js" name="d3.js"/>
                                             <h:outputScript library="js" name="dc.js"/>
                                             <h:outputScript library="js" name="crossfilter.js"/>
                                             <h:outputScript library="js" name="colorbrewer.js"/>
-                                            <h:outputScript library="js" name="dashboard.js"/>
-                                            
+
                                             <p:spacer width="100%" height="20px"/>
 
                                             <div class="row">
-                                                <div id="gain-loss-chart">
-                                                    <strong>Satisfaction</strong>
-                                                    <a class="reset" href="javascript:dc.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+                                                <div id="range-chart">
+                                                    <strong>Range Selector</strong>
+                                                    <a class="reset" href="javascript:rangeChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
 
                                                     <div class="clearfix"></div>
                                                 </div>
+                                            </div>
 
-                                                <div id="quarter-chart">
+                                            <div class="row">
+                                                <table width="100%">
+                                                    <tr>
+                                                        <td width="40%">
+                                                            <strong>Average Response Time</strong>
+                                                            <div class="average-time" id="average-response-time"></div>
+                                                        </td>
+                                                        <td width="40%">
+                                                            <strong>Average Resolution Time</strong>
+                                                            <div class="average-time" id="average-resolution-time"></div>
+                                                        </td>
+                                                        <td width="10%">
+                                                            <strong>Opened Tickets</strong>
+                                                            <div class="average-time" id="open-tickets"></div>
+                                                        </td>
+                                                        <td width="10%">
+                                                            <strong>Closed Tickets</strong>
+                                                            <div class="average-time" id="close-tickets"></div>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+
+                                            <div class="row">
+                                                <div id="quarter-open-chart">
                                                     <strong>Quarters</strong>
-                                                    <a class="reset" href="javascript:quarterChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+                                                    <a class="reset" href="javascript:quarterOpenChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
 
                                                     <div class="clearfix"></div>
                                                 </div>
 
-                                                <div id="day-of-week-chart">
+                                                <div id="status-chart">
+                                                    <strong>Status</strong>
+                                                    <a class="reset" href="javascript:statusChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+
+                                                    <div class="clearfix"></div>
+                                                </div>
+
+                                                <div id="severity-chart">
+                                                    <strong>Severity</strong>
+                                                    <a class="reset" href="javascript:severityChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+
+                                                    <div class="clearfix"></div>
+                                                </div>
+
+                                                <div id="topic-chart">
+                                                    <strong>Topic</strong>
+                                                    <a class="reset" href="javascript:topicChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+
+                                                    <div class="clearfix"></div>
+                                                </div>
+
+                                                <div id="satisfaction-chart">
+                                                    <strong>Satisfaction</strong>
+                                                    <a class="reset" href="javascript:satisfactionChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+
+                                                    <div class="clearfix"></div>
+                                                </div>
+
+                                                <div id="day-of-week-open-chart">
                                                     <strong>Day of Week</strong>
-                                                    <a class="reset" href="javascript:dayOfWeekChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+                                                    <a class="reset" href="javascript:dayOfWeekOpenChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
 
                                                     <div class="clearfix"></div>
                                                 </div>
 
-                                                <div id="fluctuation-chart">
-                                                    <strong>Fluctuation(%)</strong>
-                                                    <span class="reset" style="display: none;">range: <span class="filter"></span></span>
-                                                    <a class="reset" href="javascript:fluctuationChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
-
-                                                    <div class="clearfix"></div>
-                                                </div>
                                             </div>
 
                                             <div class="row">
-                                                <div id="yearly-bubble-chart" class="dc-chart">
-                                                    <strong>Yearly Performance</strong>
-                                                    <a class="reset" href="javascript:yearlyBubbleChart.filterAll();dc.redrawAll();"
-                                                       style="display: none;">reset</a>
-
-                                                    <div class="clearfix"></div>
-                                                </div>
-                                            </div>
-
-                                            <div class="row">
-                                                <div id="monthly-move-chart">
-                                                    <strong>Ticket Volumes</strong>
+                                                <div id="volume-chart">
+                                                    <strong>Ticket Volume</strong>
                                                     <span class="reset" style="display: none;">range: <span class="filter"></span></span>
-                                                    <a class="reset" href="javascript:moveChart.filterAll();volumeChart.filterAll();dc.redrawAll();"
+                                                    <a class="reset" href="javascript:volumeChart.filterAll();volumeChart.filterAll();dc.redrawAll();"
                                                        style="display: none;">reset</a>
 
                                                     <div class="clearfix"></div>
@@ -242,10 +309,19 @@
 
                                             <p:spacer width="100%" height="20px"/>
 
+                                            <div class="row">
+                                                <div id="tickets-summary-chart">
+                                                    <strong>Tickets</strong>
+                                                    <a class="reset" href="javascript:ticketSummaryChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
 
+                                                    <div class="clearfix"></div>
+                                                </div>
+                                            </div>
+
+                                            <p:spacer width="100%" height="20px"/>
 
                                             <div class="clearfix"></div>
-                                            
+
 
                                         </h:panelGroup>
 
@@ -268,20 +344,11 @@
                             <tr>
                                 <td>
 
-                                    <p:spacer width="100%" height="20px"/>
-
                                     <div class="row">
-                                        <table class="table table-hover dc-data-table">
-                                            <thead>
-                                                <tr class="header">
-                                                    <th>Company</th>
-                                                    <th>Tickets</th>
-                                                </tr>
-                                            </thead>
-                                        </table>
+                                        <div id="company-chart">
+                                            <div class="clearfix"></div>
+                                        </div>
                                     </div>
-
-                                    <div class="clearfix"></div>
 
                                 </td>
                             </tr>
@@ -292,13 +359,38 @@
 
                     <table class="page-container">
                         <thead>
-                            <tr><th>Sites</th></tr>
+                            <tr><th>DAS</th></tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td>
 
+                                    <div class="row">
+                                        <div id="das-chart">
+                                            <div class="clearfix"></div>
+                                        </div>
+                                    </div>
 
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <p:spacer width="100%" height="20px"/>
+
+                    <table class="page-container">
+                        <thead>
+                            <tr><th>Assignee</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+
+                                    <div class="row">
+                                        <div id="assignee-chart">
+                                            <div class="clearfix"></div>
+                                        </div>
+                                    </div>
 
                                 </td>
                             </tr>

@@ -140,6 +140,7 @@ public class Ticket implements Serializable {
     private Map<String, List> available;
 
 //</editor-fold>
+    
     //<editor-fold defaultstate="collapsed" desc="Constructors">
     public Ticket() {
         this.attachments = new ArrayList<>();
@@ -389,6 +390,7 @@ public class Ticket implements Serializable {
     }
 
 //</editor-fold>
+    
     //<editor-fold defaultstate="collapsed" desc="Setters">
     /**
      * Set the value of id. Unique storage key
@@ -612,6 +614,7 @@ public class Ticket implements Serializable {
     }
 
 //</editor-fold>
+    
     /**
      * Creates a new Ticket, adds it to the persistence layer and adds storage
      * related resources.
@@ -625,6 +628,9 @@ public class Ticket implements Serializable {
         // Set the ticket variables
         creator = (User) dap.find(User.class, SessionUser.getCurrentUser().getId());
 
+        // Set the satisfaction
+        satisfied = TicketSatisfaction.NOT_RATED;
+        
         // VAR access
         if (SessionUser.getCurrentUser().isVAR()
                 || SessionUser.getCurrentUser().isClient()) {
@@ -679,6 +685,9 @@ public class Ticket implements Serializable {
         creator = user;
         requester = user;
 
+        // Set the satisfaction
+        satisfied = TicketSatisfaction.NOT_RATED;
+        
         // Set the person who closed the ticket if its set to solved
         switch (newStatus) {
             case OPEN:

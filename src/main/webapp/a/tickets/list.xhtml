@@ -66,12 +66,12 @@
                                 </tr>
                             </ui:fragment>
                             <tr>
-                                <ui:remove>
+                                <ui:fragment rendered="#{jsfSessionUser.currentUser.hasPermission('ticket:analytic')}">
                                     <td><p:commandLink value="Ticket Analytics" 
                                                        action="/a/tickets/analytics.xhtml?faces-redirect=true" 
                                                        process="@this" 
                                                        type="button"/></td>
-                                </ui:remove>
+                                </ui:fragment>
                             </tr>
                         </tbody>
                     </table>
@@ -157,7 +157,7 @@
 
                                     <input id="hidden_field_browser_height" name="hidden_field_browser_height" type="hidden" value="123" />
                                     <input id="hidden_field_browser_width" name="hidden_field_browser_width" type="hidden" value="123" />
-                                    
+
                                     <script type="text/javascript">
                                         window.onload = height;
                                         function height() {
@@ -166,9 +166,9 @@
 
                                             var height = Math.max(body.scrollHeight, body.offsetHeight,
                                                     html.clientHeight, html.scrollHeight, html.offsetHeight);
-                                            
+
                                             var width = window.innerWidth;
-                                            
+
                                             document.getElementById('hidden_field_browser_width').value = width;
                                             document.getElementById('hidden_field_browser_height').value = height - 250;
                                             loadTickets();
