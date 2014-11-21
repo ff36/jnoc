@@ -14,24 +14,12 @@
         <h:outputStylesheet name="css/dc.css"/>
         <link rel="shortcut icon" type="image/png" href="#{request.contextPath}/resources/images/favicon.ico" />
         <title>#{msgs['default.page.title']} | #{msgs['admin.dashboad.page.title']}</title>
-
-        <style>
-            .average-time {
-                background: #3182bd;
-                color: #ffffff;
-                width: 100%;
-                font-size: 26px;
-                text-align: center;
-                padding-top: 30px;
-                padding-bottom: 30px;
-                margin-top: 5px;
-                margin-bottom: 20px
-            }
-            .dc-chart g.row text {fill: black;}
-        </style>
     </h:head>
 
     <h:body>
+
+        #{jsfSessionUser.currentUser.hasPagePermission('ticket:analytic')}
+        #{jsfSessionUser.currentUser.hasPageRole('ADMIN')}
 
         <h:form id="form">
 
@@ -80,68 +68,74 @@
 
                 <pe:layoutPane id="center" position="center" resizeWhileDragging="true">
 
-                    <table class="page-container">
-                        <thead>
-                            <tr><th>My Support Ticket Stats</th></tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>
-                                    <table class="ticket-stats-table">
-                                        <tr>
-                                            <td>
-                                                <h3>Open Tickets</h3>
-                                                <h:outputText value="" styleClass="ticket-stats-title"/>
-                                            </td>
-                                            <td>
-                                                <h3>Lifetime Tickets</h3>
-                                                <h:outputText value="" styleClass="ticket-stats-title"/>
-                                            </td>
-                                            <td>
-                                                <h3>Ave. Response Time</h3>
-                                                <h:outputText value="" styleClass="ticket-stats-title"/>
-                                            </td>
-                                            <td>
-                                                <h3>Ave. Resolution Time</h3>
-                                                <h:outputText value="" styleClass="ticket-stats-title"/>
-                                            </td>
-                                            <td>
-                                                <h3>Ranking</h3>
-                                                <h:outputText value="" styleClass="ticket-stats-title"/>
-                                            </td>
-                                            <td>
-                                                <h3>Feedback</h3>
-                                            </td>
+                    <ui:remove>
 
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <h:outputText value="2" styleClass="ticket-stats-value"/>
-                                            </td>
-                                            <td>
-                                                <h:outputText value="84" styleClass="ticket-stats-value"/>
-                                            </td>
-                                            <td>
-                                                <h:outputText value="34" styleClass="ticket-stats-value"/><h:outputText value="mins" styleClass="ticket-stats-ranking-sub"/>
-                                            </td>
-                                            <td>
-                                                <h:outputText value="248" styleClass="ticket-stats-value"/><h:outputText value="mins" styleClass="ticket-stats-ranking-sub"/>
-                                            </td>
-                                            <td>
-                                                <h:outputText value="3" styleClass="ticket-stats-value"/><h:outputText value="/56" styleClass="ticket-stats-ranking-sub"/>
-                                            </td>
-                                            <td>
-                                                <h:outputText value="78%" styleClass="ticket-stats-value"/><h:outputText value="+" styleClass="ticket-stats-ranking-sub"/>
-                                            </td>
-                                        </tr>
-                                    </table>
+                        <table class="page-container">
+                            <thead>
+                                <tr><th>My Support Ticket Stats</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <table class="ticket-stats-table">
+                                            <tr>
+                                                <td>
+                                                    <h3>Open Tickets</h3>
+                                                    <h:outputText value="" styleClass="ticket-stats-title"/>
+                                                </td>
+                                                <td>
+                                                    <h3>Lifetime Tickets</h3>
+                                                    <h:outputText value="" styleClass="ticket-stats-title"/>
+                                                </td>
+                                                <td>
+                                                    <h3>Ave. Response Time</h3>
+                                                    <h:outputText value="" styleClass="ticket-stats-title"/>
+                                                </td>
+                                                <td>
+                                                    <h3>Ave. Resolution Time</h3>
+                                                    <h:outputText value="" styleClass="ticket-stats-title"/>
+                                                </td>
+                                                <td>
+                                                    <h3>Ranking</h3>
+                                                    <h:outputText value="" styleClass="ticket-stats-title"/>
+                                                </td>
+                                                <td>
+                                                    <h3>Feedback</h3>
+                                                </td>
 
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <h:outputText value="2" styleClass="ticket-stats-value"/>
+                                                </td>
+                                                <td>
+                                                    <h:outputText value="84" styleClass="ticket-stats-value"/>
+                                                </td>
+                                                <td>
+                                                    <h:outputText value="34" styleClass="ticket-stats-value"/><h:outputText value="mins" styleClass="ticket-stats-ranking-sub"/>
+                                                </td>
+                                                <td>
+                                                    <h:outputText value="248" styleClass="ticket-stats-value"/><h:outputText value="mins" styleClass="ticket-stats-ranking-sub"/>
+                                                </td>
+                                                <td>
+                                                    <h:outputText value="3" styleClass="ticket-stats-value"/><h:outputText value="/56" styleClass="ticket-stats-ranking-sub"/>
+                                                </td>
+                                                <td>
+                                                    <h:outputText value="78%" styleClass="ticket-stats-value"/><h:outputText value="+" styleClass="ticket-stats-ranking-sub"/>
+                                                </td>
+                                            </tr>
+                                        </table>
 
-                    <p:spacer width="100%" height="20px"/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <p:spacer width="100%" height="20px"/>
+
+                    </ui:remove>
+
+
 
                     <table class="page-container">
                         <thead>
@@ -149,7 +143,7 @@
                                 <th>
 
                                     <div class="dc-data-count">
-                                        Support Ticket Stats | <span class="filter-count"></span> selected out of <span class="total-count"></span> records
+                                        Support Tickets | <span class="filter-count"></span> selected out of <span class="total-count"></span> records
                                     </div>
 
                                     <p:commandButton id="reset-button" 
@@ -214,109 +208,321 @@
 
                                             <p:spacer width="100%" height="20px"/>
 
-                                            <div class="row">
-                                                <div id="range-chart">
-                                                    <strong>Range Selector</strong>
-                                                    <a class="reset" href="javascript:rangeChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
-
-                                                    <div class="clearfix"></div>
-                                                </div>
-                                            </div>
-
-                                            <div class="row">
-                                                <table width="100%">
+                                            <table width="100%">
+                                                <tbody>
                                                     <tr>
-                                                        <td width="40%">
-                                                            <strong>Average Response Time</strong>
-                                                            <div class="average-time" id="average-response-time"></div>
+                                                        <td >
+                                                            <table class="page-container">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Date Range
+                                                                            <p:commandButton styleClass="header-button white-button"
+                                                                                             value="Reset"
+                                                                                             process="@this"
+                                                                                             onclick="rangeChart.filterAll();
+                                                                                                     dc.redrawAll();"/> 
+                                                                        </th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td>
+                                                                            <div class="row">
+                                                                                <div id="range-chart">
+                                                                                    <div class="clearfix"></div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
                                                         </td>
-                                                        <td width="40%">
-                                                            <strong>Average Resolution Time</strong>
-                                                            <div class="average-time" id="average-resolution-time"></div>
+
+                                                        <td >
+                                                            <table class="page-container">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Quarters
+                                                                            <p:commandButton styleClass="header-button white-button"
+                                                                                             value="Reset"
+                                                                                             process="@this"
+                                                                                             onclick="quarterOpenChart.filterAll();
+                                                                                                     dc.redrawAll();"/> 
+                                                                        </th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td>
+                                                                            <div class="row">
+                                                                                <div id="quarter-open-chart">
+                                                                                    <div class="clearfix"></div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
                                                         </td>
-                                                        <td width="10%">
-                                                            <strong>Opened Tickets</strong>
-                                                            <div class="average-time" id="open-tickets"></div>
-                                                        </td>
-                                                        <td width="10%">
-                                                            <strong>Closed Tickets</strong>
-                                                            <div class="average-time" id="close-tickets"></div>
+
+                                                        <td>
+                                                            <table class="page-container">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Days
+                                                                            <p:commandButton styleClass="header-button white-button"
+                                                                                             value="Reset"
+                                                                                             process="@this"
+                                                                                             onclick="dayOfWeekOpenChart.filterAll();
+                                                                                                     dc.redrawAll();"/> 
+                                                                        </th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td>
+                                                                            <div class="row">
+                                                                                <div id="day-of-week-open-chart">
+                                                                                    <div class="clearfix"></div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
                                                         </td>
                                                     </tr>
-                                                </table>
-                                            </div>
+                                                </tbody>
+                                            </table>
 
-                                            <div class="row">
-                                                <div id="quarter-open-chart">
-                                                    <strong>Quarters</strong>
-                                                    <a class="reset" href="javascript:quarterOpenChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+                                            <p:spacer width="100%" height="10px"/>
 
-                                                    <div class="clearfix"></div>
-                                                </div>
+                                            <table width="100%">
+                                                <tbody>
+                                                    <tr>
+                                                        <td valign="top">
+                                                            <!-- Timings -->
+                                                            <table class="page-container" style="height: 134px">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Average Response Time</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td>
+                                                                            <div id="average-response-time"></div>
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
 
-                                                <div id="status-chart">
-                                                    <strong>Status</strong>
-                                                    <a class="reset" href="javascript:statusChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+                                                            <p:spacer width="100%" height="10px"/>
 
-                                                    <div class="clearfix"></div>
-                                                </div>
+                                                            <table class="page-container" style="height: 135px">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Average Resolution Time</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td>
+                                                                            <div id="average-resolution-time"></div>
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
 
-                                                <div id="severity-chart">
-                                                    <strong>Severity</strong>
-                                                    <a class="reset" href="javascript:severityChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+                                                            <p:spacer width="100%" height="10px"/>
 
-                                                    <div class="clearfix"></div>
-                                                </div>
+                                                            <table class="page-container" style="height: 135px">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Average Comment Qty</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td>
+                                                                            <div id="average-comments"></div>
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
 
-                                                <div id="topic-chart">
-                                                    <strong>Topic</strong>
-                                                    <a class="reset" href="javascript:topicChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+                                                        </td>
 
-                                                    <div class="clearfix"></div>
-                                                </div>
+                                                        <td>
+                                                            <!-- Pie -->
+                                                            <table class="page-container">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Status
+                                                                            <p:commandButton styleClass="header-button white-button"
+                                                                                             value="Reset"
+                                                                                             process="@this"
+                                                                                             onclick="statusChart.filterAll();
+                                                                                                     dc.redrawAll();"/> 
+                                                                        </th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td>
+                                                                            <div id="status-chart">
+                                                                                <div class="clearfix"></div>
+                                                                            </div>
+                                                                            <table>
+                                                                                <tbody>
+                                                                                    <tr valign="bottom">
+                                                                                        <td width="150px">
+                                                                                            <div id="close-tickets" class="analytics-numbers"></div><div class="analytics-units" style="margin-left: 40px; margin-top: 20px">Closed</div>
 
-                                                <div id="satisfaction-chart">
-                                                    <strong>Satisfaction</strong>
-                                                    <a class="reset" href="javascript:satisfactionChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
 
-                                                    <div class="clearfix"></div>
-                                                </div>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td>
+                                                                                            <div id="open-tickets" class="analytics-numbers"></div><div class="analytics-units" style="margin-left: 40px; margin-top: 20px">Open</div>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                </tbody>
+                                                                            </table>
 
-                                                <div id="day-of-week-open-chart">
-                                                    <strong>Day of Week</strong>
-                                                    <a class="reset" href="javascript:dayOfWeekOpenChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
 
-                                                    <div class="clearfix"></div>
-                                                </div>
+                                                            <p:spacer width="100%" height="10px"/>
 
-                                            </div>
+                                                            <table class="page-container">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Severity
+                                                                            <p:commandButton styleClass="header-button white-button"
+                                                                                             value="Reset"
+                                                                                             process="@this"
+                                                                                             onclick="severityChart.filterAll();
+                                                                                                     dc.redrawAll();"/> 
+                                                                        </th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td>
+                                                                            <div id="severity-chart">
+                                                                                <div class="clearfix"></div>
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
 
-                                            <div class="row">
-                                                <div id="volume-chart">
-                                                    <strong>Ticket Volume</strong>
-                                                    <span class="reset" style="display: none;">range: <span class="filter"></span></span>
-                                                    <a class="reset" href="javascript:volumeChart.filterAll();volumeChart.filterAll();dc.redrawAll();"
-                                                       style="display: none;">reset</a>
+                                                        </td>
 
-                                                    <div class="clearfix"></div>
-                                                </div>
-                                            </div>
+                                                        <td>
+                                                            <!-- Row -->
+                                                            <table class="page-container">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Topic
+                                                                            <p:commandButton styleClass="header-button white-button"
+                                                                                             value="Reset"
+                                                                                             process="@this"
+                                                                                             onclick="topicChart.filterAll();
+                                                                                                     dc.redrawAll();"/> 
+                                                                        </th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td>
+                                                                            <div id="topic-chart">
+                                                                                <div class="clearfix"></div>
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
 
-                                            <div class="row">
-                                                <div id="monthly-volume-chart">
-                                                </div>
-                                            </div>
+                                                            <p:spacer width="100%" height="10px"/>
+
+                                                            <table class="page-container">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Satisfaction
+                                                                            <p:commandButton styleClass="header-button white-button"
+                                                                                             value="Reset"
+                                                                                             process="@this"
+                                                                                             onclick="satisfactionChart.filterAll();
+                                                                                                     dc.redrawAll();"/> 
+                                                                        </th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td>
+                                                                            <div id="satisfaction-chart">
+                                                                                <div class="clearfix"></div>
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
 
                                             <p:spacer width="100%" height="20px"/>
 
-                                            <div class="row">
-                                                <div id="tickets-summary-chart">
-                                                    <strong>Tickets</strong>
-                                                    <a class="reset" href="javascript:ticketSummaryChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+                                            <ui:fragment rendered="#{jsfSessionUser.currentUser.hasPermission('ticket:analytic')}">
+                                                <table width="100%">
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>
+                                                                <table class="page-container">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>Tickets
+                                                                            </th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <td>
+                                                                                <p:spacer width="100%" height="20px"/>
+                                                                                <div class="row">
+                                                                                    <table id="tickets-summary-table">
+                                                                                        <thead>
+                                                                                            <tr class='header'>
+                                                                                                <th>Date</th>
+                                                                                                <th>Time</th>
+                                                                                                <th>Status</th>
+                                                                                                <th>Severity</th>
+                                                                                                <th>ID</th>
+                                                                                                <th>Title</th>
+                                                                                                <th>Requester</th>
+                                                                                                <th>Company</th>
+                                                                                                <th>Assignee</th>
+                                                                                                <th>Rating</th>
+                                                                                            </tr>
+                                                                                        </thead>
+                                                                                    </table>
+                                                                                </div>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
 
-                                                    <div class="clearfix"></div>
-                                                </div>
-                                            </div>
+                                            </ui:fragment>
 
                                             <p:spacer width="100%" height="20px"/>
 
@@ -334,11 +540,19 @@
 
                 </pe:layoutPane>
 
-                <pe:layoutPane id="east" position="east" resizeWhileDragging="true" size="280">
+                <pe:layoutPane id="east" position="east" resizeWhileDragging="true" size="280" rendered="#{jsfSessionUser.currentUser.hasPermission('ticket:analytic')}">
 
                     <table class="page-container">
                         <thead>
-                            <tr><th>Companies</th></tr>
+                            <tr>
+                                <th>Companies
+                                    <p:commandButton styleClass="header-button white-button"
+                                                     value="Reset"
+                                                     process="@this"
+                                                     onclick="companyChart.filterAll();
+                                                             dc.redrawAll();"/> 
+                                </th>
+                            </tr>
                         </thead>
                         <tbody>
                             <tr>
@@ -359,7 +573,15 @@
 
                     <table class="page-container">
                         <thead>
-                            <tr><th>DAS</th></tr>
+                            <tr>
+                                <th>DAS
+                                    <p:commandButton styleClass="header-button white-button"
+                                                     value="Reset"
+                                                     process="@this"
+                                                     onclick="dasChart.filterAll();
+                                                             dc.redrawAll();"/> 
+                                </th>
+                            </tr>
                         </thead>
                         <tbody>
                             <tr>
@@ -380,7 +602,15 @@
 
                     <table class="page-container">
                         <thead>
-                            <tr><th>Assignee</th></tr>
+                            <tr>
+                                <th>Assignee
+                                    <p:commandButton styleClass="header-button white-button"
+                                                     value="Reset"
+                                                     process="@this"
+                                                     onclick="assigneeChart.filterAll();
+                                                             dc.redrawAll();"/> 
+                                </th>
+                            </tr>
                         </thead>
                         <tbody>
                             <tr>

@@ -144,11 +144,11 @@ public class DTX {
         CHANGE_PASSWORD(3L),
         NEW_TICKET(4L),
         TICKET_MODIFIED(5L),
-        TICKET_SOLVED(6L),
+        //TICKET_SOLVED(6L),
         EXCEPTION(7L),
         ACCOUNT_REQUEST(8L),
         RMA_REQUEST(9L),
-        FEEDBACK(10L);
+        FEEDBACK(6L);
 
         private final Long value;
 
@@ -220,16 +220,6 @@ public class DTX {
             return label;
         }
         
-    };
-
-    /**
-     * Support ticket satisfaction states.
-     */
-    public static enum TicketSatisfaction {
-
-        NOT_RATED,
-        SATISFIED,
-        NOT_SATISFIED
     };
 
     /**
@@ -373,7 +363,14 @@ public class DTX {
         AGENT_TYPE,
         AGENT_VERSION_NUMBER,
         TICKET_EMAIL_ID,
-        TICKET_MSG;
+        TICKET_MSG,
+        TICKET_ASSIGNEE,
+        TICKET_5_STAR,
+        TICKET_4_STAR,
+        TICKET_3_STAR,
+        TICKET_2_STAR,
+        TICKET_1_STAR,
+        TICKET_0_STAR;
     };
 
     /**

@@ -116,7 +116,7 @@ public class TicketAnalytics implements Serializable {
         private String title;
         private Long openEpoch;
         private Long closeEpoch;
-        private DTX.TicketSatisfaction satisfied;
+        private int satisfied;
         private String das;
         private int commentQty;
         private long resolutionDuration;
@@ -217,11 +217,11 @@ public class TicketAnalytics implements Serializable {
             this.closeEpoch = closeEpoch;
         }
 
-        public DTX.TicketSatisfaction getSatisfied() {
+        public int getSatisfied() {
             return satisfied;
         }
 
-        public void setSatisfied(DTX.TicketSatisfaction satisfied) {
+        public void setSatisfied(int satisfied) {
             this.satisfied = satisfied;
         }
 

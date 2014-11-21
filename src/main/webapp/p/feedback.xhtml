@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:ez="http://xmlns.jcp.org/jsf/composite/ezcomp"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <h:outputStylesheet name="css/login.css"/>
+        <h:outputStylesheet name="css/common.css"/>
+        <link rel="shortcut icon" type="image/png" href="#{request.contextPath}/resources/images/favicon.ico" />
+        <title>#{msgs['default.page.title']} | #{msgs['satisfied.page.title']}</title>
+    </h:head>
+    <h:body>
+
+
+
+        <h:form id="form">
+
+            <p:remoteCommand autoRun="true"
+                             actionListener="#{satisfaction.init()}"
+                             update=":form:lazy-update-class"/>
+
+            <h:panelGroup id="lazy-update-class">
+
+                <div id="feedback">
+                    <p:graphicImage name="images/ajax-loader.gif" 
+                                    rendered="#{!satisfaction.renderForm 
+                                                and !satisfaction.renderError 
+                                                and !satisfaction.renderThankyou}" 
+                                    styleClass="ajax-lazy-loader"/>
+
+                    <h:outputText rendered="#{satisfaction.renderThankyou}" value="Thankyou" />
+
+                    <h:outputText rendered="#{satisfaction.renderError}" value="Invalid Token" />
+
+                    <h:panelGroup rendered="#{satisfaction.renderForm}">
+
+                        <h4>Review:</h4>
+                        <h2>#{satisfaction.ticket.title}</h2>
+                        <p:spacer height="10px" width="100%"/>
+                        <p:inputTextarea id="feedback" 
+                                         value="#{satisfaction.feedback}"
+                                         rows="10"
+                                         style="height: 200px"
+                                         placeholder="Additional feedback..."/>
+                        <p:spacer height="10px" width="100%"/>
+                        <p:rating id="rating" 
+                                  value="#{satisfaction.rating}" 
+                                  style="margin-left: 80px"/>
+                        <p:spacer height="10px" width="100%"/>
+
+                        <p:commandButton id="login-btn"
+                                         styleClass="feedback-button-update-class"
+                                         action="#{satisfaction.submit()}"
+                                         ajax="true" 
+                                         value="Submit"
+                                         onclick="PF('blockui1').block();"
+                                         oncomplete="PF('blockui1').unblock();"
+                                         process="@this,feedback,rating"
+                                         update=":form:lazy-update-class"/>
+
+                        <ez:blockUI target="@(.feedback-button-update-class)" widgetVar="blockui1"/>
+
+                    </h:panelGroup>
+
+                </div>
+            </h:panelGroup>
+
+
+        </h:form>
+
+    </h:body>
+</html>

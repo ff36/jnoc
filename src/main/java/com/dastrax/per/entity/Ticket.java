@@ -12,7 +12,6 @@ import com.dastrax.app.security.SessionUser;
 import com.dastrax.per.dap.CrudService;
 import com.dastrax.per.dap.QueryParameter;
 import com.dastrax.per.project.DTX;
-import com.dastrax.per.project.DTX.TicketSatisfaction;
 import com.dastrax.per.project.DTX.TicketSeverity;
 import com.dastrax.per.project.DTX.TicketStatus;
 import com.dastrax.per.project.DTX.TicketTopic;
@@ -78,7 +77,8 @@ import org.primefaces.push.EventBusFactory;
     @NamedQuery(name = "Ticket.findAllByCreator", query = "SELECT e FROM Ticket e JOIN e.creator a WHERE a.id = :id"),
     @NamedQuery(name = "Ticket.findAllByRequester", query = "SELECT e FROM Ticket e JOIN e.requester a WHERE a.id = :id"),
     @NamedQuery(name = "Ticket.findAllByAssignee", query = "SELECT e FROM Ticket e JOIN e.assignee a WHERE a.id = :id"),
-    @NamedQuery(name = "Ticket.findAllByCloser", query = "SELECT e FROM Ticket e JOIN e.closer a WHERE a.id = :id"),})
+    @NamedQuery(name = "Ticket.findAllByCloser", query = "SELECT e FROM Ticket e JOIN e.closer a WHERE a.id = :id"),
+    @NamedQuery(name = "Ticket.findAllByCloseRange", query = "SELECT DISTINCT e FROM Ticket e WHERE e.closeEpoch BETWEEN :start AND :end")})
 @Entity
 public class Ticket implements Serializable {
 
@@ -106,8 +106,7 @@ public class Ticket implements Serializable {
     private User assignee;
     private Long openEpoch;
     private Long closeEpoch;
-    @Enumerated(EnumType.STRING)
-    private TicketSatisfaction satisfied;
+    private int satisfied;
     @Column(length = 8000)
     private String feedback;
     @ManyToOne
@@ -320,7 +319,7 @@ public class Ticket implements Serializable {
      *
      * @return the value of satisfied
      */
-    public TicketSatisfaction getSatisfied() {
+    public int getSatisfied() {
         return satisfied;
     }
 
@@ -544,7 +543,7 @@ public class Ticket implements Serializable {
      *
      * @param satisfied new value of satisfied
      */
-    public void setSatisfied(TicketSatisfaction satisfied) {
+    public void setSatisfied(int satisfied) {
         this.satisfied = satisfied;
     }
 
@@ -629,7 +628,7 @@ public class Ticket implements Serializable {
         creator = (User) dap.find(User.class, SessionUser.getCurrentUser().getId());
 
         // Set the satisfaction
-        satisfied = TicketSatisfaction.NOT_RATED;
+        satisfied = 0;
         
         // VAR access
         if (SessionUser.getCurrentUser().isVAR()
@@ -686,7 +685,7 @@ public class Ticket implements Serializable {
         requester = user;
 
         // Set the satisfaction
-        satisfied = TicketSatisfaction.NOT_RATED;
+        satisfied = 0;
         
         // Set the person who closed the ticket if its set to solved
         switch (newStatus) {
@@ -894,6 +893,7 @@ public class Ticket implements Serializable {
                 if (comment.getComment() == null || comment.getComment().isEmpty()) {
                     comment.setComment("TICKET CLOSED.");
                 }
+                
                 break;
         }
     }

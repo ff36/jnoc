@@ -12,11 +12,7 @@ import org.quartz.JobExecutionException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.faces.application.FacesMessage;
 import javax.mail.*;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.primefaces.push.EventBus;
-import org.primefaces.push.EventBusFactory;
 
 /**
  * Implements the Quartz Job interface to schedule Gmail IMAP check.
