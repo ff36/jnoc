@@ -216,7 +216,7 @@
         <dependency>
             <groupId>org.primefaces</groupId>
             <artifactId>primefaces</artifactId>
-            <version>5.0</version>
+            <version>5.1</version>
         </dependency>
         
         <dependency>
@@ -242,7 +242,12 @@
             <artifactId>rome</artifactId>
             <version>1.0</version>
         </dependency>
-
+        
+        <dependency>
+            <groupId>org.atmosphere</groupId>
+            <artifactId>atmosphere-runtime</artifactId>
+            <version>2.2.2</version>
+        </dependency>
         <!-- END | PRIMEFACES -->
 
         <!-- START | JUNIT -->
@@ -277,13 +282,35 @@
         </dependency>
         <!-- START | MARKDOWN -->
         
-        <!-- START | GMAIL -->
+        <!-- START | QUARTZ -->
         <dependency>
-            <groupId>com.googlecode.gmail4j</groupId>
-            <artifactId>gmail4j</artifactId>
-            <version>0.4</version>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz</artifactId>
+            <version>2.2.1</version>
         </dependency>
-        <!-- END | GMAIL -->
+        
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz-jobs</artifactId>
+            <version>2.2.1</version>
+        </dependency>
+        <!-- END | QUARTZ -->
+        
+        <!-- START | MAIL -->
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+            <version>1.4</version>
+        </dependency>
+        <!-- END | MAIL -->
+        
+        <!-- START | HTML TO TEXT -->
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.7.2</version>
+        </dependency>
+        <!-- END | HTML TO TEXT -->
         
     </dependencies>
 

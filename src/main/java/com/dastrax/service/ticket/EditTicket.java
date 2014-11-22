@@ -11,6 +11,7 @@ import com.dastrax.per.entity.Comment;
 import com.dastrax.per.entity.Ticket;
 import com.dastrax.service.navigation.Navigator;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
@@ -121,6 +122,7 @@ public class EditTicket implements Serializable {
                 navigator.navigate("LIST_TICKETS");
             }
 
+            ticket.setCcEmailRecipients(new ArrayList<String>());
         } catch (NullPointerException | NumberFormatException e) {
             // The ticket was not found in the persistence
             navigator.navigate("LIST_TICKETS");
@@ -141,5 +143,14 @@ public class EditTicket implements Serializable {
         
     }
 
+    /**
+     * When a push notification comes in we want to update the ticket but without
+     * loosing what the administrator was working on.
+     */
+    public void updateComments() {
+        Ticket newTicket = (Ticket) dap.find(Ticket.class, Long.valueOf(viewParamTicketID));
+        newTicket.setComment(ticket.getComment());
+        ticket = newTicket;
+    }
     
 }

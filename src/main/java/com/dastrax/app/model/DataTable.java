@@ -154,9 +154,9 @@ public class DataTable {
      * @param root. Root parameter filter map
      */
     public void initTable(
-            Map<String, List<String>> parameters, 
+            Map<String, List<String>> parameters,
             Map<String, List<Long>> root) {
-        
+
         this.model = new DataTableModel(
                 this.modelQuery,
                 root,
@@ -256,7 +256,7 @@ public class DataTable {
         /**
          * Given the rowKey this method will lookup the object in the
          * persistence layer.
-         * 
+         *
          * @param rowKey
          * @return The object associated with the rowKey.
          */
@@ -267,6 +267,7 @@ public class DataTable {
 
         /**
          * Given the object the identifying rowKey can be obtained.
+         *
          * @param object
          * @return The rowKey associated with the object.
          */
@@ -274,6 +275,7 @@ public class DataTable {
         public Object getRowKey(Object object) {
             return modelQuery.rowKey(object);
         }
+
 //</editor-fold>
 
     }
