@@ -43,5 +43,21 @@
             </p:commandButton> 
 
         </p:dialog>
+
+        <p:growl widgetVar="notificationGrowl"
+                 redisplay="false"
+                 showDetail="false" 
+                 sticky="false" />
+
+        <p:socket onMessage="handleMessage" channel="/ticket" />
+
+        <script type="text/javascript">
+            function handleMessage(facesmessage) {
+                facesmessage.severity = 'info';
+
+                PF('notificationGrowl').show([facesmessage]);
+            }
+        </script>
+
     </cc:implementation>
 </html>

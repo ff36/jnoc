@@ -12,7 +12,6 @@ import com.dastrax.app.security.SessionUser;
 import com.dastrax.per.dap.CrudService;
 import com.dastrax.per.dap.QueryParameter;
 import com.dastrax.per.project.DTX;
-import com.dastrax.per.project.DTX.TicketSatisfaction;
 import com.dastrax.per.project.DTX.TicketSeverity;
 import com.dastrax.per.project.DTX.TicketStatus;
 import com.dastrax.per.project.DTX.TicketTopic;
@@ -29,6 +28,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
+import javax.faces.application.FacesMessage;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.CascadeType;
@@ -50,6 +50,9 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.primefaces.push.EventBus;
+import org.primefaces.push.EventBusFactory;
 
 /**
  * This class is mapped in the persistence layer allowing instances of this
@@ -70,10 +73,12 @@ import javax.persistence.criteria.Root;
     @NamedQuery(name = "Ticket.findAllExceptStatus", query = "SELECT e FROM Ticket e WHERE e.status <> :status"),
     @NamedQuery(name = "Ticket.findAllExceptMultiStatus", query = "SELECT e FROM Ticket e WHERE e.status <> :status1 AND e.status <> :status2"),
     @NamedQuery(name = "Ticket.findAllByType", query = "SELECT e FROM Ticket e WHERE e.topic = :topic"),
+    @NamedQuery(name = "Ticket.findAllByEmail", query = "SELECT e FROM Ticket e WHERE e.email = :email"),
     @NamedQuery(name = "Ticket.findAllByCreator", query = "SELECT e FROM Ticket e JOIN e.creator a WHERE a.id = :id"),
     @NamedQuery(name = "Ticket.findAllByRequester", query = "SELECT e FROM Ticket e JOIN e.requester a WHERE a.id = :id"),
     @NamedQuery(name = "Ticket.findAllByAssignee", query = "SELECT e FROM Ticket e JOIN e.assignee a WHERE a.id = :id"),
-    @NamedQuery(name = "Ticket.findAllByCloser", query = "SELECT e FROM Ticket e JOIN e.closer a WHERE a.id = :id"),})
+    @NamedQuery(name = "Ticket.findAllByCloser", query = "SELECT e FROM Ticket e JOIN e.closer a WHERE a.id = :id"),
+    @NamedQuery(name = "Ticket.findAllByCloseRange", query = "SELECT DISTINCT e FROM Ticket e WHERE e.closeEpoch BETWEEN :start AND :end")})
 @Entity
 public class Ticket implements Serializable {
 
@@ -101,8 +106,7 @@ public class Ticket implements Serializable {
     private User assignee;
     private Long openEpoch;
     private Long closeEpoch;
-    @Enumerated(EnumType.STRING)
-    private TicketSatisfaction satisfied;
+    private int satisfied;
     @Column(length = 8000)
     private String feedback;
     @ManyToOne
@@ -113,6 +117,7 @@ public class Ticket implements Serializable {
     private List<Tag> tags;
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}, orphanRemoval = true)
     private List<Attachment> attachments;
+    private String email;
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Transient Properties">
@@ -314,7 +319,7 @@ public class Ticket implements Serializable {
      *
      * @return the value of satisfied
      */
-    public TicketSatisfaction getSatisfied() {
+    public int getSatisfied() {
         return satisfied;
     }
 
@@ -372,6 +377,15 @@ public class Ticket implements Serializable {
      */
     public Attachment getAttachment() {
         return attachment;
+    }
+
+    /**
+     * Get the value of email.
+     *
+     * @return the value of email
+     */
+    public String getEmail() {
+        return email;
     }
 
 //</editor-fold>
@@ -529,7 +543,7 @@ public class Ticket implements Serializable {
      *
      * @param satisfied new value of satisfied
      */
-    public void setSatisfied(TicketSatisfaction satisfied) {
+    public void setSatisfied(int satisfied) {
         this.satisfied = satisfied;
     }
 
@@ -589,6 +603,15 @@ public class Ticket implements Serializable {
         this.attachment = attachment;
     }
 
+    /**
+     * Set the value of email.
+     *
+     * @param email new value of email
+     */
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
 //</editor-fold>
     
     /**
@@ -604,6 +627,9 @@ public class Ticket implements Serializable {
         // Set the ticket variables
         creator = (User) dap.find(User.class, SessionUser.getCurrentUser().getId());
 
+        // Set the satisfaction
+        satisfied = 0;
+        
         // VAR access
         if (SessionUser.getCurrentUser().isVAR()
                 || SessionUser.getCurrentUser().isClient()) {
@@ -613,17 +639,68 @@ public class Ticket implements Serializable {
         // Set the person who closed the ticket if its set to solved
         switch (newStatus) {
             case OPEN:
-                newOpenStatus();
+                newOpenStatus(creator);
                 break;
             case CLOSED:
-                newSolveStatus();
+                newSolveStatus(creator);
                 break;
         }
 
+        // Set the ticket creation
         openEpoch = Calendar.getInstance().getTimeInMillis();
-        comment.setCreateEpoch(Calendar.getInstance().getTimeInMillis());
-        comment.setCommenter(creator);
-        comments.add(comment);
+
+        // Create a time based id for email identification
+        email = String.valueOf(new Date().getTime());
+
+        // Sort the tags
+        cleanTags();
+
+        // Persist the new ticket
+        dap.create(this);
+
+        // send the emails
+        email(DTX.EmailTemplate.NEW_TICKET);
+
+        // Push
+        if (this.requester != null) {
+            push();
+        }
+
+        return navigation;
+
+    }
+
+    /**
+     * Creates a new Ticket from email, adds it to the persistence layer and
+     * adds storage related resources.
+     *
+     * @param user
+     * @param newStatus
+     * @return navigation string
+     */
+    public Ticket create(User user, DTX.TicketStatus newStatus) {
+
+        // Set the ticket variables
+        creator = user;
+        requester = user;
+
+        // Set the satisfaction
+        satisfied = 0;
+        
+        // Set the person who closed the ticket if its set to solved
+        switch (newStatus) {
+            case OPEN:
+                newOpenStatus(creator);
+                break;
+            case CLOSED:
+                newSolveStatus(creator);
+                break;
+        }
+        // Set the ticket creation
+        openEpoch = Calendar.getInstance().getTimeInMillis();
+
+        // Create a time based id for email identification
+        email = String.valueOf(new Date().getTime());
 
         // Sort the tags
         cleanTags();
@@ -634,7 +711,30 @@ public class Ticket implements Serializable {
         // send the emails
         email(DTX.EmailTemplate.NEW_TICKET);
 
-        return navigation;
+        // Push
+        if (this.requester != null) {
+            push();
+        }
+
+        return newTicket;
+
+    }
+
+    /**
+     * Push notifications
+     */
+    private void push() {
+            // Push
+            EventBus eventBus = EventBusFactory.getDefault().eventBus();
+            eventBus.publish("ticket", new FacesMessage(
+                    StringEscapeUtils.escapeHtml("New Unassigned Ticket"),
+                    StringEscapeUtils.escapeHtml(
+                            this.getTitle()
+                            + " requested by "
+                            + this.getRequester().getContact().buildFullName()
+                            + " ("
+                            + this.getRequester().getEmail()
+                            + ")")));
 
     }
 
@@ -663,32 +763,62 @@ public class Ticket implements Serializable {
      * @param newStatus
      */
     public void edit(DTX.TicketStatus newStatus) {
-        try {
-            if (!comment.getComment().isEmpty()) {
-                // Add the comment
-                comment.setCommenter(SessionUser.getCurrentUser());
-                comment.setCreateEpoch(new Date().getTime());
-                comments.add(comment);
-                comment = new Comment();
-            }
-        } catch (NullPointerException npe) {
-            // Do nothing. The comment is null.
-        }
 
         // Check and manage any changes to the ticket status
         switch (newStatus) {
             case OPEN:
-                newOpenStatus();
+                newOpenStatus(SessionUser.getCurrentUser());
                 break;
             case CLOSED:
-                newSolveStatus();
+                newSolveStatus(SessionUser.getCurrentUser());
                 break;
         }
 
         // Sort the tags
         cleanTags();
+        
         // send the emails
         email(DTX.EmailTemplate.TICKET_MODIFIED);
+        
+        // reset the comment
+        comment = new Comment();
+        
+        // Persist the ticket
+        update();
+
+    }
+
+    /**
+     * When a ticket is edited this method provides all the dependency setting
+     * changes required to update the ticket created by an email.
+     *
+     * @param newStatus
+     * @param commenter
+     */
+    public void edit(DTX.TicketStatus newStatus, User commenter) {
+
+        // Check and manage any changes to the ticket status
+        switch (newStatus) {
+            case OPEN:
+                newOpenStatus(commenter);
+                break;
+            case CLOSED:
+                newSolveStatus(commenter);
+                break;
+        }
+
+        // Sort the tags
+        cleanTags();
+
+        // send the emails
+        email(DTX.EmailTemplate.TICKET_MODIFIED);
+        
+        // reset the comment
+        comment = new Comment();
+
+        // Reset the CC
+        ccEmailRecipients.clear();
+
         // Persist the ticket
         update();
     }
@@ -696,7 +826,7 @@ public class Ticket implements Serializable {
     /**
      * Converts a ticket status to OPEN.
      */
-    private void newOpenStatus() {
+    private void newOpenStatus(User commenter) {
 
         switch (status) {
             // Going from SOLVED to OPEN
@@ -711,12 +841,39 @@ public class Ticket implements Serializable {
                 comments.add(closing);
                 break;
         }
+
+        try {
+            if (!comment.getComment().isEmpty()) {
+                // Add the comment
+                comment.setCommenter(commenter);
+                comment.setCreateEpoch(new Date().getTime());
+                comments.add(comment);
+            }
+        } catch (NullPointerException npe) {
+            // Do nothing. The comment is null.
+        }
     }
 
     /**
      * Converts a ticket status to SOLVED.
      */
-    private void newSolveStatus() {
+    private void newSolveStatus(User commenter) {
+
+        try {
+            if (!comment.getComment().isEmpty()) {
+                // Add the comment
+                comment.setCommenter(commenter);
+                comment.setCreateEpoch(new Date().getTime());
+                comments.add(comment);
+            }
+        } catch (NullPointerException npe) {
+            // The comment is null.
+            comment = new Comment();
+            // Add the comment
+            comment.setCommenter(commenter);
+            comment.setCreateEpoch(new Date().getTime());
+            comments.add(comment);
+        }
 
         switch (status) {
             // Going from OPEN to SOLVED
@@ -733,6 +890,10 @@ public class Ticket implements Serializable {
                 closing.setComment("%CLOSED%");
                 closing.setCreateEpoch(cal.getTimeInMillis());
                 comments.add(closing);
+                if (comment.getComment() == null || comment.getComment().isEmpty()) {
+                    comment.setComment("TICKET CLOSED.");
+                }
+                
                 break;
         }
     }
@@ -1166,9 +1327,9 @@ public class Ticket implements Serializable {
     public Comment lastComment() {
         Comment last = new Comment();
         last.setCreateEpoch(0L);
-        for (Comment comment : comments) {
-            if (comment.getCreateEpoch() > last.getCreateEpoch()) {
-                last = comment;
+        for (Comment c : comments) {
+            if (c.getCreateEpoch() > last.getCreateEpoch()) {
+                last = c;
             }
         }
         return last;
@@ -1198,8 +1359,8 @@ public class Ticket implements Serializable {
                 // Make sure the email conforms to proper format
                 Iterator<String> i = ccEmailRecipients.iterator();
                 while (i.hasNext()) {
-                    String email = i.next();
-                    if (!email.matches(DTX.EMAIL_REGEX)) {
+                    String ccEmail = i.next();
+                    if (!ccEmail.matches(DTX.EMAIL_REGEX)) {
                         i.remove();
                     }
                 }
@@ -1221,8 +1382,8 @@ public class Ticket implements Serializable {
                 Template.class, template.getValue());
 
         // Send the emails
-        for (String email : ccEmailRecipients) {
-            sendEmail(email, temp);
+        for (String ccEmail : ccEmailRecipients) {
+            sendEmail(ccEmail, temp);
         }
     }
 
@@ -1233,23 +1394,26 @@ public class Ticket implements Serializable {
      */
     private void sendEmail(String recipient, Template template) {
         // Build an new email
-        Email email = new Email();
+        Email e = new Email();
 
         // Set the recipient
-        email.setRecipientEmail(recipient.toLowerCase());
+        e.setRecipientEmail(recipient.toLowerCase());
+
+        // Override the template subject
+        template.setSubject(title + " (DTX-" + email + ")");
 
         // Set the variables
         Map<DTX.EmailVariableKey, String> vars = new HashMap<>();
         vars.put(DTX.EmailVariableKey.TICKET_ID, id.toString());
+        vars.put(DTX.EmailVariableKey.TICKET_MSG, comment.getComment());
         vars.put(DTX.EmailVariableKey.TICKET_TITLE, title);
-        vars.put(DTX.EmailVariableKey.TICKET_STATUS, status.getLabel());
-        email.setVariables(vars);
+        e.setVariables(vars);
 
         // Set the template
-        email.setTemplate(template);
+        e.setTemplate(template);
 
         // Send the email
-        new DefaultEmailer().send(email);
+        new DefaultEmailer().send(e);
     }
 
     //<editor-fold defaultstate="collapsed" desc="Overrides">

@@ -14,6 +14,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
@@ -38,6 +39,9 @@ public class Tickets implements Serializable {
     private DataTable dataTable;
     private final ModelQuery model;
     private final Map<String, List<String>> parameters;
+    private int browserHeight;
+    private int browserWidth;
+    private int numberOfRows;
 //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="Constructors">
@@ -56,6 +60,32 @@ public class Tickets implements Serializable {
     public DataTable getDataTable() {
         return dataTable;
     }
+
+    public int getBrowserHeight() {
+        return browserHeight;
+    }
+
+    public void setBrowserHeight(int browserHeight) {
+        this.browserHeight = browserHeight;
+    }
+
+    public int getNumberOfRows() {
+        return numberOfRows;
+    }
+
+    public void setNumberOfRows(int numberOfRows) {
+        this.numberOfRows = numberOfRows;
+    }
+
+    public int getBrowserWidth() {
+        return browserWidth;
+    }
+
+    public void setBrowserWidth(int browserWidth) {
+        this.browserWidth = browserWidth;
+    }
+    
+    
  
 //</editor-fold>
 
@@ -75,6 +105,22 @@ public class Tickets implements Serializable {
      * and data after the page has loaded.
      */
     public void init() {
+        // Get the browser height
+        Map<String, String> requestParameterMap = FacesContext.getCurrentInstance()
+                .getExternalContext()
+                .getRequestParameterMap();
+        browserHeight = Integer.valueOf(requestParameterMap.get("hidden_field_browser_height"));
+        browserWidth = Integer.valueOf(requestParameterMap.get("hidden_field_browser_width"));
+        if (browserWidth >= 2100) {
+           numberOfRows = browserHeight / 34; 
+        } 
+        if (browserWidth > 1900 && browserWidth < 2100) {
+            numberOfRows = browserHeight / 40;
+        }
+        if (browserWidth < 1900) {
+            numberOfRows = browserHeight / 50;
+        }
+
         dataTable = new DataTable(model);
         dataTable.initTable(
                 parameters, 

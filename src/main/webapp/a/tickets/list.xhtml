@@ -24,7 +24,11 @@
 
             <pe:ajaxErrorHandler />
 
+            <p:socket onMessage="pushUpdateTable" channel="/ticket" />
+            <p:remoteCommand name="pushUpdateTable" update="@widgetVar(ticketsTable)" />
+
             <p:growl id="growl" 
+                     widgetVar="growl"
                      redisplay="false"
                      showDetail="false" 
                      sticky="false" />
@@ -62,12 +66,12 @@
                                 </tr>
                             </ui:fragment>
                             <tr>
-                                <ui:remove>
+                                <ui:fragment rendered="#{jsfSessionUser.currentUser.hasPermission('ticket:analytic') and jsfSessionUser.currentUser.administrator}">
                                     <td><p:commandLink value="Ticket Analytics" 
                                                        action="/a/tickets/analytics.xhtml?faces-redirect=true" 
                                                        process="@this" 
                                                        type="button"/></td>
-                                </ui:remove>
+                                </ui:fragment>
                             </tr>
                         </tbody>
                     </table>
@@ -146,10 +150,30 @@
                             <tr>
                                 <td>
 
-                                    <p:remoteCommand autoRun="true" 
-                                                     async="true" 
-                                                     actionListener="#{tickets.init()}" 
+                                    <p:remoteCommand name="loadTickets"
+                                                     async="true"
+                                                     actionListener="#{tickets.init()}"
                                                      update=":form:lazy-update-class"/>
+
+                                    <input id="hidden_field_browser_height" name="hidden_field_browser_height" type="hidden" value="123" />
+                                    <input id="hidden_field_browser_width" name="hidden_field_browser_width" type="hidden" value="123" />
+
+                                    <script type="text/javascript">
+                                        window.onload = height;
+                                        function height() {
+                                            var body = document.body,
+                                                    html = document.documentElement;
+
+                                            var height = Math.max(body.scrollHeight, body.offsetHeight,
+                                                    html.clientHeight, html.scrollHeight, html.offsetHeight);
+
+                                            var width = window.innerWidth;
+
+                                            document.getElementById('hidden_field_browser_width').value = width;
+                                            document.getElementById('hidden_field_browser_height').value = height - 250;
+                                            loadTickets();
+                                        }
+                                    </script>
 
                                     <p:spacer width="100%" height="20px"/>
 
@@ -171,8 +195,8 @@
                                                          styleClass="type1-table"
                                                          lazy="true"
                                                          paginator="true"
-                                                         rows="20"
-                                                         rowsPerPageTemplate="20,50"
+                                                         rows="#{tickets.numberOfRows}"
+                                                         rowsPerPageTemplate="#{tickets.numberOfRows * 2}, #{tickets.numberOfRows * 3}, #{tickets.numberOfRows * 5}, #{tickets.numberOfRows * 10}"
                                                          paginatorAlwaysVisible="false"
                                                          paginatorPosition="bottom"> 
 
@@ -259,6 +283,13 @@
                                                           filterStyle="display:none"
                                                           sortBy="#{ticket.severity}">
                                                     #{ticket.severity}
+                                                </p:column>
+
+                                                <p:column headerText="Email ID"
+                                                          filterBy="#{ticket.email}"
+                                                          filterStyle="display:none"
+                                                          sortBy="#{ticket.email}">
+                                                    (DTX-#{ticket.email})
                                                 </p:column>
 
                                                 <p:rowExpansion>  

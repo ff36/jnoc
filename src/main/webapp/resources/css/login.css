@@ -96,6 +96,16 @@ A:link:hover, A:visited:hover
 	width: 312px;
 	height: 120px;
 }
+#feedback
+{
+	position: fixed;
+	top: 30%;
+	left: 50%;
+	margin-top: -89px;
+	margin-left: -162px;
+	width: 312px;
+	height: 395px;
+}
 .footer
 {
 	/*+placement:anchor-bottom-left 0px 0px;*/
