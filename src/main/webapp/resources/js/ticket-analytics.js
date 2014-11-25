@@ -500,7 +500,7 @@ var rangeGroup = rangeDimension.group()
             return d.open;
         });
 rangeChart
-        .width(width - 50)
+        //.width(null)
         .height(90)
         .margins({top: 10, right: 10, bottom: 20, left: 10})
         .dimension(rangeDimension)
