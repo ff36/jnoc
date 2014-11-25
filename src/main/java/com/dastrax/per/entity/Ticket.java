@@ -884,6 +884,11 @@ public class Ticket implements Serializable {
                 status = DTX.TicketStatus.CLOSED;
                 closeEpoch = cal.getTimeInMillis();
                 closer = SessionUser.getCurrentUser();
+                
+                // If no assignee has been given make one from the closer
+                if (assignee == null && closer.isAdministrator()) {
+                    assignee = closer;
+                }
 
                 Comment closing = new Comment();
                 closing.setCommenter(closer);

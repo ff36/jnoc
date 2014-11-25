@@ -144,11 +144,11 @@ public class DTX {
         CHANGE_PASSWORD(3L),
         NEW_TICKET(4L),
         TICKET_MODIFIED(5L),
-        //TICKET_SOLVED(6L),
+        TICKET_FEEDBACK(6L),
         EXCEPTION(7L),
         ACCOUNT_REQUEST(8L),
         RMA_REQUEST(9L),
-        FEEDBACK(6L);
+        USER_FEEDBACK(10L);
 
         private final Long value;
 

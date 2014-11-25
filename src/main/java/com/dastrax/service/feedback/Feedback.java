@@ -107,7 +107,7 @@ public class Feedback implements Serializable {
 
             // Retreive the email template from the database.
             Template template = (Template) dap.find(Template.class,
-                    DTX.EmailTemplate.FEEDBACK);
+                    DTX.EmailTemplate.USER_FEEDBACK.getValue());
             email.setTemplate(template);
 
             // Send the email
