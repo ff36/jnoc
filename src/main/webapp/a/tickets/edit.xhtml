@@ -501,7 +501,7 @@
                                                     When new accounts are created via a support email we do our best to link the new account to an existing company. If a suitable company can't be found the user is temporary classified as <em>'Undefined'</em>. The ticket was successfully created but until #{editTicket.ticket.requester.contact.firstName} is associated with a company (new or existing) you will be unable to edit or manage the ticket.
 
                                                     <p:spacer width="100%" height="10"/>
-                                                    
+
                                                     <p:remoteCommand autoRun="true" 
                                                                      async="true" 
                                                                      actionListener="#{editTicket.ticket.requester.lazyLoad()}" 
@@ -634,6 +634,15 @@
 
                                             <p:column>
                                                 <h:outputText value="#{attachment.title}"/>
+                                            </p:column>
+
+                                            <p:column>
+                                                <p:commandLink process="@this"
+                                                               action="#{attachment.download()}"
+                                                               ajax="false"
+                                                               title="Download"> 
+                                                    <p:graphicImage value="#{uriUtil.icon('black/arrow_bottom_icon_16.png', true)}"/>
+                                                </p:commandLink>
                                             </p:column>
 
                                             <p:column>

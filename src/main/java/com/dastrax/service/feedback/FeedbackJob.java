@@ -71,7 +71,7 @@ public class FeedbackJob implements Job {
 
             // Retreive the email template from the database.
             Template template = (Template) dap.find(
-                    Template.class, DTX.EmailTemplate.FEEDBACK.getValue());
+                    Template.class, DTX.EmailTemplate.TICKET_FEEDBACK.getValue());
 
             for (Ticket ticket : tickets) {
                 sendEmail(ticket, template);
