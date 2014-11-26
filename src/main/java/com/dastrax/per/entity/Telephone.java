@@ -57,19 +57,21 @@ public class Telephone implements Serializable {
     
     //<editor-fold defaultstate="collapsed" desc="Transient Properties">
     @Transient
-    private final String defaultPhoneCountry = ResourceBundle.getBundle("config").getString("DefaultPhoneCountry");
+    private final String defaultPhoneCountry;
     @Transient
     private final List<Locale> countries;
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Constructors">
     public Telephone() {
-        this.country = defaultPhoneCountry;
+        this.defaultPhoneCountry = ResourceBundle.getBundle("config").getString("DefaultPhoneCountry");
+        this.country = ResourceBundle.getBundle("config").getString("DefaultPhoneCountry");
         this.type = TelephoneType.DESK;
         this.countries = new Countries().getWorldCountries();
     }
 
     public Telephone(String country) {
+        this.defaultPhoneCountry = ResourceBundle.getBundle("config").getString("DefaultPhoneCountry");
         this.country = country;
         this.type = TelephoneType.DESK;
         this.countries = new Countries().getWorldCountries();
@@ -174,6 +176,10 @@ public class Telephone implements Serializable {
     public boolean validFormat() {
 
         try {
+            if (country == null) {
+                country = ResourceBundle.getBundle("config").getString("DefaultPhoneCountry");
+            }
+            
             if (number.length() > 3) {
                 PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
                 Phonenumber.PhoneNumber phoneNumber;

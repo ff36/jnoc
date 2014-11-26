@@ -242,6 +242,14 @@
                                         <th>
                                             #{editTicket.ticket.title} <h:outputText value="Email ID: (DTX-#{editTicket.ticket.email})" 
                                                           styleClass="comment-date"/>
+
+                                            <p:commandButton 
+                                                rendered="#{jsfSessionUser.currentUser.hasPermission('ticket:delete') and jsfSessionUser.currentUser.administrator}"
+                                                styleClass="header-button"
+                                                value="Delete Ticket"
+                                                process="@this"
+                                                actionListener="#{editTicket.ticket.delete()}"
+                                                action="#{navigator.navigate('LIST_TICKETS')}"/> 
                                         </th>
                                     </tr>
                                 </thead>
@@ -381,7 +389,7 @@
 
                                                                 <ez:blockUI target="@widgetVar(reopenBtn)" widgetVar="blockui3"/>
 
-                                                                <h:panelGroup rendered="#{editTicket.renderEditor}">
+                                                                <h:panelGroup rendered="#{editTicket.renderEditor and editTicket.ticket.closeEpoch eq null}">
 
                                                                     <div class="bubble">
 
@@ -443,7 +451,9 @@
                                                                                         Parsed as Markdown
                                                                                     </a>
 
-                                                                                    <p:inputTextarea autoResize="true"
+                                                                                    <p:focus for="commentInput"/>
+                                                                                    <p:inputTextarea id="commentInput" 
+                                                                                                     autoResize="true"
                                                                                                      value="#{editTicket.ticket.comment.comment}"
                                                                                                      style="width: 100%; min-height: 100px">
                                                                                         <p:ajax event="keyup" />

@@ -9,7 +9,6 @@ import com.dastrax.app.misc.TemporalUtil;
 import com.dastrax.per.dap.CrudService;
 import java.io.Serializable;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -56,6 +55,7 @@ public class Account implements Serializable {
     private Long lastSessionEpoch;
     private Long currentSessionEpoch;
     private Long closeEpoch;
+    private boolean certified;
 //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="Transient Properties">
@@ -173,6 +173,11 @@ public class Account implements Serializable {
     public Long getCloseEpoch() {
         return closeEpoch;
     }
+
+    public boolean isCertified() {
+        return certified;
+    }
+    
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Setters">
@@ -257,6 +262,12 @@ public class Account implements Serializable {
     public void setCloseEpoch(Long closeEpoch) {
         this.closeEpoch = closeEpoch;
     }
+
+    public void setCertified(boolean certified) {
+        this.certified = certified;
+    }
+    
+    
 //</editor-fold>
     
     /**

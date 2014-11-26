@@ -215,6 +215,12 @@
                                                 <p:ajax event="rowSelect"/>  
                                                 <p:ajax event="rowUnselect"/>
 
+                                                <p:column style="width:18px">  
+                                                    <p:graphicImage value="#{uriUtil.image('warning.png', true)}" 
+                                                                    rendered="#{ticket.assignee eq null and jsfSessionUser.currentUser.administrator}"
+                                                                    title="No Assignee"/>
+                                                </p:column>
+
                                                 <p:column selectionMode="multiple" 
                                                           style="width:18px" />
 
@@ -410,7 +416,7 @@
 
                                                         <p:commandButton styleClass="red-button" 
                                                                          action="#{navigator.navigate('EDIT_TICKET_WITH_PARAM', 'ticket='.concat(ticket.id))}" 
-                                                                         value="Reopen Ticket" 
+                                                                         value="View Ticket" 
                                                                          process="@this"
                                                                          rendered="#{ticket.status eq 'CLOSED'}"/>
 

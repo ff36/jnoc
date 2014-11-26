@@ -41,7 +41,8 @@ public class DTX {
         SITE("SITES"),
         TICKETS("TICKETS"),
         TICKET_ATTACHMENTS("ATTACHMENTS"),
-        TEMPORARY("TEMPORARY");
+        TEMPORARY("TEMPORARY"),
+        CORE_EMAIL("EMAIL");
 
         private final String value;
 
@@ -64,7 +65,8 @@ public class DTX {
         CORE_COMPANY_LOGO_HOLDER("company_logo_holder.svg"),
         USER_PROFILE_GRAPHIC("profile.jpg"),
         COMPANY_LOGO("company_logo.png"),
-        SITE_PURCHASE_ORDER("purchase_order.pdf");
+        SITE_PURCHASE_ORDER("purchase_order.pdf"),
+        EMAIL_BLACKLIST("blacklist.json");
 
         private final String value;
 
@@ -406,7 +408,8 @@ public class DTX {
         USER_DIRECTORY,
         COMPANY_DIRECTORY,
         TEMPORARY_FILE,
-        TICKET_ATTACHEMENT
+        TICKET_ATTACHEMENT,
+        EMAIL_BLACKLIST;
         
     };
     

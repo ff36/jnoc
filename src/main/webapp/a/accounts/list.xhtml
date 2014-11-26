@@ -175,6 +175,12 @@
                                                     <p:rowToggler />  
                                                 </p:column>
 
+                                                <p:column id="certified" style="width:18px">
+                                                    <p:graphicImage value="#{uriUtil.icon('black/cert_icon_16.png', true)}"
+                                                                    title="Certified"
+                                                                    rendered="#{user.account.certified}"/>   
+                                                </p:column>
+                                                
                                                 <p:column headerText="Name"
                                                           filterBy="#{user.contact.firstName}"
                                                           filterStyle="display:none"
@@ -225,7 +231,7 @@
                                                                     title="Verified"
                                                                     rendered="#{user.account.confirmed}"/>   
                                                 </p:column>
-
+                                                
                                                 <p:rowExpansion>  
 
                                                     <div class="expanded-row-wrapper-1">
@@ -317,6 +323,24 @@
                                                                             <td class="field-label-4" width="100px">Last Activity:</td>
                                                                             <td class="field-value-4">
                                                                                 #{user.account.getCurrentSessionTimeStamp()}
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td class="field-label-4" width="100px">Certified:</td>
+                                                                            <td class="field-value-4">
+                                                                                <p:inplace id="certifiedAIP" 
+                                                                                           styleClass="inplace" 
+                                                                                           editor="true" 
+                                                                                           label="#{user.account.certified ? 'Yes' : 'No'}" 
+                                                                                           disabled="#{!jsfSessionUser.currentUser.hasPermission('account:edit')}">  
+                                                                                    <p:ajax event="save" 
+                                                                                            listener="#{user.account.update()}" 
+                                                                                            update=":form:accounts-table :form:growl" 
+                                                                                            oncomplete="PF('accountsTable').filter();"/>
+                                                                                    <p:selectBooleanButton value="#{user.account.certified}" 
+                                                                                                           onLabel="Yes" 
+                                                                                                           offLabel="No" />
+                                                                                </p:inplace>
                                                                             </td>
                                                                         </tr>
                                                                     </table>
@@ -575,7 +599,7 @@
                                                                     </td>
                                                                     <td>
                                                                         <p:inputText value="#{user.contact.newTelephone.number}"
-                                                                                     style="margin-left: 10px"
+                                                                                     style="margin-left: 10px;"
                                                                                      styleClass="dlg-telephone-update-class">
                                                                             <p:ajax event="keyup" update="add-telephone-button" />
                                                                         </p:inputText>
@@ -586,7 +610,8 @@
                                                                                          action="#{user.contact.resetTelephone()}"
                                                                                          disabled="#{!user.contact.newTelephone.validFormat()}"
                                                                                          update="@this @(.dlg-telephone-update-class)"
-                                                                                         process="@this @(.dlg-telephone-update-class)">
+                                                                                         process="@this @(.dlg-telephone-update-class)"
+                                                                                         style="margin-left: 20px">
                                                                             <p:collector value="#{user.contact.newTelephone}" 
                                                                                          addTo="#{user.contact.telephones}" 
                                                                                          unique="true"/>

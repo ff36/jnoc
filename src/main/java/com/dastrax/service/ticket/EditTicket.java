@@ -43,6 +43,7 @@ public class EditTicket implements Serializable {
 
     //<editor-fold defaultstate="collapsed" desc="Constructors">
     public EditTicket() {
+        this.renderEditor = true;
         this.ticket = new Ticket();
         this.viewParamTicketID = JsfUtil.getRequestParameter("ticket");
     }
@@ -135,7 +136,7 @@ public class EditTicket implements Serializable {
      */
     public void changeEditor() {
         if (renderEditor) {
-            renderEditor = false;
+            //renderEditor = false;
         } else {
             this.ticket.setComment(new Comment());
             renderEditor = true;
