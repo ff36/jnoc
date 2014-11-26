@@ -140,6 +140,13 @@ public class DefaultStorageManager implements StorageManager {
                         + "/"
                         + id;
                 break;
+            case EMAIL_BLACKLIST:
+                key = DTX.StorageDirectory.CORE.getValue()
+                        + "/"
+                        + DTX.StorageDirectory.CORE_EMAIL.getValue()
+                        + "/"
+                        + DTX.StorageFile.EMAIL_BLACKLIST.getValue();
+                break;
         }
         return key;
     }

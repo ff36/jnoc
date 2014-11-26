@@ -63,8 +63,8 @@ var quarterOpenDimension = ticket.dimension(function (d) {
         return "Q4";
 });
 quarterOpenChart
-        .width(200)
-        .height(90)
+        .width(150)
+        .height(60)
         .margins({top: 10, left: 10, right: 10, bottom: 20})
         .dimension(quarterOpenDimension)
         .group(quarterOpenDimension.group())
@@ -84,8 +84,8 @@ var dayOfWeekOpenDimension = ticket.dimension(function (d) {
     return day + "." + name[day];
 });
 dayOfWeekOpenChart
-        .width(200)
-        .height(90)
+        .width(150)
+        .height(70)
         .margins({top: 10, left: 10, right: 10, bottom: 20})
         .dimension(dayOfWeekOpenDimension)
         .group(dayOfWeekOpenDimension.group())
@@ -500,9 +500,9 @@ var rangeGroup = rangeDimension.group()
             return d.open;
         });
 rangeChart
-        .width(width - 700)
+        //.width(null)
         .height(90)
-        .margins({top: 10, right: 10, bottom: 20, left: 40})
+        .margins({top: 10, right: 10, bottom: 20, left: 10})
         .dimension(rangeDimension)
         .group(rangeGroup)
         .centerBar(true)

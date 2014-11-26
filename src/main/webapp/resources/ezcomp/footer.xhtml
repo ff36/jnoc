@@ -47,9 +47,11 @@
         <p:growl widgetVar="notificationGrowl"
                  redisplay="false"
                  showDetail="false" 
-                 sticky="false" />
+                 sticky="true"/>
 
-        <p:socket onMessage="handleMessage" channel="/ticket" />
+        <p:socket onMessage="handleMessage" 
+                  channel="/ticket" 
+                  rendered="#{jsfSessionUser.currentUser.administrator}"/>
 
         <script type="text/javascript">
             function handleMessage(facesmessage) {

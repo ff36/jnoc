@@ -144,7 +144,7 @@ public class EmailToTicket {
                     ticket.setAttachment(a);
                     ticket.addAttachment();
                 }
-                
+
             }
 
         } else {
@@ -184,13 +184,16 @@ public class EmailToTicket {
         User user = null;
 
         // Get the email
-        String from = "unknown";
+        String from = "";
         if (msg.getReplyTo().length >= 1) {
             from = msg.getReplyTo()[0].toString();
-        } else if (msg.getFrom().length >= 1) {
+        }
+        String email = StringUtils.substringBetween(from, "<", ">").toLowerCase();
+
+        // Check the email
+        if (!email.matches(DTX.EMAIL_REGEX)) {
             from = msg.getFrom()[0].toString();
         }
-        String email = StringUtils.substringBetween(from, "<", ">");
 
         // Try to set the users name
         String[] names = from.split(" ");

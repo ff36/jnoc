@@ -12,10 +12,15 @@ import com.dastrax.app.upload.DefaultUploadManager;
 import com.dastrax.app.upload.UploadFile;
 import com.dastrax.app.upload.UploadManager;
 import com.dastrax.per.project.DTX;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 import javax.mail.internet.MimeBodyPart;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -24,6 +29,7 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Transient;
+import org.apache.commons.io.IOUtils;
 import org.primefaces.event.FileUploadEvent;
 
 /**
@@ -59,7 +65,7 @@ public class Attachment implements Serializable {
     @Transient
     private UploadFile uploadFile;
 //</editor-fold>
-    
+
     //<editor-fold defaultstate="collapsed" desc="Constructors">
     public Attachment() {
     }
@@ -204,10 +210,10 @@ public class Attachment implements Serializable {
         }
 
     }
-    
+
     /**
-     * Saves the attachment from its temporary location to its permanent
-     * storage location.
+     * Saves the attachment from its temporary location to its permanent storage
+     * location.
      */
     public void save() {
         UploadManager uploader = new DefaultUploadManager();
@@ -226,7 +232,38 @@ public class Attachment implements Serializable {
     }
 
     /**
-     * Generates the path to the file type icon that matches the files mime type.
+     * Removes an attachment from storage.
+     *
+     * @throws java.io.IOException
+     */
+    public void download() throws IOException {
+        FacesContext fc = FacesContext.getCurrentInstance();
+        ExternalContext ec = fc.getExternalContext();
+
+        ec.responseReset(); // Some JSF component library or some Filter might have set some headers in the buffer beforehand. We want to get rid of them, else it may collide.
+        ec.setResponseContentType(this.mime); // Check http://www.iana.org/assignments/media-types for all types. Use if necessary ExternalContext#getMimeType() for auto-detection based on filename.
+        //ec.setResponseContentLength(contentLength); // Set it with the file size. This header is optional. It will work if it's omitted, but the download progress will be unknown.
+        ec.setResponseHeader("Content-Disposition", "attachment; filename=\"" + this.title + "\""); // The Save As popup magic is done here. You can give it any file name you want, this only won't work in MSIE, it will use current request URL as file name instead.
+
+// Generate the S3 Key
+        StorageManager storage = new DefaultStorageManager();
+        InputStream input = storage.get(
+                storage.keyGenerator(
+                        DTX.KeyType.TICKET_ATTACHEMENT, s3id))
+                .getObjectContent();
+
+        OutputStream output = ec.getResponseOutputStream();
+        IOUtils.copy(input, output);
+
+        fc.responseComplete(); // Important! Otherwise JSF will attempt to render the response which obviously will fail since it's already written with a file and closed.
+
+        //return new DefaultStreamedContent(objectContent, this.mime, this.title);
+    }
+
+    /**
+     * Generates the path to the file type icon that matches the files mime
+     * type.
+     *
      * @param viaCDN
      * @return The URI path (either via the CDN or directly) to the icon that
      * matches the file type.

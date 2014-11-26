@@ -160,13 +160,13 @@
                                                       widgetVar="profile-image-dlg" 
                                                       dynamic="true" 
                                                       resizable="false" 
-                                                      height="#{((600 / settings.user.uploadFile.image.width) * settings.user.uploadFile.image.height) + 100}">  
+                                                      height="#{((400 / settings.user.uploadFile.image.width) * settings.user.uploadFile.image.height) + 100}">  
 
                                                 <h3>Click and drag on the image to select an area.</h3>
 
                                                 <p:graphicImage id="cropped-image" 
                                                                 value="#{settings.user.uploadFile.meta.uri}" 
-                                                                width="600px"/>  
+                                                                width="400px"/>  
                                                 <pe:imageAreaSelect id="image-area-select" 
                                                                     for="cropped-image" 
                                                                     handles="true" 

@@ -4,7 +4,6 @@
         <param-name>javax.faces.PROJECT_STAGE</param-name>
         <param-value>Production</param-value>
     </context-param>
-    
     <!-- START | PRIMEFACES -->
     <context-param>
         <param-name>primefaces.THEME</param-name>
@@ -15,7 +14,6 @@
         <param-value>native</param-value>
     </context-param>
     <!-- END | PRIMEFACES -->
-    
     <!-- START | CAPTCHA -->
     <context-param>
         <param-name>primefaces.PRIVATE_CAPTCHA_KEY</param-name>
@@ -26,7 +24,6 @@
         <param-value>6LcndugSAAAAAGkai0kWhTdOv_Tl_qcmX1fEVexj</param-value>
     </context-param>
     <!-- START | CAPTCHA -->
-    
     <!-- START | QUARTZ -->
     <context-param>
         <param-name>quartz:config-file</param-name>
@@ -44,12 +41,10 @@
         <param-name>quartz:start-on-load</param-name>
         <param-value>true</param-value>
     </context-param>
-
     <listener>
         <listener-class>org.quartz.ee.servlet.QuartzInitializerListener</listener-class>
     </listener>
     <!-- END | QUARTZ -->
-    
     <!-- START | SHIRO -->
     <listener>
         <listener-class>org.apache.shiro.web.env.EnvironmentLoaderListener</listener-class>
@@ -68,7 +63,6 @@
         <dispatcher>ERROR</dispatcher>
     </filter-mapping>
     <!-- END | SHIRO -->
-    
     <!-- START | JSF -->
     <servlet>
         <servlet-name>Faces Servlet</servlet-name>
@@ -80,7 +74,6 @@
         <url-pattern>*.jsf</url-pattern>
     </servlet-mapping>
     <!-- END | JSF -->
-    
     <!-- START | PUSH -->
     <servlet>
         <servlet-name>Push Servlet</servlet-name>
@@ -92,19 +85,16 @@
         <url-pattern>/primepush/*</url-pattern>
     </servlet-mapping>
     <!-- END | PUSH -->
-    
     <!-- START | TIMEOUT -->
     <session-config>
         <session-timeout>180</session-timeout>
     </session-config>
     <!-- END | TIMEOUT -->
-    
     <!-- START | LANDING PAGE -->
     <welcome-file-list>
         <welcome-file>login.jsf</welcome-file>
     </welcome-file-list>
     <!-- END | LANDING PAGE -->
-    
     <!-- START | ERROR PAGES -->
     <!-- END | ERROR PAGES -->
 </web-app>
