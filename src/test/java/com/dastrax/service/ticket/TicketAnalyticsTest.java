@@ -8,7 +8,6 @@ import mockit.Injectable;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Tested;
-import mockit.Verifications;
 import mockit.integration.junit4.JMockit;
 
 import org.junit.Before;
@@ -32,7 +31,7 @@ public class TicketAnalyticsTest {
 	@Before
 	public void setUp() throws Exception {
 		
-		User user = new MockUp<User>(){
+		final User user = new MockUp<User>(){
 			@Mock
 			public Metier getMetier(){
 				Metier metier = new Metier();
