@@ -29,7 +29,7 @@ import com.dastrax.per.project.DTX.CompanyType;
 public class CreateCompanyTest {
 
 	@Tested
-	private CreateCompany cc;
+	private CreateCompany createCompany;
 	
 	@Mocked
 	private Company company;
@@ -68,7 +68,7 @@ public class CreateCompanyTest {
 			
 		}};
 		
-		cc.init();
+		createCompany.init();
 		Assert.assertEquals(true, this.render);
 		
 		new Verifications() {{
@@ -94,7 +94,7 @@ public class CreateCompanyTest {
 			
 		}};
 		
-		cc.init();
+		createCompany.init();
 		Assert.assertEquals(true, this.render);
 		
 		new Verifications() {{
