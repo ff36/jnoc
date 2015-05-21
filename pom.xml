@@ -39,7 +39,64 @@
     
     
     <dependencies>
-
+		<!-- START | JMOCK-->
+		
+		<dependency>
+		   <groupId>org.jmockit</groupId>
+		   <artifactId>jmockit</artifactId>
+		   <version>1.17</version>
+		   <scope>test</scope>
+		</dependency>
+		 <!-- 
+		<dependency>
+			<groupId>org.jmock</groupId>
+			<artifactId>jmock</artifactId>
+			<version>2.6.0</version>
+			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.jmock</groupId>
+			<artifactId>jmock-legacy</artifactId>
+			<version>2.6.0</version>
+			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+	      <groupId>cglib</groupId>
+	      <artifactId>cglib</artifactId>
+	      <version>2.1_3</version>
+	      <scope>test</scope>
+	    </dependency>
+	    <dependency>
+	      <groupId>org.objenesis</groupId>
+	      <artifactId>objenesis</artifactId>
+	      <version>1.0</version>
+	      <scope>test</scope>
+	    </dependency>
+	   
+	    <dependency>
+			<groupId>jdave.junit4</groupId>
+			<artifactId>jdave-junit4</artifactId>
+			<version>1.5</version>
+			<scope>test</scope>
+		</dependency>
+	    <dependency>
+			<groupId>jdave</groupId>
+			<artifactId>jdave-core</artifactId>
+			<version>1.5</version>
+			<scope>test</scope>
+		</dependency>
+		 
+	    <dependency>
+			<groupId>org.jmock</groupId>
+			<artifactId>jmock-junit4</artifactId>
+			<version>2.6.0</version>
+			<scope>test</scope>
+		</dependency>
+		-->
+		<!-- END | JMOCK-->
+        
         <!-- START | ECLIPSELINK -->  
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
