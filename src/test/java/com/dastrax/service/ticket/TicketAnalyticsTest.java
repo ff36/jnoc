@@ -31,7 +31,7 @@ public class TicketAnalyticsTest {
 	@Before
 	public void setUp() throws Exception {
 		
-		User user = new MockUp<User>(){
+		final User user = new MockUp<User>(){
 			@Mock
 			public Metier getMetier(){
 				Metier metier = new Metier();
