@@ -5,15 +5,13 @@
  */
 package com.dastrax.per.entity;
 
-import com.dastrax.app.misc.TemporalUtil;
-import com.dastrax.app.security.SessionUser;
-import com.dastrax.per.dap.CrudService;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.ResourceBundle;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.ejb.AsyncResult;
 import javax.ejb.Asynchronous;
 import javax.naming.InitialContext;
@@ -26,6 +24,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Transient;
+
+import com.dastrax.app.misc.TemporalUtil;
+import com.dastrax.app.security.SessionUser;
+import com.dastrax.per.dap.CrudService;
 
 /**
  * This class is mapped in the persistence layer allowing instances of this
@@ -72,7 +74,7 @@ public class Audit implements Serializable {
             dap = (CrudService) InitialContext.doLookup(
                     ResourceBundle.getBundle("config").getString("CRUD"));
         } catch (NamingException ex) {
-//            LOG.log(Level.SEVERE, null, ex);
+            LOG.log(Level.SEVERE, null, ex);
         }
     }
 //</editor-fold>

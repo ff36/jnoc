@@ -5,6 +5,18 @@
  */
 package com.dastrax.app.service.internal;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.auth.AWSCredentials;
@@ -32,16 +44,6 @@ import com.dastrax.per.entity.Company;
 import com.dastrax.per.entity.User;
 import com.dastrax.per.project.DTX;
 import com.dastrax.per.project.DTX.KeyType;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 
 /**
  * This class contains methods to facilitate functions relating to file storage.

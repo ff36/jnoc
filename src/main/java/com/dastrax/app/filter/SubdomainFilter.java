@@ -12,6 +12,9 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ResourceBundle;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -33,7 +36,7 @@ import javax.servlet.http.HttpSession;
  * @author <tarka@solid.com>
  */
 public class SubdomainFilter implements Filter {
-
+	private static final Logger LOG = Logger.getLogger(SubdomainFilter.class.getName());
     //<editor-fold defaultstate="collapsed" desc="Properties">
     private static final boolean debug = true;
     private FilterConfig filterConfig = null;
@@ -179,6 +182,7 @@ public class SubdomainFilter implements Filter {
                 }
                 response.getOutputStream().close();
             } catch (IOException ex) {
+            	LOG.log(Level.SEVERE, ex.getMessage(), ex);
             }
         } else {
             try {
@@ -187,6 +191,7 @@ public class SubdomainFilter implements Filter {
                 }
                 response.getOutputStream().close();
             } catch (IOException ex) {
+            	LOG.log(Level.SEVERE, ex.getMessage(), ex);
             }
         }
     }
@@ -206,6 +211,7 @@ public class SubdomainFilter implements Filter {
             sw.close();
             stackTrace = sw.getBuffer().toString();
         } catch (IOException ex) {
+        	LOG.log(Level.SEVERE, ex.getMessage(), ex);
         }
         return stackTrace;
     }

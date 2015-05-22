@@ -168,7 +168,7 @@ public class UserModelQuery implements ModelQuery {
             String filterValue = (String) filters.get(filterProperty);
 
             // Search term
-            Expression literal = builder.literal((String) "%" + filterValue + "%");
+            Expression literal = builder.literal("%" + filterValue + "%");
 
             // When the globalFilter is deleted it returns ""
             if (!"".equals(filterValue)) {

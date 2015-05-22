@@ -2,8 +2,6 @@ package com.dastrax.service.company;
 
 import java.util.List;
 
-import javax.mail.Session;
-
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mock;

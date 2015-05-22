@@ -9,17 +9,20 @@ package com.dastrax.app.model;
 import com.dastrax.per.entity.Company;
 import com.dastrax.per.entity.Company_;
 import com.dastrax.per.project.DTX.CompanyType;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
+
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+
 import org.primefaces.model.SortOrder;
 
 /**
@@ -64,7 +67,8 @@ public class CompanyModelQuery implements ModelQuery {
      * @return A type safe CriteriaQuery that can be queried against the 
      * persistence layer.
      */
-    @Override
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	@Override
     public CriteriaQuery query(
             int first,
             int pageSize,
@@ -175,7 +179,8 @@ public class CompanyModelQuery implements ModelQuery {
      * 
      * @return Returns the class type to associate with the query.
      */
-    @Override
+    @SuppressWarnings("rawtypes")
+	@Override
     public Class clazz() {
         return Company.class;
     }

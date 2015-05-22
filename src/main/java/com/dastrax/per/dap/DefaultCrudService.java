@@ -66,7 +66,7 @@ public class DefaultCrudService implements CrudService {
      */
     @Override
     public Object update(Object t) {
-        return (Object)this.em.merge(t);
+        return this.em.merge(t);
     }
 
     /**
@@ -92,7 +92,7 @@ public class DefaultCrudService implements CrudService {
     @Override
     @SuppressWarnings("unchecked")
     public Object find(Class type, Object id) {
-        return (Object) this.em.find(type, id);
+        return this.em.find(type, id);
     }
     
     /**

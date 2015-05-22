@@ -5,16 +5,13 @@
  */
 package com.dastrax.per.entity;
 
-import com.dastrax.per.dap.CrudService;
-import com.dastrax.per.project.DTX;
-import com.dastrax.per.project.DTX.IncidentStatus;
-import com.dastrax.per.project.DTX.TicketSeverity;
-import com.dastrax.app.misc.JsfUtil;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.CascadeType;
@@ -29,6 +26,12 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
+
+import com.dastrax.app.misc.JsfUtil;
+import com.dastrax.per.dap.CrudService;
+import com.dastrax.per.project.DTX;
+import com.dastrax.per.project.DTX.IncidentStatus;
+import com.dastrax.per.project.DTX.TicketSeverity;
 
 /**
  * This class is mapped in the persistence layer allowing instances of this
@@ -96,7 +99,7 @@ public class Incident implements Serializable {
             dap = (CrudService) InitialContext.doLookup(
                     ResourceBundle.getBundle("config").getString("CRUD"));
         } catch (NamingException ex) {
-//            LOG.log(Level.SEVERE, null, ex);
+            LOG.log(Level.SEVERE, null, ex);
         }
     }
 //</editor-fold>

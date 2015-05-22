@@ -10,11 +10,15 @@ import com.dastrax.per.project.DTX.TelephoneType;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
+
 import java.io.Serializable;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -42,7 +46,7 @@ import javax.persistence.Transient;
 })
 @Entity
 public class Telephone implements Serializable {
-
+	private static final Logger LOG = Logger.getLogger(Telephone.class.getName());
     //<editor-fold defaultstate="collapsed" desc="Properties">
     private static final long serialVersionUID = 1L;
 
@@ -219,6 +223,7 @@ public class Telephone implements Serializable {
 
         } catch (NumberParseException npe) {
             // Bad number format
+        	LOG.log(Level.SEVERE, npe.getMessage(), npe);
         }
 
         return result;

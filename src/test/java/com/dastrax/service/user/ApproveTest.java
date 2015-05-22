@@ -15,8 +15,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import sun.security.provider.VerificationProvider;
-
 import com.dastrax.app.misc.JsfUtil;
 import com.dastrax.per.dap.CrudService;
 import com.dastrax.per.dap.QueryParameter;
@@ -24,7 +22,6 @@ import com.dastrax.per.entity.Account;
 import com.dastrax.per.entity.Token;
 import com.dastrax.per.entity.User;
 import com.dastrax.service.navigation.Navigator;
-import com.dastrax.service.user.Approve;
 
 @RunWith(JMockit.class)
 public class ApproveTest {
@@ -45,7 +42,7 @@ public class ApproveTest {
 
 	@Before
 	public void setUp(){
-		JsfUtil jsfUtil = new MockUp<JsfUtil>() {
+		new MockUp<JsfUtil>() {
 			@Mock
 			public String getRequestParameter(String navigationCase){
 				return "dfl";

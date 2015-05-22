@@ -18,12 +18,15 @@ import com.dastrax.per.dap.CrudService;
 import com.dastrax.per.dap.QueryParameter;
 import com.dastrax.per.project.DTX;
 import com.dastrax.per.project.DTX.CompanyType;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.UUID;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.CascadeType;
@@ -39,6 +42,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 import javax.persistence.Version;
+
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.extensions.event.ImageAreaSelectEvent;
 import org.primefaces.model.DualListModel;
@@ -111,7 +115,7 @@ public class Company implements Serializable {
             dap = (CrudService) InitialContext.doLookup(
                     ResourceBundle.getBundle("config").getString("CRUD"));
         } catch (NamingException ex) {
-//            LOG.log(Level.SEVERE, null, ex);
+            LOG.log(Level.SEVERE, null, ex);
         }
     }
 //</editor-fold>
@@ -373,12 +377,14 @@ public class Company implements Serializable {
             das = linkedAndAvailableDas.getTarget();
         } catch (NullPointerException npe) {
             // Do nothing. The linkedAndAvailableDas was null
+        	LOG.log(Level.SEVERE, npe.getMessage(), npe);
         }
 
         if (DTX.CompanyType.VAR.equals(type)) {
             try {
                 clients = linkedAndAvailableClientCompanies.getTarget();
             } catch (NullPointerException npe) {
+            	LOG.log(Level.SEVERE, npe.getMessage(), npe);
                 // Do nothing. The linkedAndAvailableClientCompanies was null
             }
 
@@ -402,6 +408,7 @@ public class Company implements Serializable {
                 parent.clients.add(newCompany);
                 parent.update(false, false);
             } catch (NullPointerException npe) {
+            	LOG.log(Level.SEVERE, npe.getMessage(), npe);
                 // Do nothing. The parent company is null
             }
 
@@ -458,6 +465,7 @@ public class Company implements Serializable {
                 parent.update(false, false);
             } catch (NullPointerException npe) {
                 // Do nothing. the parent company is null
+            	LOG.log(Level.SEVERE, npe.getMessage(), npe);
             }
         }
 
@@ -548,6 +556,7 @@ public class Company implements Serializable {
 
             } catch (NullPointerException npe) {
                 // Do nothing. The Das was null
+            	LOG.log(Level.SEVERE, npe.getMessage(), npe);
             }
 
             linkedAvailableDas.setSource(parentSites);

@@ -1,14 +1,12 @@
 package com.dastrax.service.util;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 import mockit.Injectable;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Tested;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.dastrax.app.security.SessionUser;

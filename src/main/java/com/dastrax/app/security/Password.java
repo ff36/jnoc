@@ -24,7 +24,6 @@ import org.apache.shiro.authc.credential.PasswordService;
  * @author <tarka@solid.com>
  */
 public class Password {
-
     //<editor-fold defaultstate="collapsed" desc="Properties">
     private static final Logger LOG = Logger.getLogger(Password.class.getName());
     private String current, request, confirm, email, encrypted;
@@ -229,6 +228,7 @@ public class Password {
                 return false;
             }
         } catch (NullPointerException npe) {
+        	LOG.log(Level.SEVERE, npe.getMessage(), npe);
             // The requested and/or confirm password is null
             return false;
         }

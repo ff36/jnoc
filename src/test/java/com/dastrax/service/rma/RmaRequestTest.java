@@ -1,9 +1,5 @@
 package com.dastrax.service.rma;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.logging.Level;
-
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.context.Flash;
@@ -16,7 +12,6 @@ import mockit.Mocked;
 import mockit.Tested;
 import mockit.integration.junit4.JMockit;
 
-import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -58,6 +53,13 @@ public class RmaRequestTest {
 		new MockUp<DefaultEmailer>() {
 			@Mock
 			public void send(Email email) {}
+		};
+		
+		new MockUp<Email>(){
+			@Mock
+			public void $init(){
+				
+			}
 		};
 		
 		new MockUp<JsfUtil>() {

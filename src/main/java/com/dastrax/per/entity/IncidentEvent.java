@@ -5,9 +5,6 @@
  */
 package com.dastrax.per.entity;
 
-import com.dastrax.per.dap.CrudService;
-import com.dastrax.per.project.DTX.IncidentEventType;
-import com.dastrax.per.project.DTX.TicketPriority;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -17,6 +14,7 @@ import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.CascadeType;
@@ -30,6 +28,10 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
+
+import com.dastrax.per.dap.CrudService;
+import com.dastrax.per.project.DTX.IncidentEventType;
+import com.dastrax.per.project.DTX.TicketPriority;
 
 /**
  * This class is mapped in the persistence layer allowing instances of this
@@ -86,7 +88,7 @@ public class IncidentEvent implements Serializable {
             dap = (CrudService) InitialContext.doLookup(
                     ResourceBundle.getBundle("config").getString("CRUD"));
         } catch (NamingException ex) {
-//            LOG.log(Level.SEVERE, null, ex);
+            LOG.log(Level.SEVERE, null, ex);
         }
     }
 //</editor-fold>

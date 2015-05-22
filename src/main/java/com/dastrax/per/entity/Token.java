@@ -5,11 +5,6 @@
  */
 package com.dastrax.per.entity;
 
-import com.dastrax.per.dap.CrudService;
-import com.dastrax.per.dap.QueryParameter;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Calendar;
@@ -20,6 +15,7 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.ejb.Asynchronous;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -29,6 +25,12 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Transient;
+
+import com.dastrax.per.dap.CrudService;
+import com.dastrax.per.dap.QueryParameter;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * This class is mapped in the persistence layer allowing instances of this
@@ -78,7 +80,7 @@ public class Token implements Serializable {
             dap = (CrudService) InitialContext.doLookup(
                     ResourceBundle.getBundle("config").getString("CRUD"));
         } catch (NamingException ex) {
-//            LOG.log(Level.SEVERE, null, ex);
+            LOG.log(Level.SEVERE, null, ex);
         }
     }
 //</editor-fold>
@@ -173,6 +175,7 @@ public class Token implements Serializable {
             this.parameters = mapper.writeValueAsString(parameters);
         } catch (JsonProcessingException ex) {
             // Unable to convert map to JSON string
+        	LOG.log(Level.SEVERE, ex.getMessage(), ex);
         }
     }
 
@@ -189,6 +192,7 @@ public class Token implements Serializable {
                     });
         } catch (IOException ex) {
             // Unable to convert JSON to map
+        	LOG.log(Level.SEVERE, ex.getMessage(), ex);
         }
         return null;
     }

@@ -7,16 +7,19 @@ package com.dastrax.app.model;
 
 import com.dastrax.per.entity.Incident;
 import com.dastrax.per.entity.Incident_;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+
 import org.primefaces.model.SortOrder;
 
 /**
@@ -96,7 +99,7 @@ public class IncidentModelQuery implements ModelQuery {
                 List<Predicate> rootPredicate = new ArrayList<>();
 
                 List<String> values = (List<String>) rootFilter.get(key);
-                Expression literal;
+                Expression<String> literal;
                 if (!values.isEmpty()) {
                     for (String value : values) {
                         // Search term
@@ -114,7 +117,7 @@ public class IncidentModelQuery implements ModelQuery {
                 } else {
                     // This indicates that the user has access to no sites
                     // Search term
-                    literal = builder.literal((String) "DOES_NOT_EXIST");
+                    literal = builder.literal("DOES_NOT_EXIST");
                     // Predicate
                     switch (key) {
                         case "das":
@@ -137,7 +140,7 @@ public class IncidentModelQuery implements ModelQuery {
                 List<Predicate> optionalPredicate = new ArrayList<>();
                 for (String value : values) {
                     // Search term
-                    Expression literal = builder.literal((String) value);
+                    Expression<String> literal = builder.literal((String) value);
                     // Predicate
                     switch (key) {
                         case "assignee":
@@ -165,7 +168,7 @@ public class IncidentModelQuery implements ModelQuery {
             String filterValue = (String) filters.get(filterProperty);
 
             // Search term
-            Expression literal = builder.literal((String) "%" + filterValue + "%");
+            Expression literal = builder.literal("%" + filterValue + "%");
 
             // When the globalFilter is deleted it returns ""
             if (!"".equals(filterValue)) {

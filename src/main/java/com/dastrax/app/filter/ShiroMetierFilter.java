@@ -6,12 +6,13 @@
 
 package com.dastrax.app.filter;
 
-import com.dastrax.app.security.SessionUser;
-import com.dastrax.per.entity.User;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -19,6 +20,9 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
+
+import com.dastrax.app.security.SessionUser;
+import com.dastrax.per.entity.User;
 
 /**
  * Filters and redirects users based on their Metier. This filter is used by
@@ -30,7 +34,7 @@ import javax.servlet.http.HttpServletResponse;
  * @author <tarka@solid.com>
  */
 public class ShiroMetierFilter implements Filter {
-    
+	private static final Logger LOG = Logger.getLogger(ShiroMetierFilter.class.getName());
     //<editor-fold defaultstate="collapsed" desc="Properties">
     private static final boolean debug = true;
     private FilterConfig filterConfig;
@@ -146,6 +150,7 @@ public class ShiroMetierFilter implements Filter {
                 }
                 response.getOutputStream().close();
             } catch (IOException ex) {
+            	LOG.log(Level.SEVERE, ex.getMessage(), ex);
             }
         } else {
             try {
@@ -154,6 +159,7 @@ public class ShiroMetierFilter implements Filter {
                 }
                 response.getOutputStream().close();
             } catch (IOException ex) {
+            	LOG.log(Level.SEVERE, ex.getMessage(), ex);
             }
         }
     }
@@ -173,6 +179,7 @@ public class ShiroMetierFilter implements Filter {
             sw.close();
             stackTrace = sw.getBuffer().toString();
         } catch (IOException ex) {
+        	LOG.log(Level.SEVERE, ex.getMessage(), ex);
         }
         return stackTrace;
     }

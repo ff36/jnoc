@@ -9,14 +9,17 @@ import com.dastrax.per.dap.CrudService;
 import com.dastrax.per.dap.QueryParameter;
 import com.dastrax.per.entity.Permission;
 import com.dastrax.per.entity.User;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+
 import org.apache.shiro.authc.AccountException;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
@@ -24,6 +27,8 @@ import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.SimpleAuthenticationInfo;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.authc.credential.DefaultPasswordService;
+import org.apache.shiro.authc.credential.PasswordService;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
@@ -71,7 +76,8 @@ public class ShiroDastraxRealm extends AuthorizingRealm {
             CrudService dap = (CrudService) InitialContext.doLookup(
                     ResourceBundle.getBundle("config").getString("CRUD"));
             
-            List<User> users = (List<User>)dap.findWithNamedQuery(
+            @SuppressWarnings("unchecked")
+			List<User> users = (List<User>)dap.findWithNamedQuery(
                     "User.findByEmail", 
                     QueryParameter.with("email", email).parameters());
             
@@ -92,6 +98,13 @@ public class ShiroDastraxRealm extends AuthorizingRealm {
             info = new SimpleAuthenticationInfo(
                     principals, 
                     user.getPassword().toCharArray());
+            //exit authentication
+//            PasswordService psvc = new DefaultPasswordService();
+//            String newencrypted = psvc.encryptPassword(upToken.getPassword());
+//            LOG.log(Level.ALL, "password db:"+user.getPassword()+", param:"+ newencrypted);
+//            info = new SimpleAuthenticationInfo(
+//                    principals, 
+//                    newencrypted.toCharArray());
         } catch (NamingException ne) {
             LOG.log(Level.SEVERE, "JNDI NamingException", ne);
             throw new UnknownAccountException("Exception during authentication");
@@ -116,7 +129,8 @@ public class ShiroDastraxRealm extends AuthorizingRealm {
             CrudService dap = (CrudService) InitialContext.doLookup(
                     ResourceBundle.getBundle("config").getString("CRUD"));
             
-            List<User> users = (List<User>)dap.findWithNamedQuery(
+            @SuppressWarnings("unchecked")
+			List<User> users = (List<User>)dap.findWithNamedQuery(
                     "User.findByEmail", 
                     QueryParameter
                             .with("email", currentUser.getEmail()).parameters());

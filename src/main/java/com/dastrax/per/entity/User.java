@@ -20,6 +20,7 @@ import com.dastrax.app.upload.UploadManager;
 import com.dastrax.per.dap.CrudService;
 import com.dastrax.per.dap.QueryParameter;
 import com.dastrax.per.project.DTX;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -32,7 +33,9 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.ResourceBundle;
 import java.util.UUID;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.naming.InitialContext;
@@ -52,6 +55,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.Version;
 import javax.validation.constraints.Pattern;
+
 import org.apache.shiro.SecurityUtils;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.extensions.event.ImageAreaSelectEvent;
@@ -142,7 +146,7 @@ public class User implements Serializable {
             dap = (CrudService) InitialContext.doLookup(
                     ResourceBundle.getBundle("config").getString("CRUD"));
         } catch (NamingException ex) {
-//            LOG.log(Level.SEVERE, null, ex);
+            LOG.log(Level.SEVERE, null, ex);
         }
     }
 //</editor-fold>
@@ -536,6 +540,7 @@ public class User implements Serializable {
             JsfUtil.addSuccessMessage("New user created");
         } catch (Exception e) {
             // Request does not come from JSF
+        	LOG.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 

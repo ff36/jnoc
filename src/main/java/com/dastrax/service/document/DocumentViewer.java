@@ -5,17 +5,19 @@
  */
 package com.dastrax.service.document;
 
+import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
+import javax.ejb.EJB;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
+
 import com.dastrax.app.misc.JsfUtil;
 import com.dastrax.app.service.internal.DefaultURI;
 import com.dastrax.per.dap.CrudService;
 import com.dastrax.per.entity.Attachment;
 import com.dastrax.per.project.DTX;
-import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import javax.ejb.EJB;
-import javax.faces.view.ViewScoped;
-import javax.inject.Named;
 
 /**
  * Document Viewer table CDI bean. Provides methods for viewing and editing

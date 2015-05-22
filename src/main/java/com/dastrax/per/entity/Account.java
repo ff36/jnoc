@@ -7,9 +7,12 @@ package com.dastrax.per.entity;
 
 import com.dastrax.app.misc.TemporalUtil;
 import com.dastrax.per.dap.CrudService;
+
 import java.io.Serializable;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.Entity;
@@ -69,7 +72,7 @@ public class Account implements Serializable {
             dap = (CrudService) InitialContext.doLookup(
                     ResourceBundle.getBundle("config").getString("CRUD"));
         } catch (NamingException ex) {
-//            LOG.log(Level.SEVERE, null, ex);
+            LOG.log(Level.SEVERE, null, ex);
         }
     }
 //</editor-fold>

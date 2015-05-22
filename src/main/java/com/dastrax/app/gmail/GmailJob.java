@@ -5,23 +5,34 @@
  */
 package com.dastrax.app.gmail;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Map;
+import java.util.Properties;
+import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.mail.Flags;
+import javax.mail.Folder;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.NoSuchProviderException;
+import javax.mail.Session;
+import javax.mail.Store;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+
+import org.quartz.Job;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
+
 import com.dastrax.app.service.internal.DefaultStorageManager;
 import com.dastrax.app.services.StorageManager;
 import com.dastrax.per.dap.DefaultCrudService;
 import com.dastrax.per.project.DTX;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
-import java.io.InputStream;
-import org.quartz.Job;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.mail.*;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 
 /**
  * Implements the Quartz Job interface to schedule Gmail IMAP check.
@@ -39,13 +50,16 @@ public class GmailJob implements Job {
      */
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
-
         Folder folder = null;
         Store store = null;
         try {
 
             Properties props = System.getProperties();
             props.setProperty("mail.store.protocol", "imaps");
+            props.setProperty("mail.imap.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+            props.setProperty("mail.imap.socketFactory.fallback", "false");
+            props.setProperty("mail.imaps.host", "imap.gmail.com");
+            props.setProperty("mail.imaps.port", "993");
 
             Session session = Session.getDefaultInstance(props, null);
             // session.setDebug(true);

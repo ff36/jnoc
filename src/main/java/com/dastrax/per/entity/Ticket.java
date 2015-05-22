@@ -5,16 +5,6 @@
  */
 package com.dastrax.per.entity;
 
-import com.dastrax.app.email.DefaultEmailer;
-import com.dastrax.app.email.Email;
-import com.dastrax.app.misc.TemporalUtil;
-import com.dastrax.app.security.SessionUser;
-import com.dastrax.per.dap.CrudService;
-import com.dastrax.per.dap.QueryParameter;
-import com.dastrax.per.project.DTX;
-import com.dastrax.per.project.DTX.TicketSeverity;
-import com.dastrax.per.project.DTX.TicketStatus;
-import com.dastrax.per.project.DTX.TicketTopic;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -27,7 +17,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.faces.application.FacesMessage;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -50,9 +42,21 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+
 import org.apache.commons.lang.StringEscapeUtils;
 import org.primefaces.push.EventBus;
 import org.primefaces.push.EventBusFactory;
+
+import com.dastrax.app.email.DefaultEmailer;
+import com.dastrax.app.email.Email;
+import com.dastrax.app.misc.TemporalUtil;
+import com.dastrax.app.security.SessionUser;
+import com.dastrax.per.dap.CrudService;
+import com.dastrax.per.dap.QueryParameter;
+import com.dastrax.per.project.DTX;
+import com.dastrax.per.project.DTX.TicketSeverity;
+import com.dastrax.per.project.DTX.TicketStatus;
+import com.dastrax.per.project.DTX.TicketTopic;
 
 /**
  * This class is mapped in the persistence layer allowing instances of this
@@ -155,7 +159,7 @@ public class Ticket implements Serializable {
             dap = (CrudService) InitialContext.doLookup(
                     ResourceBundle.getBundle("config").getString("CRUD"));
         } catch (NamingException ex) {
-//            LOG.log(Level.SEVERE, null, ex);
+            LOG.log(Level.SEVERE, null, ex);
         }
     }
 //</editor-fold>
@@ -851,6 +855,7 @@ public class Ticket implements Serializable {
             }
         } catch (NullPointerException npe) {
             // Do nothing. The comment is null.
+        	LOG.log(Level.SEVERE, npe.getMessage(), npe);
         }
     }
 
@@ -926,6 +931,7 @@ public class Ticket implements Serializable {
             }
         } catch (Exception e) {
             // Do nothing tags is null
+        	LOG.log(Level.SEVERE, e.getMessage(), e);
         }
 
     }
@@ -960,6 +966,7 @@ public class Ticket implements Serializable {
 
         } catch (NullPointerException npe) {
             // Do Nothing! The View parameter is null
+        	LOG.log(Level.SEVERE, npe.getMessage(), npe);
         }
     }
 
@@ -1232,7 +1239,7 @@ public class Ticket implements Serializable {
 
             for (String subWord : titleWords) {
                 if (!subWord.matches("(is|are|and|as|for|to|in|that|the|this|a|i)")) {
-                    Expression literal = builder.literal((String) "%" + subWord + "%");
+                    Expression literal = builder.literal("%" + subWord + "%");
 
                     // When the globalFilter is deleted it returns ""
                     if (!"".equals(subWord)) {
