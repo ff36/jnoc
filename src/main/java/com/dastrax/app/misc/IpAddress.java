@@ -116,7 +116,7 @@ public class IpAddress {
             int num = Integer.parseInt(ipa);
             ipa = String.format("%03d", num);
         } catch (NumberFormatException nfe) {
-        	LOG.log(Level.SEVERE, nfe.getMessage(), nfe);
+        	LOG.log(Level.CONFIG, nfe.getMessage(), nfe);
         }
     }
 
@@ -128,7 +128,7 @@ public class IpAddress {
             int num = Integer.parseInt(ipb);
             ipb = String.format("%03d", num);
         } catch (NumberFormatException nfe) {
-        	LOG.log(Level.SEVERE, nfe.getMessage(), nfe);
+        	LOG.log(Level.CONFIG, nfe.getMessage(), nfe);
         }
     }
 
@@ -140,7 +140,7 @@ public class IpAddress {
             int num = Integer.parseInt(ipc);
             ipc = String.format("%03d", num);
         } catch (NumberFormatException nfe) {
-        	LOG.log(Level.SEVERE, nfe.getMessage(), nfe);
+        	LOG.log(Level.CONFIG, nfe.getMessage(), nfe);
         }
     }
 
@@ -152,7 +152,7 @@ public class IpAddress {
             int num = Integer.parseInt(ipd);
             ipd = String.format("%03d", num);
         } catch (NumberFormatException nfe) {
-        	LOG.log(Level.SEVERE, nfe.getMessage(), nfe);
+        	LOG.log(Level.CONFIG, nfe.getMessage(), nfe);
         }
     }
 

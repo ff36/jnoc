@@ -182,7 +182,7 @@ public class SubdomainFilter implements Filter {
                 }
                 response.getOutputStream().close();
             } catch (IOException ex) {
-            	LOG.log(Level.SEVERE, ex.getMessage(), ex);
+            	LOG.log(Level.CONFIG, ex.getMessage(), ex);
             }
         } else {
             try {
@@ -191,7 +191,7 @@ public class SubdomainFilter implements Filter {
                 }
                 response.getOutputStream().close();
             } catch (IOException ex) {
-            	LOG.log(Level.SEVERE, ex.getMessage(), ex);
+            	LOG.log(Level.CONFIG, ex.getMessage(), ex);
             }
         }
     }
@@ -211,7 +211,7 @@ public class SubdomainFilter implements Filter {
             sw.close();
             stackTrace = sw.getBuffer().toString();
         } catch (IOException ex) {
-        	LOG.log(Level.SEVERE, ex.getMessage(), ex);
+        	LOG.log(Level.CONFIG, ex.getMessage(), ex);
         }
         return stackTrace;
     }

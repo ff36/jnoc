@@ -81,7 +81,7 @@ public class ExceptionUtil {
                         .toString();
 			} catch (Exception e) {
 				// Do nothing as this means we have no security manager
-				LOG.log(Level.SEVERE, e.getMessage(), e);
+				LOG.log(Level.CONFIG, e.getMessage(), e);
 			}
 
             // Set the email variables

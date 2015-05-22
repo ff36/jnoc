@@ -39,7 +39,7 @@ public class TemporalUtil {
                     DTX.TemporalFormat.DATE_FORMAT.getValue())
                     .format(cal.getTime());
         } catch (NullPointerException npe) {
-        	LOG.log(Level.SEVERE, npe.getMessage(), npe);
+        	LOG.log(Level.CONFIG, npe.getMessage(), npe);
             // Event is null
             return "";
         }
@@ -60,7 +60,7 @@ public class TemporalUtil {
                     DTX.TemporalFormat.TIME_FORMAT.getValue())
                     .format(cal.getTime());
         } catch (NullPointerException npe) {
-        	LOG.log(Level.SEVERE, npe.getMessage(), npe);
+        	LOG.log(Level.CONFIG, npe.getMessage(), npe);
             // Event is null
             return "";
         }
@@ -81,7 +81,7 @@ public class TemporalUtil {
                     DTX.TemporalFormat.DATE_TIME_FORMAT.getValue())
                     .format(cal.getTime());
         } catch (NullPointerException npe) {
-        	LOG.log(Level.SEVERE, npe.getMessage(), npe);
+        	LOG.log(Level.CONFIG, npe.getMessage(), npe);
             // Event is null
             return "";
         }
@@ -100,7 +100,7 @@ public class TemporalUtil {
             cal.setTimeInMillis(event);
             return cal;
         } catch (NullPointerException npe) {
-        	LOG.log(Level.SEVERE, npe.getMessage(), npe);
+        	LOG.log(Level.CONFIG, npe.getMessage(), npe);
             // Event is null
             return null;
         }
@@ -117,7 +117,7 @@ public class TemporalUtil {
         try {
             return event.getTimeInMillis();
         } catch (NullPointerException npe) {
-        	LOG.log(Level.SEVERE, npe.getMessage(), npe);
+        	LOG.log(Level.CONFIG, npe.getMessage(), npe);
             // Event is null
             return null;
         }
@@ -134,7 +134,7 @@ public class TemporalUtil {
         try {
             return new Date(event);
         } catch (NullPointerException npe) {
-        	LOG.log(Level.SEVERE, npe.getMessage(), npe);
+        	LOG.log(Level.CONFIG, npe.getMessage(), npe);
             // Event is null
             return null;
         }
@@ -151,7 +151,7 @@ public class TemporalUtil {
         try {
             return event.getTime();
         } catch (NullPointerException npe) {
-        	LOG.log(Level.SEVERE, npe.getMessage(), npe);
+        	LOG.log(Level.CONFIG, npe.getMessage(), npe);
             // Event is null
             return null;
         }

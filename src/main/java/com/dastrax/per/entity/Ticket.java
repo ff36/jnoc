@@ -159,7 +159,7 @@ public class Ticket implements Serializable {
             dap = (CrudService) InitialContext.doLookup(
                     ResourceBundle.getBundle("config").getString("CRUD"));
         } catch (NamingException ex) {
-            LOG.log(Level.SEVERE, null, ex);
+            LOG.log(Level.CONFIG, null, ex);
         }
     }
 //</editor-fold>
@@ -855,7 +855,7 @@ public class Ticket implements Serializable {
             }
         } catch (NullPointerException npe) {
             // Do nothing. The comment is null.
-        	LOG.log(Level.SEVERE, npe.getMessage(), npe);
+        	LOG.log(Level.CONFIG, npe.getMessage(), npe);
         }
     }
 
@@ -931,7 +931,7 @@ public class Ticket implements Serializable {
             }
         } catch (Exception e) {
             // Do nothing tags is null
-        	LOG.log(Level.SEVERE, e.getMessage(), e);
+        	LOG.log(Level.CONFIG, e.getMessage(), e);
         }
 
     }
@@ -966,7 +966,7 @@ public class Ticket implements Serializable {
 
         } catch (NullPointerException npe) {
             // Do Nothing! The View parameter is null
-        	LOG.log(Level.SEVERE, npe.getMessage(), npe);
+        	LOG.log(Level.CONFIG, npe.getMessage(), npe);
         }
     }
 

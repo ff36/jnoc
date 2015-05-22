@@ -42,7 +42,7 @@ public class UserJSFCvt implements Converter {
         try {
             return dap.find(User.class, Long.valueOf(string));
         } catch (NumberFormatException e) {
-        	LOG.log(Level.SEVERE, e.getMessage(), e);
+        	LOG.log(Level.CONFIG, e.getMessage(), e);
             return null;
         }
     }
@@ -52,7 +52,7 @@ public class UserJSFCvt implements Converter {
         try {
             return ((User) o).getId().toString();
         } catch (NullPointerException | ClassCastException e) {
-        	LOG.log(Level.SEVERE, e.getMessage(), e);
+        	LOG.log(Level.CONFIG, e.getMessage(), e);
             return null;
         }
     }

@@ -46,7 +46,7 @@ public class DefaultAttributeFilter implements AttributeFilter {
             dap = (CrudService) InitialContext.doLookup(
                     ResourceBundle.getBundle("config").getString("CRUD"));
         } catch (NamingException ex) {
-            LOG.log(Level.SEVERE, null, ex);
+            LOG.log(Level.CONFIG, null, ex);
         }
     }
 //</editor-fold>
@@ -115,7 +115,7 @@ public class DefaultAttributeFilter implements AttributeFilter {
             filters.put("das", das);
         } catch (NullPointerException npe) {
             // Do nothing. The User company is null
-        	LOG.log(Level.SEVERE, npe.getMessage(), npe);
+        	LOG.log(Level.CONFIG, npe.getMessage(), npe);
         }
 
         return filters;

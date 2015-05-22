@@ -53,7 +53,7 @@ public class TagJSFCvt implements Converter {
         try {
             return dap.find(Tag.class, Long.valueOf(string));
         } catch (NumberFormatException e) {
-        	LOG.log(Level.SEVERE, e.getMessage(), e);
+        	LOG.log(Level.CONFIG, e.getMessage(), e);
             return null;
         }
     }
@@ -63,7 +63,7 @@ public class TagJSFCvt implements Converter {
         try {
             return ((Tag) o).getId().toString();
         } catch (NullPointerException | ClassCastException e) {
-        	LOG.log(Level.SEVERE, e.getMessage(), e);
+        	LOG.log(Level.CONFIG, e.getMessage(), e);
             return null;
         }
     }

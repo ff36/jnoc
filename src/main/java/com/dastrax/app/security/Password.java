@@ -228,7 +228,7 @@ public class Password {
                 return false;
             }
         } catch (NullPointerException npe) {
-        	LOG.log(Level.SEVERE, npe.getMessage(), npe);
+        	LOG.log(Level.CONFIG, npe.getMessage(), npe);
             // The requested and/or confirm password is null
             return false;
         }

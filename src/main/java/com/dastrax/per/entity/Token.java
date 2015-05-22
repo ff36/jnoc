@@ -80,7 +80,7 @@ public class Token implements Serializable {
             dap = (CrudService) InitialContext.doLookup(
                     ResourceBundle.getBundle("config").getString("CRUD"));
         } catch (NamingException ex) {
-            LOG.log(Level.SEVERE, null, ex);
+            LOG.log(Level.CONFIG, null, ex);
         }
     }
 //</editor-fold>
@@ -175,7 +175,7 @@ public class Token implements Serializable {
             this.parameters = mapper.writeValueAsString(parameters);
         } catch (JsonProcessingException ex) {
             // Unable to convert map to JSON string
-        	LOG.log(Level.SEVERE, ex.getMessage(), ex);
+        	LOG.log(Level.CONFIG, ex.getMessage(), ex);
         }
     }
 
@@ -192,7 +192,7 @@ public class Token implements Serializable {
                     });
         } catch (IOException ex) {
             // Unable to convert JSON to map
-        	LOG.log(Level.SEVERE, ex.getMessage(), ex);
+        	LOG.log(Level.CONFIG, ex.getMessage(), ex);
         }
         return null;
     }
@@ -238,7 +238,7 @@ public class Token implements Serializable {
             }
 
         } catch (NamingException ex) {
-            LOG.log(Level.SEVERE, null, ex);
+            LOG.log(Level.CONFIG, null, ex);
         }
     }
 

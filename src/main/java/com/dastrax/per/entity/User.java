@@ -146,7 +146,7 @@ public class User implements Serializable {
             dap = (CrudService) InitialContext.doLookup(
                     ResourceBundle.getBundle("config").getString("CRUD"));
         } catch (NamingException ex) {
-            LOG.log(Level.SEVERE, null, ex);
+            LOG.log(Level.CONFIG, null, ex);
         }
     }
 //</editor-fold>
@@ -540,7 +540,7 @@ public class User implements Serializable {
             JsfUtil.addSuccessMessage("New user created");
         } catch (Exception e) {
             // Request does not come from JSF
-        	LOG.log(Level.SEVERE, e.getMessage(), e);
+        	LOG.log(Level.CONFIG, e.getMessage(), e);
         }
     }
 

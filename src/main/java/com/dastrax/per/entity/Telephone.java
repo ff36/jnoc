@@ -223,7 +223,7 @@ public class Telephone implements Serializable {
 
         } catch (NumberParseException npe) {
             // Bad number format
-        	LOG.log(Level.SEVERE, npe.getMessage(), npe);
+        	LOG.log(Level.CONFIG, npe.getMessage(), npe);
         }
 
         return result;

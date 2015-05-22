@@ -236,7 +236,7 @@ public class DefaultDNSManager implements DNSManager {
                 }
 
             } catch (AmazonServiceException ase) {
-                LOG.log(Level.INFO, "Resource does not exist on route 53", ase);
+                LOG.log(Level.CONFIG, "Resource does not exist on route 53", ase);
             }
             return false;
         }
@@ -267,7 +267,7 @@ public class DefaultDNSManager implements DNSManager {
             }
 
         } catch (AmazonServiceException ase) {
-            LOG.log(Level.INFO, "DNS Service exception on route 53", ase);
+            LOG.log(Level.CONFIG, "DNS Service exception on route 53", ase);
             return null;
         }
         return result;
@@ -300,7 +300,7 @@ public class DefaultDNSManager implements DNSManager {
                     client = new AmazonRoute53Client(credentials);
                 }
             } catch (IOException io) {
-                LOG.log(Level.INFO, "Error creating AmazonRoute53Client", io);
+                LOG.log(Level.CONFIG, "Error creating AmazonRoute53Client", io);
             }
         }
 //</editor-fold>

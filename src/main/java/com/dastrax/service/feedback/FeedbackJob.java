@@ -83,7 +83,7 @@ public class FeedbackJob implements Job {
             }
 
         } catch (NamingException ex) {
-            LOG.log(Level.SEVERE, null, ex);
+            LOG.log(Level.CONFIG, null, ex);
         }
 
     }

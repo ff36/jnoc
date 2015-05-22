@@ -115,7 +115,7 @@ public class Company implements Serializable {
             dap = (CrudService) InitialContext.doLookup(
                     ResourceBundle.getBundle("config").getString("CRUD"));
         } catch (NamingException ex) {
-            LOG.log(Level.SEVERE, null, ex);
+            LOG.log(Level.CONFIG, null, ex);
         }
     }
 //</editor-fold>
@@ -377,14 +377,14 @@ public class Company implements Serializable {
             das = linkedAndAvailableDas.getTarget();
         } catch (NullPointerException npe) {
             // Do nothing. The linkedAndAvailableDas was null
-        	LOG.log(Level.SEVERE, npe.getMessage(), npe);
+        	LOG.log(Level.CONFIG, npe.getMessage(), npe);
         }
 
         if (DTX.CompanyType.VAR.equals(type)) {
             try {
                 clients = linkedAndAvailableClientCompanies.getTarget();
             } catch (NullPointerException npe) {
-            	LOG.log(Level.SEVERE, npe.getMessage(), npe);
+            	LOG.log(Level.CONFIG, npe.getMessage(), npe);
                 // Do nothing. The linkedAndAvailableClientCompanies was null
             }
 
@@ -408,7 +408,7 @@ public class Company implements Serializable {
                 parent.clients.add(newCompany);
                 parent.update(false, false);
             } catch (NullPointerException npe) {
-            	LOG.log(Level.SEVERE, npe.getMessage(), npe);
+            	LOG.log(Level.CONFIG, npe.getMessage(), npe);
                 // Do nothing. The parent company is null
             }
 
@@ -465,7 +465,7 @@ public class Company implements Serializable {
                 parent.update(false, false);
             } catch (NullPointerException npe) {
                 // Do nothing. the parent company is null
-            	LOG.log(Level.SEVERE, npe.getMessage(), npe);
+            	LOG.log(Level.CONFIG, npe.getMessage(), npe);
             }
         }
 
@@ -556,7 +556,7 @@ public class Company implements Serializable {
 
             } catch (NullPointerException npe) {
                 // Do nothing. The Das was null
-            	LOG.log(Level.SEVERE, npe.getMessage(), npe);
+            	LOG.log(Level.CONFIG, npe.getMessage(), npe);
             }
 
             linkedAvailableDas.setSource(parentSites);

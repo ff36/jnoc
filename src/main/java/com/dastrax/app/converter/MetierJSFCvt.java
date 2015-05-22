@@ -42,7 +42,7 @@ public class MetierJSFCvt implements Converter {
         try {
             return dap.find(Metier.class, Long.valueOf(string));
         } catch (NumberFormatException e) {
-        	LOG.log(Level.SEVERE, e.getMessage(), e);
+        	LOG.log(Level.CONFIG, e.getMessage(), e);
             return null;
         }
     }
@@ -52,7 +52,7 @@ public class MetierJSFCvt implements Converter {
         try {
             return ((Metier) o).getId().toString();
         } catch (NullPointerException | ClassCastException e) {
-        	LOG.log(Level.SEVERE, e.getMessage(), e);
+        	LOG.log(Level.CONFIG, e.getMessage(), e);
             return null;
         }
     }
