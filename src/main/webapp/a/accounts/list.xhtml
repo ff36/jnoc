@@ -723,8 +723,31 @@
 
                                                             <p:spacer width="100%" height="2px"/>
 
-                                                            <h:outputText value="#{user.company.name ne null ? user.company.name : 'No Company'}"/>
+                                                             <h:outputText value="#{user.metier.name ne null ? user.metier.name : 'No Type'} -- #{user.company.name ne null ? user.company.name : 'No Company'}"/>
 
+															<hr></hr>
+
+                                                            <h:outputText value="Change Type" 
+                                                                          style="font-weight: bold"/>
+
+                                                            <table class="blank-table">
+                                                                <tr>
+                                                                    <td>
+                                                                        <p:selectOneMenu
+                                                                       					id="companyType" 
+                                                                                        value="#{user.metier}" 
+                                                                                        converter = "metierNameCvt"  
+                                                                                        style="width: 180px"
+                                                                                        styleClass="dlg-company-update-class dlg-company-process-class"
+                                                                                        >
+                                                                        		<f:selectItem itemLabel="VAR" itemValue="VAR" />
+                                                                        		<f:selectItem itemLabel="Client" itemValue="CLIENT" />
+                                                                        		<p:ajax update="availableCompanies" event="valueChange" listener="#{user.changCompanyType}" />  
+                                                                        </p:selectOneMenu>
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                            
                                                             <hr></hr>
 
                                                             <h:outputText value="Change Company" 
