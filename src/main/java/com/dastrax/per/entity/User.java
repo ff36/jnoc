@@ -500,11 +500,11 @@ public class User implements Serializable {
         metiers = dap.findWithNamedQuery("Metier.findAll");
         // Undefined is internal only
         Iterator<Metier> iterator = metiers.iterator();
-	while (iterator.hasNext()) {
-            if ("UNDEFINED".equals(iterator.next().getName())) {
-                iterator.remove();
-            }
-	}
+		while (iterator.hasNext()) {
+	            if ("UNDEFINED".equals(iterator.next().getName())) {
+	                iterator.remove();
+	            }
+		}
     }
 
     /**

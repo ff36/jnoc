@@ -713,11 +713,12 @@
                                                                   resizable="false" 
                                                                   width="810px">  
 
+															 
                                                             <p:remoteCommand autoRun="true" 
                                                                              async="true" 
                                                                              actionListener="#{user.lazyLoad()}" 
                                                                              update="availableCompanies"/>
-
+ 															
                                                             <h:outputText value="Current Company" 
                                                                           style="font-weight: bold"/>
 
@@ -742,7 +743,7 @@
                                                                                         >
                                                                         		<f:selectItem itemLabel="VAR" itemValue="VAR" />
                                                                         		<f:selectItem itemLabel="Client" itemValue="CLIENT" />
-                                                                        		<p:ajax update="availableCompanies" event="valueChange" listener="#{user.changCompanyType}" />  
+                                                                        		<p:ajax update="availableCompanies" listener="#{user.changCompanyType}" />  
                                                                         </p:selectOneMenu>
                                                                     </td>
                                                                 </tr>
