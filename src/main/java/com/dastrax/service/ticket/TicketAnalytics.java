@@ -5,20 +5,47 @@
  */
 package com.dastrax.service.ticket;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.ejb.EJB;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.sql.DataSource;
+
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
+
 import com.dastrax.per.dap.CrudService;
 import com.dastrax.per.entity.Comment;
 import com.dastrax.per.entity.Ticket;
 import com.dastrax.per.project.DTX;
+import com.dastrax.service.util.UriUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.ejb.EJB;
-import javax.faces.view.ViewScoped;
-import javax.inject.Named;
 
 /**
  * {description}
@@ -38,6 +65,7 @@ public class TicketAnalytics implements Serializable {
 
     private String data;
     private boolean render;
+    private DefaultStreamedContent file;
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Constructors">
@@ -65,7 +93,7 @@ public class TicketAnalytics implements Serializable {
     }
 //</editor-fold>
 
-    /**
+	/**
      * Initialize the page by loading the specified ticket from the persistence
      * layer.
      */
@@ -86,13 +114,53 @@ public class TicketAnalytics implements Serializable {
 
         try {
             data = new ObjectMapper().writeValueAsString(digests);
+            //System.out.println(data);
         } catch (JsonProcessingException ex) {
             LOG.log(Level.SEVERE, "JSON SERIALIZATION ERROR", ex);
         }
-
         render = true;
     }
 
+    /**
+     * down load pdf report
+     * @return StreamedContent 
+     */
+    public StreamedContent getReportAsPdf() {
+    	
+    	try{
+    		File tmpfile = generateReport();
+    		this.file  = new DefaultStreamedContent(new FileInputStream(tmpfile), "application/pdf", "ticket.report"+System.currentTimeMillis()+".pdf");
+    	}catch (FileNotFoundException e){
+    		LOG.log(Level.SEVERE, "JasperReprot error", e);
+    	}
+    	
+    	return this.file;
+    } 
+    
+    /**
+     * fill data to report
+     * @return
+     */
+    private File generateReport(){
+    	File tmpfile = new File("ticketreport.pdf");
+    	
+		try {
+			Context context = new InitialContext();
+			DataSource datasource = (DataSource) context.lookup(UriUtil.getDataSourceJNDI());
+			
+			Connection connection = datasource.getConnection();
+			JasperReport jasperReport = JasperCompileManager.compileReport(TicketDigest.class.getResourceAsStream("/TicketAnalytics.jrxml"));
+			Map customParameters = new HashMap();
+			JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, customParameters, connection);
+			
+			FileOutputStream os = new FileOutputStream(tmpfile);
+			JasperExportManager.exportReportToPdfStream(jasperPrint, os);
+		} catch (NamingException | SQLException | JRException | FileNotFoundException e) {
+			LOG.log(Level.SEVERE, e.getMessage(), e);
+		}
+		return tmpfile;
+    }
+    
     /**
      * {description}
      *

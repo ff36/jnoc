@@ -1,3 +1,4 @@
+
 <?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
@@ -14,6 +15,10 @@
         <h:outputStylesheet name="css/dc.css"/>
         <link rel="shortcut icon" type="image/png" href="#{request.contextPath}/resources/images/favicon.ico" />
         <title>#{msgs['default.page.title']} | #{msgs['admin.dashboad.page.title']}</title>
+        <h:outputScript library="js" name="d3.js"/>
+		<h:outputScript library="js" name="dc.js"/>
+		<h:outputScript library="js" name="crossfilter.js"/>
+		<h:outputScript library="js" name="colorbrewer.js"/>
     </h:head>
 
     <h:body>
@@ -152,6 +157,9 @@
                                                      process="@this"
                                                      onclick="dc.filterAll();
                                                              dc.renderAll();"/> 
+                                    <p:commandButton value="Export As PDF" ajax="false" icon="ui-icon-arrowthick-1-s">
+	        							<p:fileDownload value="#{ticketAnalytics.reportAsPdf}" />
+	    							</p:commandButton>
                                 </th>
                             </tr>
                         </thead>
@@ -200,11 +208,6 @@
                                         <h:panelGroup rendered="#{ticketAnalytics.render}">
 
                                             <h:inputHidden id="json-data" value="#{ticketAnalytics.data}"/>
-
-                                            <h:outputScript library="js" name="d3.js"/>
-                                            <h:outputScript library="js" name="dc.js"/>
-                                            <h:outputScript library="js" name="crossfilter.js"/>
-                                            <h:outputScript library="js" name="colorbrewer.js"/>
 
                                             <p:spacer width="100%" height="20px"/>
 

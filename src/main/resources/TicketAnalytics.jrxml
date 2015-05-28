@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.1.0.final using JasperReports Library version 6.1.0  -->
+<!-- 2015-05-27T20:56:28 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TicketAnalytics" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="f5a3ef20-ff09-4c2c-a959-715d81efbe28">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="jdbc_ticket_status"/>
+	<style name="Table_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<subDataset name="ticket_status_dataset" uuid="b7711ef2-a3cd-4e2a-b431-2770777c4847">
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="jdbc_ticket_status"/>
+		<queryString>
+			<![CDATA[select count(*), `status` from `ticket` group by `status`]]>
+		</queryString>
+		<field name="count(*)" class="java.lang.Long"/>
+		<field name="status" class="java.lang.String">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<group name="status">
+			<groupExpression><![CDATA[$F{status}]]></groupExpression>
+		</group>
+	</subDataset>
+	<subDataset name="ticket_severity_dataset" uuid="2b5d6155-6764-4723-ba9f-0dc3c74c4b17">
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="New Data Adapter (7)"/>
+		<queryString>
+			<![CDATA[select count(*), 
+	IF(t.`severity`='S1','SERVICE DOWN (S1)',
+		IF(t.`severity`='S2', 
+				'SERVICE DISRUPTION (S2)', 
+				'GENERAL SUPPORT (S3)')
+	) as `severity` 
+
+from 
+	`ticket` as t left join `subject` as s on s.id = t.`REQUESTER_ID` 
+	left join metier as m on m.ID = s.METIER_ID
+where m.id <> 'UNDEFINED'
+group by t.`severity`;]]>
+		</queryString>
+		<field name="count(*)" class="java.lang.Long"/>
+		<field name="severity" class="java.lang.String"/>
+	</subDataset>
+	<queryString>
+		<![CDATA[select count(*), `status` from `ticket` group by `status`]]>
+	</queryString>
+	<field name="count(*)" class="java.lang.Long"/>
+	<field name="status" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<detail>
+		<band height="610" splitType="Stretch">
+			<staticText>
+				<reportElement x="12" y="58" width="100" height="30" uuid="e0c8a924-c9d0-4d3f-bb34-2c5aa63b08ab"/>
+				<textElement>
+					<font size="20" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Status]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="80" y="-10" width="400" height="40" uuid="079c61ad-b995-4739-bbcf-7d072a7933c9"/>
+				<textElement textAlignment="Center">
+					<font size="22" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Ticket Status & Severity]]></text>
+			</staticText>
+			<pieChart>
+				<chart evaluationTime="Report">
+					<reportElement x="-20" y="50" width="595" height="260" uuid="30b9387b-055a-4fa4-971b-6aceb0d50adb"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<pieDataset maxCount="20">
+					<dataset>
+						<datasetRun subDataset="ticket_status_dataset" uuid="a5cb1ac4-ea9e-4839-9a2e-d11eb92e9aa1">
+							<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+						</datasetRun>
+					</dataset>
+					<keyExpression><![CDATA[$F{status}]]></keyExpression>
+					<valueExpression><![CDATA[$F{count(*)}]]></valueExpression>
+					<labelExpression><![CDATA[$F{status}+" : "+$F{count(*)}]]></labelExpression>
+				</pieDataset>
+				<piePlot>
+					<plot/>
+					<itemLabel/>
+				</piePlot>
+			</pieChart>
+			<pieChart>
+				<chart evaluationTime="Report">
+					<reportElement x="-16" y="340" width="593" height="250" uuid="66f17c04-7692-4ebe-8fe3-908a94bd5bc6"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<pieDataset>
+					<dataset>
+						<datasetRun subDataset="ticket_severity_dataset" uuid="2ea60fca-2480-4fd8-9e55-514f356c8a3b">
+							<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+						</datasetRun>
+					</dataset>
+					<keyExpression><![CDATA[$F{severity}]]></keyExpression>
+					<valueExpression><![CDATA[$F{count(*)}]]></valueExpression>
+					<labelExpression><![CDATA[$F{severity} +" : "+$F{count(*)}]]></labelExpression>
+				</pieDataset>
+				<piePlot>
+					<plot/>
+					<itemLabel/>
+				</piePlot>
+			</pieChart>
+			<staticText>
+				<reportElement x="12" y="350" width="100" height="30" uuid="64b8d294-e592-45f3-b6da-c401e5ce9f2c"/>
+				<textElement>
+					<font size="20" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Severity]]></text>
+			</staticText>
+		</band>
+	</detail>
+</jasperReport>
