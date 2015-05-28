@@ -240,9 +240,14 @@
                                 <thead>
                                     <tr>
                                         <th>
-                                            #{editTicket.ticket.title} <h:outputText value="Email ID: (DTX-#{editTicket.ticket.email})" 
-                                                          styleClass="comment-date"/>
-
+                                        	<h:outputLabel for="ticketTitle" value=" " />
+											<p:inplace id="ticketTitle" editor="true">
+												<p:inputText value="#{editTicket.ticket.title}" label="text" require="true"/>
+												<p:ajax event="save" listener="#{editTicket.ticket.update}" />
+											</p:inplace>
+                                           
+                                            <h:outputText value="Email ID: (DTX-#{editTicket.ticket.email})" styleClass="comment-date"/>
+											
                                             <p:commandButton 
                                                 rendered="#{jsfSessionUser.currentUser.hasPermission('ticket:delete') and jsfSessionUser.currentUser.administrator}"
                                                 styleClass="header-button"
