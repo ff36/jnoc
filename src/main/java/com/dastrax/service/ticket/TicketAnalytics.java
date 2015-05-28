@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -36,6 +37,7 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 
+import org.primefaces.expression.impl.ThisExpressionResolver;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
@@ -54,6 +56,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @since Build 141104.092550
  * @author Tarka L'Herpiniere
  * @author <tarka@solid.com>
+ */
+/**
+ * @author Think
+ *
  */
 @Named
 @ViewScoped
@@ -98,7 +104,6 @@ public class TicketAnalytics implements Serializable {
      * layer.
      */
     public void init() {
-
         // Get the ticket from the persistence layer
         List<Ticket> tickets = dap.findWithNamedQuery("Ticket.findAll");
 
@@ -121,19 +126,23 @@ public class TicketAnalytics implements Serializable {
         render = true;
     }
 
-    /**
+    
+    public void setData(String data) {
+		this.data = data;
+	}
+
+	/**
      * down load pdf report
      * @return StreamedContent 
      */
     public StreamedContent getReportAsPdf() {
-    	
     	try{
     		File tmpfile = generateReport();
     		this.file  = new DefaultStreamedContent(new FileInputStream(tmpfile), "application/pdf", "ticket.report"+System.currentTimeMillis()+".pdf");
-    	}catch (FileNotFoundException e){
+    		System.out.println(this.file.getStream().available());
+    	}catch (IOException e){
     		LOG.log(Level.SEVERE, "JasperReprot error", e);
     	}
-    	
     	return this.file;
     } 
     

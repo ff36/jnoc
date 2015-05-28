@@ -37,8 +37,8 @@ public class AccountRequest implements Serializable {
     private static final Logger LOG = Logger.getLogger(AccountRequest.class.getName());
     
     // Variables---------------------------------------------------------------
-//    private static final String recipient = "register@solid.com";
-    private static final String recipient = "tomxming@gmail.com";
+    private static final String recipient = "register@solid.com";
+//    private static final String recipient = "tomxming@gmail.com";
     //private static final String recipient = "test1@dev.tarka.tv";
     private String name;
     private String company;
@@ -91,7 +91,6 @@ public class AccountRequest implements Serializable {
     public void submit(ActionEvent event) { 
 
     	Map<String, List<String>> ps = JsfUtil.getRequestParameters();
-    	System.out.println(ps);
     	
         // Build an new email
         Email e = new Email();
@@ -107,19 +106,6 @@ public class AccountRequest implements Serializable {
         vars.put(EmailVariableKey.TELEPHONE, phone);
         
         e.setVariables(vars);
-
-        // Create a Token
-        Token token = new Token();
-        token.setId(new Random().nextLong());
-        token.setEmail(email);
-        token.setCreateEpoch(Calendar.getInstance().getTimeInMillis());
-//        Map<String, String> params = new HashMap(1);
-//        token.setParameters(params);
-        token.create();
-        e.setParam(token);
-        
-        User user = new User();
-        user.create();
         
         // Retreive the email template from the database.
         Template emailTemplate = (Template) dap.find(Template.class, DTX.EmailTemplate.ACCOUNT_REQUEST.getValue());

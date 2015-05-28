@@ -1,0 +1,1 @@
+update `template` set `linkpath`='/a/accounts/create.jsf' where `id`='8'; 
