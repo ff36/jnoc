@@ -114,6 +114,7 @@ public class EmailToTicket {
                 comment.setComment(getMessage(msg));
 
                 Ticket ticket = tickets.get(0);
+                ticket.setGmailJobTicketed(true);
                 ticket.setComment(comment);
                 ticket.setSendEmailToRequester(true);
                 if (ticket.getAssignee() != null) {
@@ -135,6 +136,7 @@ public class EmailToTicket {
                 comment.setComment(getMessage(msg));
 
                 Ticket ticket = new Ticket();
+                ticket.setGmailJobTicketed(true);
                 ticket.setStatus(DTX.TicketStatus.OPEN);
                 ticket.setTitle(title);
                 ticket.setSeverity(DTX.TicketSeverity.S3);
@@ -159,6 +161,7 @@ public class EmailToTicket {
             comment.setComment(getMessage(msg));
 
             Ticket ticket = new Ticket();
+            ticket.setGmailJobTicketed(true);
             ticket.setStatus(DTX.TicketStatus.OPEN);
             ticket.setTitle(title);
             ticket.setSeverity(DTX.TicketSeverity.S3);

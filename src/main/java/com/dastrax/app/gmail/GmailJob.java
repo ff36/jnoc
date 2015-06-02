@@ -102,7 +102,11 @@ public class GmailJob implements Job {
                         // Set the message as seen
                         msg.setFlag(Flags.Flag.SEEN, true);
                         // Process it
-                        new EmailToTicket().processEmail(msg);
+                        try{
+                        	new EmailToTicket().processEmail(msg);
+                        } catch (Exception e){
+                        	// remove to other folder
+                        }
                         // Delete the message
                         msg.setFlag(Flags.Flag.DELETED, true);
                     }

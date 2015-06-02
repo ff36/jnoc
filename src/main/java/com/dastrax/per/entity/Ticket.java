@@ -142,6 +142,9 @@ public class Ticket implements Serializable {
     @Transient
     private Map<String, List> available;
 
+    @Transient
+    private boolean gmailJobTicketed =  false; 
+    
 //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="Constructors">
@@ -618,7 +621,11 @@ public class Ticket implements Serializable {
 
 //</editor-fold>
     
-    /**
+    public void setGmailJobTicketed(boolean gmailJobTicketed) {
+		this.gmailJobTicketed = gmailJobTicketed;
+	}
+
+	/**
      * Creates a new Ticket, adds it to the persistence layer and adds storage
      * related resources.
      *
@@ -664,7 +671,6 @@ public class Ticket implements Serializable {
 
         // send the emails
         email(DTX.EmailTemplate.NEW_TICKET);
-
         // Push
         if (this.requester != null) {
             push();
@@ -729,6 +735,7 @@ public class Ticket implements Serializable {
      */
     private void push() {
             // Push
+    	if(!this.gmailJobTicketed){
             EventBus eventBus = EventBusFactory.getDefault().eventBus();
             eventBus.publish("ticket", new FacesMessage(
                     StringEscapeUtils.escapeHtml("New Unassigned Ticket"),
@@ -739,7 +746,7 @@ public class Ticket implements Serializable {
                             + " ("
                             + this.getRequester().getEmail()
                             + ")")));
-
+    	}
     }
 
     /**
@@ -1388,13 +1395,20 @@ public class Ticket implements Serializable {
         if (sendEmailToAssignee && assignee != null) {
             ccEmailRecipients.add(assignee.getEmail());
         }
-
+        
+        if(gmailJobTicketed){
+	        String noc = ResourceBundle.getBundle("config").getString("notification.of.creation.mail");
+	        if(noc!=null){
+	        	ccEmailRecipients.add(noc);
+	        }
+        }
         // Retreive the email template from the database.
         Template temp = (Template) dap.find(
                 Template.class, template.getValue());
 
         // Send the emails
         for (String ccEmail : ccEmailRecipients) {
+        	System.out.println("email: "+ccEmail);
             sendEmail(ccEmail, temp);
         }
     }
