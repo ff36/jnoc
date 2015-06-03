@@ -20,7 +20,9 @@ import org.junit.runner.RunWith;
 import com.dastrax.app.email.DefaultEmailer;
 import com.dastrax.app.email.Email;
 import com.dastrax.app.misc.JsfUtil;
+import com.dastrax.app.security.SessionUser;
 import com.dastrax.per.dap.CrudService;
+import com.dastrax.per.entity.User;
 import com.dastrax.service.navigation.Navigator;
 
 @RunWith(JMockit.class)
@@ -42,6 +44,8 @@ public class RmaRequestTest {
 	private FacesContext facesContext;
 	@Mocked
 	private Flash flash;
+	@Mocked
+	private User user;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -59,6 +63,13 @@ public class RmaRequestTest {
 			@Mock
 			public void $init(){
 				
+			}
+		};
+		
+		new MockUp<SessionUser>(){
+			@Mock
+			public User getCurrentUser(){
+				return user;
 			}
 		};
 		
