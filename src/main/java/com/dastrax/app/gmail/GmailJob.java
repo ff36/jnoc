@@ -7,6 +7,7 @@ package com.dastrax.app.gmail;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Properties;
 import java.util.ResourceBundle;
@@ -50,16 +51,14 @@ public class GmailJob implements Job {
      */
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        Folder folder = null;
+        Folder folder = null, failFolder = null;
+        
         Store store = null;
+        
         try {
 
             Properties props = System.getProperties();
             props.setProperty("mail.store.protocol", "imaps");
-            props.setProperty("mail.imap.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-            props.setProperty("mail.imap.socketFactory.fallback", "false");
-            props.setProperty("mail.imaps.host", "imap.gmail.com");
-            props.setProperty("mail.imaps.port", "993");
 
             Session session = Session.getDefaultInstance(props, null);
             // session.setDebug(true);
@@ -68,6 +67,7 @@ public class GmailJob implements Job {
                     "imap.gmail.com",
                     ResourceBundle.getBundle("config").getString("SenderEmailAddress"),
                     ResourceBundle.getBundle("config").getString("SenderEmailPassword"));
+            
             folder = store.getFolder("Inbox");
             /* Others GMail folders :
              * [Gmail]/All Mail   This folder contains all of your Gmail messages.
@@ -78,7 +78,24 @@ public class GmailJob implements Job {
              * [Gmail]/Trash      Messages deleted from Gmail.
              */
             folder.open(Folder.READ_WRITE);
-
+            
+            /*
+             * handle email is fail, this email will move to Fail folder.
+             * Fail folder is not exist, create Fail folder 
+             */
+            try {
+    			failFolder = store.getFolder("Fail");
+    		} catch (MessagingException e) {
+    			//Fail folder is not exist, create Fail Folder
+    			try {
+    				Folder defaultFolder = store.getDefaultFolder();
+    				failFolder = defaultFolder.getFolder("Fail");   
+    		        failFolder.create(Folder.HOLDS_MESSAGES);
+    			} catch (MessagingException e1) {
+    				e1.printStackTrace();
+    			}
+    		}
+            
             // Attributes & Flags for all messages ..
             Message[] messages = folder.getMessages();
 
@@ -87,6 +104,7 @@ public class GmailJob implements Job {
             InputStream input = storage.get(storage.keyGenerator(DTX.KeyType.EMAIL_BLACKLIST, null)).getObjectContent();
             Map<String, Object> blacklist = new ObjectMapper().readValue(input, Map.class);
 
+            
             for (int i = 0; i < messages.length; ++i) {
                 final Message msg = messages[i];
 
@@ -103,9 +121,12 @@ public class GmailJob implements Job {
                         msg.setFlag(Flags.Flag.SEEN, true);
                         // Process it
                         try{
+                        	//System.out.println(Thread.currentThread().getName()+" : "+msg.getSubject());
                         	new EmailToTicket().processEmail(msg);
                         } catch (Exception e){
-                        	// remove to other folder
+                        	// error, remove to other folder
+           					folder.copyMessages(new Message[]{msg}, failFolder);
+           					msg.setFlag(Flags.Flag.DELETED, true);
                         }
                         // Delete the message
                         msg.setFlag(Flags.Flag.DELETED, true);

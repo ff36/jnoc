@@ -183,7 +183,7 @@ public class Navigator implements Serializable {
             Cookie cookie = new Cookie(
                     "dtx_navigation",
                     mapper.writeValueAsString(selectedMenuItems));
-            cookie.setHttpOnly(true);
+            //cookie.setHttpOnly(true);
             cookie.setComment("Stores personal navigation preferences");
             cookie.setMaxAge(31536000);
             cookie.setPath("/");

@@ -71,7 +71,7 @@ public class EmailToTicket {
             dap = (CrudService) InitialContext.doLookup(
                     ResourceBundle.getBundle("config").getString("CRUD"));
         } catch (NamingException ex) {
-            LOG.log(Level.CONFIG, null, ex);
+            LOG.log(Level.SEVERE, null, ex);
         }
     }
 //</editor-fold>
@@ -86,7 +86,7 @@ public class EmailToTicket {
         // Get the email subject
         String subject = msg.getSubject();
         String title = subject;
-
+        
         // Aquire the user account or create it if not
         User user = aquireAccount(msg);
 
@@ -100,10 +100,8 @@ public class EmailToTicket {
 
             // get the ticket
             @SuppressWarnings("unchecked")
-			List<Ticket> tickets = dap.findWithNamedQuery(
-                    "Ticket.findAllByEmail",
-                    QueryParameter
-                    .with("email", emailId)
+			List<Ticket> tickets = dap.findWithNamedQuery("Ticket.findAllByEmail",
+                    QueryParameter.with("email", emailId)
                     .parameters());
 
             if (!tickets.isEmpty()) {
@@ -139,6 +137,7 @@ public class EmailToTicket {
                 ticket.setGmailJobTicketed(true);
                 ticket.setStatus(DTX.TicketStatus.OPEN);
                 ticket.setTitle(title);
+                ticket.setMailTitle(msg.getSubject());
                 ticket.setSeverity(DTX.TicketSeverity.S3);
                 ticket.setTopic(DTX.TicketTopic.GENERAL);
                 ticket.setSendEmailToRequester(true);
@@ -154,27 +153,56 @@ public class EmailToTicket {
             }
 
         } else {
-            // Create a new ticket
-            Comment comment = new Comment();
-            comment.setCommenter(user);
-            comment.setCreateEpoch(new Date().getTime());
-            comment.setComment(getMessage(msg));
+        	
+        	@SuppressWarnings("unchecked")
+			List<Ticket> tickets = dap.findWithNamedQuery("Ticket.findAllByTitle",
+                    QueryParameter.with("mailTitle", msg.getSubject())
+                    .parameters());
+        	if(!tickets.isEmpty()){
+        		// The ticket exists
+                Comment comment = new Comment();
+                comment.setCommenter(user);
+                comment.setCreateEpoch(new Date().getTime());
+                comment.setComment(getMessage(msg));
 
-            Ticket ticket = new Ticket();
-            ticket.setGmailJobTicketed(true);
-            ticket.setStatus(DTX.TicketStatus.OPEN);
-            ticket.setTitle(title);
-            ticket.setSeverity(DTX.TicketSeverity.S3);
-            ticket.setTopic(DTX.TicketTopic.GENERAL);
-            ticket.setSendEmailToRequester(true);
-            ticket.setComment(comment);
-            ticket.create(user, DTX.TicketStatus.OPEN);
+                Ticket ticket = tickets.get(0);
+                ticket.setGmailJobTicketed(true);
+                ticket.setComment(comment);
+                ticket.setSendEmailToRequester(true);
+                if (ticket.getAssignee() != null) {
+                    ticket.setSendEmailToAssignee(true);
+                }
+                ticket.edit(DTX.TicketStatus.OPEN, user);
 
-            // Take care of the attachements
-            for (Attachment a : attachments) {
-                ticket.setAttachment(a);
-                ticket.addAttachment();
-            }
+                // Take care of the attachements
+                for (Attachment a : attachments) {
+                    ticket.setAttachment(a);
+                    ticket.addAttachment();
+                }
+        	}else{
+        		// Create a new ticket
+                Comment comment = new Comment();
+                comment.setCommenter(user);
+                comment.setCreateEpoch(new Date().getTime());
+                comment.setComment(getMessage(msg));
+
+                Ticket ticket = new Ticket();
+                ticket.setGmailJobTicketed(true);
+                ticket.setStatus(DTX.TicketStatus.OPEN);
+                ticket.setTitle(title);
+                ticket.setMailTitle(msg.getSubject());
+                ticket.setSeverity(DTX.TicketSeverity.S3);
+                ticket.setTopic(DTX.TicketTopic.GENERAL);
+                ticket.setSendEmailToRequester(true);
+                ticket.setComment(comment);
+                ticket.create(user, DTX.TicketStatus.OPEN);
+
+                // Take care of the attachements
+                for (Attachment a : attachments) {
+                    ticket.setAttachment(a);
+                    ticket.addAttachment();
+                }
+        	}
 
         }
     }

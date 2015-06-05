@@ -78,6 +78,7 @@ import com.dastrax.per.project.DTX.TicketTopic;
     @NamedQuery(name = "Ticket.findAllExceptMultiStatus", query = "SELECT e FROM Ticket e WHERE e.status <> :status1 AND e.status <> :status2"),
     @NamedQuery(name = "Ticket.findAllByType", query = "SELECT e FROM Ticket e WHERE e.topic = :topic"),
     @NamedQuery(name = "Ticket.findAllByEmail", query = "SELECT e FROM Ticket e WHERE e.email = :email"),
+    @NamedQuery(name = "Ticket.findAllByTitle", query = "SELECT e FROM Ticket e WHERE e.mailTitle = :mailTitle"),
     @NamedQuery(name = "Ticket.findAllByCreator", query = "SELECT e FROM Ticket e JOIN e.creator a WHERE a.id = :id"),
     @NamedQuery(name = "Ticket.findAllByRequester", query = "SELECT e FROM Ticket e JOIN e.requester a WHERE a.id = :id"),
     @NamedQuery(name = "Ticket.findAllByAssignee", query = "SELECT e FROM Ticket e JOIN e.assignee a WHERE a.id = :id"),
@@ -100,6 +101,8 @@ public class Ticket implements Serializable {
     @Enumerated(EnumType.STRING)
     private TicketSeverity severity;
     private String title;
+    private String mailTitle;
+    
     @ManyToOne
     private User creator;
     @ManyToOne
@@ -195,7 +198,15 @@ public class Ticket implements Serializable {
         return title;
     }
 
-    /**
+    public String getMailTitle() {
+		return mailTitle;
+	}
+
+	public void setMailTitle(String mailTitle) {
+		this.mailTitle = mailTitle;
+	}
+
+	/**
      * Get the value of openEpoch.
      *
      * @return the value of openEpoch
