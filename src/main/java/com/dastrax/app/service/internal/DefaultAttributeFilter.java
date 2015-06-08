@@ -5,13 +5,6 @@
  */
 package com.dastrax.app.service.internal;
 
-import com.dastrax.app.security.SessionUser;
-import com.dastrax.app.services.AttributeFilter;
-import com.dastrax.per.dap.CrudService;
-import com.dastrax.per.entity.Company;
-import com.dastrax.per.entity.DAS;
-import com.dastrax.per.entity.Ticket;
-import com.dastrax.per.entity.User;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,8 +12,16 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+
+import com.dastrax.app.security.SessionUser;
+import com.dastrax.app.services.AttributeFilter;
+import com.dastrax.per.dap.CrudService;
+import com.dastrax.per.entity.Company;
+import com.dastrax.per.entity.DAS;
+import com.dastrax.per.entity.User;
 
 /**
  * This class contains executable filter methods. In contrast to using SHIRO or
@@ -45,7 +46,7 @@ public class DefaultAttributeFilter implements AttributeFilter {
             dap = (CrudService) InitialContext.doLookup(
                     ResourceBundle.getBundle("config").getString("CRUD"));
         } catch (NamingException ex) {
-            LOG.log(Level.SEVERE, null, ex);
+            LOG.log(Level.CONFIG, null, ex);
         }
     }
 //</editor-fold>
@@ -114,6 +115,7 @@ public class DefaultAttributeFilter implements AttributeFilter {
             filters.put("das", das);
         } catch (NullPointerException npe) {
             // Do nothing. The User company is null
+        	LOG.log(Level.CONFIG, npe.getMessage(), npe);
         }
 
         return filters;

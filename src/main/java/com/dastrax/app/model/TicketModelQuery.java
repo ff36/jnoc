@@ -13,18 +13,21 @@ import com.dastrax.per.entity.Ticket;
 import com.dastrax.per.entity.Ticket_;
 import com.dastrax.per.entity.User_;
 import com.dastrax.per.project.DTX.TicketStatus;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
+
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+
 import org.primefaces.model.SortOrder;
 
 /**
@@ -150,7 +153,7 @@ public class TicketModelQuery implements ModelQuery {
                     switch (key) {
                         case "assignee":
                             // Search term
-                            Expression assigneeLiteral = builder.literal((String) value);
+                            Expression<String> assigneeLiteral = builder.literal(value);
                             if ("null".equals(value.toLowerCase())) {
                                 optionalPredicate.add(ticket.get(Ticket_.assignee).isNull());
                             } else {
@@ -159,23 +162,23 @@ public class TicketModelQuery implements ModelQuery {
                             break;
                         case "requester":
                             // Search term
-                            Expression requesterLiteral = builder.literal((String) value);
+                            Expression<String> requesterLiteral = builder.literal(value);
                             optionalPredicate.add(builder.equal(ticket.join(Ticket_.requester, JoinType.LEFT).get(User_.email), requesterLiteral));
                             break;
                         case "status":
                             // Search term
-                            String ticketStatus = (String) value;
+                            String ticketStatus = value;
                             Expression statusLiteral = builder.literal(TicketStatus.valueOf(ticketStatus));
                             optionalPredicate.add(builder.equal(ticket.get(Ticket_.status), statusLiteral));
                             break;
                         case "company":
                             // Search term
-                            Expression companyLiteral = builder.literal((String) value);
+                            Expression companyLiteral = builder.literal(value);
                             optionalPredicate.add(builder.equal(ticket.join(Ticket_.requester, JoinType.LEFT).join(User_.company, JoinType.LEFT).get(Company_.id), companyLiteral));
                             break;
                         case "das":
                             // Search term
-                            Expression dasLiteral = builder.literal(Long.parseLong((String) value));
+                            Expression dasLiteral = builder.literal(Long.parseLong( value));
                             optionalPredicate.add(builder.equal(ticket.join(Ticket_.das, JoinType.LEFT).get(DAS_.id), dasLiteral));
                             break;
                         default:
@@ -193,7 +196,7 @@ public class TicketModelQuery implements ModelQuery {
             String filterValue = (String) filters.get(filterProperty);
 
             // Search term
-            Expression literal = builder.literal((String) "%" + filterValue + "%");
+            Expression literal = builder.literal("%" + filterValue + "%");
 
             // When the globalFilter is deleted it returns ""
             if (!"".equals(filterValue)) {

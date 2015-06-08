@@ -4,24 +4,27 @@
  */
 package com.dastrax.service.rma;
 
-import com.dastrax.app.email.DefaultEmailer;
-import com.dastrax.app.email.Email;
-import com.dastrax.per.dap.CrudService;
-import com.dastrax.per.entity.Template;
-import com.dastrax.per.project.DTX;
-import com.dastrax.per.project.DTX.EmailVariableKey;
-import com.dastrax.service.navigation.Navigator;
-import com.dastrax.app.misc.JsfUtil;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
+
 import javax.ejb.EJB;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import com.dastrax.app.misc.JsfUtil;
+import com.dastrax.app.security.SessionUser;
+import com.dastrax.per.dap.CrudService;
+import com.dastrax.per.entity.Comment;
+import com.dastrax.per.entity.Ticket;
+import com.dastrax.per.entity.User;
+import com.dastrax.per.project.DTX;
+import com.dastrax.per.project.DTX.TicketStatus;
+import com.dastrax.service.navigation.Navigator;
 
 /**
  * An Return Material Authorization (RMA) request. Currently RMA requests are
@@ -101,7 +104,7 @@ public class RmaRequest implements Serializable {
         String deliveryDate = new SimpleDateFormat(
                 DTX.TemporalFormat.DATE_FORMAT.getValue())
                 .format(rma.getDeliveryDate());
-
+        
         // Convert List to string
         String html = "<h4>RMA Details:</h4>"
                 + "<br /> Company Name (on invoice): "
@@ -164,7 +167,27 @@ public class RmaRequest implements Serializable {
                     + "<br />";
             html = html + temp;
         }
+        
+        Ticket ticket = new Ticket();
 
+        User user = SessionUser.getCurrentUser();
+        Comment comment = new Comment();
+        comment.setComment(html);
+        comment.setCommenter(user);
+        long epocd = System.currentTimeMillis();
+        comment.setCreateEpoch(epocd);
+        List<Comment> comments = new ArrayList<Comment>();
+        comments.add(comment);
+        ticket.setComments(comments);
+        ticket.setSatisfied(0);
+        ticket.setRequester(user);
+        ticket.setStatus(TicketStatus.OPEN);
+        ticket.setEmail(rma.getResponsibleEmail());
+        ticket.setTitle("created by RMA");
+        ticket.setOpenEpoch(epocd);
+        dap.create(ticket);
+        
+        /*
         // Build an new email
         Email email = new Email();
         email.setRecipientEmail(recipient);
@@ -183,7 +206,7 @@ public class RmaRequest implements Serializable {
 
         // Send the email
         new DefaultEmailer().send(email);
-
+		*/
         JsfUtil.addSuccessMessage("Your RMA request has been received and "
                 + "submitted for processing.  A support representative will"
                 + " contact you during normal business hours:  Monday-Friday,"

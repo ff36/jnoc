@@ -12,11 +12,16 @@ import com.dastrax.per.entity.Template;
 import com.dastrax.per.project.DTX;
 import com.dastrax.per.project.DTX.EmailVariableKey;
 import com.dastrax.per.project.DTX.ProjectStage;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.ejb.EJB;
 import javax.inject.Inject;
+
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.shiro.SecurityUtils;
 
@@ -33,7 +38,7 @@ import org.apache.shiro.SecurityUtils;
  * stages
  */
 public class ExceptionUtil {
-
+	private static final Logger LOG = Logger.getLogger(ExceptionUtil.class.getName());
     //<editor-fold defaultstate="collapsed" desc="Properties">
     private final String stage = ResourceBundle.getBundle("config").getString("ProjectStage");
     private final String recipent = ResourceBundle.getBundle("config").getString("WebMasterEmailAddress");
@@ -69,15 +74,15 @@ public class ExceptionUtil {
             // Get the current user if one exists
             String user = "Unavailable";
             try {
-                user = SecurityUtils
-                        .getSubject()
+            	user = SecurityUtils.getSubject()
                         .getPrincipals()
                         .asList()
                         .get(0)
                         .toString();
-            } catch (Exception ex) {
-                // Do nothing as this means we have no security manager
-            }
+			} catch (Exception e) {
+				// Do nothing as this means we have no security manager
+				LOG.log(Level.CONFIG, e.getMessage(), e);
+			}
 
             // Set the email variables
             Map<EmailVariableKey, String> vars = new HashMap<>();

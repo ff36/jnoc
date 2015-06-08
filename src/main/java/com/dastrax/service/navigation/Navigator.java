@@ -136,7 +136,7 @@ public class Navigator implements Serializable {
                 && SessionUser.getCurrentUser().isAdministrator()) {
             menuItems.add(new MenuItem("10", "Create DAS", "/a/das/create.xhtml?faces-redirect=true"));
         }
-        //menuItems.add(new MenuItem("11", "Create RMA", "/a/rma/create.xhtml?faces-redirect=true"));
+        menuItems.add(new MenuItem("11", "Create RMA", "/a/rma/create.xhtml?faces-redirect=true"));
         //menuItems.add(new MenuItem("12", "Analytics", "/a/analytics/dashboard.xhtml?faces-redirect=true"));
         menuItems.add(new MenuItem("13", "Profile Settings", "/a/settings/personal/profile.xhtml?faces-redirect=true"));
         menuItems.add(new MenuItem("14", "Account Settings", "/a/settings/personal/admin.xhtml?faces-redirect=true"));
@@ -183,7 +183,7 @@ public class Navigator implements Serializable {
             Cookie cookie = new Cookie(
                     "dtx_navigation",
                     mapper.writeValueAsString(selectedMenuItems));
-            cookie.setHttpOnly(true);
+            //cookie.setHttpOnly(true);
             cookie.setComment("Stores personal navigation preferences");
             cookie.setMaxAge(31536000);
             cookie.setPath("/");

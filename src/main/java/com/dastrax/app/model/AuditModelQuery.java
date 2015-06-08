@@ -9,18 +9,21 @@ import com.dastrax.per.entity.Audit;
 import com.dastrax.per.entity.Audit_;
 import com.dastrax.per.entity.Contact_;
 import com.dastrax.per.entity.User_;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
+
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+
 import org.primefaces.model.SortOrder;
 
 /**
@@ -64,7 +67,8 @@ public class AuditModelQuery implements ModelQuery {
      * @return A type safe CriteriaQuery that can be queried against the 
      * persistence layer.
      */
-    @Override
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	@Override
     public CriteriaQuery query(
             int first,
             int pageSize,
@@ -105,7 +109,7 @@ public class AuditModelQuery implements ModelQuery {
                     switch (key) {
                         case "author":
                             // Search term
-                            Expression literalID = builder.literal((Long) value);
+                            Expression<Long> literalID = builder.literal((Long) value);
                             rootPredicate.add(builder.equal(audit.join(Audit_.author, JoinType.LEFT).get(User_.id), literalID));
                             break;
                         default:
@@ -129,7 +133,7 @@ public class AuditModelQuery implements ModelQuery {
                     switch (key) {
                         case "author":
                             // Search term
-                            Expression literalName = builder.literal((String) value);
+                            Expression<String> literalName = builder.literal((String) value);
                             optionalPredicate.add(builder.like(audit.join(Audit_.author, JoinType.LEFT).get(User_.contact).get(Contact_.firstName), literalName));
                             optionalPredicate.add(builder.like(audit.join(Audit_.author, JoinType.LEFT).get(User_.contact).get(Contact_.lastName), literalName));
                             break;
@@ -143,12 +147,12 @@ public class AuditModelQuery implements ModelQuery {
         }
 
         // Implement the Global Filter
-        for (Iterator it = filters.keySet().iterator(); it.hasNext();) {
+        for (Iterator<?> it = filters.keySet().iterator(); it.hasNext();) {
             String filterProperty = (String) it.next();
             String filterValue = (String) filters.get(filterProperty);
 
             // Search term
-            Expression literal = builder.literal((String) "%" + filterValue + "%");
+            Expression<String> literal = builder.literal("%" + filterValue + "%");
 
             // When the globalFilter is deleted it returns ""
             if (!"".equals(filterValue)) {
@@ -178,7 +182,8 @@ public class AuditModelQuery implements ModelQuery {
      * 
      * @return Returns the class type to associate with the query.
      */
-    @Override
+    @SuppressWarnings("rawtypes")
+	@Override
     public Class clazz() {
         return Audit.class;
     }

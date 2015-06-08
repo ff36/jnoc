@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
-import java.util.logging.Level;
 
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;

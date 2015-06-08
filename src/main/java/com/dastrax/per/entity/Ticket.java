@@ -5,16 +5,6 @@
  */
 package com.dastrax.per.entity;
 
-import com.dastrax.app.email.DefaultEmailer;
-import com.dastrax.app.email.Email;
-import com.dastrax.app.misc.TemporalUtil;
-import com.dastrax.app.security.SessionUser;
-import com.dastrax.per.dap.CrudService;
-import com.dastrax.per.dap.QueryParameter;
-import com.dastrax.per.project.DTX;
-import com.dastrax.per.project.DTX.TicketSeverity;
-import com.dastrax.per.project.DTX.TicketStatus;
-import com.dastrax.per.project.DTX.TicketTopic;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -27,7 +17,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.faces.application.FacesMessage;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -50,9 +42,21 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+
 import org.apache.commons.lang.StringEscapeUtils;
 import org.primefaces.push.EventBus;
 import org.primefaces.push.EventBusFactory;
+
+import com.dastrax.app.email.DefaultEmailer;
+import com.dastrax.app.email.Email;
+import com.dastrax.app.misc.TemporalUtil;
+import com.dastrax.app.security.SessionUser;
+import com.dastrax.per.dap.CrudService;
+import com.dastrax.per.dap.QueryParameter;
+import com.dastrax.per.project.DTX;
+import com.dastrax.per.project.DTX.TicketSeverity;
+import com.dastrax.per.project.DTX.TicketStatus;
+import com.dastrax.per.project.DTX.TicketTopic;
 
 /**
  * This class is mapped in the persistence layer allowing instances of this
@@ -74,6 +78,7 @@ import org.primefaces.push.EventBusFactory;
     @NamedQuery(name = "Ticket.findAllExceptMultiStatus", query = "SELECT e FROM Ticket e WHERE e.status <> :status1 AND e.status <> :status2"),
     @NamedQuery(name = "Ticket.findAllByType", query = "SELECT e FROM Ticket e WHERE e.topic = :topic"),
     @NamedQuery(name = "Ticket.findAllByEmail", query = "SELECT e FROM Ticket e WHERE e.email = :email"),
+    @NamedQuery(name = "Ticket.findAllByTitle", query = "SELECT e FROM Ticket e WHERE e.mailTitle = :mailTitle"),
     @NamedQuery(name = "Ticket.findAllByCreator", query = "SELECT e FROM Ticket e JOIN e.creator a WHERE a.id = :id"),
     @NamedQuery(name = "Ticket.findAllByRequester", query = "SELECT e FROM Ticket e JOIN e.requester a WHERE a.id = :id"),
     @NamedQuery(name = "Ticket.findAllByAssignee", query = "SELECT e FROM Ticket e JOIN e.assignee a WHERE a.id = :id"),
@@ -96,6 +101,8 @@ public class Ticket implements Serializable {
     @Enumerated(EnumType.STRING)
     private TicketSeverity severity;
     private String title;
+    private String mailTitle;
+    
     @ManyToOne
     private User creator;
     @ManyToOne
@@ -138,6 +145,9 @@ public class Ticket implements Serializable {
     @Transient
     private Map<String, List> available;
 
+    @Transient
+    private boolean gmailJobTicketed =  false; 
+    
 //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="Constructors">
@@ -155,7 +165,7 @@ public class Ticket implements Serializable {
             dap = (CrudService) InitialContext.doLookup(
                     ResourceBundle.getBundle("config").getString("CRUD"));
         } catch (NamingException ex) {
-//            LOG.log(Level.SEVERE, null, ex);
+            LOG.log(Level.CONFIG, null, ex);
         }
     }
 //</editor-fold>
@@ -188,7 +198,15 @@ public class Ticket implements Serializable {
         return title;
     }
 
-    /**
+    public String getMailTitle() {
+		return mailTitle;
+	}
+
+	public void setMailTitle(String mailTitle) {
+		this.mailTitle = mailTitle;
+	}
+
+	/**
      * Get the value of openEpoch.
      *
      * @return the value of openEpoch
@@ -614,7 +632,11 @@ public class Ticket implements Serializable {
 
 //</editor-fold>
     
-    /**
+    public void setGmailJobTicketed(boolean gmailJobTicketed) {
+		this.gmailJobTicketed = gmailJobTicketed;
+	}
+
+	/**
      * Creates a new Ticket, adds it to the persistence layer and adds storage
      * related resources.
      *
@@ -660,7 +682,6 @@ public class Ticket implements Serializable {
 
         // send the emails
         email(DTX.EmailTemplate.NEW_TICKET);
-
         // Push
         if (this.requester != null) {
             push();
@@ -725,6 +746,7 @@ public class Ticket implements Serializable {
      */
     private void push() {
             // Push
+    	if(!this.gmailJobTicketed){
             EventBus eventBus = EventBusFactory.getDefault().eventBus();
             eventBus.publish("ticket", new FacesMessage(
                     StringEscapeUtils.escapeHtml("New Unassigned Ticket"),
@@ -735,7 +757,7 @@ public class Ticket implements Serializable {
                             + " ("
                             + this.getRequester().getEmail()
                             + ")")));
-
+    	}
     }
 
     /**
@@ -851,6 +873,7 @@ public class Ticket implements Serializable {
             }
         } catch (NullPointerException npe) {
             // Do nothing. The comment is null.
+        	LOG.log(Level.CONFIG, npe.getMessage(), npe);
         }
     }
 
@@ -926,6 +949,7 @@ public class Ticket implements Serializable {
             }
         } catch (Exception e) {
             // Do nothing tags is null
+        	LOG.log(Level.CONFIG, e.getMessage(), e);
         }
 
     }
@@ -960,6 +984,7 @@ public class Ticket implements Serializable {
 
         } catch (NullPointerException npe) {
             // Do Nothing! The View parameter is null
+        	LOG.log(Level.CONFIG, npe.getMessage(), npe);
         }
     }
 
@@ -1232,7 +1257,7 @@ public class Ticket implements Serializable {
 
             for (String subWord : titleWords) {
                 if (!subWord.matches("(is|are|and|as|for|to|in|that|the|this|a|i)")) {
-                    Expression literal = builder.literal((String) "%" + subWord + "%");
+                    Expression literal = builder.literal("%" + subWord + "%");
 
                     // When the globalFilter is deleted it returns ""
                     if (!"".equals(subWord)) {
@@ -1381,7 +1406,13 @@ public class Ticket implements Serializable {
         if (sendEmailToAssignee && assignee != null) {
             ccEmailRecipients.add(assignee.getEmail());
         }
-
+        
+        if(gmailJobTicketed){
+	        String noc = ResourceBundle.getBundle("config").getString("notification.of.creation.mail");
+	        if(noc!=null){
+	        	ccEmailRecipients.add(noc);
+	        }
+        }
         // Retreive the email template from the database.
         Template temp = (Template) dap.find(
                 Template.class, template.getValue());

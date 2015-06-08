@@ -14,6 +14,7 @@ import com.dastrax.per.entity.Ticket;
 import com.dastrax.per.entity.User;
 import com.dastrax.per.entity.User_;
 import com.dastrax.per.project.DTX;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.mail.BodyPart;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -35,6 +37,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+
 import org.apache.commons.lang.StringUtils;
 import org.jsoup.Jsoup;
 
@@ -68,7 +71,7 @@ public class EmailToTicket {
             dap = (CrudService) InitialContext.doLookup(
                     ResourceBundle.getBundle("config").getString("CRUD"));
         } catch (NamingException ex) {
-//            LOG.log(Level.SEVERE, null, ex);
+            LOG.log(Level.SEVERE, null, ex);
         }
     }
 //</editor-fold>
@@ -83,7 +86,7 @@ public class EmailToTicket {
         // Get the email subject
         String subject = msg.getSubject();
         String title = subject;
-
+        
         // Aquire the user account or create it if not
         User user = aquireAccount(msg);
 
@@ -96,10 +99,9 @@ public class EmailToTicket {
             title = title.replace("fullEmailId", "");
 
             // get the ticket
-            List<Ticket> tickets = dap.findWithNamedQuery(
-                    "Ticket.findAllByEmail",
-                    QueryParameter
-                    .with("email", emailId)
+            @SuppressWarnings("unchecked")
+			List<Ticket> tickets = dap.findWithNamedQuery("Ticket.findAllByEmail",
+                    QueryParameter.with("email", emailId)
                     .parameters());
 
             if (!tickets.isEmpty()) {
@@ -110,6 +112,7 @@ public class EmailToTicket {
                 comment.setComment(getMessage(msg));
 
                 Ticket ticket = tickets.get(0);
+                ticket.setGmailJobTicketed(true);
                 ticket.setComment(comment);
                 ticket.setSendEmailToRequester(true);
                 if (ticket.getAssignee() != null) {
@@ -131,8 +134,10 @@ public class EmailToTicket {
                 comment.setComment(getMessage(msg));
 
                 Ticket ticket = new Ticket();
+                ticket.setGmailJobTicketed(true);
                 ticket.setStatus(DTX.TicketStatus.OPEN);
                 ticket.setTitle(title);
+                ticket.setMailTitle(msg.getSubject());
                 ticket.setSeverity(DTX.TicketSeverity.S3);
                 ticket.setTopic(DTX.TicketTopic.GENERAL);
                 ticket.setSendEmailToRequester(true);
@@ -148,26 +153,56 @@ public class EmailToTicket {
             }
 
         } else {
-            // Create a new ticket
-            Comment comment = new Comment();
-            comment.setCommenter(user);
-            comment.setCreateEpoch(new Date().getTime());
-            comment.setComment(getMessage(msg));
+        	
+        	@SuppressWarnings("unchecked")
+			List<Ticket> tickets = dap.findWithNamedQuery("Ticket.findAllByTitle",
+                    QueryParameter.with("mailTitle", msg.getSubject())
+                    .parameters());
+        	if(!tickets.isEmpty()){
+        		// The ticket exists
+                Comment comment = new Comment();
+                comment.setCommenter(user);
+                comment.setCreateEpoch(new Date().getTime());
+                comment.setComment(getMessage(msg));
 
-            Ticket ticket = new Ticket();
-            ticket.setStatus(DTX.TicketStatus.OPEN);
-            ticket.setTitle(title);
-            ticket.setSeverity(DTX.TicketSeverity.S3);
-            ticket.setTopic(DTX.TicketTopic.GENERAL);
-            ticket.setSendEmailToRequester(true);
-            ticket.setComment(comment);
-            ticket.create(user, DTX.TicketStatus.OPEN);
+                Ticket ticket = tickets.get(0);
+                ticket.setGmailJobTicketed(true);
+                ticket.setComment(comment);
+                ticket.setSendEmailToRequester(true);
+                if (ticket.getAssignee() != null) {
+                    ticket.setSendEmailToAssignee(true);
+                }
+                ticket.edit(DTX.TicketStatus.OPEN, user);
 
-            // Take care of the attachements
-            for (Attachment a : attachments) {
-                ticket.setAttachment(a);
-                ticket.addAttachment();
-            }
+                // Take care of the attachements
+                for (Attachment a : attachments) {
+                    ticket.setAttachment(a);
+                    ticket.addAttachment();
+                }
+        	}else{
+        		// Create a new ticket
+                Comment comment = new Comment();
+                comment.setCommenter(user);
+                comment.setCreateEpoch(new Date().getTime());
+                comment.setComment(getMessage(msg));
+
+                Ticket ticket = new Ticket();
+                ticket.setGmailJobTicketed(true);
+                ticket.setStatus(DTX.TicketStatus.OPEN);
+                ticket.setTitle(title);
+                ticket.setMailTitle(msg.getSubject());
+                ticket.setSeverity(DTX.TicketSeverity.S3);
+                ticket.setTopic(DTX.TicketTopic.GENERAL);
+                ticket.setSendEmailToRequester(true);
+                ticket.setComment(comment);
+                ticket.create(user, DTX.TicketStatus.OPEN);
+
+                // Take care of the attachements
+                for (Attachment a : attachments) {
+                    ticket.setAttachment(a);
+                    ticket.addAttachment();
+                }
+        	}
 
         }
     }
@@ -213,7 +248,8 @@ public class EmailToTicket {
         // Make sure its a real email
         if (email.matches(DTX.EMAIL_REGEX)) {
             // Get the user by email
-            List<User> users = dap.findWithNamedQuery(
+            @SuppressWarnings("unchecked")
+			List<User> users = dap.findWithNamedQuery(
                     "User.findByEmail",
                     QueryParameter
                     .with("email", email)
@@ -237,19 +273,20 @@ public class EmailToTicket {
      * @param email
      * @return
      */
-    private User createUser(String email, String firstName, String lastName) {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	private User createUser(String email, String firstName, String lastName) {
 
         // New user
         User user = new User();
 
         // Use the email to see if they belong to a company
         CriteriaBuilder builder = dap.getCriteriaBuilder();
-        CriteriaQuery query = builder.createQuery(User.class);
+		CriteriaQuery query = builder.createQuery(User.class);
         Root root = query.from(User.class);
         String[] split = email.split("@");
 
         // Use the second half of the email to match
-        Expression literal = builder.literal((String) "%" + split[1]);
+        Expression literal = builder.literal("%" + split[1]);
         Predicate predicate = builder.like(root.get(User_.email), literal);
         query.where(predicate);
         List<User> users = dap.findWithCriteriaQuery(query);

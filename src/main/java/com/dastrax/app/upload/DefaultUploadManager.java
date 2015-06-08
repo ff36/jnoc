@@ -5,18 +5,6 @@
  */
 package com.dastrax.app.upload;
 
-import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectInputStream;
-import com.dastrax.app.services.StorageManager;
-import com.dastrax.app.service.internal.DefaultStorageManager;
-import com.dastrax.app.service.internal.DefaultURI;
-import com.dastrax.per.entity.Attachment;
-import com.dastrax.per.entity.Company;
-import com.dastrax.per.entity.User;
-import com.dastrax.per.project.DTX;
-import com.dastrax.per.project.DTX.CroppableType;
-import com.dastrax.per.project.DTX.URIType;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -25,13 +13,29 @@ import java.io.InputStream;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.imageio.ImageIO;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
+
 import net.coobird.thumbnailator.Thumbnails;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.primefaces.event.FileUploadEvent;
+
+import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.S3ObjectInputStream;
+import com.dastrax.app.service.internal.DefaultStorageManager;
+import com.dastrax.app.service.internal.DefaultURI;
+import com.dastrax.app.services.StorageManager;
+import com.dastrax.per.entity.Attachment;
+import com.dastrax.per.entity.Company;
+import com.dastrax.per.entity.User;
+import com.dastrax.per.project.DTX;
+import com.dastrax.per.project.DTX.CroppableType;
+import com.dastrax.per.project.DTX.URIType;
 
 /**
  * Methods dedicated to handling file uploads. Specifically the transition to

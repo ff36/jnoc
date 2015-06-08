@@ -1,7 +1,5 @@
 package com.dastrax.service.util;
 
-import static org.junit.Assert.fail;
-
 import java.util.List;
 
 import mockit.Injectable;

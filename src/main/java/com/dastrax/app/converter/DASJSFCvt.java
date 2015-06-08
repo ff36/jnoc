@@ -5,8 +5,12 @@
  */
 package com.dastrax.app.converter;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.dastrax.per.dap.CrudService;
 import com.dastrax.per.entity.DAS;
+
 import javax.ejb.EJB;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -26,7 +30,7 @@ import javax.inject.Named;
 @Named
 @FacesConverter("dasCvt")
 public class DASJSFCvt implements Converter {
-
+	private static final Logger LOG = Logger.getLogger(DASJSFCvt.class.getName());
     //<editor-fold defaultstate="collapsed" desc="Properties">
     @EJB
     private CrudService dap;
@@ -36,8 +40,9 @@ public class DASJSFCvt implements Converter {
     @Override
     public Object getAsObject(FacesContext fc, UIComponent uic, String string) {
         try {
-            return (DAS) dap.find(DAS.class, Long.valueOf(string));
+            return dap.find(DAS.class, Long.valueOf(string));
         } catch (NumberFormatException e) {
+        	LOG.log(Level.CONFIG, e.getMessage(), e);
             return null;
         }
     }
@@ -47,6 +52,7 @@ public class DASJSFCvt implements Converter {
         try {
             return ((DAS) o).getId().toString();
         } catch (NullPointerException | ClassCastException e) {
+        	LOG.log(Level.CONFIG, e.getMessage(), e);
             return null;
         }
     }

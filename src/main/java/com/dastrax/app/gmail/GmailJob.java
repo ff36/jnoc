@@ -5,23 +5,35 @@
  */
 package com.dastrax.app.gmail;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Properties;
+import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.mail.Flags;
+import javax.mail.Folder;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.NoSuchProviderException;
+import javax.mail.Session;
+import javax.mail.Store;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+
+import org.quartz.Job;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
+
 import com.dastrax.app.service.internal.DefaultStorageManager;
 import com.dastrax.app.services.StorageManager;
 import com.dastrax.per.dap.DefaultCrudService;
 import com.dastrax.per.project.DTX;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
-import java.io.InputStream;
-import org.quartz.Job;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.mail.*;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 
 /**
  * Implements the Quartz Job interface to schedule Gmail IMAP check.
@@ -39,9 +51,10 @@ public class GmailJob implements Job {
      */
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
-
-        Folder folder = null;
+        Folder folder = null, failFolder = null;
+        
         Store store = null;
+        
         try {
 
             Properties props = System.getProperties();
@@ -54,6 +67,7 @@ public class GmailJob implements Job {
                     "imap.gmail.com",
                     ResourceBundle.getBundle("config").getString("SenderEmailAddress"),
                     ResourceBundle.getBundle("config").getString("SenderEmailPassword"));
+            
             folder = store.getFolder("Inbox");
             /* Others GMail folders :
              * [Gmail]/All Mail   This folder contains all of your Gmail messages.
@@ -64,7 +78,24 @@ public class GmailJob implements Job {
              * [Gmail]/Trash      Messages deleted from Gmail.
              */
             folder.open(Folder.READ_WRITE);
-
+            
+            /*
+             * handle email is fail, this email will move to Fail folder.
+             * Fail folder is not exist, create Fail folder 
+             */
+            try {
+    			failFolder = store.getFolder("Fail");
+    		} catch (MessagingException e) {
+    			//Fail folder is not exist, create Fail Folder
+    			try {
+    				Folder defaultFolder = store.getDefaultFolder();
+    				failFolder = defaultFolder.getFolder("Fail");   
+    		        failFolder.create(Folder.HOLDS_MESSAGES);
+    			} catch (MessagingException e1) {
+    				e1.printStackTrace();
+    			}
+    		}
+            
             // Attributes & Flags for all messages ..
             Message[] messages = folder.getMessages();
 
@@ -73,6 +104,7 @@ public class GmailJob implements Job {
             InputStream input = storage.get(storage.keyGenerator(DTX.KeyType.EMAIL_BLACKLIST, null)).getObjectContent();
             Map<String, Object> blacklist = new ObjectMapper().readValue(input, Map.class);
 
+            
             for (int i = 0; i < messages.length; ++i) {
                 final Message msg = messages[i];
 
@@ -88,7 +120,14 @@ public class GmailJob implements Job {
                         // Set the message as seen
                         msg.setFlag(Flags.Flag.SEEN, true);
                         // Process it
-                        new EmailToTicket().processEmail(msg);
+                        try{
+                        	//System.out.println(Thread.currentThread().getName()+" : "+msg.getSubject());
+                        	new EmailToTicket().processEmail(msg);
+                        } catch (Exception e){
+                        	// error, remove to other folder
+           					folder.copyMessages(new Message[]{msg}, failFolder);
+           					msg.setFlag(Flags.Flag.DELETED, true);
+                        }
                         // Delete the message
                         msg.setFlag(Flags.Flag.DELETED, true);
                     }

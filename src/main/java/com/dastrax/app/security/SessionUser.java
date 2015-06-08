@@ -24,7 +24,6 @@ import org.apache.shiro.SecurityUtils;
  */
 @Named
 public class SessionUser {
-
     /**
      * Obtains the current session User Agent Information.
      * <b>IMPORTANT!</b>

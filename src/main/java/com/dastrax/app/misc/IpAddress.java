@@ -6,6 +6,9 @@
 
 package com.dastrax.app.misc;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.validation.constraints.Pattern;
 
 /**
@@ -18,7 +21,7 @@ import javax.validation.constraints.Pattern;
  */
 // PENDING! This class should use the InetAddress.class to account for IPv6 and IPv4
 public class IpAddress {
-
+	private static final Logger LOG = Logger.getLogger(IpAddress.class.getName());
     //<editor-fold defaultstate="collapsed" desc="Properties">
     @Pattern(regexp = "^([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])$", message = "Invalid IP")
     private String ipa, ipb, ipc, ipd;  
@@ -113,6 +116,7 @@ public class IpAddress {
             int num = Integer.parseInt(ipa);
             ipa = String.format("%03d", num);
         } catch (NumberFormatException nfe) {
+        	LOG.log(Level.CONFIG, nfe.getMessage(), nfe);
         }
     }
 
@@ -124,6 +128,7 @@ public class IpAddress {
             int num = Integer.parseInt(ipb);
             ipb = String.format("%03d", num);
         } catch (NumberFormatException nfe) {
+        	LOG.log(Level.CONFIG, nfe.getMessage(), nfe);
         }
     }
 
@@ -135,6 +140,7 @@ public class IpAddress {
             int num = Integer.parseInt(ipc);
             ipc = String.format("%03d", num);
         } catch (NumberFormatException nfe) {
+        	LOG.log(Level.CONFIG, nfe.getMessage(), nfe);
         }
     }
 
@@ -146,6 +152,7 @@ public class IpAddress {
             int num = Integer.parseInt(ipd);
             ipd = String.format("%03d", num);
         } catch (NumberFormatException nfe) {
+        	LOG.log(Level.CONFIG, nfe.getMessage(), nfe);
         }
     }
 

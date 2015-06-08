@@ -5,6 +5,22 @@
  */
 package com.dastrax.service.feedback;
 
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+
+import org.quartz.Job;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
+
 import com.dastrax.app.email.DefaultEmailer;
 import com.dastrax.app.email.Email;
 import com.dastrax.per.dap.CrudService;
@@ -13,17 +29,6 @@ import com.dastrax.per.entity.Template;
 import com.dastrax.per.entity.Ticket;
 import com.dastrax.per.entity.Token;
 import com.dastrax.per.project.DTX;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.ResourceBundle;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import org.quartz.Job;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
 
 /**
  * Sends out feedback email to tickets closed in the past hour.
@@ -34,7 +39,7 @@ import org.quartz.JobExecutionException;
  * @author <tarka@solid.com>
  */
 public class FeedbackJob implements Job {
-
+	private static final Logger LOG = Logger.getLogger(FeedbackJob.class.getName());
     /**
      * @param context
      * @throws org.quartz.JobExecutionException
@@ -78,7 +83,7 @@ public class FeedbackJob implements Job {
             }
 
         } catch (NamingException ex) {
-//            LOG.log(Level.SEVERE, null, ex);
+            LOG.log(Level.CONFIG, null, ex);
         }
 
     }

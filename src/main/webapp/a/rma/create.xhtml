@@ -72,13 +72,13 @@
                                                 <td>
 
                                                     <h3>Company Name (on invoice):*</h3>
-                                                    <p:inputText value="#{rmaRequest.companyName}" required="true" requiredMessage="Company name is required"/>
+                                                    <p:inputText value="#{rmaRequest.rma.companyName}" required="true" requiredMessage="Company name is required"/>
 
                                                     <h3>Project Name:*</h3>
-                                                    <p:inputText value="#{rmaRequest.projectName}" required="true" requiredMessage="Project name is required"/>
+                                                    <p:inputText value="#{rmaRequest.rma.projectName}" required="true" requiredMessage="Project name is required"/>
 
                                                     <h3>Quote/Sales Order/Fulfillment #:</h3>
-                                                    <p:inputText value="#{rmaRequest.orderNumber}"/>
+                                                    <p:inputText value="#{rmaRequest.rma.orderNumber}"/>
 
                                                 </td>
                                             </tr>
@@ -98,16 +98,16 @@
                                                     <h2></h2>
 
                                                     <h3>Name:*</h3>
-                                                    <p:inputText value="#{rmaRequest.responsibleName}" required="true" requiredMessage="Name is required"/>
+                                                    <p:inputText value="#{rmaRequest.rma.responsibleName}" required="true" requiredMessage="Name is required"/>
 
                                                     <h3>Company:*</h3>
-                                                    <p:inputText value="#{rmaRequest.responsibleCompany}" required="true" requiredMessage="Company is required"/>
+                                                    <p:inputText value="#{rmaRequest.rma.responsibleCompany}" required="true" requiredMessage="Company is required"/>
 
                                                     <h3>Phone:*</h3>
-                                                    <p:inputText value="#{rmaRequest.responsiblePhone}" required="true" requiredMessage="Phone is required"/>
+                                                    <p:inputText value="#{rmaRequest.rma.responsiblePhone}" required="true" requiredMessage="Phone is required"/>
 
                                                     <h3>Email:*</h3>
-                                                    <p:inputText value="#{rmaRequest.responsibleEmail}" required="true" requiredMessage="Email is required"/>
+                                                    <p:inputText value="#{rmaRequest.rma.responsibleEmail}" required="true" requiredMessage="Email is required"/>
 
                                                 </td>
                                             </tr>
@@ -129,34 +129,34 @@
                                                             <td>
 
                                                                 <h3>Name:*</h3>
-                                                                <p:inputText value="#{rmaRequest.shippingName}" required="true" requiredMessage="Name is required"/>
+                                                                <p:inputText value="#{rmaRequest.rma.shippingName}" required="true" requiredMessage="Name is required"/>
 
                                                                 <h3>Company:*</h3>
-                                                                <p:inputText value="#{rmaRequest.shippingCompany}" required="true" requiredMessage="Company is required"/>
+                                                                <p:inputText value="#{rmaRequest.rma.shippingCompany}" required="true" requiredMessage="Company is required"/>
 
                                                                 <h3>Phone:*</h3>
-                                                                <p:inputText value="#{rmaRequest.shippingPhone}" required="true" requiredMessage="Phone is required"/>
+                                                                <p:inputText value="#{rmaRequest.rma.shippingPhone}" required="true" requiredMessage="Phone is required"/>
 
                                                                 <h3>Email:*</h3>
-                                                                <p:inputText value="#{rmaRequest.shippingEmail}" required="true" requiredMessage="Email is required"/>
+                                                                <p:inputText value="#{rmaRequest.rma.shippingEmail}" required="true" requiredMessage="Email is required"/>
 
                                                             </td>
                                                             <td>
 
                                                                 <h3>Address 1:*</h3>
-                                                                <p:inputText value="#{rmaRequest.shippingAddress1}" required="true" requiredMessage="Address 1 is required"/>
+                                                                <p:inputText value="#{rmaRequest.rma.shippingAddress1}" required="true" requiredMessage="Address 1 is required"/>
 
                                                                 <h3>Address 2:</h3>
-                                                                <p:inputText value="#{rmaRequest.shippingAddress2}"/>
+                                                                <p:inputText value="#{rmaRequest.rma.shippingAddress2}"/>
 
                                                                 <h3>City:*</h3>
-                                                                <p:inputText value="#{rmaRequest.shippingCity}" required="true" requiredMessage="City is required"/>
+                                                                <p:inputText value="#{rmaRequest.rma.shippingCity}" required="true" requiredMessage="City is required"/>
 
                                                                 <h3>State:*</h3>
-                                                                <p:inputText value="#{rmaRequest.shippingState}" required="true" requiredMessage="State is required"/>
+                                                                <p:inputText value="#{rmaRequest.rma.shippingState}" required="true" requiredMessage="State is required"/>
 
                                                                 <h3>Zip:*</h3>
-                                                                <p:inputText value="#{rmaRequest.shippingZip}" required="true" requiredMessage="Zip is required"/>
+                                                                <p:inputText value="#{rmaRequest.rma.shippingZip}" required="true" requiredMessage="Zip is required"/>
 
                                                             </td>
                                                         </tr>
@@ -165,10 +165,10 @@
 
 
                                                     <h3>Does this address accepts Saturday deliveries?*</h3>
-                                                    <p:selectBooleanButton value="#{rmaRequest.saturdayDelivery}" onLabel="Yes" offLabel="No" />
+                                                    <p:selectBooleanButton value="#{rmaRequest.rma.saturdayDelivery}" onLabel="Yes" offLabel="No" />
 
                                                     <h3>Date replacement product must be delivered?</h3>
-                                                    <p:calendar value="#{rmaRequest.deliveryDate}" showButtonPanel="true" pattern="MMMM dd, yyy"/>
+                                                    <p:calendar value="#{rmaRequest.rma.deliveryDate}" showButtonPanel="true" pattern="MMMM dd, yyy"/>
 
                                                 </td>
                                             </tr>
@@ -187,7 +187,7 @@
                                                                      value="Add Product"
                                                                      process="@this"
                                                                      onclick="PF('new-product-dlg').show();"
-                                                                     actionListener="#{rmaRequest.resetRmaProduct()}"
+                                                                     actionListener="#{rmaRequest.rma.resetRmaProduct()}"
                                                                      update="@(.dlg-product-update-class)"/>
 
                                                 </th>
@@ -201,7 +201,7 @@
 
                                                     <p:dataTable id="product-table" 
                                                                  styleClass="type2-table" 
-                                                                 value="#{rmaRequest.products}" 
+                                                                 value="#{rmaRequest.rma.products}" 
                                                                  var="product"
                                                                  emptyMessage="No products added">  
 
@@ -249,8 +249,8 @@
 
                                                         <p:column width="20">
                                                             <p:commandLink update="product-table" title="Remove Product" process="product-table">
-                                                                <p:graphicImage value="#{URIUtil().s3Icon('black/trash_icon_16.png')}"/>
-                                                                <p:collector value="#{product}" removeFrom="#{rmaRequest.products}" unique="true"/> 
+                                                                <h:outputText value="Remove Product" />
+                                                                <p:collector value="#{product}" removeFrom="#{rmaRequest.rma.products}" unique="true"/> 
                                                             </p:commandLink>
                                                         </p:column>
 
@@ -266,36 +266,36 @@
                                         <h:panelGroup id="product-group">
                                             
                                             <h3>Quantity:*</h3>
-                                            <p:spinner value="#{rmaRequest.newRmaProduct.qty}"/>
+                                            <p:spinner value="#{rmaRequest.rma.newRmaProduct.qty}"/>
 
                                             <h3>Serial Number:*</h3>
-                                            <p:inputText value="#{rmaRequest.newRmaProduct.serialNumber}" required="true" requiredMessage="Serial Number is required"/>
+                                            <p:inputText value="#{rmaRequest.rma.newRmaProduct.serialNumber}"/>
 
                                             <h3>Part Number:*</h3>
-                                            <p:inputText value="#{rmaRequest.newRmaProduct.partNumber}"/>
+                                            <p:inputText value="#{rmaRequest.rma.newRmaProduct.partNumber}"/>
 
                                             <h3>Part Name:*</h3>
-                                            <p:inputText value="#{rmaRequest.newRmaProduct.partName}" required="true" requiredMessage="Part Name is required"/>
+                                            <p:inputText value="#{rmaRequest.rma.newRmaProduct.partName}"/>
 
                                             <h3>Reason for return:*</h3>
-                                            <p:selectOneMenu value="#{rmaRequest.newRmaProduct.returnReason}" required="true" requiredMessage="Return reason required" style="width: 150px"> 
+                                            <p:selectOneMenu value="#{rmaRequest.rma.newRmaProduct.returnReason}" style="width: 150px"> 
                                                 <f:selectItem itemLabel="Not Needed" itemValue="Not Needed" />  
                                                 <f:selectItem itemLabel="Wrong Item" itemValue="Wrong Item" />  
                                                 <f:selectItem itemLabel="Failure" itemValue="Failure" />  
                                             </p:selectOneMenu>
 
                                             <h3>Failure Stage:*</h3>
-                                            <p:selectOneMenu value="#{rmaRequest.newRmaProduct.failureStage}" required="true" requiredMessage="Failure stage required"> 
+                                            <p:selectOneMenu value="#{rmaRequest.rma.newRmaProduct.failureStage}"> 
                                                 <f:selectItem itemLabel="Not Applicable" itemValue="Not Applicable" />  
                                                 <f:selectItem itemLabel="In Service" itemValue="In Service" />  
                                                 <f:selectItem itemLabel="During Implementation" itemValue="During Implementation" />  
                                             </p:selectOneMenu>
 
                                             <h3>Reported Issue Details:*</h3>
-                                            <p:inputTextarea value="#{rmaRequest.newRmaProduct.issueDetails}" required="true" requiredMessage="Issue Details are required" rows="10" cols="20"/>
+                                            <p:inputTextarea value="#{rmaRequest.rma.newRmaProduct.issueDetails}" cols="20"/>
 
                                             <h3>What troubleshooting steps have been taken to resolve this issue?:*</h3>
-                                            <p:inputTextarea value="#{rmaRequest.newRmaProduct.troubleshooting}" required="true" requiredMessage="Troubleshooting is required" rows="10" cols="20"/>
+                                            <p:inputTextarea value="#{rmaRequest.rma.newRmaProduct.troubleshooting}" rows="10" cols="20"/>
 
                                         </h:panelGroup>
 
@@ -304,12 +304,12 @@
                                         <p:commandButton id="btn_product" 
                                                          value="Add Product" 
                                                          styleClass="green-button"
-                                                         update="product-group :form:product-group" 
+                                                         update="product-group :form:product-group product-table" 
                                                          process="@this @parent"
-                                                         action="#{rmaRequest.resetRmaProduct()}"
+                                                         action="#{rmaRequest.rma.resetRmaProduct()}"
                                                          onsuccess="PF('new-product-dlg').hide()">
 
-                                            <p:collector value="#{rmaRequest.newRmaProduct}" addTo="#{rmaRequest.products}" unique="true"/>
+                                            <p:collector value="#{rmaRequest.rma.newRmaProduct}" addTo="#{rmaRequest.rma.products}" unique="true"/>
 
                                         </p:commandButton>
 

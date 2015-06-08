@@ -5,21 +5,6 @@
  */
 package com.dastrax.per.entity;
 
-import com.amazonaws.services.s3.model.ObjectListing;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
-import com.dastrax.app.email.DefaultEmailer;
-import com.dastrax.app.email.Email;
-import com.dastrax.app.misc.JsfUtil;
-import com.dastrax.app.security.Password;
-import com.dastrax.app.security.SessionUser;
-import com.dastrax.app.service.internal.DefaultStorageManager;
-import com.dastrax.app.services.StorageManager;
-import com.dastrax.app.upload.DefaultUploadManager;
-import com.dastrax.app.upload.UploadFile;
-import com.dastrax.app.upload.UploadManager;
-import com.dastrax.per.dap.CrudService;
-import com.dastrax.per.dap.QueryParameter;
-import com.dastrax.per.project.DTX;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -32,9 +17,12 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.ResourceBundle;
 import java.util.UUID;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.faces.event.AjaxBehaviorEvent;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.CascadeType;
@@ -52,9 +40,26 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.Version;
 import javax.validation.constraints.Pattern;
+
 import org.apache.shiro.SecurityUtils;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.extensions.event.ImageAreaSelectEvent;
+
+import com.amazonaws.services.s3.model.ObjectListing;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.dastrax.app.email.DefaultEmailer;
+import com.dastrax.app.email.Email;
+import com.dastrax.app.misc.JsfUtil;
+import com.dastrax.app.security.Password;
+import com.dastrax.app.security.SessionUser;
+import com.dastrax.app.service.internal.DefaultStorageManager;
+import com.dastrax.app.services.StorageManager;
+import com.dastrax.app.upload.DefaultUploadManager;
+import com.dastrax.app.upload.UploadFile;
+import com.dastrax.app.upload.UploadManager;
+import com.dastrax.per.dap.CrudService;
+import com.dastrax.per.dap.QueryParameter;
+import com.dastrax.per.project.DTX;
 
 /**
  * This class is mapped in the persistence layer allowing instances of this
@@ -142,7 +147,7 @@ public class User implements Serializable {
             dap = (CrudService) InitialContext.doLookup(
                     ResourceBundle.getBundle("config").getString("CRUD"));
         } catch (NamingException ex) {
-//            LOG.log(Level.SEVERE, null, ex);
+            LOG.log(Level.CONFIG, null, ex);
         }
     }
 //</editor-fold>
@@ -495,11 +500,11 @@ public class User implements Serializable {
         metiers = dap.findWithNamedQuery("Metier.findAll");
         // Undefined is internal only
         Iterator<Metier> iterator = metiers.iterator();
-	while (iterator.hasNext()) {
-            if ("UNDEFINED".equals(iterator.next().getName())) {
-                iterator.remove();
-            }
-	}
+		while (iterator.hasNext()) {
+	            if ("UNDEFINED".equals(iterator.next().getName())) {
+	                iterator.remove();
+	            }
+		}
     }
 
     /**
@@ -536,6 +541,7 @@ public class User implements Serializable {
             JsfUtil.addSuccessMessage("New user created");
         } catch (Exception e) {
             // Request does not come from JSF
+        	LOG.log(Level.CONFIG, e.getMessage(), e);
         }
     }
 
@@ -928,6 +934,47 @@ public class User implements Serializable {
         sendEmail(em);
     }
 
+    /**
+     * when company type change,  update companies
+     * @param event
+     */
+    public void changCompanyType(AjaxBehaviorEvent event){
+	        if (SessionUser.getCurrentUser().isAdministrator()) {
+	            // Make sure its the right kind of company
+	            if ("CLIENT".equals(metier.getName())) {
+	                availableCompanies = dap.findWithNamedQuery(
+	                        "Company.findByType", 
+	                        QueryParameter
+	                                .with("type", DTX.CompanyType.CLIENT)
+	                                .parameters());
+	            }
+	            // Make sure its the right kind of company
+	            if ("VAR".equals(metier.getName())) {
+	                availableCompanies = dap.findWithNamedQuery(
+	                        "Company.findByType", 
+	                        QueryParameter
+	                                .with("type", DTX.CompanyType.VAR)
+	                                .parameters());
+	            }
+	        }
+	        // VAR can only add to their own company and client companies
+	        if (SessionUser.getCurrentUser().isVAR()) {
+	            if ("CLIENT".equals(metier.getName())) {
+	                availableCompanies.addAll(company.getClients());
+	            }
+	            if ("VAR".equals(metier.getName())) {
+	                availableCompanies.add(company);
+	            }
+	            
+	        }
+	        // Clients can only add to their own company
+	        if (SessionUser.getCurrentUser().isClient()) {
+	        	System.out.println("isClient");
+	            availableCompanies.add(company);
+	        }
+	        
+    }
+    
     /**
      * Construct an email to the specified address and persist the
      * Token to confirm the authentication at a later date.

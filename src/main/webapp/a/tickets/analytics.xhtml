@@ -136,7 +136,10 @@
                     </ui:remove>
 
 
-
+					<h:outputScript library="js" name="d3.js"/>
+                                    <h:outputScript library="js" name="dc.js"/>
+                                    <h:outputScript library="js" name="crossfilter.js"/>
+                                    <h:outputScript library="js" name="colorbrewer.js"/>
                     <table class="page-container">
                         <thead>
                             <tr>
@@ -152,6 +155,10 @@
                                                      process="@this"
                                                      onclick="dc.filterAll();
                                                              dc.renderAll();"/> 
+                                    <p:commandButton value="Export As PDF" ajax="false" icon="ui-icon-arrowthick-1-s" 
+                                    	styleClass="header-button" process="@this">
+	        									<p:fileDownload value="#{ticketAnalytics.reportAsPdf}" />
+	    							</p:commandButton>
                                 </th>
                             </tr>
                         </thead>
@@ -200,11 +207,6 @@
                                         <h:panelGroup rendered="#{ticketAnalytics.render}">
 
                                             <h:inputHidden id="json-data" value="#{ticketAnalytics.data}"/>
-
-                                            <h:outputScript library="js" name="d3.js"/>
-                                            <h:outputScript library="js" name="dc.js"/>
-                                            <h:outputScript library="js" name="crossfilter.js"/>
-                                            <h:outputScript library="js" name="colorbrewer.js"/>
 
                                             <p:spacer width="100%" height="20px"/>
 

@@ -5,15 +5,17 @@
  */
 package com.dastrax.per.project;
 
+import java.io.Serializable;
+
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
+
 import com.dastrax.per.project.DTX.CompanyType;
 import com.dastrax.per.project.DTX.DMSType;
 import com.dastrax.per.project.DTX.TelephoneType;
 import com.dastrax.per.project.DTX.TicketSeverity;
 import com.dastrax.per.project.DTX.TicketStatus;
 import com.dastrax.per.project.DTX.TicketTopic;
-import java.io.Serializable;
-import javax.faces.view.ViewScoped;
-import javax.inject.Named;
 
 /**
  * JSF offers a default implementation converter for ENUM types. This class

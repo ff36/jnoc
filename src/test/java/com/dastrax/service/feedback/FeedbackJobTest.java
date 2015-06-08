@@ -1,7 +1,6 @@
 package com.dastrax.service.feedback;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import javax.naming.InitialContext;
@@ -11,8 +10,6 @@ import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
-import mockit.Tested;
-import mockit.Verifications;
 import mockit.integration.junit4.JMockit;
 
 import org.junit.Before;
@@ -24,7 +21,6 @@ import com.dastrax.per.dap.CrudService;
 import com.dastrax.per.dap.QueryParameter;
 import com.dastrax.per.entity.Template;
 import com.dastrax.per.entity.Ticket;
-import com.dastrax.per.entity.Token;
 import com.dastrax.per.project.DTX;
 
 @RunWith(JMockit.class)
@@ -58,8 +54,8 @@ public class FeedbackJobTest {
 		
 		new MockUp<InitialContext>() {
 			@Mock
-			public <T> T doLookup(String name){
-				return (T) dap;
+			public <T> CrudService doLookup(String name){
+				return dap;
 			} 
 		};
 		feedbackJob = new FeedbackJob();

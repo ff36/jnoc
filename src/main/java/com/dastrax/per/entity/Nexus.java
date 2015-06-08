@@ -5,12 +5,6 @@
  */
 package com.dastrax.per.entity;
 
-import com.dastrax.app.security.SessionUser;
-import com.dastrax.per.dap.CrudService;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -18,7 +12,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.Entity;
@@ -30,6 +26,13 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
+
+import com.dastrax.app.security.SessionUser;
+import com.dastrax.per.dap.CrudService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * This class is mapped in the persistence layer allowing instances of this
@@ -79,7 +82,7 @@ public class Nexus implements Serializable {
             dap = (CrudService) InitialContext.doLookup(
                     ResourceBundle.getBundle("config").getString("CRUD"));
         } catch (NamingException ex) {
-//            LOG.log(Level.SEVERE, null, ex);
+            LOG.log(Level.CONFIG, null, ex);
         }
     }
 //</editor-fold>
@@ -195,6 +198,7 @@ public class Nexus implements Serializable {
             this.implicitMembers = mapper.writeValueAsString(implicitExpression);
         } catch (JsonProcessingException ex) {
             // Unable to convert map to JSON string
+        	LOG.log(Level.CONFIG, ex.getMessage(), ex);
         }
     }
 
@@ -226,6 +230,7 @@ public class Nexus implements Serializable {
                     });
         } catch (IOException ex) {
             // Unable to convert JSON to map
+        	LOG.log(Level.CONFIG, ex.getMessage(), ex);
         }
         return null;
     }

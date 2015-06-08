@@ -364,7 +364,7 @@ public class Authenticate implements Serializable {
                                         = new UsernamePasswordToken(
                                                 email.toLowerCase(), password);
                                 SecurityUtils.getSubject().login(subjectToken);
-
+                                
                                 /*
                                  Obtain request and responses to redirect the 
                                  user to their original requested page

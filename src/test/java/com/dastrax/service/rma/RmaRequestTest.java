@@ -1,9 +1,5 @@
 package com.dastrax.service.rma;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.logging.Level;
-
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.context.Flash;
@@ -16,7 +12,6 @@ import mockit.Mocked;
 import mockit.Tested;
 import mockit.integration.junit4.JMockit;
 
-import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,7 +20,9 @@ import org.junit.runner.RunWith;
 import com.dastrax.app.email.DefaultEmailer;
 import com.dastrax.app.email.Email;
 import com.dastrax.app.misc.JsfUtil;
+import com.dastrax.app.security.SessionUser;
 import com.dastrax.per.dap.CrudService;
+import com.dastrax.per.entity.User;
 import com.dastrax.service.navigation.Navigator;
 
 @RunWith(JMockit.class)
@@ -47,6 +44,8 @@ public class RmaRequestTest {
 	private FacesContext facesContext;
 	@Mocked
 	private Flash flash;
+	@Mocked
+	private User user;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -58,6 +57,20 @@ public class RmaRequestTest {
 		new MockUp<DefaultEmailer>() {
 			@Mock
 			public void send(Email email) {}
+		};
+		
+		new MockUp<Email>(){
+			@Mock
+			public void $init(){
+				
+			}
+		};
+		
+		new MockUp<SessionUser>(){
+			@Mock
+			public User getCurrentUser(){
+				return user;
+			}
 		};
 		
 		new MockUp<JsfUtil>() {

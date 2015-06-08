@@ -5,6 +5,18 @@
  */
 package com.dastrax.app.service.internal;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.ResourceBundle;
+import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.enterprise.inject.Default;
+
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.PropertiesCredentials;
@@ -19,19 +31,9 @@ import com.amazonaws.services.route53.model.ListResourceRecordSetsResult;
 import com.amazonaws.services.route53.model.RRType;
 import com.amazonaws.services.route53.model.ResourceRecord;
 import com.amazonaws.services.route53.model.ResourceRecordSet;
+import com.dastrax.app.misc.JsfUtil;
 import com.dastrax.app.services.DNSManager;
 import com.dastrax.per.project.DTX;
-import com.dastrax.app.misc.JsfUtil;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.StringTokenizer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.enterprise.inject.Default;
 
 /**
  * Methods dedicated to handling Domain Name System (DNSManager) based
@@ -234,7 +236,7 @@ public class DefaultDNSManager implements DNSManager {
                 }
 
             } catch (AmazonServiceException ase) {
-                LOG.log(Level.INFO, "Resource does not exist on route 53", ase);
+                LOG.log(Level.CONFIG, "Resource does not exist on route 53", ase);
             }
             return false;
         }
@@ -265,7 +267,7 @@ public class DefaultDNSManager implements DNSManager {
             }
 
         } catch (AmazonServiceException ase) {
-            LOG.log(Level.INFO, "DNS Service exception on route 53", ase);
+            LOG.log(Level.CONFIG, "DNS Service exception on route 53", ase);
             return null;
         }
         return result;
@@ -298,7 +300,7 @@ public class DefaultDNSManager implements DNSManager {
                     client = new AmazonRoute53Client(credentials);
                 }
             } catch (IOException io) {
-                LOG.log(Level.INFO, "Error creating AmazonRoute53Client", io);
+                LOG.log(Level.CONFIG, "Error creating AmazonRoute53Client", io);
             }
         }
 //</editor-fold>
