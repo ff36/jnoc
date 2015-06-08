@@ -181,7 +181,11 @@ public class Approve implements Serializable {
 
     }
 
-    /**
+    public void setNavigator(Navigator navigator) {
+		this.navigator = navigator;
+	}
+
+	/**
      * Confirms a new users account
      */
     public void confirmNewEmail() {
