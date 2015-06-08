@@ -1419,7 +1419,6 @@ public class Ticket implements Serializable {
 
         // Send the emails
         for (String ccEmail : ccEmailRecipients) {
-        	System.out.println("email: "+ccEmail);
             sendEmail(ccEmail, temp);
         }
     }
