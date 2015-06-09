@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.1.0.final using JasperReports Library version 6.1.0  -->
+<!-- 2015-06-09T11:20:49 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TicketAnalytics" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="8b96b5d7-0e43-48a3-a2c1-ba424fcd1a83">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="mysql"/>
+	<subDataset name="Dataset1" uuid="61323cb6-9d48-45cb-a36b-ac11872ab821">
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="mysql"/>
+		<queryString>
+			<![CDATA[select count(*) as tcount, 
+	IF(t.`severity`='S1','SERVICE DOWN (S1)',
+		IF(t.`severity`='S2', 
+				'SERVICE DISRUPTION (S2)', 
+				'GENERAL SUPPORT (S3)')
+	) as `severity` 
+
+from 
+	`ticket` as t left join `subject` as s on s.id = t.`REQUESTER_ID` 
+	left join metier as m on m.ID = s.METIER_ID
+where m.id <> 'UNDEFINED'
+group by t.`severity`]]>
+		</queryString>
+		<field name="tcount" class="java.lang.Long"/>
+		<field name="severity" class="java.lang.String"/>
+	</subDataset>
+	<queryString>
+		<![CDATA[select count(*) as scount, t.`status` 
+from 
+	`ticket` as t left join `subject` as s on s.id = t.`REQUESTER_ID` 
+	left join metier as m on m.ID = s.METIER_ID
+where m.id <> 'UNDEFINED'
+group by t.`status`]]>
+	</queryString>
+	<field name="scount" class="java.lang.Long"/>
+	<field name="status" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch">
+			<staticText>
+				<reportElement x="80" y="20" width="400" height="40" uuid="f2dec961-ec07-4faf-86b3-596c038671e2"/>
+				<textElement textAlignment="Center">
+					<font size="22" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Ticket Status & Severity]]></text>
+			</staticText>
+		</band>
+	</title>
+	<summary>
+		<band height="650" splitType="Stretch">
+			<pieChart>
+				<chart evaluationTime="Report">
+					<reportElement x="18" y="-4" width="540" height="300" uuid="d6dc3b32-fe8d-4978-84cf-06589ed10022"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<pieDataset>
+					<keyExpression><![CDATA[$F{status}]]></keyExpression>
+					<valueExpression><![CDATA[$F{scount}]]></valueExpression>
+					<labelExpression><![CDATA[$F{status}+" : "+$F{scount}]]></labelExpression>
+				</pieDataset>
+				<piePlot>
+					<plot/>
+					<itemLabel/>
+				</piePlot>
+			</pieChart>
+			<pieChart>
+				<chart evaluationTime="Report">
+					<reportElement x="18" y="348" width="550" height="300" uuid="cefb32c7-8b98-4b03-838d-d9d51b1d82f5"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<pieDataset>
+					<dataset>
+						<datasetRun subDataset="Dataset1" uuid="a108b531-08a2-4a18-a7ae-c6eb6e423942">
+							<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+						</datasetRun>
+					</dataset>
+					<keyExpression><![CDATA[$F{severity}]]></keyExpression>
+					<valueExpression><![CDATA[$F{tcount}]]></valueExpression>
+					<labelExpression><![CDATA[$F{severity}+" : "+$F{tcount}]]></labelExpression>
+				</pieDataset>
+				<piePlot>
+					<plot/>
+					<itemLabel/>
+				</piePlot>
+			</pieChart>
+			<staticText>
+				<reportElement x="9" y="10" width="100" height="30" uuid="8ab40343-a81c-49df-8d7b-7ecbe62e6726"/>
+				<textElement>
+					<font size="20" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Status]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="9" y="357" width="100" height="30" uuid="1f89f4b7-0c0f-4f08-8fa6-82668a3f8a38"/>
+				<textElement>
+					<font size="20" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Severity]]></text>
+			</staticText>
+		</band>
+	</summary>
+</jasperReport>

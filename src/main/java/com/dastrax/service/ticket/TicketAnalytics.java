@@ -158,7 +158,7 @@ public class TicketAnalytics implements Serializable {
 			DataSource datasource = (DataSource) context.lookup(UriUtil.getDataSourceJNDI());
 			
 			Connection connection = datasource.getConnection();
-			JasperReport jasperReport = JasperCompileManager.compileReport(TicketDigest.class.getResourceAsStream("/TicketAnalytics.jrxml"));
+			JasperReport jasperReport = JasperCompileManager.compileReport(TicketDigest.class.getResourceAsStream("/report/TicketAnalytics.jrxml"));
 			Map customParameters = new HashMap();
 			JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, customParameters, connection);
 			
