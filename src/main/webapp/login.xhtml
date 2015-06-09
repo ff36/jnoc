@@ -80,13 +80,15 @@
                     <tr>
                         <td>
                             <h:commandLink action="#{navigator.navigate('FORGOT_PASSWORD')}"
-                                           value="Forgot password?"
+                                           value="Forgot password?" 
+                                           immediate="true" 
                                            type="button"/>
 
                             <br></br>
 
                             <h:commandLink value="Get an account"
                                            action="#{navigator.navigate('REQUEST_ACCOUNT')}"
+                                           immediate="true" 
                                            type="button"/>
 
                         </td>

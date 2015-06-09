@@ -104,13 +104,14 @@
                                                            onmouseout="document.getElementById('das-hover-details').style.display = 'none'"/>
                                         </ui:fragment>
 
-                                        <ui:remove>
+                                        <ui:fragment rendered="#{jsfSessionUser.currentUser.hasPermission('rma:access') and jsfSessionUser.currentUser.administrator}">
                                             <p:graphicImage value="#{uriUtil.icon('black/refresh_icon_16.png', true)}"/>
                                             <p:commandLink value="RMA"
                                                            action="/a/rma/create.xhtml?faces-redirect=true"
                                                            onmouseover="document.getElementById('rma-hover-details').style.display = 'block'"
                                                            onmouseout="document.getElementById('rma-hover-details').style.display = 'none'"/>
-
+                                        </ui:fragment>
+										<ui:remove>
                                             <p:graphicImage value="#{uriUtil.icon('black/chart_bar_icon_16.png', true)}"/>
                                             <p:commandLink value="Analytics"
                                                            action="/a/analytics/dashboard.xhtml?faces-redirect=true"
