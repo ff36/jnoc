@@ -5,6 +5,32 @@
  */
 package com.dastrax.service.security;
 
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
+import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.ejb.EJB;
+import javax.enterprise.context.RequestScoped;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
+import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.Pattern;
+
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.ExcessiveAttemptsException;
+import org.apache.shiro.authc.IncorrectCredentialsException;
+import org.apache.shiro.authc.LockedAccountException;
+import org.apache.shiro.authc.UnknownAccountException;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.web.util.WebUtils;
+
 import com.dastrax.app.misc.JsfUtil;
 import com.dastrax.app.service.internal.DefaultDNSManager;
 import com.dastrax.app.service.internal.DefaultURI;
@@ -15,28 +41,6 @@ import com.dastrax.per.entity.Audit;
 import com.dastrax.per.entity.Company;
 import com.dastrax.per.entity.User;
 import com.dastrax.per.project.DTX;
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.Date;
-import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.ejb.EJB;
-import javax.enterprise.context.RequestScoped;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
-import javax.inject.Named;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.constraints.Pattern;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.AuthenticationException;
-import org.apache.shiro.authc.ExcessiveAttemptsException;
-import org.apache.shiro.authc.IncorrectCredentialsException;
-import org.apache.shiro.authc.LockedAccountException;
-import org.apache.shiro.authc.UnknownAccountException;
-import org.apache.shiro.authc.UsernamePasswordToken;
-import org.apache.shiro.web.util.WebUtils;
 
 /**
  * User authentication related services. Including subdomain authentication
@@ -167,18 +171,19 @@ public class Authenticate implements Serializable {
                 // Is the user trying to access the universal page
                 if (!subdomain.equals(ResourceBundle.getBundle("config")
                         .getString("UniversalSubdomain"))) {
-
+                	
                     // Is the user trying to access the admin page
                     if (!subdomain.equals(ResourceBundle.getBundle("config")
                             .getString("AdminSubdomain"))) {
 
-                        var = (Company) dap.findWithNamedQuery(
+                    	@SuppressWarnings("unchecked")
+						List<Company> vars = (List<Company>) dap.findWithNamedQuery(
                                 "Company.findBySubdomain",
                                 QueryParameter.with("subdomain", subdomain)
-                                .parameters())
-                                .get(0);
+                                .parameters());
 
-                        if (var != null) {
+                        if (vars!=null && !vars.isEmpty()) {
+                        	var = vars.get(0);
                             logoPath = new DefaultURI.Builder(
                                     DTX.URIType.COMPANY_LOGO)
                                     .withCompany(var)
@@ -215,8 +220,11 @@ public class Authenticate implements Serializable {
                     renderUniversal = true;
                 }
             } else {
-
+            	System.out.println("subdomain is null");
                 // Subdomain is null so redirect to universal login page
+            	//AccessProtocol 		-> 	http://
+            	//UniversalSubdomain	->	login
+            	//BaseUrl				->	dastrax.com
                 String url
                         = ResourceBundle.getBundle("config")
                         .getString("AccessProtocol")

@@ -189,21 +189,34 @@ public class DefaultDNSManager implements DNSManager {
         String accessProtocol = ResourceBundle.getBundle("config").getString("AccessProtocol");
         String applicationURL = accessProtocol + baseUrl + "/";
 
-        if (!contextURL.equals(applicationURL)) {
-            StringTokenizer st = new StringTokenizer(contextURL, "/.");
-
-            for (int i = 0; i < 2; i++) {
-                subdomain = st.nextToken();
-            }
-
-            // Check to make sure the CNAME string is not UAT
-            if (subdomain == null || subdomain.equals("uat")) {
-                subdomain = null;
-            }
+        //http:// or https://
+        String contextDomain = contextURL.replace(accessProtocol, "");
+        //get domain
+        contextDomain = contextDomain.substring(0, contextDomain.indexOf("/"));
+        //get subdomain
+        subdomain = contextDomain.replace(baseUrl, "").replace(".", "").trim();
+        
+        // Check to make sure the CNAME string is not UAT
+        if ("".equals(subdomain) || subdomain == null || subdomain.equals("uat")) {
+        	subdomain = null;
         }
+        
+//        if (!contextURL.equals(applicationURL)) {
+//            StringTokenizer st = new StringTokenizer(contextURL, "/.");
+//
+//            for (int i = 0; i < 2; i++) {
+//                subdomain = st.nextToken();
+//            }
+//
+//            // Check to make sure the CNAME string is not UAT
+//            if (subdomain == null || subdomain.equals("uat")) {
+//                subdomain = null;
+//            }
+//        }
+        
         return subdomain;
     }
-
+    
     /**
      * Determines whether the specified prefix is already a registered record
      * set on route 53.
