@@ -118,6 +118,8 @@ public class EditTicket implements Serializable {
             // Get the ticket from the persistence layer
             ticket = (Ticket) dap.find(Ticket.class, Long.valueOf(viewParamTicketID));
 
+            ticket.setComment(new Comment());
+            
             // Redirect if the user is not allowed access to the ticket
             if (!ticket.initEditor()) {
                 navigator.navigate("LIST_TICKETS");
