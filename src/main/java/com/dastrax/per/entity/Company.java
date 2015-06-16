@@ -5,20 +5,6 @@
  */
 package com.dastrax.per.entity;
 
-import com.amazonaws.services.s3.model.S3ObjectSummary;
-import com.dastrax.app.misc.JsfUtil;
-import com.dastrax.app.service.internal.DefaultDNSManager;
-import com.dastrax.app.service.internal.DefaultStorageManager;
-import com.dastrax.app.services.DNSManager;
-import com.dastrax.app.services.StorageManager;
-import com.dastrax.app.upload.DefaultUploadManager;
-import com.dastrax.app.upload.UploadFile;
-import com.dastrax.app.upload.UploadManager;
-import com.dastrax.per.dap.CrudService;
-import com.dastrax.per.dap.QueryParameter;
-import com.dastrax.per.project.DTX;
-import com.dastrax.per.project.DTX.CompanyType;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +33,18 @@ import org.primefaces.event.FileUploadEvent;
 import org.primefaces.extensions.event.ImageAreaSelectEvent;
 import org.primefaces.model.DualListModel;
 
+import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.dastrax.app.misc.JsfUtil;
+import com.dastrax.app.service.internal.DefaultStorageManager;
+import com.dastrax.app.services.StorageManager;
+import com.dastrax.app.upload.DefaultUploadManager;
+import com.dastrax.app.upload.UploadFile;
+import com.dastrax.app.upload.UploadManager;
+import com.dastrax.per.dap.CrudService;
+import com.dastrax.per.dap.QueryParameter;
+import com.dastrax.per.project.DTX;
+import com.dastrax.per.project.DTX.CompanyType;
+
 /**
  * This class is mapped in the persistence layer allowing instances of this
  * class to be persisted.
@@ -61,7 +59,6 @@ import org.primefaces.model.DualListModel;
 @NamedQueries({
     @NamedQuery(name = "Company.findAll", query = "SELECT e FROM Company e"),
     @NamedQuery(name = "Company.findByID", query = "SELECT e FROM Company e WHERE e.id = :id"),
-    @NamedQuery(name = "Company.findBySubdomain", query = "SELECT e FROM Company e WHERE e.subdomain = :subdomain"),
     @NamedQuery(name = "Company.findByType", query = "SELECT e FROM Company e WHERE e.type = :type")
 })
 @Entity
@@ -80,8 +77,6 @@ public class Company implements Serializable {
     private String name;
     @Enumerated(EnumType.STRING)
     private CompanyType type;
-    // VAR have subdomains
-    private String subdomain;
     @OneToOne(cascade = {CascadeType.ALL})
     private Contact contact;
     @OneToMany
@@ -182,15 +177,6 @@ public class Company implements Serializable {
      */
     public CompanyType getType() {
         return type;
-    }
-
-    /**
-     * Get the value of sub-domain
-     *
-     * @return the value of sub-domain
-     */
-    public String getSubdomain() {
-        return subdomain;
     }
 
     /**
@@ -306,15 +292,6 @@ public class Company implements Serializable {
     }
 
     /**
-     * Set the value of subdomain.
-     *
-     * @param subdomain new value of subdomain
-     */
-    public void setSubdomain(String subdomain) {
-        this.subdomain = subdomain;
-    }
-
-    /**
      * Set the value of clients.
      *
      * @param clients new value of clients
@@ -388,9 +365,6 @@ public class Company implements Serializable {
                 // Do nothing. The linkedAndAvailableClientCompanies was null
             }
 
-            // Write the new subdomain to route 53
-            DNSManager dns = new DefaultDNSManager();
-            dns.createCNAME(subdomain);
         }
 
         // Set the new storage ID
@@ -428,15 +402,6 @@ public class Company implements Serializable {
      * resources linked to the company.
      */
     public void delete() {
-
-        String stage = ResourceBundle.getBundle("config").getString("ProjectStage");
-
-        if (!stage.equals(DTX.ProjectStage.DEV.toString())) {
-            // If its a company of type VAR delete the subdomain
-            if (DTX.CompanyType.VAR.equals(type)) {
-                new DefaultDNSManager().deleteCNAME(subdomain);
-            }
-        }
 
         // List and remove everything from the storage
         StorageManager storage = new DefaultStorageManager();

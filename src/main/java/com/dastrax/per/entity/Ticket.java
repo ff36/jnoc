@@ -1408,7 +1408,7 @@ public class Ticket implements Serializable {
         }
         
         if(gmailJobTicketed){
-	        String noc = ResourceBundle.getBundle("config").getString("notification.of.creation.mail");
+	        String noc = System.getenv("DTX_NEW_MAIL_TICKET_EMAIL");
 	        if(noc!=null){
 	        	ccEmailRecipients.add(noc);
 	        }

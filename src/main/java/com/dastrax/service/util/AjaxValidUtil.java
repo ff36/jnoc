@@ -9,10 +9,12 @@ import com.dastrax.app.service.internal.DefaultDNSManager;
 import com.dastrax.per.dap.CrudService;
 import com.dastrax.per.entity.User;
 import com.dastrax.per.project.DTX;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
@@ -45,7 +47,7 @@ public class AjaxValidUtil implements Serializable {
     public AjaxValidUtil() {
         this.emails = new ArrayList<>();
         this.subdomains = new ArrayList<>();
-        this.context = ResourceBundle.getBundle("config").getString("BaseUrl");
+        this.context = System.getenv("DTX_BASE_URL");
         this.subdomainRegex = "[a-z0-9]{2,20}";
         this.emailRegex = DTX.EMAIL_REGEX;
     }

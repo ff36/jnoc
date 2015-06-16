@@ -1073,10 +1073,7 @@ public class User implements Serializable {
     public class Request {
 
         //<editor-fold defaultstate="collapsed" desc="Properties">
-        private final String recipient
-                = ResourceBundle
-                .getBundle("config")
-                .getString("NewUserRequestEmailAddress");
+        private final String recipient = System.getenv("DTX_ACCOUNT_REQUEST_EMAIL");
         private String name;
         private String company;
         private String email;

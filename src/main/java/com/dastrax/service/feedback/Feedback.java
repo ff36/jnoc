@@ -12,13 +12,16 @@ import com.dastrax.per.entity.Template;
 import com.dastrax.per.project.DTX;
 import com.dastrax.per.dap.CrudService;
 import com.dastrax.app.misc.JsfUtil;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
+
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
+
 import net.sf.uadetector.ReadableUserAgent;
 
 /**
@@ -80,10 +83,7 @@ public class Feedback implements Serializable {
             Email email = new Email();
 
             // Set the recipient
-            email.setRecipientEmail(
-                    ResourceBundle
-                    .getBundle("config")
-                    .getString("WebMasterEmailAddress"));
+            email.setRecipientEmail(System.getenv("DTX_WEB_MASTER_EMAIL"));
 
             // Get the user agent details
             ReadableUserAgent userAgent = SessionUser.getUserAgent();

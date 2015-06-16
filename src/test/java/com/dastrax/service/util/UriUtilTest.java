@@ -25,7 +25,6 @@ public class UriUtilTest {
 	private Account account;
 	@Before
 	public void setUp() throws Exception {
-		
 		new MockUp<SessionUser>() {
 			@Mock
 			public User getCurrentUser(){
