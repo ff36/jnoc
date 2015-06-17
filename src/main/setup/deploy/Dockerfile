@@ -8,26 +8,26 @@ MAINTAINER  Tarka L'Herpiniere <tarka@solid.com>
 
 RUN         apt-get update
 
-# Prepare for Java download
+########### Prepare for Java download
 RUN         apt-get install -y python-software-properties
 RUN         apt-get install -y software-properties-common
 
-# Add the Java repository
+########### Add the Java repository
 RUN         add-apt-repository -y ppa:webupd8team/java
 
-# Update the repository sources list
+########### Update the repository sources list
 RUN         apt-get update
 
-# Install Oracle Java 8
+########### Install Oracle Java 8
 RUN         echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections
 RUN         apt-get install oracle-java8-installer -y --force-yes
 RUN         apt-get install oracle-java8-set-default -y --force-yes
 
-# Set glassfish home as enviroment property
+########### Set glassfish home as enviroment property
 ENV         GLASSFISH_HOME    /usr/local/glassfish4
 ENV         PATH              $PATH:$GLASSFISH_HOME/bin
 
-# Install Glassfish
+########### Install Glassfish
 RUN         apt-get update && \
             apt-get install -y curl unzip zip inotify-tools && \
             rm -rf /var/lib/apt/lists/*
