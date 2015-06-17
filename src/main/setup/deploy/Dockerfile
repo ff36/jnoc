@@ -31,18 +31,20 @@ ENV         PATH              $PATH:$GLASSFISH_HOME/bin
 RUN         apt-get update && \
             apt-get install -y curl unzip zip inotify-tools && \
             rm -rf /var/lib/apt/lists/*
-
 RUN         curl -L -o /tmp/glassfish-4.1.zip http://download.java.net/glassfish/4.1/release/glassfish-4.1.zip && \
             unzip /tmp/glassfish-4.1.zip -d /usr/local && \
             rm -f /tmp/glassfish-4.1.zip
 
+############ Copy files into the VM
 COPY         glassfish-start.sh /
 COPY         *.war /
 COPY         mysql-connector-java-5.1.35-bin.jar /usr/local/glassfish4/glassfish/lib/
 
+########### Change the glassfish script permissions
 RUN         chmod +x /glassfish-start.sh
 RUN         apt-get update
 
+########### Currently we only want to expose port 8080 -> 80
 EXPOSE      8080 4848
 
 ENTRYPOINT  ["/glassfish-start.sh"]
