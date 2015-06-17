@@ -44,6 +44,6 @@ COPY         mysql-connector-java-5.1.35-bin.jar /usr/local/glassfish4/glassfish
 RUN         chmod +x /glassfish-start.sh
 RUN         apt-get update
 
-EXPOSE      8080 4848 8181
+EXPOSE      8080 4848
 
 ENTRYPOINT  ["/glassfish-start.sh"]
