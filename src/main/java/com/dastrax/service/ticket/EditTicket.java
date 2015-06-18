@@ -124,6 +124,7 @@ public class EditTicket implements Serializable {
             }
 
             ticket.setCcEmailRecipients(new ArrayList<String>());
+            ticket.setComment(new Comment());
         } catch (NullPointerException | NumberFormatException e) {
             // The ticket was not found in the persistence
             navigator.navigate("LIST_TICKETS");
