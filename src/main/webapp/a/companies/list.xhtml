@@ -173,13 +173,6 @@
                                                     #{company.type}
                                                 </p:column>
 
-                                                <p:column headerText="Subdomain"
-                                                          filterBy="#{company.subdomain}"
-                                                          filterStyle="display:none"
-                                                          sortBy="#{company.subdomain}">
-                                                    #{company.subdomain}
-                                                </p:column>
-
                                                 <p:column headerText="Members">
                                                     <p:commandLink value="View" 
                                                                    actionListener="#{navigator.navigate('LIST_ACCOUNTS_WITH_PARAM', 'company='.concat(company.id))}" 
@@ -291,12 +284,6 @@
                                                                                 <h:outputText value="Overview"/>
                                                                             </td>
                                                                         </tr>
-                                                                        <h:panelGroup rendered="#{company.type eq 'VAR'}">
-                                                                            <tr>
-                                                                                <td class="field-label-4" width="100px">Sub-domain:</td>
-                                                                                <td>#{company.subdomain}</td>
-                                                                            </tr>
-                                                                        </h:panelGroup>
                                                                     </table>
                                                                 </td>
                                                                 <td>

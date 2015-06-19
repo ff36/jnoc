@@ -7,10 +7,8 @@ package com.dastrax.app.gmail;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Properties;
-import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -21,9 +19,6 @@ import javax.mail.MessagingException;
 import javax.mail.NoSuchProviderException;
 import javax.mail.Session;
 import javax.mail.Store;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -31,7 +26,6 @@ import org.quartz.JobExecutionException;
 
 import com.dastrax.app.service.internal.DefaultStorageManager;
 import com.dastrax.app.services.StorageManager;
-import com.dastrax.per.dap.DefaultCrudService;
 import com.dastrax.per.project.DTX;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -65,8 +59,8 @@ public class GmailJob implements Job {
             store = session.getStore("imaps");
             store.connect(
                     "imap.gmail.com",
-                    ResourceBundle.getBundle("config").getString("SenderEmailAddress"),
-                    ResourceBundle.getBundle("config").getString("SenderEmailPassword"));
+                    System.getenv("DTX_SENDER_EMAIL"),
+                    System.getenv("DTX_SENDER_EMAIL_SECRET"));
             
             folder = store.getFolder("Inbox");
             /* Others GMail folders :
@@ -158,16 +152,6 @@ public class GmailJob implements Job {
             }
         }
 
-    }
-
-    private DefaultCrudService lookupDefaultCrudServiceBean() {
-        try {
-            Context c = new InitialContext();
-            return (DefaultCrudService) c.lookup("java:global/com.dastrax_Dastrax_war_3.1.2/DefaultCrudService!com.dastrax.per.dap.DefaultCrudService");
-        } catch (NamingException ne) {
-            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
-            throw new RuntimeException(ne);
-        }
     }
 
 }

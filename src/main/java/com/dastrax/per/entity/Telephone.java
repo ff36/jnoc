@@ -15,7 +15,6 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -68,14 +67,14 @@ public class Telephone implements Serializable {
 
     //<editor-fold defaultstate="collapsed" desc="Constructors">
     public Telephone() {
-        this.defaultPhoneCountry = ResourceBundle.getBundle("config").getString("DefaultPhoneCountry");
-        this.country = ResourceBundle.getBundle("config").getString("DefaultPhoneCountry");
+        this.defaultPhoneCountry = System.getenv("DTX_DEFAULT_COUNTRY");
+        this.country = this.defaultPhoneCountry;
         this.type = TelephoneType.DESK;
         this.countries = new Countries().getWorldCountries();
     }
 
     public Telephone(String country) {
-        this.defaultPhoneCountry = ResourceBundle.getBundle("config").getString("DefaultPhoneCountry");
+        this.defaultPhoneCountry = System.getenv("DTX_DEFAULT_COUNTRY");
         this.country = country;
         this.type = TelephoneType.DESK;
         this.countries = new Countries().getWorldCountries();
@@ -181,7 +180,7 @@ public class Telephone implements Serializable {
 
         try {
             if (country == null) {
-                country = ResourceBundle.getBundle("config").getString("DefaultPhoneCountry");
+                country = System.getenv("DTX_DEFAULT_COUNTRY");
             }
             
             if (number.length() > 3) {

@@ -108,14 +108,14 @@ public class FeedbackJob implements Job {
         token.setId(new Random().nextLong());
         token.setEmail(ticket.getRequester().getEmail());
         token.setCreateEpoch(Calendar.getInstance().getTimeInMillis());
-        Map<String, String> params = new HashMap(1);
+        Map<String, String> params = new HashMap<>(1);
         params.put("ticket", ticket.getId().toString());
         token.setParameters(params);
         token.create();
         e.setParam(token);
         
-        String baseUrl = ResourceBundle.getBundle("config").getString("BaseUrl");
-        String protocol = ResourceBundle.getBundle("config").getString("AccessProtocol");
+        String baseUrl = System.getenv("DTX_BASE_URL");
+        String protocol = System.getenv("DTX_ACCESS_PROTOCOL");
 
         // Set the variables
         Map<DTX.EmailVariableKey, String> vars = new HashMap<>();

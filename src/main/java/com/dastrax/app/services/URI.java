@@ -6,7 +6,6 @@
 
 package com.dastrax.app.services;
 
-import java.util.ResourceBundle;
 
 /**
  * This class generates URL and URN values for specified resources.
@@ -19,10 +18,10 @@ import java.util.ResourceBundle;
 public interface URI {
     
     //<editor-fold defaultstate="collapsed" desc="Properties">
-    String s3Bucket = ResourceBundle.getBundle("config").getString("S3Bucket");
-    String baseURL = ResourceBundle.getBundle("config").getString("S3PublicBaseUrl");
-    String protocol = ResourceBundle.getBundle("config").getString("AccessProtocol");
-    String cdn = ResourceBundle.getBundle("config").getString("CDNHTTPBaseUrl");
+    String s3Bucket = System.getenv("DTX_S3_BUCKET");
+    String baseURL = System.getenv("DTX_BASE_URL");
+    String protocol = System.getenv("DTX_ACCESS_PROTOCOL");
+    String cdn = System.getenv("DTX_CDN_BASE_URL");
 //</editor-fold>
     
     /**

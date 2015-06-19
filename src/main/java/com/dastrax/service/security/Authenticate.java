@@ -8,7 +8,6 @@ package com.dastrax.service.security;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,13 +31,9 @@ import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.web.util.WebUtils;
 
 import com.dastrax.app.misc.JsfUtil;
-import com.dastrax.app.service.internal.DefaultDNSManager;
-import com.dastrax.app.service.internal.DefaultURI;
-import com.dastrax.app.services.DNSManager;
 import com.dastrax.per.dap.CrudService;
 import com.dastrax.per.dap.QueryParameter;
 import com.dastrax.per.entity.Audit;
-import com.dastrax.per.entity.Company;
 import com.dastrax.per.entity.User;
 import com.dastrax.per.project.DTX;
 
@@ -55,18 +50,15 @@ import com.dastrax.per.project.DTX;
 @RequestScoped
 public class Authenticate implements Serializable {
 
-    //<editor-fold defaultstate="collapsed" desc="Properties">
+	private static final long serialVersionUID = 1L;
+	//<editor-fold defaultstate="collapsed" desc="Properties">
     private static final Logger LOG = Logger.getLogger(Authenticate.class.getName());
-    private final String stage = ResourceBundle.getBundle("config").getString("ProjectStage");
 
     @Pattern(regexp = DTX.EMAIL_REGEX, message = "Invalid Email")
     private String email;
     private String password;
-    private boolean renderLogin;
-    private boolean renderUniversal;
-    private Company var;
-    private String logoPath;
-    private String subdomain;
+    //private Company var;
+    //private String logoPath;
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="EJB">
@@ -93,32 +85,6 @@ public class Authenticate implements Serializable {
         return password;
     }
 
-    /**
-     * Get the value of renderLogin
-     *
-     * @return the value of renderLogin
-     */
-    public boolean isRenderLogin() {
-        return renderLogin;
-    }
-
-    /**
-     * Get the value of renderUniversal
-     *
-     * @return the value of renderUniversal
-     */
-    public boolean isRenderUniversal() {
-        return renderUniversal;
-    }
-
-    /**
-     * Get the value of logoPath
-     *
-     * @return the value of logoPath
-     */
-    public String getLogoPath() {
-        return logoPath;
-    }
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Setters">
@@ -143,182 +109,11 @@ public class Authenticate implements Serializable {
 
     /**
      * Called after the object has been created to initialize the page
-     * properties and data before the page has loaded. Specifically the graphics
-     * and subdomain are checked to make sure the authenticating user is on the
-     * correct login page.
+     * properties and data before the page has loaded.
      */
     public void init() {
-        /*
-         * Obtain the current URL so we can populate the page based on the
-         * sub-domain.
-         */
-        ExternalContext ectx = FacesContext.getCurrentInstance().getExternalContext();
-        HttpServletRequest request = (HttpServletRequest) ectx.getRequest();
-        String contextURL = request.getRequestURL().toString();
-
-        DNSManager dns = new DefaultDNSManager();
-        subdomain = dns.extract(contextURL);
-
         // Set the email
         email = JsfUtil.getRequestParameter("email");
-
-        // Are we in DEV mode. If so bypass all this
-        if (!stage.equals(DTX.ProjectStage.DEV.toString())) {
-
-            // Is the user trying to access the login page via /login.jsf
-            if (subdomain != null) {
-
-                // Is the user trying to access the universal page
-                if (!subdomain.equals(ResourceBundle.getBundle("config")
-                        .getString("UniversalSubdomain"))) {
-                	
-                    // Is the user trying to access the admin page
-                    if (!subdomain.equals(ResourceBundle.getBundle("config")
-                            .getString("AdminSubdomain"))) {
-
-                    	@SuppressWarnings("unchecked")
-						List<Company> vars = (List<Company>) dap.findWithNamedQuery(
-                                "Company.findBySubdomain",
-                                QueryParameter.with("subdomain", subdomain)
-                                .parameters());
-
-                        if (vars!=null && !vars.isEmpty()) {
-                        	var = vars.get(0);
-                            logoPath = new DefaultURI.Builder(
-                                    DTX.URIType.COMPANY_LOGO)
-                                    .withCompany(var)
-                                    .create()
-                                    .generate();
-
-                            renderLogin = true;
-
-                        } else {
-                            JsfUtil.addWarningMessage(
-                                    "Sorry, this subdomain is not registered.");
-                            renderLogin = false;
-                        }
-
-                    } else {
-
-                        // Is accessing admin subdomain
-                        logoPath = new DefaultURI.Builder(
-                                DTX.URIType.LOGO)
-                                .withFile("dastrax_logo_v1.png")
-                                .create()
-                                .generate();
-                        renderLogin = true;
-                    }
-                } else {
-
-                    // Page is been accessed from the universal domain
-                    logoPath = new DefaultURI.Builder(
-                            DTX.URIType.LOGO)
-                            .withFile("dastrax_logo_v1.png")
-                            .create()
-                            .generate();
-                    renderLogin = false;
-                    renderUniversal = true;
-                }
-            } else {
-            	System.out.println("subdomain is null");
-                // Subdomain is null so redirect to universal login page
-            	//AccessProtocol 		-> 	http://
-            	//UniversalSubdomain	->	login
-            	//BaseUrl				->	dastrax.com
-                String url
-                        = ResourceBundle.getBundle("config")
-                        .getString("AccessProtocol")
-                        + ResourceBundle.getBundle("config")
-                        .getString("UniversalSubdomain")
-                        + "."
-                        + ResourceBundle.getBundle("config")
-                        .getString("BaseUrl");
-                try {
-                    FacesContext.getCurrentInstance()
-                            .getExternalContext()
-                            .redirect(url);
-                } catch (IOException ex) {
-                    LOG.log(Level.SEVERE, "Login redirect failed due to Faces"
-                            + " External Context", ex);
-                }
-                renderLogin = false;
-            }
-        } else {
-
-            // In development mode
-            logoPath = new DefaultURI.Builder(
-                    DTX.URIType.LOGO)
-                    .withFile("dastrax_logo_v1.png")
-                    .create()
-                    .generate();
-            renderLogin = true;
-        }
-    }
-
-    /**
-     * The universal login page uses this method to redirect users to their
-     * specific sub-domain login page.
-     *
-     * @throws IOException
-     */
-    public void redirect() throws IOException {
-        User user = (User) dap.findWithNamedQuery(
-                "User.findByEmail",
-                QueryParameter.with("email", email.toLowerCase())
-                .parameters())
-                .get(0);
-
-        if (user != null) {
-
-            String url = null;
-
-            // Email matches ADMIN
-            if (user.isAdministrator()) {
-                url = ResourceBundle.getBundle("config").getString("AccessProtocol")
-                        + ResourceBundle.getBundle("config").getString("AdminSubdomain")
-                        + "."
-                        + ResourceBundle.getBundle("config").getString("BaseUrl")
-                        + "/login.jsf?email="
-                        + email.toLowerCase();
-            }
-
-            // Email matches VAR
-            if (user.isVAR()) {
-                url = ResourceBundle.getBundle("config").getString("AccessProtocol")
-                        + user.getCompany().getSubdomain()
-                        + "."
-                        + ResourceBundle.getBundle("config").getString("BaseUrl")
-                        + "/login.jsf?email="
-                        + email.toLowerCase();
-            }
-
-            // Email matches CLIENT
-            if (user.isClient()) {
-                url = ResourceBundle.getBundle("config").getString("AccessProtocol")
-                        + user.getCompany().parent().getSubdomain()
-                        + "."
-                        + ResourceBundle.getBundle("config").getString("BaseUrl")
-                        + "/login.jsf?email="
-                        + email.toLowerCase();
-            }
-
-            // Redirect the subject
-            FacesContext.getCurrentInstance().getExternalContext().redirect(url);
-
-            // Add success message
-            JsfUtil.addSuccessMessage("In the futur you can access you login "
-                    + "page directly by going to " + url);
-            // Carry the message over to the page redirect
-            FacesContext
-                    .getCurrentInstance()
-                    .getExternalContext()
-                    .getFlash()
-                    .setKeepMessages(true);
-        } else {
-            // Email not registered in the system
-            JsfUtil.addWarningMessage(ResourceBundle.getBundle("messages")
-                    .getString("error.login.noemail"));
-        }
     }
 
     /**
@@ -326,9 +121,6 @@ public class Authenticate implements Serializable {
      * authenticate the requesting user.
      */
     public void authenticate() {
-
-        // Render the login by default
-        renderLogin = true;
 
         // Is the user already authenticated
         if (!SecurityUtils.getSubject().isAuthenticated()) {
@@ -340,26 +132,6 @@ public class Authenticate implements Serializable {
                         QueryParameter.with("email", email.toLowerCase())
                         .parameters())
                         .get(0);
-
-                // Check user has access to this subdomain
-                boolean isAuthorised = false;
-
-                if (user.isVAR()
-                        && var != null
-                        && user.getCompany().equals(var)) {
-                    isAuthorised = true;
-                }
-
-                if (user.isClient()
-                        && var != null
-                        && user.getCompany().parent().equals(var)) {
-                    isAuthorised = true;
-                }
-
-//                if (isAuthorised
-//                        | ResourceBundle.getBundle("config")
-//                        .getString("AdminSubdomain").equals(subdomain)
-//                        | stage.equals(DTX.ProjectStage.DEV.toString())) {
 
                     if (user.getAccount().isConfirmed()) {
 
@@ -460,24 +232,12 @@ public class Authenticate implements Serializable {
                                 .getString("error.login.unconfirmed"));
                     }
 
-//                } else {
-//                    /*
-//                     Not a member of the company under which they are trying 
-//                     to sign in
-//                     */
-//                    JsfUtil.addWarningMessage(
-//                            ResourceBundle
-//                            .getBundle("messages")
-//                            .getString("error.login.wrongdomain"));
-//                }
-
             } catch (ArrayIndexOutOfBoundsException e) {
                 // Email not registered in the system
                 JsfUtil.addWarningMessage(
                         ResourceBundle
                         .getBundle("messages")
                         .getString("error.login.noemail"));
-
             }
 
         } else {

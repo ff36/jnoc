@@ -372,11 +372,11 @@ public class EmailToTicket {
          original message header so we can cut the email here so as not to include
          previouse parts of the email.
          */
-        String emailAddress = ResourceBundle.getBundle("config").getString("SenderEmailAddress");
+        String emailAddress = System.getenv("DTX_SENDER_EMAIL");
         if (result != null && result.contains(emailAddress)) {
             result = StringUtils.substringBefore(
                     result,
-                    ResourceBundle.getBundle("config").getString("SenderEmailAddress"));
+                    emailAddress);
             result = result.substring(0, result.lastIndexOf("\n"));
         }
 

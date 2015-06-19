@@ -60,11 +60,6 @@ public class DastraxExceptionHandler extends ExceptionHandlerWrapper {
             ExceptionQueuedEventContext context
                     = (ExceptionQueuedEventContext) event.getSource();
 
-            // Handle the exception
-            // Send the email
-            ExceptionUtil exu = new ExceptionUtil();
-            exu.report(new Exception(context.getException()));
-
             // Add a message to the presentation layer
             JsfUtil.addFatalMessage(
                     ResourceBundle
