@@ -65,7 +65,8 @@ public class AjaxValidUtil implements Serializable {
         for (User user : users) {
             emails.add(user.getEmail());
         }
-        subdomains = new DefaultDNSManager().listRecordSets(0);
+        List<String> tmpSubDomain = new DefaultDNSManager().listRecordSets(0);
+        if(tmpSubDomain!=null) subdomains = tmpSubDomain;
     }
 
     /**
@@ -78,7 +79,6 @@ public class AjaxValidUtil implements Serializable {
      * Otherwise false.
      */
     public boolean emailAvailable(String query) {
-
         try {
             List<String> collection = new ArrayList<>();
             // Make sure its a valid email
@@ -112,7 +112,6 @@ public class AjaxValidUtil implements Serializable {
      * Otherwise false.
      */
     public boolean subdomainAvailable(String query) {
-
         try {
             List<String> collection = new ArrayList<>();
             // Make sure its a valid email
