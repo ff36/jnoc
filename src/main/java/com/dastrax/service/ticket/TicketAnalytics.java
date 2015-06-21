@@ -10,6 +10,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -21,13 +22,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ejb.EJB;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 import net.sf.jasperreports.engine.JRException;
@@ -37,7 +38,6 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 
-import org.primefaces.expression.impl.ThisExpressionResolver;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
@@ -139,12 +139,51 @@ public class TicketAnalytics implements Serializable {
     	try{
     		File tmpfile = generateReport();
     		this.file  = new DefaultStreamedContent(new FileInputStream(tmpfile), "application/pdf", "ticket.report"+System.currentTimeMillis()+".pdf");
-    		System.out.println(this.file.getStream().available());
+    		System.out.println("size:"+this.file.getStream().available());
     	}catch (IOException e){
     		LOG.log(Level.SEVERE, "JasperReprot error", e);
     	}
     	return this.file;
     } 
+    
+    public void getReportAsPdf1() {
+    	try{
+    		File tmpfile = generateReport();
+    		
+    		FileInputStream fis = new FileInputStream(tmpfile);
+    		
+    		FacesContext fc = FacesContext.getCurrentInstance();
+    	    ExternalContext ec = fc.getExternalContext();
+
+    	    ec.responseReset(); 
+    	    ec.setResponseContentType("application/pdf"); 
+    	    ec.setResponseContentLength(fis.available());
+    	    ec.setResponseHeader("Content-Disposition", "attachment; filename=\"ticket.report" + System.currentTimeMillis() + ".pdf\""); 
+
+    	    OutputStream output = ec.getResponseOutputStream();
+    	    // Now you can write the InputStream of the file to the above OutputStream the usual way.
+    	    // ...
+    	    byte[] buf = new byte[1024*10]; 
+    	    int byteread = 0;
+    	    
+    	    while((byteread = fis.read(buf))!=-1){
+    	    	output.write(buf, 0, byteread);
+    	    }
+    	    
+    	    output.flush();
+    	    output.close();
+    	    fis.close();
+
+    	    fc.responseComplete();
+    		
+    	}catch (IOException e){
+    		LOG.log(Level.SEVERE, "JasperReprot error", e);
+    	}
+    } 
+    
+    public void myAction(){
+    	System.out.println("do action...");
+    }
     
     /**
      * fill data to report
