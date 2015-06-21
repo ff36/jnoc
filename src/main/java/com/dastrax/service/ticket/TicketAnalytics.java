@@ -26,6 +26,8 @@ import javax.inject.Named;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 import net.sf.jasperreports.engine.JRException;
@@ -35,7 +37,9 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 
+import org.primefaces.expression.impl.ThisExpressionResolver;
 import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
 
 import com.dastrax.per.dap.CrudService;
 import com.dastrax.per.entity.Comment;
@@ -127,30 +131,26 @@ public class TicketAnalytics implements Serializable {
 		this.data = data;
 	}
 
-    
-    private DefaultStreamedContent reportPDF = null;
-    public void setReportPDF(DefaultStreamedContent reportPDF){this.reportPDF = reportPDF;}
 	/**
      * down load pdf report
      * @return StreamedContent 
      */
-    public DefaultStreamedContent getReportPDF() {
-//    	try{
-//    		File tmpfile = generateReport();
-//    		this.file  = new DefaultStreamedContent(new FileInputStream(tmpfile), "application/pdf", "ticket.report"+System.currentTimeMillis()+".pdf");
-//    		System.out.println(this.file.getStream().available());
-//    	}catch (IOException e){
-//    		LOG.log(Level.SEVERE, "JasperReprot error", e);
-//    	}
-//    	return this.file;
-    	return reportPDF;
+    public StreamedContent getReportAsPdf() {
+    	try{
+    		File tmpfile = generateReport();
+    		this.file  = new DefaultStreamedContent(new FileInputStream(tmpfile), "application/pdf", "ticket.report"+System.currentTimeMillis()+".pdf");
+    		System.out.println(this.file.getStream().available());
+    	}catch (IOException e){
+    		LOG.log(Level.SEVERE, "JasperReprot error", e);
+    	}
+    	return this.file;
     } 
     
     /**
      * fill data to report
      * @return
      */
-    public void downloadAction(){
+    private File generateReport(){
     	File tmpfile = new File("ticketreport.pdf");
     	
 		try {
@@ -164,12 +164,10 @@ public class TicketAnalytics implements Serializable {
 			
 			FileOutputStream os = new FileOutputStream(tmpfile);
 			JasperExportManager.exportReportToPdfStream(jasperPrint, os);
-			this.setReportPDF(new DefaultStreamedContent(new FileInputStream(tmpfile), "application/pdf", "ticket.report"+System.currentTimeMillis()+".pdf"));
-			os.close();
-		} catch (NamingException | SQLException | JRException | IOException e) {
+		} catch (NamingException | SQLException | JRException | FileNotFoundException e) {
 			LOG.log(Level.SEVERE, e.getMessage(), e);
 		}
-		//return tmpfile;
+		return tmpfile;
     }
     
     /**
