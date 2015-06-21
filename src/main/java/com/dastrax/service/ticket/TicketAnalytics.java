@@ -161,8 +161,6 @@ public class TicketAnalytics implements Serializable {
     	    ec.setResponseHeader("Content-Disposition", "attachment; filename=\"ticket.report" + System.currentTimeMillis() + ".pdf\""); 
 
     	    OutputStream output = ec.getResponseOutputStream();
-    	    // Now you can write the InputStream of the file to the above OutputStream the usual way.
-    	    // ...
     	    byte[] buf = new byte[1024*10]; 
     	    int byteread = 0;
     	    
@@ -180,10 +178,6 @@ public class TicketAnalytics implements Serializable {
     		LOG.log(Level.SEVERE, "JasperReprot error", e);
     	}
     } 
-    
-    public void myAction(){
-    	System.out.println("do action...");
-    }
     
     /**
      * fill data to report

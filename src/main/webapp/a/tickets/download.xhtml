@@ -16,15 +16,23 @@
 	#{jsfSessionUser.currentUser.hasPagePermission('ticket:analytic')}
 	#{jsfSessionUser.currentUser.hasPageRole('ADMIN')}
 	<h:form id="reportForm">
-    	<p:commandButton id="reportPDF" 
+    	<p:commandButton id="reportPDF1" 
         		value="Export As PDF"
         		styleClass="header-button white-button" 
         		icon="ui-icon-arrowthick-1-s " 
         		actionListener="#{ticketAnalytics.getReportAsPdf1()}" 
-        		ajax = "false" 
-        		process= "reportForm" 
-        		partialSubmit="true"
+        		ajax="false"
+        		process= "@this" 
        		/>
+       	<p:commandButton id="reportPDF" 
+        		value="Export As PDF"
+        		styleClass="header-button white-button" 
+        		icon="ui-icon-arrowthick-1-s "
+        		ajax="false"
+        		process= "@this" 
+       			>
+       				<p:fileDownload value="#{ticketAnalytics.reportAsPdf}"></p:fileDownload>
+       	</p:commandButton>
     </h:form>
 			
 </h:body>
