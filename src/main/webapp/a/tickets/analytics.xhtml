@@ -155,10 +155,10 @@
                                                      process="@this"
                                                      onclick="dc.filterAll();
                                                              dc.renderAll();"/> 
-                                    <p:commandLink value="Export As PDF" ajax="false" icon="ui-icon-arrowthick-1-s" actionListener="#{ticketAnalytics.downloadAction()}" 
-                                    	styleClass="header-button" process="@this">
-        									<p:fileDownload value="#{ticketAnalytics.reportPDF}" />
-	    							</p:commandLink>
+                                    <p:commandButton value="Export As PDF" ajax="false" icon="ui-icon-arrowthick-1-s" 
+                                    	styleClass="header-button" process="@this"  partialSubmit="true">
+	        									<p:fileDownload value="#{ticketAnalytics.reportAsPdf}" />
+	    							</p:commandButton>
                                 </th>
                             </tr>
                         </thead>
