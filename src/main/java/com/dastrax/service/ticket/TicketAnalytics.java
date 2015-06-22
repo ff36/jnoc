@@ -187,6 +187,11 @@ public class TicketAnalytics implements Serializable {
     	File tmpfile = new File("ticketreport.pdf");
     	
 		try {
+			
+			if(tmpfile.exists())
+				tmpfile.delete();
+			tmpfile.createNewFile();
+			
 			Context context = new InitialContext();
 			DataSource datasource = (DataSource) context.lookup(UriUtil.getDataSourceJNDI());
 			
@@ -197,7 +202,7 @@ public class TicketAnalytics implements Serializable {
 			
 			FileOutputStream os = new FileOutputStream(tmpfile);
 			JasperExportManager.exportReportToPdfStream(jasperPrint, os);
-		} catch (NamingException | SQLException | JRException | FileNotFoundException e) {
+		} catch (NamingException | SQLException | JRException | IOException e) {
 			LOG.log(Level.SEVERE, e.getMessage(), e);
 		}
 		return tmpfile;
