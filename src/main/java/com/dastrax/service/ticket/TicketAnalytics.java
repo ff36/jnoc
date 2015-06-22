@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -196,6 +198,18 @@ public class TicketAnalytics implements Serializable {
 			DataSource datasource = (DataSource) context.lookup(UriUtil.getDataSourceJNDI());
 			
 			Connection connection = datasource.getConnection();
+			
+			String sql = "select count(*) as scount, t.`status` as tstatus from `ticket` as t left join `subject` as s on s.id = t.`REQUESTER_ID` left join metier as m on m.ID = s.METIER_ID where m.id <> 'UNDEFINED'";
+			
+			PreparedStatement pst = connection.prepareStatement(sql);
+			ResultSet result = pst.executeQuery();
+			
+			while (result.next()) {
+				String out ="";
+				out+=result.getString("tstatus")+":"+result.getInt("scount")+"\n";
+				System.out.println(out);
+			}
+			
 			JasperReport jasperReport = JasperCompileManager.compileReport(TicketDigest.class.getResourceAsStream("/report/TicketAnalytics.jrxml"));
 			Map customParameters = new HashMap();
 			JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, customParameters, connection);
