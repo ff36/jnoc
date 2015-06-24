@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -194,10 +195,18 @@ public class TicketAnalytics implements Serializable {
 				tmpfile.delete();
 			tmpfile.createNewFile();
 			
-			Context context = new InitialContext();
-			DataSource datasource = (DataSource) context.lookup(UriUtil.getDataSourceJNDI());
+			//Context context = new InitialContext();
+			//DataSource datasource = (DataSource) context.lookup(UriUtil.getDataSourceJNDI());
 			
-			Connection connection = datasource.getConnection();
+			//Connection connection = datasource.getConnection();
+			
+			Class.forName("com.mysql.jdbc.Driver");
+			Connection connection = DriverManager.getConnection(
+				"jdbc:mysql://"+System.getenv("DTX_DB_SERVER_NAME")+"\\:3306/"+System.getenv("DTX_DB_NAME"), 
+				System.getenv("DTX_DB_USER_NAME"), 
+				System.getenv("DTX_DB_SECRET")
+			);
+					
 			
 			String sql = "select count(*) as scount, t.`status` as tstatus from `ticket` as t left join `subject` as s on s.id = t.`REQUESTER_ID` left join metier as m on m.ID = s.METIER_ID where m.id <> 'UNDEFINED'";
 			
@@ -216,7 +225,7 @@ public class TicketAnalytics implements Serializable {
 			
 			FileOutputStream os = new FileOutputStream(tmpfile);
 			JasperExportManager.exportReportToPdfStream(jasperPrint, os);
-		} catch (NamingException | SQLException | JRException | IOException e) {
+		} catch (SQLException | JRException | IOException | ClassNotFoundException e) {
 			LOG.log(Level.SEVERE, e.getMessage(), e);
 		}
 		return tmpfile;
