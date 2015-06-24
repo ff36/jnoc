@@ -208,7 +208,7 @@ public class TicketAnalytics implements Serializable {
 			);
 					
 			
-			String sql = "select count(*) as scount, t.status as tstatus from ticket as t left join subjec` as s on s.id = t.REQUESTER_ID left join metier as m on m.ID = s.METIER_ID where m.id <> 'UNDEFINED'";
+			String sql = "select count(*) as scount, t.status as tstatus from ticket as t left join subject as s on s.id = t.REQUESTER_ID left join metier as m on m.ID = s.METIER_ID where m.id <> 'UNDEFINED'";
 			
 			PreparedStatement pst = connection.prepareStatement(sql);
 			ResultSet result = pst.executeQuery();
