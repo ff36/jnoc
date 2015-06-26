@@ -7,16 +7,10 @@ package com.dastrax.service.ticket;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,10 +23,6 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.sql.DataSource;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
@@ -40,6 +30,7 @@ import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
@@ -48,7 +39,6 @@ import com.dastrax.per.dap.CrudService;
 import com.dastrax.per.entity.Comment;
 import com.dastrax.per.entity.Ticket;
 import com.dastrax.per.project.DTX;
-import com.dastrax.service.util.UriUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -77,7 +67,18 @@ public class TicketAnalytics implements Serializable {
     private DefaultStreamedContent file;
 //</editor-fold>
 
-    //<editor-fold defaultstate="collapsed" desc="Constructors">
+    private List<ReportTicketStatus> status;
+    private List<ReportTicketStatus> severities;
+    
+    public List<ReportTicketStatus> getStatus() {
+		return status;
+	}
+
+	public List<ReportTicketStatus> getSeverities() {
+		return severities;
+	}
+
+	//<editor-fold defaultstate="collapsed" desc="Constructors">
     public TicketAnalytics() {
     }
 //</editor-fold>
@@ -111,15 +112,43 @@ public class TicketAnalytics implements Serializable {
         List<Ticket> tickets = dap.findWithNamedQuery("Ticket.findAll");
 
         List<TicketDigest> digests = new ArrayList<>();
+        status = new ArrayList<ReportTicketStatus>();
+        severities = new ArrayList<ReportTicketStatus>();
+        
+        int statusOpen = 0;
+        int statusClose = 0;
+        int s1 = 0;
+        int s2 = 0;
+        int s3 = 0;
         for (Ticket ticket : tickets) {
             // Only process tickets that belong to legitimate users
             if (!"UNDEFINED".equals(ticket.getRequester().getMetier().getName())) {
                 TicketDigest ticketDigest = new TicketDigest();
                 ticketDigest.create(ticket);
                 digests.add(ticketDigest);
+                
+                if(ticket.getStatus().equals(DTX.TicketStatus.CLOSED)){
+                	statusClose++;
+                }else
+                	statusOpen++;
+                
+                if(ticket.getSeverity().equals(DTX.TicketSeverity.S1))
+                	s1++;
+                else if(ticket.getSeverity().equals(DTX.TicketSeverity.S2)){
+                	s2++;
+                }else if(ticket.getSeverity().equals(DTX.TicketSeverity.S3))
+                	s3++;
+                
             }
         }
 
+        status.add(new ReportTicketStatus(DTX.TicketStatus.OPEN.toString(), statusOpen));
+        status.add(new ReportTicketStatus(DTX.TicketStatus.CLOSED.toString(), statusClose));
+        
+        severities.add(new ReportTicketStatus("SERVICE DOWN (S1)", s1));
+        severities.add(new ReportTicketStatus("SERVICE DISRUPTION (S2)", s2));
+        severities.add(new ReportTicketStatus("GENERAL SUPPORT (S3)", s3));
+        
         try {
             data = new ObjectMapper().writeValueAsString(digests);
             //System.out.println(data);
@@ -195,6 +224,9 @@ public class TicketAnalytics implements Serializable {
 				tmpfile.delete();
 			tmpfile.createNewFile();
 			
+			//use jdbc 
+			/*
+			 
 			//Context context = new InitialContext();
 			//DataSource datasource = (DataSource) context.lookup(UriUtil.getDataSourceJNDI());
 			
@@ -218,14 +250,23 @@ public class TicketAnalytics implements Serializable {
 				out+=result.getString("tstatus")+":"+result.getInt("scount")+"\n";
 				System.out.println(out);
 			}
+			*/
 			
 			JasperReport jasperReport = JasperCompileManager.compileReport(TicketDigest.class.getResourceAsStream("/report/TicketAnalytics.jrxml"));
 			Map customParameters = new HashMap();
-			JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, customParameters, connection);
+			
+			JRBeanCollectionDataSource ds = new JRBeanCollectionDataSource(getSeverities(), false);
+			customParameters.put("subReportBeanList", ds);
+			customParameters.put("severitySource",JasperCompileManager.compileReport(TicketDigest.class.getResourceAsStream("/report/TicketAnalytics_Severity.jrxml")));
+			
+			JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, customParameters, 
+					new JRBeanCollectionDataSource(getStatus()));
+			
+			//subReportBeanList
 			
 			FileOutputStream os = new FileOutputStream(tmpfile);
 			JasperExportManager.exportReportToPdfStream(jasperPrint, os);
-		} catch (SQLException | JRException | IOException | ClassNotFoundException e) {
+		} catch (JRException | IOException e) {
 			LOG.log(Level.SEVERE, e.getMessage(), e);
 		}
 		return tmpfile;

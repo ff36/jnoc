@@ -16,6 +16,10 @@
 	#{jsfSessionUser.currentUser.hasPagePermission('ticket:analytic')}
 	#{jsfSessionUser.currentUser.hasPageRole('ADMIN')}
 	<h:form id="reportForm">
+		 <p:remoteCommand autoRun="true" 
+          async="true" 
+          actionListener="#{ticketAnalytics.init()}" 
+     	/>
     	<p:commandButton id="reportPDF1" 
         		value="Export As PDF"
         		styleClass="header-button white-button" 
