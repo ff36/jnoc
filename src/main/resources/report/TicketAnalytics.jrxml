@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.1.0.final using JasperReports Library version 6.1.0  -->
+<!-- 2015-06-26T10:38:48 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TicketAnalytics" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="8b96b5d7-0e43-48a3-a2c1-ba424fcd1a83">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="javabean"/>
+	<parameter name="subReportBeanList" class="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource">
+		<parameterDescription><![CDATA[subReportBeanList]]></parameterDescription>
+	</parameter>
+	<parameter name="severitySource" class="net.sf.jasperreports.engine.JasperReport">
+		<parameterDescription><![CDATA[severitySource]]></parameterDescription>
+	</parameter>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="count" class="java.lang.Integer">
+		<fieldDescription><![CDATA[count]]></fieldDescription>
+	</field>
+	<field name="name" class="java.lang.String">
+		<fieldDescription><![CDATA[name]]></fieldDescription>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch">
+			<staticText>
+				<reportElement x="80" y="20" width="400" height="40" uuid="f2dec961-ec07-4faf-86b3-596c038671e2"/>
+				<textElement textAlignment="Center">
+					<font size="22" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Ticket Status & Severity]]></text>
+			</staticText>
+		</band>
+	</title>
+	<summary>
+		<band height="680" splitType="Stretch">
+			<pieChart>
+				<chart evaluationTime="Report">
+					<reportElement x="18" y="-4" width="540" height="300" uuid="9e2719e2-28fc-4197-a460-7447a87fb1d8"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<pieDataset>
+					<keyExpression><![CDATA[$F{name}]]></keyExpression>
+					<valueExpression><![CDATA[$F{count}]]></valueExpression>
+					<labelExpression><![CDATA[$F{name}+" : "+$F{count}]]></labelExpression>
+				</pieDataset>
+				<piePlot>
+					<plot/>
+					<itemLabel/>
+				</piePlot>
+			</pieChart>
+			<staticText>
+				<reportElement x="9" y="10" width="100" height="30" uuid="8ab40343-a81c-49df-8d7b-7ecbe62e6726"/>
+				<textElement>
+					<font size="20" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Status]]></text>
+			</staticText>
+			<subreport>
+				<reportElement x="-20" y="350" width="595" height="330" uuid="b501a158-0e5f-4949-897c-0d6b3c26b5bb"/>
+				<dataSourceExpression><![CDATA[$P{subReportBeanList}]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{severitySource}]]></subreportExpression>
+			</subreport>
+		</band>
+	</summary>
+</jasperReport>
