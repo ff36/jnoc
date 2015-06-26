@@ -178,39 +178,6 @@ public class TicketAnalytics implements Serializable {
     	return this.file;
     } 
     
-    public void getReportAsPdf1() {
-    	try{
-    		File tmpfile = generateReport();
-    		
-    		FileInputStream fis = new FileInputStream(tmpfile);
-    		
-    		FacesContext fc = FacesContext.getCurrentInstance();
-    	    ExternalContext ec = fc.getExternalContext();
-
-    	    ec.responseReset(); 
-    	    ec.setResponseContentType("application/pdf"); 
-    	    ec.setResponseContentLength(fis.available());
-    	    ec.setResponseHeader("Content-Disposition", "attachment; filename=\"ticket.report" + System.currentTimeMillis() + ".pdf\""); 
-
-    	    OutputStream output = ec.getResponseOutputStream();
-    	    byte[] buf = new byte[1024*10]; 
-    	    int byteread = 0;
-    	    
-    	    while((byteread = fis.read(buf))!=-1){
-    	    	output.write(buf, 0, byteread);
-    	    }
-    	    
-    	    output.flush();
-    	    output.close();
-    	    fis.close();
-
-    	    fc.responseComplete();
-    		
-    	}catch (IOException e){
-    		LOG.log(Level.SEVERE, "JasperReprot error", e);
-    	}
-    } 
-    
     /**
      * fill data to report
      * @return
@@ -224,33 +191,6 @@ public class TicketAnalytics implements Serializable {
 				tmpfile.delete();
 			tmpfile.createNewFile();
 			
-			//use jdbc 
-			/*
-			 
-			//Context context = new InitialContext();
-			//DataSource datasource = (DataSource) context.lookup(UriUtil.getDataSourceJNDI());
-			
-			//Connection connection = datasource.getConnection();
-			
-			Class.forName("com.mysql.jdbc.Driver");
-			Connection connection = DriverManager.getConnection(
-				"jdbc:mysql://"+System.getenv("DTX_DB_SERVER_NAME")+":3306/"+System.getenv("DTX_DB_NAME"), 
-				System.getenv("DTX_DB_USER_NAME"), 
-				System.getenv("DTX_DB_SECRET")
-			);
-					
-			
-			String sql = "select count(*) as scount, t.status as tstatus from ticket as t left join subject as s on s.id = t.REQUESTER_ID left join metier as m on m.ID = s.METIER_ID where m.id <> 'UNDEFINED'";
-			
-			PreparedStatement pst = connection.prepareStatement(sql);
-			ResultSet result = pst.executeQuery();
-			
-			while (result.next()) {
-				String out ="";
-				out+=result.getString("tstatus")+":"+result.getInt("scount")+"\n";
-				System.out.println(out);
-			}
-			*/
 			
 			JasperReport jasperReport = JasperCompileManager.compileReport(TicketDigest.class.getResourceAsStream("/report/TicketAnalytics.jrxml"));
 			Map customParameters = new HashMap();
