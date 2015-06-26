@@ -127,16 +127,16 @@ public class TicketAnalytics implements Serializable {
                 ticketDigest.create(ticket);
                 digests.add(ticketDigest);
                 
-                if(ticket.getStatus().equals(DTX.TicketStatus.CLOSED)){
+                if(DTX.TicketStatus.CLOSED.equals(ticket.getStatus())){
                 	statusClose++;
                 }else
                 	statusOpen++;
                 
-                if(ticket.getSeverity().equals(DTX.TicketSeverity.S1))
+                if(DTX.TicketSeverity.S1.equals(ticket.getSeverity()))
                 	s1++;
-                else if(ticket.getSeverity().equals(DTX.TicketSeverity.S2)){
+                else if(DTX.TicketSeverity.S2.equals(ticket.getSeverity())){
                 	s2++;
-                }else if(ticket.getSeverity().equals(DTX.TicketSeverity.S3))
+                }else if(DTX.TicketSeverity.S3.equals(ticket.getSeverity()))
                 	s3++;
                 
             }
