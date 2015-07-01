@@ -66,18 +66,8 @@ public class TicketAnalytics implements Serializable {
     private boolean render;
     private DefaultStreamedContent file;
 //</editor-fold>
-
-    private List<ReportTicketStatus> status;
-    private List<ReportTicketStatus> severities;
+    private TicketAnalyticsPDFHandler pdfHandler;
     
-    public List<ReportTicketStatus> getStatus() {
-		return status;
-	}
-
-	public List<ReportTicketStatus> getSeverities() {
-		return severities;
-	}
-
 	//<editor-fold defaultstate="collapsed" desc="Constructors">
     public TicketAnalytics() {
     }
@@ -112,42 +102,17 @@ public class TicketAnalytics implements Serializable {
         List<Ticket> tickets = dap.findWithNamedQuery("Ticket.findAll");
 
         List<TicketDigest> digests = new ArrayList<>();
-        status = new ArrayList<ReportTicketStatus>();
-        severities = new ArrayList<ReportTicketStatus>();
-        
-        int statusOpen = 0;
-        int statusClose = 0;
-        int s1 = 0;
-        int s2 = 0;
-        int s3 = 0;
+       
         for (Ticket ticket : tickets) {
             // Only process tickets that belong to legitimate users
             if (!"UNDEFINED".equals(ticket.getRequester().getMetier().getName())) {
                 TicketDigest ticketDigest = new TicketDigest();
                 ticketDigest.create(ticket);
                 digests.add(ticketDigest);
-                
-                if(DTX.TicketStatus.CLOSED.equals(ticket.getStatus())){
-                	statusClose++;
-                }else
-                	statusOpen++;
-                
-                if(DTX.TicketSeverity.S1.equals(ticket.getSeverity()))
-                	s1++;
-                else if(DTX.TicketSeverity.S2.equals(ticket.getSeverity())){
-                	s2++;
-                }else if(DTX.TicketSeverity.S3.equals(ticket.getSeverity()))
-                	s3++;
-                
             }
         }
-
-        status.add(new ReportTicketStatus(DTX.TicketStatus.OPEN.toString(), statusOpen));
-        status.add(new ReportTicketStatus(DTX.TicketStatus.CLOSED.toString(), statusClose));
         
-        severities.add(new ReportTicketStatus("SERVICE DOWN (S1)", s1));
-        severities.add(new ReportTicketStatus("SERVICE DISRUPTION (S2)", s2));
-        severities.add(new ReportTicketStatus("GENERAL SUPPORT (S3)", s3));
+        pdfHandler = new TicketAnalyticsPDFHandler(digests);
         
         try {
             data = new ObjectMapper().writeValueAsString(digests);
@@ -169,48 +134,13 @@ public class TicketAnalytics implements Serializable {
      */
     public StreamedContent getReportAsPdf() {
     	try{
-    		File tmpfile = generateReport();
+    		File tmpfile = pdfHandler.generatePDF();
     		this.file  = new DefaultStreamedContent(new FileInputStream(tmpfile), "application/pdf", "ticket.report"+System.currentTimeMillis()+".pdf");
-    		System.out.println("size:"+this.file.getStream().available());
     	}catch (IOException e){
     		LOG.log(Level.SEVERE, "JasperReprot error", e);
     	}
     	return this.file;
     } 
-    
-    /**
-     * fill data to report
-     * @return
-     */
-    private File generateReport(){
-    	File tmpfile = new File("ticketreport.pdf");
-    	
-		try {
-			
-			if(tmpfile.exists())
-				tmpfile.delete();
-			tmpfile.createNewFile();
-			
-			
-			JasperReport jasperReport = JasperCompileManager.compileReport(TicketDigest.class.getResourceAsStream("/report/TicketAnalytics.jrxml"));
-			Map customParameters = new HashMap();
-			
-			JRBeanCollectionDataSource ds = new JRBeanCollectionDataSource(getSeverities(), false);
-			customParameters.put("subReportBeanList", ds);
-			customParameters.put("severitySource",JasperCompileManager.compileReport(TicketDigest.class.getResourceAsStream("/report/TicketAnalytics_Severity.jrxml")));
-			
-			JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, customParameters, 
-					new JRBeanCollectionDataSource(getStatus()));
-			
-			//subReportBeanList
-			
-			FileOutputStream os = new FileOutputStream(tmpfile);
-			JasperExportManager.exportReportToPdfStream(jasperPrint, os);
-		} catch (JRException | IOException e) {
-			LOG.log(Level.SEVERE, e.getMessage(), e);
-		}
-		return tmpfile;
-    }
     
     /**
      * {description}
@@ -220,7 +150,7 @@ public class TicketAnalytics implements Serializable {
      * @author Tarka L'Herpiniere
      * @author <tarka@solid.com>
      */
-    protected class TicketDigest {
+    public class TicketDigest {
 
         //<editor-fold defaultstate="collapsed" desc="Properties">
         private Long id;

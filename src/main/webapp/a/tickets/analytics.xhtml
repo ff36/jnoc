@@ -14,10 +14,18 @@
         <h:outputStylesheet name="css/dc.css"/>
         <link rel="shortcut icon" type="image/png" href="#{request.contextPath}/resources/images/favicon.ico" />
         <title>#{msgs['default.page.title']} | #{msgs['admin.dashboad.page.title']}</title>
+        
     </h:head>
 
     <h:body>
-
+		<ui:remove>
+		<h:outputScript library="js" name="jspdf.js" target="head"/>
+        <h:outputScript library="js" name="jspdf.plugin.addimage.js" target="head"/>
+        <h:outputScript library="js" name="FileSaver.js" target="head"/>
+        <h:outputScript library="js" name="canvg.js" target="head"/>
+        <h:outputScript library="js" name="html2canvas.js" target="head"/>
+        <h:outputScript library="js" name="reportAsPDF.js" target="head"/>
+		</ui:remove>
         #{jsfSessionUser.currentUser.hasPagePermission('ticket:analytic')}
         #{jsfSessionUser.currentUser.hasPageRole('ADMIN')}
 
@@ -155,13 +163,22 @@
                                                      process="@this"
                                                      onclick="dc.filterAll();
                                                              dc.renderAll();"/>
-                                    <p:lightBox iframe="true" id="lightbox_iframe" width="200px" height="100px" >
-									    <h:outputLink value="download.jsf" styleClass="header-button white-button" 
-									    	style="float:right; margin-right:10px;"
-								    	 	title=" ">
-									        	<h:outputText value="Report As PDF" />
-									    </h:outputLink>
-									</p:lightBox>
+                                    <ui:remove>
+                                    <p:commandButton id="exportAsPDFBtn" 
+                                                     styleClass="header-button white-button"
+                                                     value="Export As PDF"
+                                                     type="button" 
+                                                     onclick="exportAsPDF()" 
+                                                     />
+                                    </ui:remove>
+                                    
+	                                    <p:lightBox iframe="true" id="lightbox_iframe" width="200px" height="100px" >
+										    <h:outputLink value="download.jsf" styleClass="header-button white-button" 
+										    	style="float:right; margin-right:10px;"
+									    	 	title=" ">
+										        	<h:outputText value="Report As PDF" />
+										    </h:outputLink>
+										</p:lightBox>
                                 </th>
                             </tr>
                         </thead>
@@ -248,7 +265,7 @@
 
                                             <p:spacer width="100%" height="10px"/>
 
-                                            <table width="100%">
+                                            <table width="100%" id="chart-center" style="background:#fff;">
                                                 <tbody>
                                                     <tr>
                                                         <td valign="top">
