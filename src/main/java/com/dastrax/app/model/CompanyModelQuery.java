@@ -158,7 +158,6 @@ public class CompanyModelQuery implements ModelQuery {
 
                 globalPredicate.add(builder.like(company.get(Company_.name), literal));
                 globalPredicate.add(builder.like(company.get(Company_.type), literal));
-                globalPredicate.add(builder.like(company.get(Company_.subdomain), literal));
 
                 predicates.add(builder.or(globalPredicate.toArray(new Predicate[globalPredicate.size()])));
             }

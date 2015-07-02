@@ -6,7 +6,6 @@
 
 package com.dastrax.app.email;
 
-import java.util.ResourceBundle;
 import javax.ejb.Asynchronous;
 
 /**
@@ -21,9 +20,9 @@ import javax.ejb.Asynchronous;
 public interface Emailer {
     
     //<editor-fold defaultstate="collapsed" desc="Properties">
-    String emailSender = ResourceBundle.getBundle("config").getString("SenderEmailAddress");
-    String baseUrl = ResourceBundle.getBundle("config").getString("BaseUrl");
-    String protocol = ResourceBundle.getBundle("config").getString("AccessProtocol");
+    String emailSender = System.getenv("DTX_SENDER_EMAIL");
+    String baseUrl = System.getenv("DTX_BASE_URL");
+    String protocol = System.getenv("DTX_ACCESS_PROTOCOL");
 //</editor-fold>
     
     /**

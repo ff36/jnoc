@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -103,14 +102,15 @@ public class SubdomainFilter implements Filter {
          * solutions:
          * http://stackoverflow.com/questions/8072311/illegalstateexception-cannot-create-a-session-after-the-response-has-been-commi
          */
-        HttpSession session = httpRequest.getSession(true);
+        @SuppressWarnings("unused")
+		HttpSession session = httpRequest.getSession(true);
         
         /*
          * Evaluate the URL to determin if a subdomain needs to be extracted.
          */
         String subdomain = null;
-        String baseUrl = ResourceBundle.getBundle("config").getString("BaseUrl");
-        String accessProtocol = ResourceBundle.getBundle("config").getString("AccessProtocol");
+        String baseUrl = System.getenv("DTX_BASE_URL");
+        String accessProtocol = System.getenv("DTX_ACCESS_PROTOCOL");
         String applicationURL = accessProtocol + baseUrl + "/";
 
         if (!url.equals(applicationURL)) {

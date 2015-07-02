@@ -103,25 +103,6 @@ public class AuthenticateTest {
 	}
 
 	@Ignore
-	public void testRedirect() throws IOException {
-		new Expectations() {
-			//TODO 
-			User user ;
-			{
-				user =  (User) dap.findWithNamedQuery(
-		                "User.findByEmail",
-		                QueryParameter.with("email", "xxxx@xxx.com")
-		                .parameters())
-		                .get(0);
-				result = user1;
-			}
-		};
-		
-		authenticate.redirect();
-		
-	}
-
-	@Ignore
 	public void testAuthenticate() {
 		//TODO
 		fail("Not yet implemented");

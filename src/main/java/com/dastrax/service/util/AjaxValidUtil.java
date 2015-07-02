@@ -9,10 +9,12 @@ import com.dastrax.app.service.internal.DefaultDNSManager;
 import com.dastrax.per.dap.CrudService;
 import com.dastrax.per.entity.User;
 import com.dastrax.per.project.DTX;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
@@ -45,7 +47,7 @@ public class AjaxValidUtil implements Serializable {
     public AjaxValidUtil() {
         this.emails = new ArrayList<>();
         this.subdomains = new ArrayList<>();
-        this.context = ResourceBundle.getBundle("config").getString("BaseUrl");
+        this.context = System.getenv("DTX_BASE_URL");
         this.subdomainRegex = "[a-z0-9]{2,20}";
         this.emailRegex = DTX.EMAIL_REGEX;
     }
@@ -63,7 +65,8 @@ public class AjaxValidUtil implements Serializable {
         for (User user : users) {
             emails.add(user.getEmail());
         }
-        subdomains = new DefaultDNSManager().listRecordSets(0);
+        List<String> tmpSubDomain = new DefaultDNSManager().listRecordSets(0);
+        if(tmpSubDomain!=null) subdomains = tmpSubDomain;
     }
 
     /**
@@ -76,7 +79,6 @@ public class AjaxValidUtil implements Serializable {
      * Otherwise false.
      */
     public boolean emailAvailable(String query) {
-
         try {
             List<String> collection = new ArrayList<>();
             // Make sure its a valid email
@@ -110,7 +112,6 @@ public class AjaxValidUtil implements Serializable {
      * Otherwise false.
      */
     public boolean subdomainAvailable(String query) {
-
         try {
             List<String> collection = new ArrayList<>();
             // Make sure its a valid email

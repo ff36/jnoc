@@ -211,36 +211,6 @@
 
                                             </ui:fragment>
 
-                                            <ui:fragment rendered="#{createCompany.company.type eq 'VAR'}">
-
-                                                <h3>Sub-domain:*</h3>
-                                                <h:panelGrid columns="1" 
-                                                             styleClass="table-field-spacer">
-
-                                                    <p:inputText value="#{createCompany.company.subdomain}" 
-                                                                 styleClass="company-update-class">
-                                                        <p:ajax event="keyup" 
-                                                                update=":form:save-new-company-button subdomain-available-class" />
-                                                    </p:inputText>
-
-                                                    <p:outputPanel id="subdomain-available-class">
-
-                                                        <p:panel rendered="#{!ajaxValidUtil.subdomainAvailable(createCompany.company.subdomain) and createCompany.company.subdomain.length() gt 1}" 
-                                                                 styleClass="field-warning">
-                                                            Sorry, sub-domain is not available
-                                                        </p:panel>
-
-                                                        <p:panel rendered="#{ajaxValidUtil.subdomainAvailable(createCompany.company.subdomain) and createCompany.company.subdomain.length() gt 1}" 
-                                                                 styleClass="field-note">
-                                                            Members will sign in under:<br></br><span style="font-weight: bold"> #{createCompany.company.subdomain}.#{config['BaseUrl']}</span>
-                                                        </p:panel>
-
-                                                    </p:outputPanel>
-
-                                                </h:panelGrid>
-
-                                            </ui:fragment>
-
                                             <p:spacer width="100%" height="20px"/>
 
                                             <p:outputPanel id="addresses">
@@ -506,7 +476,7 @@
                                                              update=":form:growl @(.company-update-class)"
                                                              onclick="PF('blockui1').block();"
                                                              oncomplete="PF('blockui1').unblock();"
-                                                             disabled="#{createCompany.company.name.length() gt 1 ? createCompany.company.type eq 'VAR' ? !ajaxValidUtil.subdomainAvailable(createCompany.company.subdomain) : false : true}"/>
+                                                             disabled="#{createCompany.company.name.length() gt 1 ? false : true}"/>
 
                                             <ez:blockUI target=":form:save-new-company-button" widgetVar="blockui1"/>
 

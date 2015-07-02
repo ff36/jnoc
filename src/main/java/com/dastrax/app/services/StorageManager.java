@@ -11,9 +11,9 @@ import com.amazonaws.services.s3.model.CopyObjectResult;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.S3Object;
 import com.dastrax.per.project.DTX;
+
 import java.io.File;
 import java.util.List;
-import java.util.ResourceBundle;
 
 /**
  * This class contains methods to facilitate functions relating to file storage.
@@ -32,7 +32,7 @@ import java.util.ResourceBundle;
 public interface StorageManager {
 
     //<editor-fold defaultstate="collapsed" desc="Properties">
-    String s3Bucket = ResourceBundle.getBundle("config").getString("S3Bucket");
+    String s3Bucket = System.getenv("DTX_S3_BUCKET");
 //</editor-fold>
 
     /**

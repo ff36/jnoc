@@ -73,14 +73,14 @@
                                                 </p:commandLink> 
                                             </pe:fluidGridItem>
 
-                                            <ui:remove>
-                                                <pe:fluidGridItem rendered="#{jsfSessionUser.currentUser.hasPermission('rma:access')}" >
-                                                    <p:commandLink type="button" 
-                                                                   ajax="false">
-                                                        <p:graphicImage value="#{uriUtil.image('tile_rma_active.svg', true)}"/>
-                                                    </p:commandLink> 
-                                                </pe:fluidGridItem>
-
+                                            <pe:fluidGridItem rendered="#{jsfSessionUser.currentUser.hasPermission('rma:access')}" >
+                                                <p:commandLink 	action="#{navigator.navigate('RMA_REQUEST')}" 
+                                                				type="button" 
+                                                               	ajax="false">
+                                                    <p:graphicImage value="#{uriUtil.image('tile_rma_active.svg', true)}"/>
+                                                </p:commandLink> 
+                                            </pe:fluidGridItem>
+											<ui:remove>
                                                 <pe:fluidGridItem rendered="#{jsfSessionUser.currentUser.hasPermission('monitor-basic:access')}" >
                                                     <p:commandLink type="button" 
                                                                    ajax="false">

@@ -18,6 +18,7 @@ import com.dastrax.per.dap.CrudService;
 import com.dastrax.per.entity.Metier;
 import com.dastrax.per.entity.Ticket;
 import com.dastrax.per.entity.User;
+import com.dastrax.per.project.DTX;
 import com.dastrax.service.ticket.TicketAnalytics.TicketDigest;
 
 @RunWith(JMockit.class)
@@ -75,6 +76,13 @@ public class TicketAnalyticsTest {
                 TicketDigest ticketDigest = ticketAnalytics.new TicketDigest();
                 ticketDigest.create(tickets.get(0));
                 digests.add(ticketDigest);
+                
+                tickets.get(0).getStatus();
+                result = DTX.TicketStatus.OPEN;
+                
+                tickets.get(0).getStatus();
+                result = DTX.TicketSeverity.S1;
+                
 			}
 		};
 		
