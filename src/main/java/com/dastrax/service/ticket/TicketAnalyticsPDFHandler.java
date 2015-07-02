@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +47,10 @@ public class TicketAnalyticsPDFHandler {
 	private Long toDate;
 	
 	public TicketAnalyticsPDFHandler(List<TicketDigest> tickets){
+		this.tickets = tickets;
+	}
+	
+	public TicketAnalyticsPDFHandler(List<TicketDigest> tickets, Date from, Date to){
 		this.tickets = tickets;
 	}
 	
