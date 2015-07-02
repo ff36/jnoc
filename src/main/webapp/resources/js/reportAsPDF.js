@@ -113,7 +113,7 @@
 				var res = doc.autoTableHtmlToJson(document.getElementById("tickets-summary-table"), true);
 				doc.autoTable(res.columns, res.data);
 				
-				doc.save('ticket.report_"+new Date().getTime()+".pdf');
+				doc.save('ticket.report_'+new Date().getTime()+'.pdf');
 				$('#myFrmame').remove();
 			}, 
 			background:"#fff",
