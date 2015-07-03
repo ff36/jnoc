@@ -95,15 +95,15 @@ public class GmailJob implements Job {
 
             // Get the blacklist
             StorageManager storage = new DefaultStorageManager();
-            InputStream input = storage.get(storage.keyGenerator(DTX.KeyType.EMAIL_BLACKLIST, null)).getObjectContent();
-            Map<String, Object> blacklist = new ObjectMapper().readValue(input, Map.class);
+            //InputStream input = storage.get(storage.keyGenerator(DTX.KeyType.EMAIL_BLACKLIST, null)).getObjectContent();
+            //Map<String, Object> blacklist = new ObjectMapper().readValue(input, Map.class);
 
             
             for (int i = 0; i < messages.length; ++i) {
                 final Message msg = messages[i];
 
                 // Only process emails not on the blacklist
-                if (!blacklist.containsKey(msg.getFrom()[0].toString())) {
+                //if (!blacklist.containsKey(msg.getFrom()[0].toString())) {
 
                     /* To prevent the same message being reread if a long running
                      process is actioned we will only pull in messages that have 
@@ -125,15 +125,15 @@ public class GmailJob implements Job {
                         // Delete the message
                         msg.setFlag(Flags.Flag.DELETED, true);
                     }
-                } else {
-                     // Delete the message
-                     msg.setFlag(Flags.Flag.DELETED, true);
-                }
+//                } else {
+//                     // Delete the message
+//                     msg.setFlag(Flags.Flag.DELETED, true);
+//                }
 
             }
         } catch (NoSuchProviderException ex) {
             Logger.getLogger(GmailJob.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (MessagingException | IOException ex) {
+        } catch (MessagingException /*| IOException*/ ex) {
             Logger.getLogger(GmailJob.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             if (folder != null) {

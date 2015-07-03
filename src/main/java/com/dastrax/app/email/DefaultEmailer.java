@@ -24,8 +24,9 @@ import org.apache.velocity.exception.ParseErrorException;
 import org.apache.velocity.exception.ResourceNotFoundException;
 
 import com.amazonaws.AmazonClientException;
-import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.EnvironmentVariableCredentialsProvider;
+import com.amazonaws.regions.Region;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClient;
 import com.amazonaws.services.simpleemail.model.Body;
 import com.amazonaws.services.simpleemail.model.Content;
@@ -289,9 +290,8 @@ public class DefaultEmailer implements Emailer {
 
 		// <editor-fold defaultstate="collapsed" desc="Constructors">
 		public SES() {
-			AWSCredentials credentials = new EnvironmentVariableCredentialsProvider()
-					.getCredentials();
-			this.client = new AmazonSimpleEmailServiceClient(credentials);
+			this.client = new AmazonSimpleEmailServiceClient(new EnvironmentVariableCredentialsProvider());
+			this.client.setRegion(Region.getRegion(Regions.US_EAST_1));
 		}
 
 		// </editor-fold>

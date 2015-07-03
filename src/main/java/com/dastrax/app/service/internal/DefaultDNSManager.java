@@ -16,7 +16,6 @@ import java.util.logging.Logger;
 import javax.enterprise.inject.Default;
 
 import com.amazonaws.AmazonServiceException;
-import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.EnvironmentVariableCredentialsProvider;
 import com.amazonaws.services.route53.AmazonRoute53;
 import com.amazonaws.services.route53.AmazonRoute53Client;
@@ -268,11 +267,7 @@ public class DefaultDNSManager implements DNSManager {
 
 		// <editor-fold defaultstate="collapsed" desc="Constructors">
 		public Route53Client() {
-
-			AWSCredentials credentials = new EnvironmentVariableCredentialsProvider()
-					.getCredentials();
-			client = new AmazonRoute53Client(credentials);
-
+			client = new AmazonRoute53Client(new EnvironmentVariableCredentialsProvider());
 		}
 
 		// </editor-fold>
