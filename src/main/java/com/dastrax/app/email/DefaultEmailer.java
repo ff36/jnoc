@@ -293,6 +293,9 @@ public class DefaultEmailer implements Emailer {
 		public SES() {
 			AWSCredentials credentials = new EnvironmentVariableCredentialsProvider()
 					.getCredentials();
+			LOG.log(Level.SEVERE, "credentials.getAWSSecretKey()", credentials.getAWSSecretKey());
+			LOG.log(Level.SEVERE, "credentials.getAWSAccessKeyId()", credentials.getAWSAccessKeyId());
+			
 			this.client = new AmazonSimpleEmailServiceClient(credentials);
 			this.client.setRegion(Region.getRegion(Regions.US_EAST_1));
 		}
