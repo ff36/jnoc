@@ -298,6 +298,7 @@ public class DefaultEmailer implements Emailer {
 			
 			this.client = new AmazonSimpleEmailServiceClient(credentials);
 			this.client.setRegion(Region.getRegion(Regions.US_EAST_1));
+			
 		}
 
 		// </editor-fold>
