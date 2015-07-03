@@ -334,9 +334,7 @@ public class DefaultStorageManager implements StorageManager {
 
 		// <editor-fold defaultstate="collapsed" desc="Constructors">
 		public S3() {
-			AWSCredentials credentials = new EnvironmentVariableCredentialsProvider()
-					.getCredentials();
-			this.client = new AmazonS3Client(credentials);
+			this.client = new AmazonS3Client(new EnvironmentVariableCredentialsProvider());
 		}
 
 		// </editor-fold>
