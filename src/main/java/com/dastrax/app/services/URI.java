@@ -19,7 +19,7 @@ public interface URI {
     
     //<editor-fold defaultstate="collapsed" desc="Properties">
     String s3Bucket = System.getenv("DTX_S3_BUCKET");
-    String baseURL = System.getenv("DTX_BASE_URL");
+    String baseURL = System.getenv("DTX_S3_BASE_URL");
     String protocol = System.getenv("DTX_ACCESS_PROTOCOL");
     String cdn = System.getenv("DTX_CDN_BASE_URL");
 //</editor-fold>
