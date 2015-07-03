@@ -291,14 +291,8 @@ public class DefaultEmailer implements Emailer {
 
 		// <editor-fold defaultstate="collapsed" desc="Constructors">
 		public SES() {
-			AWSCredentials credentials = new EnvironmentVariableCredentialsProvider()
-					.getCredentials();
-			LOG.log(Level.SEVERE, "credentials.getAWSSecretKey()", credentials.getAWSSecretKey());
-			LOG.log(Level.SEVERE, "credentials.getAWSAccessKeyId()", credentials.getAWSAccessKeyId());
-			
-			this.client = new AmazonSimpleEmailServiceClient(credentials);
+			this.client = new AmazonSimpleEmailServiceClient(new EnvironmentVariableCredentialsProvider());
 			this.client.setRegion(Region.getRegion(Regions.US_EAST_1));
-			
 		}
 
 		// </editor-fold>
