@@ -115,12 +115,13 @@ public class GmailJob implements Job {
                         msg.setFlag(Flags.Flag.SEEN, true);
                         // Process it
                         try{
-                        	//System.out.println(Thread.currentThread().getName()+" : "+msg.getSubject());
+                        	System.out.println(Thread.currentThread().getName()+" : "+msg.getSubject());
                         	new EmailToTicket().processEmail(msg);
                         } catch (Exception e){
                         	// error, remove to other folder
            					folder.copyMessages(new Message[]{msg}, failFolder);
            					msg.setFlag(Flags.Flag.DELETED, true);
+           					Logger.getLogger(GmailJob.class.getName()).log(Level.ALL, "handler email error: "+e.getMessage(), e);
                         }
                         // Delete the message
                         msg.setFlag(Flags.Flag.DELETED, true);
