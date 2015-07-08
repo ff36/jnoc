@@ -115,7 +115,10 @@ public class EmailToTicket {
                 Comment comment = new Comment();
                 comment.setCommenter(user);
                 comment.setCreateEpoch(new Date().getTime());
-                comment.setComment(getMessage(msg));
+                String content =  getMessage(msg);
+                comment.setComment(content);
+                
+                System.out.println("message content:"+msg.getContent());
 
                 Ticket ticket = tickets.get(0);
                 ticket.setGmailJobTicketed(true);
@@ -137,7 +140,10 @@ public class EmailToTicket {
                 Comment comment = new Comment();
                 comment.setCommenter(user);
                 comment.setCreateEpoch(new Date().getTime());
-                comment.setComment(getMessage(msg));
+                String content =  getMessage(msg);
+                comment.setComment(content);
+                
+                System.out.println("message content:"+msg.getContent());
 
                 Ticket ticket = new Ticket();
                 ticket.setGmailJobTicketed(true);
@@ -169,7 +175,10 @@ public class EmailToTicket {
                 Comment comment = new Comment();
                 comment.setCommenter(user);
                 comment.setCreateEpoch(new Date().getTime());
-                comment.setComment(getMessage(msg));
+                String content =  getMessage(msg);
+                comment.setComment(content);
+                
+                System.out.println("message content:"+msg.getContent());
 
                 Ticket ticket = tickets.get(0);
                 ticket.setGmailJobTicketed(true);
@@ -190,7 +199,10 @@ public class EmailToTicket {
                 Comment comment = new Comment();
                 comment.setCommenter(user);
                 comment.setCreateEpoch(new Date().getTime());
-                comment.setComment(getMessage(msg));
+                String content =  getMessage(msg);
+                comment.setComment(content);
+                
+                System.out.println("message content:"+msg.getContent());
 
                 Ticket ticket = new Ticket();
                 ticket.setGmailJobTicketed(true);
