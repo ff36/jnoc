@@ -85,13 +85,7 @@ public class EmailToTicket {
     public void processEmail(Message msg) throws MessagingException, IOException {
         // Get the email subject
         String subject = msg.getSubject();
-        String title = null;
-        
-        String regExp = "(Fwd:|FWD:|fwd:|RE:|re:|Re:)";
-        if(subject!=null && subject.length()>3){
-        	title = subject.replaceFirst(regExp, "").trim();
-        }else
-        	title = subject;
+        String title = subject;
         
         // Aquire the user account or create it if not
         User user = aquireAccount(msg);
@@ -115,10 +109,7 @@ public class EmailToTicket {
                 Comment comment = new Comment();
                 comment.setCommenter(user);
                 comment.setCreateEpoch(new Date().getTime());
-                String content =  getMessage(msg);
-                comment.setComment(content);
-                
-                System.out.println("message content:"+msg.getContent());
+                comment.setComment(getMessage(msg));
 
                 Ticket ticket = tickets.get(0);
                 ticket.setGmailJobTicketed(true);
@@ -140,10 +131,7 @@ public class EmailToTicket {
                 Comment comment = new Comment();
                 comment.setCommenter(user);
                 comment.setCreateEpoch(new Date().getTime());
-                String content =  getMessage(msg);
-                comment.setComment(content);
-                
-                System.out.println("message content:"+msg.getContent());
+                comment.setComment(getMessage(msg));
 
                 Ticket ticket = new Ticket();
                 ticket.setGmailJobTicketed(true);
@@ -175,10 +163,7 @@ public class EmailToTicket {
                 Comment comment = new Comment();
                 comment.setCommenter(user);
                 comment.setCreateEpoch(new Date().getTime());
-                String content =  getMessage(msg);
-                comment.setComment(content);
-                
-                System.out.println("message content:"+msg.getContent());
+                comment.setComment(getMessage(msg));
 
                 Ticket ticket = tickets.get(0);
                 ticket.setGmailJobTicketed(true);
@@ -199,10 +184,7 @@ public class EmailToTicket {
                 Comment comment = new Comment();
                 comment.setCommenter(user);
                 comment.setCreateEpoch(new Date().getTime());
-                String content =  getMessage(msg);
-                comment.setComment(content);
-                
-                System.out.println("message content:"+msg.getContent());
+                comment.setComment(getMessage(msg));
 
                 Ticket ticket = new Ticket();
                 ticket.setGmailJobTicketed(true);
@@ -419,15 +401,15 @@ public class EmailToTicket {
             from = message.getFrom()[0].toString();
         }
 
-        String name = StringUtils.substringBefore(from, "<").trim();
-        // Just for my name because of the appostrohe
-        if (name.contains("Tarka")) {
-            name = "Tarka";
-        }
-        if (result != null && result.contains(name)) {
-            result = StringUtils.substringBefore(result, name);
-            result = result.substring(0, result.lastIndexOf("\n"));
-        }
+//        String name = StringUtils.substringBefore(from, "<").trim();
+//        // Just for my name because of the appostrohe
+//        if (name.contains("Tarka")) {
+//            name = "Tarka";
+//        }
+//        if (result != null && result.contains(name)) {
+//            result = StringUtils.substringBefore(result, name);
+//            result = result.substring(0, result.lastIndexOf("\n"));
+//        }
 
         // Remove any embedded image strings.
         if (result != null) {

@@ -98,7 +98,7 @@ public class GmailJob implements Job {
             //InputStream input = storage.get(storage.keyGenerator(DTX.KeyType.EMAIL_BLACKLIST, null)).getObjectContent();
             //Map<String, Object> blacklist = new ObjectMapper().readValue(input, Map.class);
 
-            System.out.println("messages.length:"+messages.length);
+            
             for (int i = 0; i < messages.length; ++i) {
                 final Message msg = messages[i];
 
@@ -115,13 +115,13 @@ public class GmailJob implements Job {
                         msg.setFlag(Flags.Flag.SEEN, true);
                         // Process it
                         try{
-                        	System.out.println(Thread.currentThread().getName()+" : "+msg.getSubject());
+                        	//System.out.println(Thread.currentThread().getName()+" : "+msg.getSubject());
                         	new EmailToTicket().processEmail(msg);
                         } catch (Exception e){
                         	// error, remove to other folder
            					folder.copyMessages(new Message[]{msg}, failFolder);
            					msg.setFlag(Flags.Flag.DELETED, true);
-           					Logger.getLogger(GmailJob.class.getName()).log(Level.SEVERE, "Gmail Handler Error: "+Thread.currentThread().getName()+" : "+msg.getSubject(), e);
+           					Logger.getLogger(GmailJob.class.getName()).log(Level.ALL, "handler email error: "+e.getMessage(), e);
                         }
                         // Delete the message
                         msg.setFlag(Flags.Flag.DELETED, true);
