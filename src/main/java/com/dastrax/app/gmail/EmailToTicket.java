@@ -89,7 +89,7 @@ public class EmailToTicket {
         
         String regExp = "(Fwd:|FWD:|fwd:|RE:|re:|Re:)";
         if(subject!=null && subject.length()>3){
-        	title = subject.replaceFirst(regExp, subject).trim();
+        	title = subject.replaceFirst(regExp, "").trim();
         }else
         	title = subject;
         
