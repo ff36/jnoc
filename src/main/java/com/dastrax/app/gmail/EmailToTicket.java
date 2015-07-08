@@ -379,13 +379,13 @@ public class EmailToTicket {
          original message header so we can cut the email here so as not to include
          previouse parts of the email.
          */
-        String emailAddress = System.getenv("DTX_SENDER_EMAIL");
-        if (result != null && result.contains(emailAddress)) {
-            result = StringUtils.substringBefore(
-                    result,
-                    emailAddress);
-            result = result.substring(0, result.lastIndexOf("\n"));
-        }
+//        String emailAddress = System.getenv("DTX_SENDER_EMAIL");
+//        if (result != null && result.contains(emailAddress)) {
+//            result = StringUtils.substringBefore(
+//                    result,
+//                    emailAddress);
+//            result = result.substring(0, result.lastIndexOf("\n"));
+//        }
 
         /* 
          If people have a signature it will have their name in it usually. It is
