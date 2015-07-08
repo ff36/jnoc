@@ -223,7 +223,14 @@ public class EmailToTicket {
         if (msg.getReplyTo().length >= 1) {
             from = msg.getReplyTo()[0].toString();
         }
-        String email = StringUtils.substringBetween(from, "<", ">").toLowerCase();
+        
+        String email = null;
+        if(from.indexOf(">") !=-1 && from.indexOf("<")!=-1)
+        	email= StringUtils.substringBetween(from, "<", ">").toLowerCase();
+        else 
+        	email = from.toLowerCase();
+        
+        //String email = StringUtils.substringBetween(from, "<", ">").toLowerCase();
 
         // Check the email
         if (!email.matches(DTX.EMAIL_REGEX)) {
