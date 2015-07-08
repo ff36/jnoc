@@ -85,7 +85,13 @@ public class EmailToTicket {
     public void processEmail(Message msg) throws MessagingException, IOException {
         // Get the email subject
         String subject = msg.getSubject();
-        String title = subject;
+        String title = null;
+        
+        String regExp = "(Fwd:|FWD:|fwd:|RE:|re:|Re:)";
+        if(subject!=null && subject.length()>3){
+        	title = subject.replaceFirst(regExp, subject).trim();
+        }else
+        	title = subject;
         
         // Aquire the user account or create it if not
         User user = aquireAccount(msg);
