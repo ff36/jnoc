@@ -73,6 +73,10 @@ public class Contact implements Serializable {
     private Telephone newTelephone;
     @Transient
     private Date dob;
+    
+    
+    @Transient
+    private String fullname;
 //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="Constructors">
@@ -309,7 +313,30 @@ public class Contact implements Serializable {
         dap.update(this);
     }
     
-    /**
+    public void updateFullname(){
+    	if(this.fullname!=null && this.fullname.trim().length()>0){
+
+    		if(this.fullname.indexOf(" ")!=-1){
+    			String[] names = fullname.split(" ", 2);
+    			this.firstName = names[0];
+    			this.lastName = names[1];
+    		}else
+    			this.firstName = fullname;
+    		
+    		this.update();
+    		
+    	}
+    }
+    
+    public String getFullname() {
+		return fullname==null?this.buildFullName():fullname;
+	}
+
+	public void setFullname(String fullname) {
+		this.fullname = fullname;
+	}
+
+	/**
      * Constructs a concatenated users name based on the available properties.
      * 
      * @return The concatenation of supplied names as follows:
@@ -331,6 +358,7 @@ public class Contact implements Serializable {
                 result = result + " " + lastName;
             }
         }
+        this.fullname = result;
         return result;
     }
     

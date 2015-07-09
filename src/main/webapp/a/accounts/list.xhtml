@@ -251,7 +251,11 @@
                                                                     <table>
                                                                         <tr>
                                                                             <td>
-                                                                                <h:outputText value="#{user.contact.buildFullName()}" style="font-weight: bold"/>
+                                                                            	<h:outputLabel for="userName" value="" style="font-weight: bold"/>
+																				<p:inplace id="userName" editor="true"  style="font-weight: bold">
+																					<p:inputText value="#{user.contact.fullname}" label="text" require="true"/>
+																					<p:ajax event="save" listener="#{user.contact.updateFullname}" />
+																				</p:inplace>
                                                                             </td>
                                                                             <td width="20px">
                                                                                 <h:outputLink type="button" 
@@ -538,7 +542,7 @@
 
                                                         </p:dialog>
 
-                                                        <p:dialog header="Edit Telephone" 
+                                                        <p:dialog header="Edit 	" 
                                                                   widgetVar="telephone-dlg" 
                                                                   dynamic="true" 
                                                                   resizable="false" 
