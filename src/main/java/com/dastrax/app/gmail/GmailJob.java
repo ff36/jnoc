@@ -121,6 +121,7 @@ public class GmailJob implements Job {
                         	// error, remove to other folder
            					folder.copyMessages(new Message[]{msg}, failFolder);
            					msg.setFlag(Flags.Flag.DELETED, true);
+           					Logger.getLogger(GmailJob.class.getName()).log(Level.ALL, "handler email error: "+e.getMessage(), e);
                         }
                         // Delete the message
                         msg.setFlag(Flags.Flag.DELETED, true);

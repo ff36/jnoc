@@ -223,7 +223,14 @@ public class EmailToTicket {
         if (msg.getReplyTo().length >= 1) {
             from = msg.getReplyTo()[0].toString();
         }
-        String email = StringUtils.substringBetween(from, "<", ">").toLowerCase();
+        
+        String email = null;
+        if(from.indexOf(">") !=-1 && from.indexOf("<")!=-1)
+        	email= StringUtils.substringBetween(from, "<", ">").toLowerCase();
+        else 
+        	email = from.toLowerCase();
+        
+        //String email = StringUtils.substringBetween(from, "<", ">").toLowerCase();
 
         // Check the email
         if (!email.matches(DTX.EMAIL_REGEX)) {
@@ -372,13 +379,13 @@ public class EmailToTicket {
          original message header so we can cut the email here so as not to include
          previouse parts of the email.
          */
-        String emailAddress = System.getenv("DTX_SENDER_EMAIL");
-        if (result != null && result.contains(emailAddress)) {
-            result = StringUtils.substringBefore(
-                    result,
-                    emailAddress);
-            result = result.substring(0, result.lastIndexOf("\n"));
-        }
+//        String emailAddress = System.getenv("DTX_SENDER_EMAIL");
+//        if (result != null && result.contains(emailAddress)) {
+//            result = StringUtils.substringBefore(
+//                    result,
+//                    emailAddress);
+//            result = result.substring(0, result.lastIndexOf("\n"));
+//        }
 
         /* 
          If people have a signature it will have their name in it usually. It is
@@ -394,15 +401,15 @@ public class EmailToTicket {
             from = message.getFrom()[0].toString();
         }
 
-        String name = StringUtils.substringBefore(from, "<").trim();
-        // Just for my name because of the appostrohe
-        if (name.contains("Tarka")) {
-            name = "Tarka";
-        }
-        if (result != null && result.contains(name)) {
-            result = StringUtils.substringBefore(result, name);
-            result = result.substring(0, result.lastIndexOf("\n"));
-        }
+//        String name = StringUtils.substringBefore(from, "<").trim();
+//        // Just for my name because of the appostrohe
+//        if (name.contains("Tarka")) {
+//            name = "Tarka";
+//        }
+//        if (result != null && result.contains(name)) {
+//            result = StringUtils.substringBefore(result, name);
+//            result = result.substring(0, result.lastIndexOf("\n"));
+//        }
 
         // Remove any embedded image strings.
         if (result != null) {
