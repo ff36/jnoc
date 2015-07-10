@@ -699,7 +699,7 @@ public class Ticket implements Serializable {
      * @param newStatus
      * @return navigation string
      */
-    public Ticket create(User user, DTX.TicketStatus newStatus) {
+    public Ticket createByUser(User user, DTX.TicketStatus newStatus) {
 
         // Set the ticket variables
         creator = user;

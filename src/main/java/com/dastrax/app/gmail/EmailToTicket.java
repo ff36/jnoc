@@ -142,7 +142,7 @@ public class EmailToTicket {
                 ticket.setTopic(DTX.TicketTopic.GENERAL);
                 ticket.setSendEmailToRequester(true);
                 ticket.setComment(comment);
-                ticket.create(user, DTX.TicketStatus.OPEN);
+                ticket.createByUser(user, DTX.TicketStatus.OPEN);
 
                 // Take care of the attachements
                 for (Attachment a : attachments) {
@@ -195,7 +195,7 @@ public class EmailToTicket {
                 ticket.setTopic(DTX.TicketTopic.GENERAL);
                 ticket.setSendEmailToRequester(true);
                 ticket.setComment(comment);
-                ticket.create(user, DTX.TicketStatus.OPEN);
+                ticket.createByUser(user, DTX.TicketStatus.OPEN);
 
                 // Take care of the attachements
                 for (Attachment a : attachments) {
