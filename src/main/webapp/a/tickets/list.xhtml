@@ -23,10 +23,13 @@
         <h:form id="form">
 
             <pe:ajaxErrorHandler />
-
-            <p:socket onMessage="pushUpdateTable" channel="/ticket" />
-            <p:remoteCommand name="pushUpdateTable" update="@widgetVar(ticketsTable)" />
-
+			
+			<p:socket onMessage="pushUpdateTable" channel="/ticket" />
+            <p:remoteCommand name="pushUpdateTable" update="growl" />
+			<ui:remove>
+	            <p:socket onMessage="pushUpdateTable" channel="/ticket" />
+	            <p:remoteCommand name="pushUpdateTable" update="@widgetVar(ticketsTable)" />
+			</ui:remove>
             <p:growl id="growl" 
                      widgetVar="growl"
                      redisplay="false"
