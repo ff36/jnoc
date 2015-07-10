@@ -4,11 +4,7 @@
 
     <groupId>com.dastrax</groupId>
     <artifactId>Dastrax</artifactId>
-<<<<<<< HEAD
-    <version>3.2.2</version>
-=======
     <version>3.2.4</version>
->>>>>>> release
     <packaging>war</packaging>
 
     <name>Dastrax</name>
