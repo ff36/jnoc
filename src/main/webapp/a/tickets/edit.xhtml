@@ -240,10 +240,10 @@
                                 <thead>
                                     <tr>
                                         <th>
-                                        	<h:outputLabel for="ticketTitle" value=" " />
-											<p:inplace id="ticketTitle" editor="true">
-												<p:inputText value="#{editTicket.ticket.title}" label="text" require="true"/>
-												<p:ajax event="save" listener="#{editTicket.ticket.update}" />
+											<p:inplace id="ticketTitle" editor="true" styleClass="inplace" 
+												label="#{empty editTicket.ticket.title ? 'unname' : editTicket.ticket.title}">
+													<p:inputText value= "#{editTicket.ticket.title}" label="text" require="true"/>
+													<p:ajax event="save" listener="#{editTicket.ticket.update}" />
 											</p:inplace>
                                            
                                             <h:outputText value="Email ID: (DTX-#{editTicket.ticket.email})" styleClass="comment-date"/>

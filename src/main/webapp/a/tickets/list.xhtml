@@ -251,7 +251,7 @@
                                                           sortBy="#{ticket.title}">
 
                                                     <p:commandLink id="edit-ticket" 
-                                                                   value="#{ticket.title}" 
+                                                                   value="#{empty ticket.title ? 'unname' : ticket.title}" 
                                                                    action="#{navigator.navigate('EDIT_TICKET_WITH_PARAM', 'ticket='.concat(ticket.id))}" 
                                                                    type="button" 
                                                                    process="@this" 
