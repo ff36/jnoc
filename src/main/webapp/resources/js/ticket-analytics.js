@@ -26,6 +26,7 @@ var latest = d3.time.day(new Date(data[data.length - 1].openEpoch));
 var width = window.innerWidth - 600;
 // Date format
 var dateFormat = d3.time.format("%a %e %b");
+var dateFormat1 =d3.time.format("%Y/%m");
 var timeFormat = d3.time.format("%H:%M");
 var numberFormat = d3.format(".1f");
 // Convert and precalculate certain mertics to make the system more efficient
@@ -37,6 +38,7 @@ data.forEach(function (d) {
     d.dayClose = d3.time.day(d.close);
     d.dayOpenFmt = dateFormat(d.open);
     d.timeOpenFmt = timeFormat(d.open);
+    d.date = dateFormat1(d.open);
     if (d.requesterCompany === null) {
         d.requesterCompany = 'none';
     }
@@ -325,12 +327,10 @@ var ticketsDimension = ticket.dimension(function (d) {
 });
 ticketsTable
         .dimension(ticketsDimension)
-        .group(function (d) {
-            return d.dayOpenFmt;
-        })
         .columns([
             function (d) {
                 return d.dayOpenFmt;
+            	//return d.date;
             },
             function (d) {
                 return d.timeOpenFmt;
@@ -386,9 +386,13 @@ ticketsTable
             }
         ])
         .sortBy(function (d) {
-            return d.open;
+            return d.date;
         })
         .order(d3.descending)
+		.group(function (d) {
+            return d.date;
+			//return d.dayOpenFmt;
+        })
         .size(ticket.size())
         .renderlet(function (table) {
             table.selectAll(".dc-table-group").classed("info", true);
