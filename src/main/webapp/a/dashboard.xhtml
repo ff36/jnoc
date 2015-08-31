@@ -48,14 +48,14 @@
                                                       hGutter="10"
                                                       hasImages="true"
                                                       fitWidth="true">
-
-                                            <pe:fluidGridItem rendered="#{jsfSessionUser.currentUser.hasPermission('university:access')}" >
-                                                <h:outputLink value="http://www.soliduniversityonline.com" 
-                                                              target="_blank">
-                                                    <p:graphicImage value="#{uriUtil.image('tile_university_active.svg', true)}"/>
-                                                </h:outputLink>
-                                            </pe:fluidGridItem>
-
+											<ui:remove>
+	                                            <pe:fluidGridItem rendered="#{jsfSessionUser.currentUser.hasPermission('university:access')}" >
+	                                                <h:outputLink value="http://www.soliduniversityonline.com" 
+	                                                              target="_blank">
+	                                                    <p:graphicImage value="#{uriUtil.image('tile_university_active.svg', true)}"/>
+	                                                </h:outputLink>
+	                                            </pe:fluidGridItem>
+											</ui:remove>
                                             <ui:remove>
                                                 <pe:fluidGridItem rendered="#{jsfSessionUser.currentUser.hasPermission('knowledge:access')}" >
                                                     <p:commandLink type="button" 
