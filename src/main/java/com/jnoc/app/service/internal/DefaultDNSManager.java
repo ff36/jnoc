@@ -19,7 +19,7 @@
 /*
  * Created Jul 17, 2013.
  * Copyright 2014 555 Inc ALL RIGHTS RESERVED. 
- * Developer: Tarka L'Herpiniere <tarka@solid.com>.
+
  */
 package com.jnoc.app.service.internal;
 
@@ -57,7 +57,7 @@ import com.jnoc.app.services.DNSManager;
  * @version 1.0.0
  * @since Build 1.0.0 (Jul 17, 2013)
  * @author Tarka L'Herpiniere
- * @author <tarka@solid.com>
+
  */
 @Default
 public class DefaultDNSManager implements DNSManager {
@@ -274,7 +274,7 @@ public class DefaultDNSManager implements DNSManager {
 	 * @version 2.0.0
 	 * @since Build 2.0.0 (Mar 10, 2013)
 	 * @author Tarka L'Herpiniere
-	 * @author <tarka@solid.com>
+	
 	 */
 	protected class Route53Client {
 

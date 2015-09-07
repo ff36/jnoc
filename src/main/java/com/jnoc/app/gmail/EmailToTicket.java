@@ -19,7 +19,7 @@
 /*
  * Created Oct 29, 2014.
  * Copyright 2014 555 Inc ALL RIGHTS RESERVED. 
- * Developer: Tarka L'Herpiniere <tarka@solid.com>.
+
  */
 package com.jnoc.app.gmail;
 
@@ -65,7 +65,7 @@ import org.jsoup.Jsoup;
  * @version 3.1.0
  * @since Build 141029.115419
  * @author Tarka L'Herpiniere
- * @author <tarka@solid.com>
+
  */
 public class EmailToTicket {
 

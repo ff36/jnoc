@@ -19,7 +19,7 @@
 /*
  * Created Nov 20, 2014.
  * Copyright 2014 555 Inc ALL RIGHTS RESERVED. 
- * Developer: Tarka L'Herpiniere <tarka@solid.com>.
+
  */
 package com.jnoc.service.feedback;
 
@@ -54,7 +54,7 @@ import com.jnoc.per.project.JNOC;
  * @version 3.1.0
  * @since Build 141120.161719
  * @author Tarka L'Herpiniere
- * @author <tarka@solid.com>
+
  */
 public class FeedbackJob implements Job {
 	private static final Logger LOG = Logger.getLogger(FeedbackJob.class.getName());

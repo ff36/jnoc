@@ -14,20 +14,7 @@
         <url>http://ff36.co/</url>
     </organization>
     
-    <developers>
-        <developer>
-            <id>tarka</id>
-            <name>Tarka</name>
-            <email>tarka@solid.com</email>
-            <url>http://ff36.co/</url>
-            <roles>
-                <role>architect</role>
-                <role>developer</role>
-            </roles>
-            <timezone>+1</timezone>
-        </developer>
-    </developers>
-
+    
     <properties>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

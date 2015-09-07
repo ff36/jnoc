@@ -18,7 +18,7 @@
 
 /*
  * Copyright 2013 555 Inc ALL RIGHTS RESERVED.
- * Developed by: Tarka L'Herpiniere <tarka@solid.com>.
+
  */
 package com.jnoc.service.rma;
 
@@ -53,7 +53,7 @@ import com.jnoc.service.navigation.Navigator;
  * @version 2.0.0
  * @since Build 2.1.0 (May 26, 2014)
  * @author Tarka L'Herpiniere
- * @author <tarka@solid.com>
+
  */
 @Named
 @ViewScoped

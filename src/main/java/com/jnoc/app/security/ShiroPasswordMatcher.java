@@ -19,7 +19,7 @@
 /*
  * Created Jul 15, 2013.
  * Copyright 2014 555 Inc ALL RIGHTS RESERVED. 
- * Developer: Tarka L'Herpiniere <tarka@solid.com>.
+
  */
 package com.jnoc.app.security;
 
@@ -33,7 +33,7 @@ import org.apache.shiro.authc.credential.PasswordMatcher;
  * @version 1.0.0
  * @since Build 1.0.0 (Jul 15, 2013)
  * @author Tarka L'Herpiniere
- * @author <tarka@solid.com>
+
  */
 public class ShiroPasswordMatcher extends PasswordMatcher {
 

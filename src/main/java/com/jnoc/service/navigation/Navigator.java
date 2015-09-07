@@ -19,7 +19,7 @@
 /*
  * Created May 26, 2014.
  * Copyright 2014 555 Inc ALL RIGHTS RESERVED. 
- * Developer: Tarka L'Herpiniere <tarka@solid.com>.
+
  */
 package com.jnoc.service.navigation;
 
@@ -53,7 +53,7 @@ import org.primefaces.model.menu.MenuModel;
  * @version 3.0.0
  * @since Build 3.0.0 (May 26, 2014)
  * @author Tarka L'Herpiniere
- * @author <tarka@solid.com>
+
  */
 @Named
 @SessionScoped
@@ -372,7 +372,7 @@ public class Navigator implements Serializable {
      * @version 3.0.0
      * @since Build 3.0.0 (May 26, 2014)
      * @author Tarka L'Herpiniere
-     * @author <tarka@solid.com>
+    
      */
     public class MenuItemDataModel extends ListDataModel<MenuItem>
             implements SelectableDataModel<MenuItem> {

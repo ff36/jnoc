@@ -19,7 +19,7 @@
 /*
  * Created May 13, 2014.
  * Copyright 2014 555 Inc ALL RIGHTS RESERVED. 
- * Developer: Tarka L'Herpiniere <tarka@solid.com>.
+
  */
 
 package com.jnoc.app.services;
@@ -36,7 +36,7 @@ import java.util.Map;
  * @version 2.0.0
  * @since Build 2.0.0 (Aug 5, 2013)
  * @author Tarka L'Herpiniere
- * @author <tarka@solid.com>
+
  */
 
 // TODO: See http://www.byteslounge.com/tutorials/java-ee-cdi-programmatic-dependency-disabiguation-example-injection-point-inspection

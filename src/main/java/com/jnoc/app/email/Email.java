@@ -19,7 +19,7 @@
 /*
  * Created 2013.
  * Copyright 2014 555 Inc ALL RIGHTS RESERVED. 
- * Developer: Tarka L'Herpiniere <tarka@solid.com>.
+
  */
 
 package com.jnoc.app.email;
@@ -44,7 +44,7 @@ import java.util.Map;
  * @version 1.0.0
  * @since Build 1.0-SNAPSHOT (2013)
  * @author Tarka L'Herpiniere
- * @author <tarka@solid.com>
+
  */
 public class Email {
 

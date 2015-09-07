@@ -19,7 +19,7 @@
 /*
  * Created 2013.
  * Copyright 2014 555 Inc ALL RIGHTS RESERVED. 
- * Developer: Tarka L'Herpiniere <tarka@solid.com>.
+
  */
 package com.jnoc.app.exception;
 
@@ -33,7 +33,7 @@ import javax.faces.context.ExceptionHandlerFactory;
  * @version {version}
  * @since Build {build} (May 9, 2014)
  * @author Tarka L'Herpiniere
- * @author <tarka@solid.com>
+
  */
 public class JnocExceptionFactory extends ExceptionHandlerFactory {
 

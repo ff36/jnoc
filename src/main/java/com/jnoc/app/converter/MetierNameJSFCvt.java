@@ -19,7 +19,7 @@
 /*
  * Created Jul 29, 2013.
  * Copyright 2014 555 Inc ALL RIGHTS RESERVED. 
- * Developer: Tarka L'Herpiniere <tarka@solid.com>.
+
  */
 package com.jnoc.app.converter;
 

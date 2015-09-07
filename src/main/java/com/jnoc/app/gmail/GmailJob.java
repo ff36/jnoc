@@ -19,7 +19,7 @@
 /*
  * Created Sep 29, 2014.
  * Copyright 2014 555 Inc ALL RIGHTS RESERVED. 
- * Developer: Tarka L'Herpiniere <tarka@solid.com>.
+
  */
 package com.jnoc.app.gmail;
 
@@ -53,7 +53,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @version 2.0.0
  * @since Build 140929.115744
  * @author Tarka L'Herpiniere
- * @author <tarka@solid.com>
+
  */
 public class GmailJob implements Job {
 

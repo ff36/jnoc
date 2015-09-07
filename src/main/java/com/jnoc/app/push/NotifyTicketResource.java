@@ -19,7 +19,7 @@
 /*
  * Created Nov 3, 2014.
  * Copyright 2014 555 Inc ALL RIGHTS RESERVED. 
- * Developer: Tarka L'Herpiniere <tarka@solid.com>.
+
  */
 
 package com.jnoc.app.push;
@@ -39,7 +39,7 @@ import org.primefaces.push.impl.JSONEncoder;
  * @version {project.version}
  * @since Build 141103.103031
  * @author Tarka L'Herpiniere
- * @author <tarka@solid.com>
+
  */
 @PushEndpoint("/ticket")
 public class NotifyTicketResource {

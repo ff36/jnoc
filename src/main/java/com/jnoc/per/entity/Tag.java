@@ -19,7 +19,7 @@
 /*
  * Created Jul 10, 2013.
  * Copyright 2014 555 Inc ALL RIGHTS RESERVED. 
- * Developer: Tarka L'Herpiniere <tarka@solid.com>.
+
  */
 package com.jnoc.per.entity;
 
@@ -43,7 +43,7 @@ import javax.persistence.NamedQuery;
  * @version 2.0.0
  * @since Build 2.0-SNAPSHOT (Jul 10, 2013)
  * @author Tarka L'Herpiniere
- * @author <tarka@solid.com>
+
  */
 @NamedQueries({
     @NamedQuery(name = "Tag.findAll", query = "SELECT e FROM Tag e"),

@@ -19,7 +19,7 @@
 /*
  * Created Jul 17, 2013.
  * Copyright 2014 555 Inc ALL RIGHTS RESERVED. 
- * Developer: Tarka L'Herpiniere <tarka@solid.com>.
+
  */
 package com.jnoc.app.service.internal;
 
@@ -39,7 +39,7 @@ import java.net.URL;
  * @version 2.0.0
  * @since Build 2.0.0 (Jul 17, 2013)
  * @author Tarka L'Herpiniere
- * @author <tarka@solid.com>
+
  */
 public class DefaultURI implements URI {
 
@@ -217,7 +217,7 @@ public class DefaultURI implements URI {
 
         } catch (NullPointerException npe) {
             // Company is null. This means its an administrator!
-            url = logo("dastrax_logo_v3.png", true);
+            url = logo("jnoc_logo_v3.png", true);
         }
 
         return url;
@@ -491,7 +491,7 @@ public class DefaultURI implements URI {
      * @version 3.0.0
      * @since Build 3.0.0 (Apr 17, 2014)
      * @author Tarka L'Herpiniere
-     * @author <tarka@solid.com>
+    
      */
     public static class Builder {
 

@@ -19,7 +19,7 @@
 /*
  * Created May 15, 2014.
  * Copyright 2014 555 Inc ALL RIGHTS RESERVED. 
- * Developer: Tarka L'Herpiniere <tarka@solid.com>.
+
  */
 
 package com.jnoc.per.dap;
@@ -33,7 +33,7 @@ import java.util.Map;
  * @version 3.0.0
  * @since Build 3.0-SNAPSHOT (May 15, 2014)
  * @author Tarka L'Herpiniere
- * @author <tarka@solid.com>
+
  */
 public class QueryParameter {
     

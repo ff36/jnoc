@@ -104,6 +104,6 @@ Permissions are bound by the users account type (metier). Granting a VAR account
 ### Contact
 | Type      | Name               | Role                | Telephone    | Email               | Address                              |
 |---------- | ------------------ | ------------------- | ------------ | ------------------- | ------------------------------------ |
-| General   | Mike Wing          | NOC/Support Manager | 408-639-0426 | mike.wing@solid.com | 617 N MARY AVE, SUNNYVALE, CA, 94085 |
-| Technical | Tarka L'Herpiniere | Lead Developer      | 408-400-3802 | tarka@solid.com     | 617 N MARY AVE, SUNNYVALE, CA, 94085 |
+| General   | Mike Wing          | NOC/Support Manager | 408-639-0426 | mike.wing@jnoc.com | 617 N MARY AVE, SUNNYVALE, CA, 94085 |
+| Technical | Tarka L'Herpiniere | Lead Developer      | 408-400-3802 | tarka@jnoc.com     | 617 N MARY AVE, SUNNYVALE, CA, 94085 |
 

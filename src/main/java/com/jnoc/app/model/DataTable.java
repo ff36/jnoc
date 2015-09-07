@@ -19,7 +19,7 @@
 /*
  * Created May 19, 2014.
  * Copyright 2014 555 Inc ALL RIGHTS RESERVED. 
- * Developer: Tarka L'Herpiniere <tarka@solid.com>.
+
  */
 package com.jnoc.app.model;
 
@@ -42,7 +42,7 @@ import org.primefaces.model.SortOrder;
  * @version 3.0-SNAPSHOT
  * @since Build 3.0.0 (May 19, 2014)
  * @author Tarka L'Herpiniere
- * @author <tarka@solid.com>
+
  */
 public class DataTable {
 
@@ -201,7 +201,7 @@ public class DataTable {
      * @version 3.0-SNAPSHOT
      * @since Build 2.0.0 (May 19, 2014)
      * @author Tarka L'Herpiniere
-     * @author <tarka@solid.com>
+    
      */
     public class DataTableModel extends LazyDataModel {
 

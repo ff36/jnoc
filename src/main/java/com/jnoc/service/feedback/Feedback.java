@@ -19,7 +19,7 @@
 /*
  * Created May 8, 2014.
  * Copyright 2014 555 Inc ALL RIGHTS RESERVED. 
- * Developer: Tarka L'Herpiniere <tarka@solid.com>.
+
  */
 package com.jnoc.service.feedback;
 
@@ -49,7 +49,7 @@ import net.sf.uadetector.ReadableUserAgent;
  * @version 3.0.0
  * @since Build 3.0-SNAPSHOT (May 8, 2014)
  * @author Tarka L'Herpiniere
- * @author <tarka@solid.com>
+
  */
 @Named
 @RequestScoped
