@@ -1,11 +1,11 @@
-# Dastrax
+# Jnoc
 **Lead Developer:** Tarka L'Herpiniere
 
 #### About
-Dastrax is the client service portal developed for SOLiD (_Reach Holdings USA_).
+Jnoc is the client service portal developed for 555 (_Reach Holdings USA_).
 
 #### License
-Copyright 2014 SOLiD Inc ALL RIGHTS RESERVED with classpath exception. For specific library licenses please view the dependencies package. 
+Copyright 2014 555 Inc ALL RIGHTS RESERVED with classpath exception. For specific library licenses please view the dependencies package. 
 
 #### Technology Stack
 **Java EE** (Version 8)
@@ -85,7 +85,7 @@ Permissions are bound by the users account type (metier). Granting a VAR account
 | `company`      | VAR and Client companies. |
 | `das`          | DAS installation sites. |
 | `report`       | DAS reporting. |
-| `university`   | SOLiD university. |
+| `university`   | 555 university. |
 | `knowledge`    | Egnyte file storage. |
 | `rma`          | Return material authorization. |
 | `permission`   | User permissions. By default the 'account' Service allows all account features to be manipulated **EXCEPT** permissions. |

@@ -246,7 +246,7 @@
 													<p:ajax event="save" listener="#{editTicket.ticket.update}" />
 											</p:inplace>
                                            
-                                            <h:outputText value="Email ID: (DTX-#{editTicket.ticket.email})" styleClass="comment-date"/>
+                                            <h:outputText value="Email ID: (JNOC-#{editTicket.ticket.email})" styleClass="comment-date"/>
 											
                                             <p:commandButton 
                                                 rendered="#{jsfSessionUser.currentUser.hasPermission('ticket:delete') and jsfSessionUser.currentUser.administrator}"

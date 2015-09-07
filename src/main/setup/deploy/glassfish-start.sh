@@ -2,9 +2,9 @@
 
 asadmin start-domain
 
-asadmin create-jdbc-connection-pool --datasourceclassname com.mysql.jdbc.jdbc2.optional.MysqlDataSource --restype javax.sql.DataSource --property "User=$DTX_DB_USER_NAME:Password=$DTX_DB_SECRET:URL=jdbc\\:mysql\\://$DTX_DB_SERVER_NAME\\:3306/$DTX_DB_NAME" DastraxProPool
-asadmin create-jdbc-resource --connectionpoolid DastraxProPool jdbc/DastraxPro
+asadmin create-jdbc-connection-pool --datasourceclassname com.mysql.jdbc.jdbc2.optional.MysqlDataSource --restype javax.sql.DataSource --property "User=$JNOC_DB_USER_NAME:Password=$JNOC_DB_SECRET:URL=jdbc\\:mysql\\://$JNOC_DB_SERVER_NAME\\:3306/$JNOC_DB_NAME" JnocProPool
+asadmin create-jdbc-resource --connectionpoolid JnocProPool jdbc/JnocPro
 
-asadmin deploy --contextroot / --name Dastrax /*.war
+asadmin deploy --contextroot / --name Jnoc /*.war
 asadmin stop-domain
 asadmin start-domain --verbose

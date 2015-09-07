@@ -1,5 +1,5 @@
 ############################################################
-# Dockerfile for Dastrax deployment
+# Dockerfile for Jnoc deployment
 # Version 1.0.3
 ############################################################
 

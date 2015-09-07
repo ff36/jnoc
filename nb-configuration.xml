@@ -42,13 +42,13 @@ Any value defined here will override the pom.xml file value but is only applicab
         <word>config</word>
         <word>credentialsMatcher</word>
         <word>das</word>
-        <word>dastrax</word>
-        <word>dastraxRealm</word>
+        <word>jnoc</word>
+        <word>jnocRealm</word>
         <word>DefaultPasswordService</word>
         <word>deZiIxcaaaA</word>
         <word>dms</word>
         <word>dob</word>
-        <word>dtx</word>
+        <word>jnoc</word>
         <word>eg</word>
         <word>Enum</word>
         <word>Google</word>
@@ -78,7 +78,7 @@ Any value defined here will override the pom.xml file value but is only applicab
         <word>Servlet</word>
         <word>Shiro</word>
         <word>ShiroAjaxFilter</word>
-        <word>ShiroDastraxRealm</word>
+        <word>ShiroJnocRealm</word>
         <word>ShiroMetierFilter</word>
         <word>ShiroPasswordMatcher</word>
         <word>subdomain</word>
