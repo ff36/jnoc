@@ -1,4 +1,0 @@
-{
-  "AWSEBDockerrunVersion": "1",
-  "Logging": "/usr/local/glassfish4/glassfish/domains/domain1/logs"
-}

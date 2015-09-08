@@ -2,7 +2,7 @@ DELIMITER $$
 DROP PROCEDURE IF EXISTS init_default_user$$ 
 CREATE PROCEDURE init_default_user()
 BEGIN
-	DECLARE def_username VARCHAR(255) DEFAULT 'changeit@solid.com'; 
+	DECLARE def_username VARCHAR(255) DEFAULT 'changeit@jnoc.com'; 
 	DECLARE def_password VARCHAR(255) DEFAULT '$shiro1$SHA-256$500000$jbxaCnWz7dHrQa5vjsSHgQ==$/PVKH7PjUtZwRy6BtBDSbzEr5bmYsrfMbK8YuS4BH1c=';
 
 	DECLARE account_id INT;

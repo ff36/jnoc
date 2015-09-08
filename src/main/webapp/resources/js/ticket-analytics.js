@@ -350,7 +350,7 @@ ticketsTable
                 }
             },
             function (d) {
-                return "<em><a target='_blank' href='/a/tickets/edit.jsf?ticket=" + d.id + "'>DTX-" + d.id + "</a></em>";
+                return "<em><a target='_blank' href='/a/tickets/edit.jsf?ticket=" + d.id + "'>JNOC-" + d.id + "</a></em>";
             },
             function (d) {
                 return d.title;
