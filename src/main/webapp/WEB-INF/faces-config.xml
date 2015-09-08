@@ -12,7 +12,7 @@
     
     <factory>
         <exception-handler-factory>
-            com.jnoc.app.exception.JnocExceptionFactory
+            co.ff36.jnoc.app.exception.JnocExceptionFactory
         </exception-handler-factory>
     </factory>
     
@@ -20,7 +20,7 @@
         <renderer>
             <component-family>org.primefaces.component</component-family>
             <renderer-type>org.primefaces.component.FileUploadRenderer</renderer-type>
-            <renderer-class>com.jnoc.app.upload.PrimeFacesFileUploadRenderer</renderer-class>
+            <renderer-class>co.ff36.jnoc.app.upload.PrimeFacesFileUploadRenderer</renderer-class>
         </renderer>
     </render-kit>
     

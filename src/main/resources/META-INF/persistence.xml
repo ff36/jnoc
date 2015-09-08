@@ -6,26 +6,26 @@
 	<persistence-unit name="Jnoc_PU" transaction-type="JTA">
 		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
 		<jta-data-source>jdbc/JnocPro</jta-data-source>
-		<class>com.jnoc.per.entity.Account</class>
-		<class>com.jnoc.per.entity.Address</class>
-		<class>com.jnoc.per.entity.Attachment</class>
-		<class>com.jnoc.per.entity.Audit</class>
-		<class>com.jnoc.per.entity.Comment</class>
-		<class>com.jnoc.per.entity.Company</class>
-		<class>com.jnoc.per.entity.Contact</class>
-		<class>com.jnoc.per.entity.Filter</class>
-		<class>com.jnoc.per.entity.Incident</class>
-		<class>com.jnoc.per.entity.IncidentEvent</class>
-		<class>com.jnoc.per.entity.Metier</class>
-		<class>com.jnoc.per.entity.Nexus</class>
-		<class>com.jnoc.per.entity.Permission</class>
-		<class>com.jnoc.per.entity.Tag</class>
-		<class>com.jnoc.per.entity.Telephone</class>
-		<class>com.jnoc.per.entity.Ticket</class>
-		<class>com.jnoc.per.entity.User</class>
-		<class>com.jnoc.per.entity.Token</class>
-		<class>com.jnoc.per.entity.Template</class>
-		<class>com.jnoc.per.entity.DAS</class>
+		<class>co.ff36.jnoc.per.entity.Account</class>
+		<class>co.ff36.jnoc.per.entity.Address</class>
+		<class>co.ff36.jnoc.per.entity.Attachment</class>
+		<class>co.ff36.jnoc.per.entity.Audit</class>
+		<class>co.ff36.jnoc.per.entity.Comment</class>
+		<class>co.ff36.jnoc.per.entity.Company</class>
+		<class>co.ff36.jnoc.per.entity.Contact</class>
+		<class>co.ff36.jnoc.per.entity.Filter</class>
+		<class>co.ff36.jnoc.per.entity.Incident</class>
+		<class>co.ff36.jnoc.per.entity.IncidentEvent</class>
+		<class>co.ff36.jnoc.per.entity.Metier</class>
+		<class>co.ff36.jnoc.per.entity.Nexus</class>
+		<class>co.ff36.jnoc.per.entity.Permission</class>
+		<class>co.ff36.jnoc.per.entity.Tag</class>
+		<class>co.ff36.jnoc.per.entity.Telephone</class>
+		<class>co.ff36.jnoc.per.entity.Ticket</class>
+		<class>co.ff36.jnoc.per.entity.User</class>
+		<class>co.ff36.jnoc.per.entity.Token</class>
+		<class>co.ff36.jnoc.per.entity.Template</class>
+		<class>co.ff36.jnoc.per.entity.DAS</class>
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		<properties>
 			<property name="eclipselink.logging.level" value="SEVERE" />

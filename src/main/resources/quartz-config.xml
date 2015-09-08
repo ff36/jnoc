@@ -13,7 +13,7 @@
             <name>GmailJob</name>
             <group>GmailGroup</group>
             <description>Get Gmail messages</description>
-            <job-class>com.jnoc.app.gmail.GmailJob</job-class>
+            <job-class>co.ff36.jnoc.app.gmail.GmailJob</job-class>
         </job>
  
         <trigger>
@@ -29,7 +29,7 @@
             <name>FeedbackJob</name>
             <group>FeedbackGroup</group>
             <description>Send feedback email</description>
-            <job-class>com.jnoc.service.feedback.FeedbackJob</job-class>
+            <job-class>co.ff36.jnoc.service.feedback.FeedbackJob</job-class>
         </job>
  
         <trigger>
