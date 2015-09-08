@@ -1,6 +1,6 @@
 /target/
-/Dastrax-cnx/target/
-/Dastrax-per/target/
+/Jnoc-cnx/target/
+/Jnoc-per/target/
 .classpath
 
 .factorypath

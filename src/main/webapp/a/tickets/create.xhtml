@@ -152,7 +152,7 @@
                                         <ui:fragment rendered="#{createTicket.render}">
 
                                             <h3>Topic</h3>
-                                            <p:selectOneMenu value="#{createTicket.ticket.topic}"
+                                            <p:selectOneMenu value="#{createTicket.ticket.topic}" id="topicOptions"
                                                              effect="fade"
                                                              style="width: 230px"
                                                              required="true"
@@ -164,7 +164,7 @@
                                             </p:selectOneMenu>
 
                                             <h3>Severity</h3>
-                                            <p:selectOneMenu value="#{createTicket.ticket.severity}" 
+                                            <p:selectOneMenu value="#{createTicket.ticket.severity}" id="severityOptions" 
                                                              effect="fade"
                                                              style="width: 230px"
                                                              required="true"
@@ -176,7 +176,7 @@
                                             </p:selectOneMenu>
 
                                             <h3>DAS</h3>
-                                            <p:selectOneMenu value="#{createTicket.ticket.das}"
+                                            <p:selectOneMenu value="#{createTicket.ticket.das}" id="dasOptions"
                                                              style="width: 230px"
                                                              converter="dasCvt">
                                                 <f:selectItem itemLabel="-" 

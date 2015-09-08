@@ -235,7 +235,7 @@
                                                           filterBy="#{ticket.id}"
                                                           filterStyle="display:none"
                                                           sortBy="#{ticket.id}">
-                                                    DTX-#{ticket.id}
+                                                    JNOC-#{ticket.id}
                                                 </p:column>
 
                                                 <p:column headerText="Status"
@@ -251,7 +251,7 @@
                                                           sortBy="#{ticket.title}">
 
                                                     <p:commandLink id="edit-ticket" 
-                                                                   value="#{ticket.title}" 
+                                                                   value="#{empty ticket.title ? 'unname' : ticket.title}" 
                                                                    action="#{navigator.navigate('EDIT_TICKET_WITH_PARAM', 'ticket='.concat(ticket.id))}" 
                                                                    type="button" 
                                                                    process="@this" 
@@ -298,7 +298,7 @@
                                                           filterBy="#{ticket.email}"
                                                           filterStyle="display:none"
                                                           sortBy="#{ticket.email}">
-                                                    (DTX-#{ticket.email})
+                                                    (JNOC-#{ticket.email})
                                                 </p:column>
 
                                                 <p:rowExpansion>  
