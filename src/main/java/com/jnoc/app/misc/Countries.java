@@ -15,12 +15,6 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-
-/*
- * Created Mar 17, 2014.
- * Copyright 2014 555 Inc ALL RIGHTS RESERVED. 
-
- */
 package com.jnoc.app.misc;
 
 import java.util.ArrayList;

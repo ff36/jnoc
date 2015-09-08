@@ -15,12 +15,6 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-
-/*
- * Created Jul 10, 2013.
- * Copyright 2014 555 Inc ALL RIGHTS RESERVED. 
-
- */
 package com.jnoc.per.entity;
 
 import java.io.Serializable;

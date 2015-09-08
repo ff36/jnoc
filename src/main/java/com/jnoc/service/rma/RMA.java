@@ -15,12 +15,6 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-
-/*
- * Created May 26, 2014.
- * Copyright 2014 555 Inc ALL RIGHTS RESERVED. 
-
- */
 package com.jnoc.service.rma;
 
 import java.util.ArrayList;

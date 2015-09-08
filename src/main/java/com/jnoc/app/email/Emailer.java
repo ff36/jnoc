@@ -15,13 +15,6 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-
-/*
- * Created May 13, 2014.
- * Copyright 2014 555 Inc ALL RIGHTS RESERVED. 
-
- */
-
 package com.jnoc.app.email;
 
 import javax.ejb.Asynchronous;

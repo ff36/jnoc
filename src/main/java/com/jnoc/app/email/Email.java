@@ -15,13 +15,6 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-
-/*
- * Created 2013.
- * Copyright 2014 555 Inc ALL RIGHTS RESERVED. 
-
- */
-
 package com.jnoc.app.email;
 
 import com.jnoc.per.entity.Template;

@@ -15,12 +15,6 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-
-/*
- * Created May 14, 2014.
- * Copyright 2014 555 Inc ALL RIGHTS RESERVED. 
-
- */
 package com.jnoc.app.services;
 
 import com.amazonaws.services.s3.model.CannedAccessControlList;

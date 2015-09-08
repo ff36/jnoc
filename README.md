@@ -1,11 +1,8 @@
-# Jnoc
+# JNOC
 **Lead Developer:** Tarka L'Herpiniere
 
-#### About
-Jnoc is the client service portal developed for 555 (_Reach Holdings USA_).
-
 #### License
-Copyright 2014 555 Inc ALL RIGHTS RESERVED with classpath exception. For specific library licenses please view the dependencies package. 
+Copyright 2015 555 Inc ALL RIGHTS RESERVED with classpath exception. For specific library licenses please view the dependencies package. 
 
 #### Technology Stack
 **Java EE** (Version 8)
@@ -85,7 +82,6 @@ Permissions are bound by the users account type (metier). Granting a VAR account
 | `company`      | VAR and Client companies. |
 | `das`          | DAS installation sites. |
 | `report`       | DAS reporting. |
-| `university`   | 555 university. |
 | `knowledge`    | Egnyte file storage. |
 | `rma`          | Return material authorization. |
 | `permission`   | User permissions. By default the 'account' Service allows all account features to be manipulated **EXCEPT** permissions. |
@@ -95,15 +91,9 @@ Permissions are bound by the users account type (metier). Granting a VAR account
 | Functions     | Description        |
 |-------------- |------------------ |
 | `access`        | Grants privilege to 'access' the specified 'Service'. 'create, edit, delete' functions must be accompanied by 'access' otherwise these functions are rendered mute as the page will not load. |
-| `create`        | Grants privilege to 'create' the specified 'Service'. If the specified 'Service' does not support this it will be transparently ignored. eg. 'university' does not support 'create' however, the permission 'university:create' is valid and will simply be ignored |
-| `edit`          | Grants privilege to 'edit' the specified 'Service'. If the specified 'Service' does not support this it will be transparently ignored. eg. 'university' does not support 'edit' however, the permission 'university:edit' is valid and will simply be ignored |
-| `delete`        | Grants privilege to 'delete' the specified 'Service'. If the specified 'Service' does not support this it will be transparently ignored. eg. 'university' does not support 'delete' however, the permission 'university:edit' is valid and will simply be ignored |
+| `create`        | Grants privilege to 'create' the specified 'Service'. If the specified 'Service' does not support this it will be transparently ignored. |
+| `edit`          | Grants privilege to 'edit' the specified 'Service'. If the specified 'Service' does not support this it will be transparently ignored.  |
+| `delete`        | Grants privilege to 'delete' the specified 'Service'. If the specified 'Service' does not support this it will be transparently ignored. |
 | `*`             | Grants all of the above (Use very sparingly) |
 
-
-### Contact
-| Type      | Name               | Role                | Telephone    | Email               | Address                              |
-|---------- | ------------------ | ------------------- | ------------ | ------------------- | ------------------------------------ |
-| General   | Mike Wing          | NOC/Support Manager | 408-639-0426 | mike.wing@jnoc.com | 617 N MARY AVE, SUNNYVALE, CA, 94085 |
-| Technical | Tarka L'Herpiniere | Lead Developer      | 408-400-3802 | tarka@jnoc.com     | 617 N MARY AVE, SUNNYVALE, CA, 94085 |
 

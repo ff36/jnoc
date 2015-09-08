@@ -16,12 +16,6 @@
  **/
 
 
-/*
- * Created Aug 16, 2013.
- * Copyright 2014 555 Inc ALL RIGHTS RESERVED. 
-
- */
-
 package com.jnoc.app.filter;
 
 import java.io.IOException;

@@ -15,12 +15,6 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-
-/*
- * Created May 9, 2014.
- * Copyright 2014 555 Inc ALL RIGHTS RESERVED. 
-
- */
 package com.jnoc.app.security;
 
 import static com.jnoc.per.project.JNOC.PASSWORD_LENGTH;

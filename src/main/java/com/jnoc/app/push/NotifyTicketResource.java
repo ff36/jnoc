@@ -15,13 +15,6 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-
-/*
- * Created Nov 3, 2014.
- * Copyright 2014 555 Inc ALL RIGHTS RESERVED. 
-
- */
-
 package com.jnoc.app.push;
 
 import javax.faces.application.FacesMessage;
