@@ -36,11 +36,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ---
 
-#### IDE
-**Netbeans** (Version 8.0)
-
----
-
 ### Build Information
 *TODO*
 
