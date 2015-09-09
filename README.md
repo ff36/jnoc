@@ -1,5 +1,4 @@
 # JNOC
-**Lead Developer:** Tarka L'Herpiniere
 
 #### License
 Copyright (C) 2015  555 inc ltd.
