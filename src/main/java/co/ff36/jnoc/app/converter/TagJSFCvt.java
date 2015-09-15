@@ -17,11 +17,9 @@
 
 package co.ff36.jnoc.app.converter;
 
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import co.ff36.jnoc.per.dap.CrudService;
-import co.ff36.jnoc.per.entity.Tag;
 
 import javax.ejb.EJB;
 import javax.faces.component.UIComponent;
@@ -29,6 +27,10 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import javax.inject.Named;
+
+import co.ff36.jnoc.per.dap.CrudService;
+import co.ff36.jnoc.per.dap.QueryParameter;
+import co.ff36.jnoc.per.entity.Tag;
 
 /**
  * JSF Converter class to map between presentation layer String representations
@@ -62,8 +64,11 @@ public class TagJSFCvt implements Converter {
      */
     @Override
     public Object getAsObject(FacesContext fc, UIComponent uic, String string) {
-        try {
-            return dap.find(Tag.class, Long.valueOf(string));
+    	try {
+            List<Tag> tags = dap.findWithNamedQuery("Tag.findByName", QueryParameter.with("name", string).parameters());
+            if(tags!=null && tags.size()>0)
+            	return tags.get(0);
+            return new Tag(string);
         } catch (NumberFormatException e) {
         	LOG.log(Level.CONFIG, e.getMessage(), e);
             return null;
@@ -72,8 +77,8 @@ public class TagJSFCvt implements Converter {
 
     @Override
     public String getAsString(FacesContext fc, UIComponent uic, Object o) {
-        try {
-            return ((Tag) o).getId().toString();
+    	try {
+            return ((Tag) o).getName();
         } catch (NullPointerException | ClassCastException e) {
         	LOG.log(Level.CONFIG, e.getMessage(), e);
             return null;

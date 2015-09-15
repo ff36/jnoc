@@ -7,7 +7,6 @@
 	http://www.quartz-scheduler.org/xml/job_scheduling_data_1_8.xsd"
     version="1.8">
  
- <!-- 
     <schedule>
         <job>
             <name>GmailJob</name>
@@ -21,6 +20,7 @@
                 <name>GmailTrigger</name>
                 <job-name>GmailJob</job-name>
                 <job-group>GmailGroup</job-group>
+                <!-- It will run every 30 secs -->
                 <cron-expression>*/30 * * * * ?</cron-expression>
             </cron>
         </trigger>
@@ -37,9 +37,9 @@
                 <name>FeedbackTrigger</name>
                 <job-name>FeedbackJob</job-name>
                 <job-group>FeedbackGroup</job-group>
+                <!-- It will every hour -->
                 <cron-expression>0 0 0/1 1/1 * ? *</cron-expression>
             </cron>
         </trigger>
     </schedule>
-     -->
 </job-scheduling-data>

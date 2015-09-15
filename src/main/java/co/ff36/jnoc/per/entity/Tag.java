@@ -130,5 +130,8 @@ public class Tag implements Serializable {
         return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
     }
 //</editor-fold>
-    
+    @Override
+	public String toString() {
+		return "Tag [id=" + id + ", name=" + name + "]";
+	}
 }

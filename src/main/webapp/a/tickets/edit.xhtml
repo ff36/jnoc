@@ -131,7 +131,41 @@
                             </table>
 
                             <p:spacer width="100%" height="10px"/>
+							<table class="page-container">
+                            <thead>
+                                <tr><th>Tag</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
 
+                                        <p:spacer width="100%" height="20px"/>
+
+                                        <p:graphicImage name="images/ajax-loader.gif" 
+                                                        rendered="#{!editTicket.render}" 
+                                                        styleClass="ajax-lazy-loader"/>
+
+                                        <ui:fragment rendered="#{editTicket.render}">
+
+                                            <p:autoComplete id="tags"
+                                                            value="#{editTicket.ticket.tags}"
+                                                            completeMethod="#{editTicket.ticket.filterAvailableTags}"
+                                                            multiple="true" 
+                                                            var="tag" 
+                                                            itemLabel="#{tag.name}" 
+                                                            itemValue="#{tag}" 
+                                                            converter="tagCvt"
+                                                            styleClass="ccemail">
+                                                <p:ajax event="itemSelect" update="@parent"/>
+                                            </p:autoComplete>
+
+                                        </ui:fragment>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+						<p:spacer width="100%" height="10px"/>
                             <table class="page-container">
                                 <thead>
                                     <tr><th>Details</th></tr>
@@ -246,7 +280,7 @@
 													<p:ajax event="save" listener="#{editTicket.ticket.update}" />
 											</p:inplace>
                                            
-                                            <h:outputText value="Email ID: (JNOC-#{editTicket.ticket.email})" styleClass="comment-date"/>
+                                            <h:outputText value="Email ID: (DTX-#{editTicket.ticket.email})" styleClass="comment-date"/>
 											
                                             <p:commandButton 
                                                 rendered="#{jsfSessionUser.currentUser.hasPermission('ticket:delete') and jsfSessionUser.currentUser.administrator}"

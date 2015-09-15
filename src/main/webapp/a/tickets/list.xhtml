@@ -235,7 +235,7 @@
                                                           filterBy="#{ticket.id}"
                                                           filterStyle="display:none"
                                                           sortBy="#{ticket.id}">
-                                                    JNOC-#{ticket.id}
+                                                    DTX-#{ticket.id}
                                                 </p:column>
 
                                                 <p:column headerText="Status"
@@ -244,7 +244,12 @@
                                                           sortBy="#{ticket.status}">
                                                     #{ticket.status}
                                                 </p:column>
-
+												<p:column headerText="Tags"
+                                                          filterBy="#{ticket.showTags}"
+                                                          filterStyle="display:none"
+                                                          sortBy="#{ticket.showTags}">
+                                                    #{ticket.showTags}
+                                                </p:column>
                                                 <p:column headerText="Title"
                                                           filterBy="#{ticket.title}"
                                                           filterStyle="display:none"
@@ -298,7 +303,7 @@
                                                           filterBy="#{ticket.email}"
                                                           filterStyle="display:none"
                                                           sortBy="#{ticket.email}">
-                                                    (JNOC-#{ticket.email})
+                                                    (DTX-#{ticket.email})
                                                 </p:column>
 
                                                 <p:rowExpansion>  

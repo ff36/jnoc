@@ -139,6 +139,41 @@
 
                         <table class="page-container">
                             <thead>
+                                <tr><th>Tag</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+
+                                        <p:spacer width="100%" height="20px"/>
+
+                                        <p:graphicImage name="images/ajax-loader.gif" 
+                                                        rendered="#{!createTicket.render}" 
+                                                        styleClass="ajax-lazy-loader"/>
+
+                                        <ui:fragment rendered="#{createTicket.render}">
+
+                                            <p:autoComplete id="tags"
+                                                            value="#{createTicket.ticket.tags}"
+                                                            completeMethod="#{createTicket.ticket.filterAvailableTags}"
+                                                            multiple="true" 
+                                                            var="tag" 
+                                                            itemLabel="#{tag.name}" 
+                                                            itemValue="#{tag}" 
+                                                            converter="tagCvt"
+                                                            styleClass="ccemail">
+                                                <p:ajax event="itemSelect" update="@parent"/>
+                                            </p:autoComplete>
+
+                                        </ui:fragment>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+						<p:spacer width="100%" height="10px"/>
+                        <table class="page-container">
+                            <thead>
                                 <tr><th>Details</th></tr>
                             </thead>
                             <tbody>

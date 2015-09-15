@@ -161,7 +161,8 @@ public class Ticket implements Serializable {
 
     @Transient
     private boolean gmailJobTicketed =  false; 
-    
+    @Transient
+    private String showTags = "";
 //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="Constructors">
@@ -646,10 +647,26 @@ public class Ticket implements Serializable {
 
 //</editor-fold>
     
+    
     public void setGmailJobTicketed(boolean gmailJobTicketed) {
 		this.gmailJobTicketed = gmailJobTicketed;
 	}
-
+    
+    public String getShowTags(){
+    	if("".equals(this.showTags)){
+    		for(int i=0; i<tags.size(); i++){
+    			showTags += tags.get(i).getName();
+    			
+    			if((i+1)<tags.size())
+    				showTags+=", ";
+    		}
+    	}
+    	return showTags;
+    }
+	public void setShowTags(String showTags) {
+		this.showTags = showTags;
+	}
+    
 	/**
      * Creates a new Ticket, adds it to the persistence layer and adds storage
      * related resources.
@@ -1215,14 +1232,27 @@ public class Ticket implements Serializable {
     public List<Tag> filterAvailableTags(String query) {
         List<Tag> suggestions = new ArrayList<>();
 
+        if(query.trim().length()==0){
+        	suggestions.addAll(available.get("tags"));
+        	return suggestions;
+        }
+        
         // Add suggestions from the existing list
+        boolean isExistTag  = false;
         for (Tag t : (List<Tag>) available.get("tags")) {
             String name = t.getName();
             if (name.toLowerCase().startsWith(query.toLowerCase())) {
                 suggestions.add(t);
             }
+            
+            if(name.toLowerCase().equals(query.toLowerCase())){
+            	isExistTag = true;
+            }
         }
-
+        
+        if(isExistTag==false){
+        	suggestions.add(new Tag(query));
+        }
         return suggestions;
     }
 
