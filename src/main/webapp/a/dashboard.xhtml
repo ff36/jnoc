@@ -111,32 +111,23 @@
                     <h3>How can we help you?</h3>
                     <hr></hr>
 
-                    <h2>555</h2>
-
-                    TODO - Define dynamically
-                    <!--
-                    HQ / Shipping &amp; Receiving:<br></br>
-                    617 N. Mary Avenue<br></br>
-                    Sunnyvale, CA 94085-2907<br></br>
+                    <h2>#{msgs['contact.company']}</h2>
+                    <h:outputText escape="false" value="#{msgs['contact.address']}"></h:outputText>
 
                     <p:spacer width="100%" height="10px"/>
 
-                    <b>W:</b> <a href="http://solid.com">solid.com</a><br></br>
-                    <b>T:</b> 888.409.9997<br></br>
-                    <b>E:</b> <a href="mailto:info@solid.com">info@solid.com</a><br></br>
+                    <b>W:</b> <a href="http://#{msgs['contact.web']}">#{msgs['contact.web']}</a><br></br>
+                    <b>T:</b> #{msgs['contact.phone']}<br></br>
+                    <b>E:</b> <a href="mailto:#{msgs['contact.email']}">#{msgs['contact.email']}</a><br></br>
 
                     <p:spacer width="100%" height="10px"/>
 
                     <h3>Departments</h3>
 
-                    <a href="mailto:sales@solid.com">sales@solid.com</a><br></br>
-
-                    <a href="mailto:marketing@solid.com">marketing@solid.com</a><br></br>
-
-                    <a href="mailto:support@solid.com">support@solid.com</a><br></br>
-
-                    <a href="mailto:training@solid.com">training@solid.com</a><br></br>
-                    -->
+                    <a href="mailto:#{msgs['contact.department1']}">#{msgs['contact.department1']}</a><br></br>
+                    <a href="mailto:#{msgs['contact.department2']}">#{msgs['contact.department2']}</a><br></br>
+                    <a href="mailto:#{msgs['contact.department3']}">#{msgs['contact.department3']}</a><br></br>
+                    <a href="mailto:#{msgs['contact.department4']}">#{msgs['contact.department4']}</a><br></br>
 
                     <p:spacer width="100%" height="10px"/>
 
