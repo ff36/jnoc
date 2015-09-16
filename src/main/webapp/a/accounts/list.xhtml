@@ -761,19 +761,20 @@
                                                             <table class="blank-table">
                                                                 <tr>
                                                                     <td>
-                                                                        <p:selectOneMenu id="availableCompanies" 
-                                                                                         value="#{user.company}" 
-                                                                                         converter="companyCvt"
-                                                                                         effect="fade"
-                                                                                         disabled="#{!jsfSessionUser.currentUser.hasPermission('account:edit')}"
-                                                                                         style="width: 180px"
-                                                                                         styleClass="dlg-company-update-class dlg-company-process-class">
-                                                                            <f:selectItems value="#{user.availableCompanies}" 
-                                                                                           var="v" 
-                                                                                           itemLabel="#{v.name}" 
-                                                                                           itemValue="#{v}"/>
-                                                                        </p:selectOneMenu>
-
+                                                                    	<p:autoComplete id="availableCompanies" 
+					        												style="width: 180px;"
+					        												styleClass="dlg-company-update-class dlg-company-process-class" 
+					        												dropdown="true" 
+					        												converter="companyCvt" 
+					        												effect="fade"
+					        												value="#{user.company}" 
+					        												disabled="#{!jsfSessionUser.currentUser.hasPermission('account:edit')}"
+					        												completeMethod="#{user.filterCompanies}" 
+					        												var="company" 
+					                                                        itemLabel="#{company.name}" 
+					                                                        itemValue="#{company}"
+					                                                    >
+					        											</p:autoComplete>
                                                                     </td>
                                                                 </tr>
                                                             </table>

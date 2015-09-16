@@ -17,7 +17,9 @@
 
 package co.ff36.jnoc.app.email;
 
+import java.io.File;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -25,10 +27,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.activation.DataHandler;
+import javax.activation.FileDataSource;
 import javax.ejb.Asynchronous;
+import javax.mail.BodyPart;
+import javax.mail.MessagingException;
+import javax.mail.Multipart;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+import javax.mail.internet.MimeUtility;
 
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.exception.MethodInvocationException;
@@ -38,9 +53,11 @@ import org.apache.velocity.exception.ResourceNotFoundException;
 import co.ff36.jnoc.per.project.JNOC;
 
 import com.amazonaws.AmazonClientException;
+import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.EnvironmentVariableCredentialsProvider;
 import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
+import com.amazonaws.services.simpleemail.AWSJavaMailTransport;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClient;
 import com.amazonaws.services.simpleemail.model.Body;
 import com.amazonaws.services.simpleemail.model.Content;
@@ -149,7 +166,7 @@ public class DefaultEmailer implements Emailer {
 		Sender sender = new Sender();
 		sender.sendEmail(emailSender, email.getRecipientEmail(), email
 				.getTemplate().getSubject(), new String(email.getTemplate()
-				.getHtml()), new String(email.getTemplate().getPlainText()));
+				.getHtml()), new String(email.getTemplate().getPlainText()), email.getAttachment());
 
 	}
 
@@ -248,9 +265,14 @@ public class DefaultEmailer implements Emailer {
 		 * @throws AmazonClientException
 		 */
 		protected void sendEmail(String emailSender, String emailRecipient,
-				String emailSubject, String emailHtmlBody, String emailTextBody)
+				String emailSubject, String emailHtmlBody, String emailTextBody, File attachment)
 				throws AmazonClientException {
 
+			if(attachment!=null){
+				sendEmailByAttachment(emailSender, emailRecipient, emailSubject, emailHtmlBody, emailTextBody, attachment);
+				return;
+			}
+			
 			SendEmailRequest request = new SendEmailRequest()
 					.withSource(emailSender);
 
@@ -281,6 +303,49 @@ public class DefaultEmailer implements Emailer {
 				LOG.log(Level.SEVERE, ace.getMessage(), ace);
 			}
 		}
+
+		/**
+		 * send email attachment
+		 */
+		public void sendEmailByAttachment(String emailSender,
+				String emailRecipient, String emailSubject,
+				String emailHtmlBody, String emailTextBody,
+				File attachment) {
+			try {
+				SES ses = new SES();
+				
+				MimeMessage msg = new MimeMessage(ses.getAWSsession());
+				
+				msg.setFrom(new InternetAddress(emailSender));
+				
+				msg.addRecipient(javax.mail.Message.RecipientType.TO, new InternetAddress(emailRecipient));
+				msg.setSubject(emailSubject);
+				
+				Multipart multipart = new MimeMultipart();
+				BodyPart messageBodyPart = new MimeBodyPart();
+				messageBodyPart.setContent(emailHtmlBody, "text/html;charset=UTF-8");
+				multipart.addBodyPart(messageBodyPart);
+				
+				if (attachment != null)
+				{
+			        messageBodyPart = new MimeBodyPart();
+			        FileDataSource source = new FileDataSource(attachment);
+			        messageBodyPart.setDataHandler(new DataHandler(source));
+			        messageBodyPart.setFileName(MimeUtility.encodeWord(attachment.getName()));
+			        multipart.addBodyPart(messageBodyPart);
+				}
+				msg.setContent(multipart);
+
+				msg.saveChanges();
+				ses.getAWSTransport().sendMessage(msg, null);
+				
+			} catch (MessagingException e) {
+				e.printStackTrace();
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+			
+		}
 	}
 
 	/**
@@ -292,19 +357,58 @@ public class DefaultEmailer implements Emailer {
 	 * @version 2.0.0
 	 * @since Build 2.0.0 (2013)
 	 * @author Tarka L'Herpiniere
-	
+	 * @author <tarka@solid.com>
 	 */
 	private class SES {
 
 		// <editor-fold defaultstate="collapsed" desc="Properties">
 		private AmazonSimpleEmailServiceClient client;
 
+		private Transport AWSTransport;
+		private Session AWSsession;
+		
 		// </editor-fold>
 
 		// <editor-fold defaultstate="collapsed" desc="Constructors">
 		public SES() {
+			EnvironmentVariableCredentialsProvider provider = null;
+			AWSCredentials credentials =  null;
+			
+			
+			//use environment variable init	
+			provider = new EnvironmentVariableCredentialsProvider();
 			this.client = new AmazonSimpleEmailServiceClient(new EnvironmentVariableCredentialsProvider());
 			this.client.setRegion(Region.getRegion(Regions.US_EAST_1));
+			credentials = provider.getCredentials();
+			
+			
+			//use properties init
+//			try {
+//                try (InputStream credentialsAsStream = Thread.currentThread()
+//                        .getContextClassLoader()
+//                        .getResourceAsStream("aws-api.properties")) {
+//
+//                    credentials = new PropertiesCredentials(credentialsAsStream);
+//                    this.client = new AmazonSimpleEmailServiceClient(credentials);
+//                }
+//
+//            } catch (IOException t) {
+//                System.err.println("Error creating AmazonSimpleEmailServiceClient: " + t);
+//            }
+//			
+			
+			Properties props = new Properties();
+            props.setProperty("mail.transport.protocol", "aws");
+            props.setProperty("mail.aws.user", credentials.getAWSAccessKeyId());
+            props.setProperty("mail.aws.password", credentials.getAWSSecretKey());
+            AWSsession = Session.getInstance(props);
+            AWSTransport = new AWSJavaMailTransport(AWSsession, null);
+            try {
+				AWSTransport.connect();
+			} catch (MessagingException e) {
+				e.printStackTrace();
+			}
+			
 		}
 
 		// </editor-fold>
@@ -319,5 +423,14 @@ public class DefaultEmailer implements Emailer {
 			return client;
 		}
 		// </editor-fold>
+
+		public Transport getAWSTransport() {
+			return AWSTransport;
+		}
+
+		public Session getAWSsession() {
+			return AWSsession;
+		}
+
 	}
 }

@@ -186,18 +186,21 @@
 
                                             <pe:switch id="switch" value="#{createUser.user.metier.name}">  
                                                 <pe:defaultCase>
-                                                    <h3><h:outputText value="Company"/></h3>  
-                                                    <p:selectOneMenu value="#{createUser.user.company}"
-                                                                     style="width: 258px"
-                                                                     styleClass="account-update-class"
-                                                                     converter="companyCvt">
-                                                        <f:selectItems value="#{createUser.user.availableCompanies}" 
-                                                                       var="company" 
-                                                                       itemLabel="#{company.name}" 
-                                                                       itemValue="#{company}"/>
-                                                        <p:ajax event="change"/>
-                                                    </p:selectOneMenu>
-                                                </pe:defaultCase>  
+                                                    <h3><h:outputText value="Company"/></h3>
+        											<p:autoComplete id="companyAuto" 
+        												style="width: 258px;"
+        												styleClass="account-update-class"
+        												dropdown="true" 
+        												converter="companyCvt" 
+        												value="#{createUser.user.company}" 
+        												completeMethod="#{createUser.user.filterCompanies}" 
+        												var="company" 
+                                                        itemLabel="#{company.name}" 
+                                                        itemValue="#{company}"
+                                                    >
+        												<p:ajax event="change"/>
+        											</p:autoComplete>
+                                                </pe:defaultCase>
 
                                                 <pe:case value="ADMIN"/>
 

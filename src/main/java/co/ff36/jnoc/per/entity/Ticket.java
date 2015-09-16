@@ -88,6 +88,7 @@ import co.ff36.jnoc.per.entity.Ticket_;
     @NamedQuery(name = "Ticket.findAll", query = "SELECT e FROM Ticket e"),
     @NamedQuery(name = "Ticket.findByID", query = "SELECT e FROM Ticket e WHERE e.id = :id"),
     @NamedQuery(name = "Ticket.findAllByStatus", query = "SELECT e FROM Ticket e WHERE e.status = :status"),
+    @NamedQuery(name = "Ticket.findAllByStatusAndOpen", query = "SELECT e FROM Ticket e WHERE e.status = :status AND e.openEpoch < :openEpoch"),
     @NamedQuery(name = "Ticket.findAllExceptStatus", query = "SELECT e FROM Ticket e WHERE e.status <> :status"),
     @NamedQuery(name = "Ticket.findAllExceptMultiStatus", query = "SELECT e FROM Ticket e WHERE e.status <> :status1 AND e.status <> :status2"),
     @NamedQuery(name = "Ticket.findAllByType", query = "SELECT e FROM Ticket e WHERE e.topic = :topic"),
@@ -1246,8 +1247,7 @@ public class Ticket implements Serializable {
             }
             
             if(name.toLowerCase().equals(query.toLowerCase())){
-            	isExistTag = true;
-            }
+            	isExistTag = true;            }
         }
         
         if(isExistTag==false){

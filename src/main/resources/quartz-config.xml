@@ -8,6 +8,7 @@
     version="1.8">
  
     <schedule>
+    	<!-- 
         <job>
             <name>GmailJob</name>
             <group>GmailGroup</group>
@@ -20,7 +21,6 @@
                 <name>GmailTrigger</name>
                 <job-name>GmailJob</job-name>
                 <job-group>GmailGroup</job-group>
-                <!-- It will run every 30 secs -->
                 <cron-expression>*/30 * * * * ?</cron-expression>
             </cron>
         </trigger>
@@ -37,9 +37,28 @@
                 <name>FeedbackTrigger</name>
                 <job-name>FeedbackJob</job-name>
                 <job-group>FeedbackGroup</job-group>
-                <!-- It will every hour -->
                 <cron-expression>0 0 0/1 1/1 * ? *</cron-expression>
             </cron>
         </trigger>
+        
+        
+        <job>
+            <name>TicketReportOfWeeklyJob</name>
+            <group>reportEmailGroup</group>
+            <description>Send report email</description>
+            <job-class>co.ff36.jnoc.app.report.TicketReportOfWeeklyJob</job-class>
+        </job>
+ 
+        <trigger>
+            <cron>
+                <name>TicketReportOfWeeklyTrigger</name>
+                <job-name>TicketReportOfWeeklyJob</job-name>
+                <job-group>reportEmailGroup</job-group>
+                <cron-expression>*/30 * * * * ?</cron-expression>
+            </cron>
+        </trigger>
+         -->
+        
     </schedule>
+
 </job-scheduling-data>

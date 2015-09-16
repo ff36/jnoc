@@ -592,6 +592,16 @@ public class User implements Serializable {
         update();
     }
     
+    public List<Company> filterCompanies(String query){
+    	List<Company> companies = new ArrayList<Company>();
+
+    	for (Company company : availableCompanies) {
+    		if(company.getName().toLowerCase().startsWith(query.toLowerCase()))
+    		companies.add(company);
+		}
+    	return companies;
+    }
+    
     /**
      * Close a user accounts. We cannot technically delete a user account as it
      * will inevitably have dependencies on tickets etc. Instead we remove any
