@@ -17,14 +17,6 @@
 
 package co.ff36.jnoc.service.user;
 
-import co.ff36.jnoc.app.misc.JsfUtil;
-import co.ff36.jnoc.per.dap.CrudService;
-import co.ff36.jnoc.per.dap.QueryParameter;
-import co.ff36.jnoc.per.entity.Token;
-import co.ff36.jnoc.per.entity.User;
-import co.ff36.jnoc.service.navigation.Navigator;
-import co.ff36.jnoc.service.ticket.EditTicket;
-
 import java.io.Serializable;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -33,6 +25,13 @@ import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import co.ff36.jnoc.app.misc.JsfUtil;
+import co.ff36.jnoc.per.dap.CrudService;
+import co.ff36.jnoc.per.dap.QueryParameter;
+import co.ff36.jnoc.per.entity.Token;
+import co.ff36.jnoc.per.entity.User;
+import co.ff36.jnoc.service.navigation.Navigator;
 
 /**
  *
@@ -43,7 +42,7 @@ import javax.inject.Named;
 public class Approve implements Serializable {
 
     //<editor-fold defaultstate="collapsed" desc="Properties">
-    private static final Logger LOG = Logger.getLogger(EditTicket.class.getName());
+    private static final Logger LOG = Logger.getLogger(Approve.class.getName());
     private static final long serialVersionUID = 1L;
 
     private Token token;

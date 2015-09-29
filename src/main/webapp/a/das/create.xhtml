@@ -5,7 +5,8 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:pe="http://primefaces.org/ui/extensions"
       xmlns:ez="http://xmlns.jcp.org/jsf/composite/ezcomp"
-      xmlns:f="http://java.sun.com/jsf/core">
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
     <h:head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -31,7 +32,7 @@
 
             <ez:navigation-a/>
 
-            <pe:layout stateCookie="#{config.ProjectStage ne 'DEV'}" 
+            <pe:layout 
                        widgetVar="layourWgt" >
 
                 <pe:layoutPane id="north" 
@@ -233,8 +234,151 @@
                                     
                                     <h3>Response Time</h3>
                                     <p:spinner value="#{createDas.das.responseHrs}" min="0"/> 
-                                    
-                                    <h3>Reporting</h3>
+                                   
+                                    <p:spacer width="100%" 
+                                              height="20px"/>
+									<p:outputPanel id="carriers">
+										<table class="page-container">
+											<thead>
+												<tr>
+													<th>
+														Carriers
+														<p:commandButton id="new-carrier-button" escape="false"
+																		 styleClass="header-button white-button"
+																		 value="Add Carrier"
+																		 process="@this"
+																		 onclick="PF('new-carrier-dlg').show();"
+																		 actionListener="#{createDas.das.resetCarrier()}"
+																		 update="@(.dlg-carrier-update-class)"/> 
+													</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr>
+													<td>
+														<p:spacer width="100%" height="5px"/>
+														<p:dataTable id="carriers-table" value="#{createDas.das.carriers}"
+																	 var="carrier"
+																	 styleClass="type2-table"
+																	 emptyMessage="You do not have any carriers.">
+									
+															<p:column>
+																<h:outputText escape="false" value="#{carrier.buildFullCarrier()}"/>
+															</p:column>
+									
+															<p:column width="20px">
+																<p:commandLink update="carriers-table" 
+																			   title="Remove Carrier" 
+																			   process="carriers-table">
+																	<p:graphicImage value="#{uriUtil.icon('black/trash_icon_16.png', true)}"/>
+																	<p:collector value="#{carrier}" 
+																				 removeFrom="#{createDas.das.carriers}" 
+																				 unique="true"/> 
+																</p:commandLink>
+															</p:column>
+														</p:dataTable>                            
+													</td>
+												</tr>
+											</tbody>
+										</table>
+									
+									</p:outputPanel>
+									
+									<p:dialog id="new-carrier-dlg" 
+												height="600px"
+											  header="Add Carrier" 
+											  widgetVar="new-carrier-dlg" 
+											  dynamic="true" 
+											  resizable="false">  
+										<h:panelGroup id="carrier-group">
+										<table>
+											<tr><td colspan="4"><h2>Verizon Point of Contact</h2></td></tr>
+											<tr>
+												<td><h3>Name:</h3></td>
+												<td>
+													<p:inputText id="add-1" value="#{createDas.das.newCarrier.name}" >
+													</p:inputText>
+												</td>
+												<td><h3>Title:</h3></td>
+												<td>
+													<p:inputText id="add-2" value="#{createDas.das.newCarrier.title}" >
+													</p:inputText>
+												</td>
+											</tr>
+											<tr>
+												<td><h3>Phone:</h3></td>
+												<td>
+													<p:autoComplete id="add-3"
+															value="#{createDas.das.newCarrier.phones}"
+															completeMethod="#{createDas.das.newCarrier.completeInfo}"
+															multiple="true">
+													</p:autoComplete>
+												</td>
+												<td><h3>Email:</h3></td>
+												<td>
+													<p:autoComplete id="add-4"
+															value="#{createDas.das.newCarrier.emails}"
+															completeMethod="#{createDas.das.newCarrier.completeInfo}"
+															multiple="true">
+													</p:autoComplete>
+												</td>
+											</tr>
+											
+											<tr><td colspan="4"><h3>Verizon NOC Number</h3></td></tr>
+											<tr>
+												<td><h3>NOC Email:</h3></td>
+												<td colspan="3">
+													<p:autoComplete id="add-5"
+															value="#{createDas.das.newCarrier.nocEmails}"
+															completeMethod="#{createDas.das.newCarrier.completeInfo}"
+															multiple="true">
+													</p:autoComplete>
+												</td>
+											</tr>
+											
+											<tr><td colspan="4"><h3>Verizon Signal Source Info</h3></td></tr>
+											<tr>
+												<td><h3>BTS ID:</h3></td>
+												<td>
+													<p:inputText id="add-6" value="#{createDas.das.newCarrier.btsId}">
+													</p:inputText>
+												</td>
+												<td><h3>Location:</h3></td>
+												<td>
+													<p:inputText id="add-7" value="#{createDas.das.newCarrier.location}">
+													</p:inputText>
+												</td>
+											</tr>
+											<tr>
+												<td><h3>Notes:</h3></td>
+												<td colspan="3">
+													<p:inputTextarea id="add-8" rows="3" cols="40" autoResize="false" 
+																value="#{createDas.das.newCarrier.notes}" >
+													</p:inputTextarea>
+												</td>
+											</tr>
+										</table>
+										</h:panelGroup>
+										<hr></hr>
+										<p:commandButton id="add-carrier-button" escape="false"
+														 value="Add Carrier" 
+														 styleClass="green-button" 
+														 update="carrier-group :form:carrier-group carriers-table"
+														 process="@this @parent" 
+														 action="#{createDas.das.resetCarrier()}" 
+														 onsuccess="PF('new-carrier-dlg').hide()"
+													>
+									
+											<p:collector value="#{createDas.das.newCarrier}" 
+														 addTo="#{createDas.das.carriers}" 
+														 unique="true"/>  
+									
+										</p:commandButton> 
+									</p:dialog>
+
+
+									<ez:blockUI target=":form:create-btn" widgetVar="blockui1"/>
+									<h3>Reporting</h3>
                                     <p:selectBooleanButton value="#{createDas.das.reportingEnabled}" 
                                                            onLabel="Enabled" 
                                                            offLabel="Disabled" />
@@ -251,15 +395,11 @@
                                                      update=":form:growl"
                                                      process="@(.page-container :input)"
                                                      disabled="#{createDas.das.name eq null or createDas.das.name.length() eq 0 or !createDas.das.ipAddress.valid()}"/>
-
-                                    <ez:blockUI target=":form:create-btn" widgetVar="blockui1"/>
-
                                 </td>
                             </tr>
                         </tbody>
                     </table>
-
-
+						
                 </pe:layoutPane>
 
                 <pe:layoutPane id="south" 

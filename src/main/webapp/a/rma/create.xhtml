@@ -309,7 +309,9 @@
                                                          action="#{rmaRequest.rma.resetRmaProduct()}"
                                                          onsuccess="PF('new-product-dlg').hide()">
 
-                                            <p:collector value="#{rmaRequest.rma.newRmaProduct}" addTo="#{rmaRequest.rma.products}" unique="true"/>
+                                            <p:collector value="#{rmaRequest.rma.newRmaProduct}" 
+		                                           	 	addTo="#{rmaRequest.rma.products}" 
+		                                           	 	unique="true"/>
 
                                         </p:commandButton>
 

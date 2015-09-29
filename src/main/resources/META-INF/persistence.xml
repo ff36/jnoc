@@ -26,6 +26,7 @@
 		<class>co.ff36.jnoc.per.entity.Token</class>
 		<class>co.ff36.jnoc.per.entity.Template</class>
 		<class>co.ff36.jnoc.per.entity.DAS</class>
+		<class>co.ff36.jnoc.per.entity.Carrier</class>
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		<properties>
 			<property name="eclipselink.logging.level" value="SEVERE" />

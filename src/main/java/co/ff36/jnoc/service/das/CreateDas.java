@@ -43,6 +43,7 @@ public class CreateDas implements Serializable {
     private static final long serialVersionUID = 1L;
     
     private DAS das;
+    private boolean render=true;
 //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="Constructors">
@@ -73,6 +74,14 @@ public class CreateDas implements Serializable {
         this.das = das;
     }
 
+    public boolean isRender(){
+    	return this.render;
+    }
+
+	public void setRender(boolean render) {
+		this.render = render;
+	}
+    
 //</editor-fold>
 
 }

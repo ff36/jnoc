@@ -135,7 +135,13 @@
                                                           filterBy="#{site.name}"
                                                           filterStyle="display:none"
                                                           sortBy="#{site.name}">
-                                                    #{site.name}
+                                                    <p:commandLink id="edit-das" 
+															value="#{empty site.name ? 'unname' : site.name}" 
+															action="#{navigator.navigate('EDIT_DAS_WITH_PARAM', 'das='.concat(site.id))}" 
+															type="button" 
+															process="@this" 
+															title="View / edit das"/>
+                                                    
                                                 </p:column>
 
                                                 <p:column headerText="Support"
@@ -294,7 +300,9 @@
                                                                   header="DAS" 
                                                                   widgetVar="das-dlg" 
                                                                   dynamic="true"
-                                                                  width="800px">  
+                                                                  width="800px"
+                                                                  height="500px"
+                                                                  >  
 
                                                             <h3>DMS Firmware *</h3>
                                                             <p:selectOneMenu value="#{site.dms}" 

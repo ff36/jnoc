@@ -40,7 +40,6 @@ import javax.inject.Named;
  * @version 2.0.0
  * @since Build 2.0-SNAPSHOT (Aug 8, 2013)
  * @author Tarka L'Herpiniere
-
  */
 @Named
 @ViewScoped

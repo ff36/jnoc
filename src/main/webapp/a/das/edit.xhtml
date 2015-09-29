@@ -1,0 +1,412 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:ez="http://xmlns.jcp.org/jsf/composite/ezcomp"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<h:outputStylesheet name="css/auth.css" />
+	<h:outputStylesheet name="css/common.css" />
+	<link rel="shortcut icon" type="image/png"
+		href="#{request.contextPath}/resources/images/favicon.ico" />
+	<title>#{msgs['default.page.title']} | #{msgs['admin.site.edit.page.title']}</title>
+</h:head>
+
+<h:body>
+#{permissionUtil.hasPagePermission('site:create')}
+#{jsfSessionUser.currentUser.hasPageRole('ADMIN')}
+	
+<h:form id="form">
+
+	<pe:ajaxErrorHandler />
+
+	<p:growl id="growl" redisplay="false" showDetail="false"
+		sticky="false" />
+
+	<ez:navigation-a />
+	
+	<pe:layout widgetVar="layourWgt" >
+		<pe:layoutPane id="north" 
+				position="north" 
+				closable="false" 
+				resizable="false" 
+				size="40"/>
+	
+		<pe:layoutPane id="west" 
+				position="west" 
+				resizeWhileDragging="true" 
+				size="250">
+	
+			<table class="navigation-sidebar">
+				<thead>
+					<tr><th>DAS Dashboard</th></tr>
+				</thead>
+				<tfoot><tr><td></td></tr></tfoot>
+				<tbody>
+					<tr>
+						<td><p:commandLink value="DAS" 
+								action="/a/das/list.xhtml?faces-redirect=true" 
+								process="@this" 
+								type="button"/>
+						</td>
+					</tr>
+					<tr>
+						<td><p:commandLink value="Create New DAS" 
+									action="/a/das/create.xhtml?faces-redirect=true" 
+									process="@this" 
+									type="button"/>
+						</td>
+					</tr>
+					<tr>
+						<td class="active">Edit DAS</td>
+					</tr>
+					
+				</tbody>
+			</table>
+	
+		</pe:layoutPane>
+		
+		<pe:layoutPane id="center" 
+				position="center" 
+				resizeWhileDragging="true">
+			<p:remoteCommand autoRun="true" 
+				async="true" 
+				actionListener="#{editDas.init()}" 
+				process=":form:lazy-update-class :form:lazy-update-class2 :form:reportint-option"
+				update=":form:lazy-update-class :form:lazy-update-class2 :form:reportint-option"/>
+				
+			<table class="page-container">
+				<thead>
+					<tr><th>Edit DAS</th></tr>
+				</thead>
+				<tbody><tr><td>
+				<h:panelGroup id="lazy-update-class">
+				<ui:fragment rendered="#{editDas.render}">
+					<h3>DAS Name*</h3>                                    
+					<p:inputText value="#{editDas.das.name}"  
+							required="true" 
+							requiredMessage="Name is required">
+						<p:ajax event="keyup" update=":form:edit-btn"/>
+					</p:inputText>
+	
+					<h3>DMS IP*</h3> 
+					<h:panelGrid columns="7" styleClass="table-align-bottom">
+	
+						<p:inputText id="ipa" 
+								value="#{editDas.das.ipAddress.ipa}" 
+								size="3" 
+								styleClass="ip-field">
+							<p:ajax event="blur" 
+								update=":form:edit-btn @this" 
+								listener="#{editDas.das.ipAddress.formatA}"/>
+						</p:inputText>
+	
+						<h:outputText value="." styleClass="ip-field-period"/>
+	
+						<p:inputText id="ipb" 
+							value="#{editDas.das.ipAddress.ipb}" 
+							size="3" 
+							styleClass="ip-field">
+								<p:ajax event="blur" 
+									update=":form:edit-btn  @this" 
+									listener="#{editDas.das.ipAddress.formatB}"/>
+						</p:inputText>
+	
+						<h:outputText value="." styleClass="ip-field-period"/>
+	
+						<p:inputText id="ipc" 
+								value="#{editDas.das.ipAddress.ipc}" 
+								size="3" 
+								styleClass="ip-field">
+							<p:ajax event="blur" 
+								update=":form:edit-btn  @this" 
+								listener="#{editDas.das.ipAddress.formatC}"/>
+						</p:inputText>
+	
+						<h:outputText value="." styleClass="ip-field-period"/>
+	
+						<p:inputText id="ipd" 
+								value="#{editDas.das.ipAddress.ipd}" 
+								size="3" 
+								styleClass="ip-field">
+							<p:ajax event="blur" 
+								update=":form:edit-btn  @this" 
+								listener="#{editDas.das.ipAddress.formatD}"/>
+						</p:inputText>
+	
+					</h:panelGrid>
+	
+					<h3>DMS Firmware *</h3>
+					<p:selectOneMenu value="#{editDas.das.dms}" 
+							effect="fade"
+							style="width: 258px"
+							required="true"
+							requiredMessage="DMS Firmware required"> 
+						<f:selectItem itemLabel="-" noSelectionOption="true" />
+						<f:selectItems value="#{enumController.DMSTypes}" 
+								var="dms" 
+								itemLabel="#{dms.label}" 
+								itemValue="#{dms}" />
+							<p:ajax event="change" update="@this :form:growl"/>
+					</p:selectOneMenu>
+	
+					<h3>Contact Name</h3>
+					<h:panelGrid columns="2" styleClass="table-vertical-spacer">
+						<p:inputText id="first-name" value="#{editDas.das.contact.firstName}"/>
+						<p:watermark value="First Name" for="first-name"/>
+						<p:inputText id="last-name" value="#{editDas.das.contact.lastName}"/>
+						<p:watermark value="Last Name" for="last-name"/>
+					</h:panelGrid>
+	
+					<h3>Contact Email</h3>
+					<p:inputText value="#{editDas.das.contact.email}"/>
+	
+					<h3>Address</h3>
+					<h:panelGrid columns="2" styleClass="table-vertical-spacer">
+	
+						<p:inputText id="address-line-two" value="#{editDas.das.address.lineTwo}"/>
+						<p:watermark value="Street" for="address-line-two"/>
+	
+						<p:inputText id="address-line-three" value="#{editDas.das.address.lineThree}"/>
+						<p:watermark value="City" for="address-line-three"/>
+	
+						<p:inputText id="address-line-four" value="#{editDas.das.address.lineFour}"/>
+						<p:watermark value="State" for="address-line-four"/>
+	
+						<p:inputText id="address-line-five" value="#{editDas.das.address.lineFive}"/>
+						<p:watermark value="Zip" for="address-line-five"/>
+	
+					</h:panelGrid>
+	
+					<h3>Co-ordinates</h3>
+					<h:panelGrid columns="2" styleClass="table-vertical-spacer">
+						<p:inputText id="latitude" value="#{editDas.das.address.latitude}"/>
+						<p:watermark value="Latitude" for="latitude"/>
+						<p:inputText id="longitude" value="#{editDas.das.address.longitude}"/>
+						<p:watermark value="Longitude" for="longitude"/>
+					</h:panelGrid>
+	
+					<h3>Installer</h3>
+					<p:inputText id="installer" value="#{editDas.das.installer}"/>
+	
+					<h3>Support Package</h3>
+					<p:selectOneMenu value="#{editDas.das.packageType}" 
+							effect="fade"
+							style="width: 258px">  
+						<f:selectItem itemLabel="-" itemValue="" />
+						<f:selectItem itemLabel="Monitoring" itemValue="Monitoring" />  
+						<f:selectItem itemLabel="Maintenance" itemValue="Maintenance" />  
+						<f:selectItem itemLabel="Monitoring and Maintenance" itemValue="Monitoring and Maintenance" /> 
+					</p:selectOneMenu>
+	
+					<h3>Response Time</h3>
+					<p:spinner value="#{editDas.das.responseHrs}" min="0"/> 
+					</ui:fragment>
+					</h:panelGroup>
+					
+					<p:spacer width="100%" height="20px"/>
+					<p:outputPanel id="carriers">
+						<h:panelGroup id="lazy-update-class2">
+						<table class="page-container">
+						<thead><tr><th>
+							Carriers
+							<p:commandButton id="new-carrier-button" escape="false"
+									styleClass="header-button white-button"
+									value="Add Carrier"
+									process="@this"
+									onclick="PF('new-carrier-dlg').show();"
+									actionListener="#{editDas.das.resetCarrier()}"
+									update="@(.dlg-carrier-update-class)"/> 
+						</th></tr></thead>
+						<tbody><tr><td>
+							<p:spacer width="100%" height="5px"/>
+							<p:dataTable id="carriers-table" value="#{editDas.das.carriers}" rendered="#{editDas.render}"
+									var="carrier"
+									styleClass="type2-table"
+									resizableColumns="true"
+									rowIndexVar="index"
+									emptyMessage="You do not have any carriers."
+								>
+	
+								<p:column>
+									<h:outputText escape="false" value="#{carrier.buildFullCarrier()}"/>
+								</p:column>
+	
+								<p:column styleClass="carrier-colum2"  style="width:60px;">
+									<p:commandLink escape="false"
+										styleClass="header-button white-button"
+										process="@this"
+										oncomplete="PF('new-carrier-dlg').show();"
+										update="@(.dlg-carrier-update-class)">
+											<p:graphicImage style="padding-right:10px; padding-left:10px;"  value="#{uriUtil.icon('black/cog_icon_16.png', true)}"/>
+											<f:setPropertyActionListener value="#{carrier}" target="#{editDas.das.newCarrier}"/>
+									</p:commandLink> 
+									
+									
+									<ui:remove>
+									<p:commandButton update=":form:carrier-group"  style="padding-right:10px; padding-left:10px;"
+											oncomplete="PF('new-carrier-dlg').show()" title="Edit">
+										<p:graphicImage style="padding-right:10px; padding-left:10px;"  value="#{uriUtil.icon('black/cog_icon_16.png', true)}"/>
+										<f:setPropertyActionListener value="#{carrier}" target="#{editDas.das.newCarrier}"/>
+									</p:commandButton>
+									<p:commandLink
+											title="Edit Carrier" 
+											onclick="PF('form:carriers-table:#{index}:edit-carrier-dlg').show();">
+										<p:graphicImage style="padding-right:10px; padding-left:10px;"  value="#{uriUtil.icon('black/cog_icon_16.png', true)}"/>
+									</p:commandLink>
+									</ui:remove>
+									
+									<p:commandLink update="carriers-table" 
+											title="Remove Carrier" 
+											process="carriers-table">
+										<p:graphicImage value="#{uriUtil.icon('black/trash_icon_16.png', true)}"/>
+										<p:collector value="#{carrier}" 
+											removeFrom="#{editDas.das.carriers}" 
+											unique="true"/> 
+									</p:commandLink>
+									
+								</p:column>
+							</p:dataTable>                            
+						</td></tr></tbody>
+					</table>
+					</h:panelGroup>
+				</p:outputPanel>
+
+				<p:dialog id="new-carrier-dlg" 
+						height="600px"
+						header="Add Carrier" 
+						widgetVar="new-carrier-dlg" 
+						dynamic="true" 
+						resizable="false">  
+					<h:panelGroup id="carrier-group">
+						<table>
+							<tr>
+								<td colspan="4"><h3>Verizon Point of Contact</h3></td>
+							</tr>
+							<tr>
+								<td><h3>Name:</h3></td>
+								<td>
+									<p:inputText id="add-1" value="#{editDas.das.newCarrier.name}"></p:inputText>
+								</td>
+								<td><h3>Title:</h3></td>
+								<td>
+									<p:inputText id="add-2" value="#{editDas.das.newCarrier.title}" >
+									</p:inputText>
+								</td>
+							</tr>
+							<tr>
+								<td><h3>Phone:</h3></td>
+								<td>
+									<p:autoComplete id="add-3"
+											value="#{editDas.das.newCarrier.phones}"
+											completeMethod="#{editDas.das.newCarrier.completeInfo}"
+											multiple="true">
+									</p:autoComplete>
+								</td>
+								<td><h3>Email:</h3></td>
+								<td>
+									<p:autoComplete id="add-4"
+											value="#{editDas.das.newCarrier.emails}"
+											completeMethod="#{editDas.das.newCarrier.completeInfo}"
+											multiple="true">
+									</p:autoComplete>
+								</td>
+							</tr>
+
+							<tr><td colspan="4"><h3>Verizon NOC Number</h3></td></tr>
+							<tr>
+								<td><h3>NOC Email:</h3></td>
+								<td colspan="3">
+									<p:autoComplete id="add-5"
+										value="#{editDas.das.newCarrier.nocEmails}"
+										completeMethod="#{editDas.das.newCarrier.completeInfo}"
+										multiple="true">
+									</p:autoComplete>
+								</td>
+							</tr>
+
+							<tr><td colspan="4"><h3>Verizon Signal Source Info</h3></td></tr>
+							<tr>
+								<td><h3>BTS ID:</h3></td>
+								<td>
+									<p:inputText id="add-6" value="#{editDas.das.newCarrier.btsId}">
+									</p:inputText>
+								</td>
+								<td><h3>Location:</h3></td>
+								<td>
+									<p:inputText id="add-7" value="#{editDas.das.newCarrier.location}">
+									</p:inputText>
+								</td>
+							</tr>
+							<tr>
+								<td><h3>Notes:</h3></td>
+								<td colspan="3">
+									<p:inputTextarea id="add-8" rows="3" cols="40" autoResize="false" 
+										value="#{editDas.das.newCarrier.notes}" >
+									</p:inputTextarea>
+								</td>
+							</tr>
+						</table>
+					</h:panelGroup>
+					<hr></hr>
+					<p:commandButton id="add-carrier-button" escape="false"
+							value="Commit Carrier" 
+							styleClass="green-button" 
+							update="carrier-group :form:carrier-group carriers-table "
+							process="@this @parent" 
+							action="#{editDas.das.resetCarrier()}" 
+							onsuccess="PF('new-carrier-dlg').hide()">
+						<p:collector 
+								value="#{editDas.das.newCarrier}" 
+								addTo="#{editDas.das.carriers}" 
+								unique="true"/>
+					</p:commandButton> 
+				</p:dialog>
+				
+				<ez:blockUI target=":form:edit-btn" widgetVar="blockui1"/>
+				
+				<h:panelGroup id="reportint-option">
+					<ui:fragment rendered="#{editDas.render}">
+						<h3>Reporting</h3>
+							<p:selectBooleanButton value="#{editDas.das.reportingEnabled}" 
+								onLabel="Enabled" 
+								offLabel="Disabled" />
+					</ui:fragment>
+				</h:panelGroup>
+				
+				<p:spacer width="100%" height="20px"/>
+				
+				<p:commandButton id="edit-btn" 
+						styleClass="green-button"
+						value="Update"
+						action="#{editDas.das.update()}"
+						onclick="PF('blockui1').block();"
+						oncomplete="PF('blockui1').unblock();"
+						update=":form:growl"
+						process="@(.page-container :input)"
+						disabled="#{editDas.das.name eq null or editDas.das.name.length() eq 0 or !editDas.das.ipAddress.valid()}"/>
+			</td></tr></tbody>
+		</table>
+		</pe:layoutPane>
+
+		<pe:layoutPane id="south" 
+				position="south" 
+				closable="false" 
+				resizable="false" 
+				size="40">
+			<ez:footer/>
+		</pe:layoutPane>
+	</pe:layout>
+
+
+</h:form>
+
+</h:body>
+
+</html>
+

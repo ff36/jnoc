@@ -58,7 +58,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class TicketAnalytics implements Serializable {
 
     //<editor-fold defaultstate="collapsed" desc="Properties">
-    private static final Logger LOG = Logger.getLogger(EditTicket.class.getName());
+    private static final Logger LOG = Logger.getLogger(TicketAnalytics.class.getName());
     private static final long serialVersionUID = 1L;
 
     private String data;

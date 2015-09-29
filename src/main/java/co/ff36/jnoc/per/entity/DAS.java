@@ -17,13 +17,10 @@
 
 package co.ff36.jnoc.per.entity;
 
-import co.ff36.jnoc.app.misc.IpAddress;
-import co.ff36.jnoc.app.misc.JsfUtil;
-import co.ff36.jnoc.per.dap.CrudService;
-import co.ff36.jnoc.per.project.JNOC.DMSType;
-
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.naming.InitialContext;
@@ -37,10 +34,16 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 import javax.persistence.Version;
 import javax.validation.constraints.Pattern;
+
+import co.ff36.jnoc.app.misc.IpAddress;
+import co.ff36.jnoc.app.misc.JsfUtil;
+import co.ff36.jnoc.per.dap.CrudService;
+import co.ff36.jnoc.per.project.JNOC.DMSType;
 
 /**
  * This class is mapped in the persistence layer allowing instances of this
@@ -85,6 +88,11 @@ public class DAS implements Serializable {
     @Enumerated(EnumType.STRING)
     private DMSType dms;
     private boolean reportingEnabled;
+    
+    
+    //@OneToMany(mappedBy = "das", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(cascade = {CascadeType.ALL}, mappedBy="das",orphanRemoval = true)
+    private Set<Carrier> carriers;
 //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="Transient Properties">
@@ -92,13 +100,26 @@ public class DAS implements Serializable {
     private CrudService dap;
     @Transient
     private IpAddress ipAddress;
+    @Transient
+    private Carrier newCarrier;
+    
 //</editor-fold>
 
-    //<editor-fold defaultstate="collapsed" desc="Constructors">
+    
+    public Carrier getNewCarrier() {
+		return newCarrier;
+	}
+
+	public void setNewCarrier(Carrier newCarrier) {
+		this.newCarrier = newCarrier;
+	}
+
+	//<editor-fold defaultstate="collapsed" desc="Constructors">
     public DAS() {
         this.contact = new Contact();
         this.address = new Address();
         this.ipAddress = new IpAddress();
+        this.carriers = new HashSet<Carrier>();
         
         try {
             dap = (CrudService) InitialContext.doLookup(
@@ -330,7 +351,15 @@ public class DAS implements Serializable {
         this.dms = dms;
     }
 
-    /**
+	public Set<Carrier> getCarriers() {
+		return carriers;
+	}
+
+	public void setCarriers(Set<Carrier> carriers) {
+		this.carriers = carriers;
+	}
+
+	/**
      * Set the value of reportingEnabled.
      *
      * @param reportingEnabled new value of reportingEnabled
@@ -350,13 +379,23 @@ public class DAS implements Serializable {
     
 //</editor-fold>
 
-    /**
+
+	public void resetCarrier() {
+		newCarrier = new Carrier();
+		this.newCarrier.setDas(this);
+    }
+	
+	
+	/**
      * Creates a new DAS, adds it to the persistence layer and adds storage
      * related resources.
      */
     public void create() {
         // Translate the IP
         this.dmsIp = ipAddress.concatIP();
+        for (Carrier carrier : carriers) {
+			carrier.buildStrings();
+		}
         
         // Persist the DAS
         DAS das = (DAS) dap.create(this);
@@ -364,7 +403,7 @@ public class DAS implements Serializable {
         JsfUtil.addSuccessMessage(das.getName() + " has been created.");
     }
 
-    /**
+	/**
      * Removes the das from the persistence layer and any associated resources
      * linked to the DAS.
      */
@@ -378,6 +417,7 @@ public class DAS implements Serializable {
     public void update() {
         DAS das = (DAS) dap.update(this);
         this.version = das.getVersion();
+        JsfUtil.addSuccessMessage(das.getName() + " update success.");
     }
     
     //<editor-fold defaultstate="collapsed" desc="Overrides">
@@ -402,6 +442,12 @@ public class DAS implements Serializable {
         DAS other = (DAS) object;
         return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
     }
+
+	@Override
+	public String toString() {
+		return "DAS [id=" + id + ", name=" + name + "]";
+	}
+    
 //</editor-fold>
 
 }
