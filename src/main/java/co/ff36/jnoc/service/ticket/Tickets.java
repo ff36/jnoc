@@ -17,11 +17,13 @@
 
 package co.ff36.jnoc.service.ticket;
 
+import co.ff36.jnoc.app.misc.CookieUtil;
 import co.ff36.jnoc.app.misc.JsfUtil;
 import co.ff36.jnoc.app.model.DataTable;
 import co.ff36.jnoc.app.model.ModelQuery;
 import co.ff36.jnoc.app.model.TicketModelQuery;
 import co.ff36.jnoc.app.service.internal.DefaultAttributeFilter;
+import co.ff36.jnoc.service.navigation.MenuItem;
 
 import java.io.Serializable;
 import java.util.List;
@@ -31,6 +33,10 @@ import java.util.logging.Logger;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
+import javax.servlet.http.Cookie;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Ticket table CDI bean. Provides advanced data table capability for
@@ -84,10 +90,26 @@ public class Tickets implements Serializable {
     }
 
     public int getNumberOfRows() {
+//    	Cookie[] cookies = CookieUtil.readCookie();
+//        for (Cookie cookie : cookies) {
+//            if (cookie.getName().equals("tickets_number_of_rows")) {
+//                this.numberOfRows = Integer.parseInt(cookie.getValue());
+//                break;
+//            }
+//        }
         return numberOfRows;
     }
 
     public void setNumberOfRows(int numberOfRows) {
+		
+    	Cookie cookie = new Cookie(
+		        "tickets_number_of_rows",
+		        numberOfRows+"");
+		//cookie.setHttpOnly(true);
+		cookie.setMaxAge(31536000);
+		cookie.setPath("/");
+		CookieUtil.writeCookie(cookie);
+		
         this.numberOfRows = numberOfRows;
     }
 
@@ -125,16 +147,29 @@ public class Tickets implements Serializable {
                 .getRequestParameterMap();
         browserHeight = Integer.valueOf(requestParameterMap.get("hidden_field_browser_height"));
         browserWidth = Integer.valueOf(requestParameterMap.get("hidden_field_browser_width"));
-        if (browserWidth >= 2100) {
-           numberOfRows = browserHeight / 34; 
-        } 
-        if (browserWidth > 1900 && browserWidth < 2100) {
-            numberOfRows = browserHeight / 40;
+        
+        boolean isExistForCookie = false;
+        Cookie[] cookies = CookieUtil.readCookie();
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("tickets_number_of_rows")) {
+                this.numberOfRows = Integer.parseInt(cookie.getValue());
+                isExistForCookie = true;
+                break;
+            }
         }
-        if (browserWidth < 1900) {
-            numberOfRows = browserHeight / 50;
+        
+        if(!isExistForCookie){
+        	if (browserWidth >= 2100) {
+                numberOfRows = browserHeight / 34; 
+             } 
+             if (browserWidth > 1900 && browserWidth < 2100) {
+                 numberOfRows = browserHeight / 40;
+             }
+             if (browserWidth < 1900) {
+                 numberOfRows = browserHeight / 50;
+             }
         }
-
+        
         dataTable = new DataTable(model);
         dataTable.initTable(
                 parameters, 

@@ -415,6 +415,9 @@
                                                             <p:menuitem value="Edit Company"
                                                                         onclick="PF('company-dlg').show();"
                                                                         disabled="#{!jsfSessionUser.currentUser.hasPermission('account:edit') or user.isAdministrator()}"/>                                    
+                                                            <p:menuitem value="Resend Token"
+                                                                        actionListener="#{user.resendToken()}" 
+                                                                        disabled="#{(jsfSessionUser.currentUser.hasPermission('account:edit') and user.isComfirmed())}"/>                                    
                                                             <p:separator />
                                                             <p:menuitem value="Close Account" 
                                                                         actionListener="#{user.close()}" 

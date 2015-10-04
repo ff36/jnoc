@@ -451,6 +451,14 @@ public class User implements Serializable {
 //</editor-fold>
     
     /**
+     * check account is active
+     * @return
+     */
+    public boolean isComfirmed(){
+    	return this.getAccount().isConfirmed();
+    }
+    
+    /**
      * Loads availableCompanies data from the persistence layer and sets the
      * class level properties. This information is generally not needed so it is
      * not loaded by default.
@@ -837,6 +845,35 @@ public class User implements Serializable {
         newPermission = new Permission();
     }
 
+    
+    /**
+     * at account list page. when you click resend token. whill call this.
+     */
+    public void resendToken(){
+    	
+    	List<Token> tokens = dap.findWithNamedQuery(
+                "Token.findByUserID",
+                QueryParameter
+                .with("user", this.id.toString())
+                .parameters());
+    	
+    	if(tokens!=null && tokens.size()>0){
+    		Token token = tokens.get(0);
+    		dap.delete(Token.class, token.getId());
+    	}
+    	
+    	Token token = newUserEmail();
+    	token.create();
+    	
+    	try {
+            JsfUtil.addSuccessMessage("Send Comfirm Success");
+        } catch (Exception e) {
+            // Request does not come from JSF
+        	LOG.log(Level.CONFIG, e.getMessage(), e);
+        }
+    	
+    }
+    
     /**
      * Construct an email to the newly requested address and persist the
      * Token to confirm the authentication at a later date.

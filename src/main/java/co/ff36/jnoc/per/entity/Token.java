@@ -62,6 +62,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @NamedQueries({
     @NamedQuery(name = "Token.findAll", query = "SELECT e FROM Token e"),
     @NamedQuery(name = "Token.findByID", query = "SELECT e FROM Token e WHERE e.id = :id"),
+    @NamedQuery(name = "Token.findByUserID", query = "SELECT e FROM Token e WHERE e.user = :user"),
     @NamedQuery(name = "Token.findByEmail", query = "SELECT e FROM Token e WHERE e.email = :email"),
     @NamedQuery(name = "Token.findByEpoch", query = "SELECT e FROM Token e WHERE e.createEpoch < :epoch")
 })
