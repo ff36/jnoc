@@ -404,13 +404,16 @@
                                                                         oncomplete="PF('permission-dlg').show();" 
                                                                         actionListener="#{user.resetPermission()}" 
                                                                         disabled="#{!jsfSessionUser.currentUser.hasPermission('permission,account:edit')}"/> 
+                                                            <p:menuitem value="Edit Group" 
+                                                                        oncomplete="PF('group-dlg').show();" 
+                                                                        actionListener="#{user.resetGroup()}" 
+                                                                        disabled="#{!jsfSessionUser.currentUser.hasPermission('permission,account:edit')}"/> 
                                                             <p:menuitem value="Edit Address" 
                                                                         oncomplete="PF('address-dlg').show();" 
                                                                         actionListener="#{user.resetPermission()}" 
                                                                         disabled="#{!jsfSessionUser.currentUser.hasPermission('account:edit')}"/>
                                                             <p:menuitem value="Edit Telephone"  
-                                                                        oncomplete="PF('telephone-dlg').show();" 
-                                                                        actionListener="#{user.resetPermission()}" 
+                                                                        onclick="PF('telephone-dlg').show();" 
                                                                         disabled="#{!jsfSessionUser.currentUser.hasPermission('account:edit')}"/> 
                                                             <p:menuitem value="Edit Company"
                                                                         onclick="PF('company-dlg').show();"
@@ -797,7 +800,86 @@
                                                             <ez:blockUI target="@(.company-save-button-update-class)" widgetVar="blockui4"/>
 
                                                         </p:dialog>
+														
+														<p:dialog header="Edit Group" 
+                                                                  widgetVar="group-dlg" 
+                                                                  dynamic="true" 
+                                                                  resizable="false" 
+                                                                  width="810px">  
 
+                                                            <h:outputText value="Current Group" style="font-weight: bold"/>
+
+                                                            <p:dataTable value="#{user.roles}"
+                                                                         var="group"
+                                                                         styleClass="blank-table dlg-group-update-class">
+
+                                                                <p:column>
+                                                                    <h:outputText value="#{group.showRole()}"/>
+                                                                </p:column>
+
+                                                                <p:column width="20">
+                                                                    <p:commandLink update="@(.dlg-group-update-class)" 
+                                                                                   title="Remove Group" 
+                                                                                   process="@(.dlg-group-update-class)">
+                                                                        <p:graphicImage value="#{uriUtil.icon('black/trash_icon_16.png', true)}"/>
+                                                                        <p:collector value="#{group}" 
+                                                                                     removeFrom="#{user.roles}" 
+                                                                                     unique="true"/> 
+                                                                    </p:commandLink>
+                                                                </p:column>
+
+                                                            </p:dataTable>
+
+                                                            <hr></hr>
+
+                                                            <h:outputText value="Add New Group" style="font-weight: bold"/>
+
+                                                            <table class="blank-table">
+                                                                <tr>
+                                                                    <td>
+                                                                    	<p:selectOneMenu
+                                                                   					id="allGroups" 
+                                                                                    value="#{user.newGroup}" 
+                                                                                    converter = "roleCvt"  
+                                                                                    style="width: 180px"
+                                                                                   	>
+                                                                        		<f:selectItems value="#{user.allGroups}" 
+						                                                               var="g" 
+						                                                               itemLabel="#{g.showRole()}" 
+						                                                               itemValue="#{g}" />
+                                                                        </p:selectOneMenu>
+                                                                    </td>
+                                                                    <td>
+                                                                        <p:commandButton id="add-group-per-button"
+                                                                                         value="Update Group"
+                                                                                         action="#{user.resetGroup()}"
+                                                                                         update="@(.dlg-group-update-class)">
+                                                                            <p:collector value="#{user.newGroup}" 
+                                                                                         addTo="#{user.roles}" 
+                                                                                         unique="true"/>
+                                                                        </p:commandButton>
+
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+
+                                                            <hr></hr>
+
+                                                            <p:commandButton id="per-save-group-button" 
+                                                                             styleClass="green-button group-save-button-update-class" 
+                                                                             actionListener="#{user.updateGroup()}" 
+                                                                             value="Save"  
+                                                                             process="@this" 
+                                                                             update="@(.group-update-class) :form:growl"
+                                                                             onclick="PF('blockui4').block();"
+                                                                             oncomplete="PF('blockui4').unblock();"
+                                                                             onsuccess="PF('group-dlg').hide()"/>
+
+                                                            <ez:blockUI target="@(.group-save-button-update-class)" 
+                                                                        widgetVar="blockui4"/>
+
+                                                        </p:dialog>
+														
                                                     </div>
                                                 </p:rowExpansion> 
 

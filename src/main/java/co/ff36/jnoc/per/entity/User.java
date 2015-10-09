@@ -22,12 +22,14 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -43,6 +45,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -92,7 +97,7 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
     @NamedQuery(name = "User.findByEmail", query = "SELECT e FROM User e WHERE e.email = :email"),
     @NamedQuery(name = "User.findByMetier", query = "SELECT e FROM User e WHERE e.metier.name = :name"),
     @NamedQuery(name = "User.findByNullCompany", query = "SELECT e FROM User e WHERE e.company IS NULL"),
-    @NamedQuery(name = "User.findByCompany", query = "SELECT e FROM User e JOIN e.company c WHERE c.id = :id")
+    @NamedQuery(name = "User.findByCompany", query = "SELECT e FROM User e JOIN e.company c WHERE c.id = :id"),
 })
 @Table(name = "SUBJECT")
 @Entity
@@ -140,6 +145,20 @@ public class User implements Serializable {
     private Request request;
     @Transient
     Password newPassword;
+    
+    /////////////////group////////////////////////////////////
+    @ManyToMany
+	@JoinTable(name="subject_role", 
+		joinColumns={@JoinColumn(name="User_ID")},
+		inverseJoinColumns={@JoinColumn(name="Role_ID")}
+	)
+    private List<Role> roles = new ArrayList<Role>();
+    @Transient
+    private Role newGroup;
+    @Transient
+    private List<Role> allGroups;
+    ////////////////////end group//////////////////////////////
+    
 //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Constructors">
@@ -1232,4 +1251,54 @@ public class User implements Serializable {
 
     }
 
+    //////////////////////////// group ///////////////////////////////////
+    ////role == group////
+    public void updateGroup(){
+    	Set<Permission> tpermissions = new HashSet<Permission>();
+    	for (Role role : this.roles) {
+			List<PermissionTemplate> pts = role.getPermissions();
+			for (PermissionTemplate permissionTemplate : pts) {
+				tpermissions.add(new Permission(permissionTemplate.getExpression()));
+			}
+		}
+    	this.permissions.clear();
+    	this.permissions.addAll(permissions);
+    	
+    	User user = (User) dap.update(this);
+    	this.version = user.version;
+    	this.roles = user.getRoles();
+    	
+    	JsfUtil.addSuccessMessage("Saved");
+    }
+    
+    public List<Role> getAllGroups() {
+    	if(allGroups==null||allGroups.isEmpty()){
+    		this.allGroups  = (List<Role>) dap.findWithNamedQuery("Role.findAll");
+    	}
+		return allGroups;
+	}
+    
+    public void resetGroup(){
+    	this.newGroup = null;
+    }
+    
+	public List<Role> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(List<Role> roles) {
+		this.roles = roles;
+	}
+
+	public Role getNewGroup() {
+		return newGroup;
+	}
+
+	public void setNewGroup(Role newGroup) {
+		this.newGroup = newGroup;
+	}
+
+	public void setAllGroups(List<Role> allGroups) {
+		this.allGroups = allGroups;
+	}
 }

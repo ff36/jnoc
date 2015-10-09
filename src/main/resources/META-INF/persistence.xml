@@ -27,6 +27,8 @@
 		<class>co.ff36.jnoc.per.entity.Template</class>
 		<class>co.ff36.jnoc.per.entity.DAS</class>
 		<class>co.ff36.jnoc.per.entity.Carrier</class>
+		<class>co.ff36.jnoc.per.entity.Role</class>
+		<class>co.ff36.jnoc.per.entity.PermissionTemplate</class>
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		<properties>
 			<property name="eclipselink.logging.level" value="SEVERE" />
