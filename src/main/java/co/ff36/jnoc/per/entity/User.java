@@ -1266,7 +1266,6 @@ public class User implements Serializable {
     	
     	User user = (User) dap.update(this);
     	this.version = user.version;
-    	this.roles = user.getRoles();
     	
     	JsfUtil.addSuccessMessage("Saved");
     }
