@@ -40,7 +40,6 @@ create table role_permission_template(
 	CONSTRAINT `FK_role_permission_templatep_id` FOREIGN KEY (`Permission_template_ID`) REFERENCES `permisison_template` (`ID`)
 );
 
-
 INSERT INTO `role` VALUES (1,'admin'),(2,'employee'),(3,'guest');
 INSERT INTO `permisison_template` values(1, '*:*'), (2, 'accounts:access,create,edit'), (3, 'ticket:*'), (4, 'company:*,das:*'), (5, 'rma:*'), (6, 'ticket:access,accounts:access');
 INSERT INTO `subject_role` VALUES (1,1),(152,2),(153,3);

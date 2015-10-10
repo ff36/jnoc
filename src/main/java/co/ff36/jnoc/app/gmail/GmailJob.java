@@ -17,9 +17,10 @@
 
 package co.ff36.jnoc.app.gmail;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Map;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,9 +39,6 @@ import org.quartz.JobExecutionException;
 
 import co.ff36.jnoc.app.service.internal.DefaultStorageManager;
 import co.ff36.jnoc.app.services.StorageManager;
-import co.ff36.jnoc.per.project.JNOC;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Implements the Quartz Job interface to schedule Gmail IMAP check.
@@ -106,6 +104,22 @@ public class GmailJob implements Job {
             // Attributes & Flags for all messages ..
             Message[] messages = folder.getMessages();
 
+            /*
+             * sort message by received date. when in the email conversion. the last mail is full message. but the conversion email has same title.
+             * so. we will create new ticket by last email, the conversion other email is skip.  
+             */
+//            List<Message> messageList = Arrays.asList(messages);
+//            Collections.sort(messageList,new Comparator<Message>(){
+//                public int compare(Message arg0, Message arg1) {
+//                    try {
+//						return arg1.getReceivedDate().compareTo(arg0.getReceivedDate());
+//					} catch (MessagingException e) {
+//						e.printStackTrace();
+//					}
+//                    return 0;
+//                }
+//            });
+            
             // Get the blacklist
             StorageManager storage = new DefaultStorageManager();
             //InputStream input = storage.get(storage.keyGenerator(JNOC.KeyType.EMAIL_BLACKLIST, null)).getObjectContent();
@@ -114,7 +128,6 @@ public class GmailJob implements Job {
             
             for (int i = 0; i < messages.length; ++i) {
                 final Message msg = messages[i];
-
                 // Only process emails not on the blacklist
                 //if (!blacklist.containsKey(msg.getFrom()[0].toString())) {
 

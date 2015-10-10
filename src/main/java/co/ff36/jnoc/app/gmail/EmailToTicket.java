@@ -25,7 +25,6 @@ import co.ff36.jnoc.per.entity.Metier;
 import co.ff36.jnoc.per.entity.Ticket;
 import co.ff36.jnoc.per.entity.User;
 import co.ff36.jnoc.per.project.JNOC;
-
 import co.ff36.jnoc.per.entity.User_;
 
 import java.io.IOException;
@@ -103,7 +102,7 @@ public class EmailToTicket {
         // Aquire the user account or create it if not
         User user = aquireAccount(msg);
 
-        if (subject.matches("(.*)(\\({1})(JNOC-)([0-9]*)(\\){1})(.*)")) {
+        if (subject.matches("(.*)(\\({1})(DTX-)([0-9]*)(\\){1})(.*)")) {
             // Extract the email id
             String fullEmailId = StringUtils.substringBetween(msg.getSubject(), "(", ")");
             String emailId = fullEmailId.substring(4);
@@ -119,12 +118,12 @@ public class EmailToTicket {
 
             if (!tickets.isEmpty()) {
                 // The ticket exists
+            	Ticket ticket = tickets.get(0);
                 Comment comment = new Comment();
                 comment.setCommenter(user);
                 comment.setCreateEpoch(new Date().getTime());
-                comment.setComment(getMessage(msg));
+                comment.setComment(getMessage(msg, ticket));
 
-                Ticket ticket = tickets.get(0);
                 ticket.setGmailJobTicketed(true);
                 ticket.setComment(comment);
                 ticket.setSendEmailToRequester(true);
@@ -144,7 +143,7 @@ public class EmailToTicket {
                 Comment comment = new Comment();
                 comment.setCommenter(user);
                 comment.setCreateEpoch(new Date().getTime());
-                comment.setComment(getMessage(msg));
+                comment.setComment(getMessage(msg, null));
 
                 Ticket ticket = new Ticket();
                 ticket.setGmailJobTicketed(true);
@@ -167,37 +166,19 @@ public class EmailToTicket {
 
         } else {
         	
-        	@SuppressWarnings("unchecked")
-			List<Ticket> tickets = dap.findWithNamedQuery("Ticket.findAllByTitle",
-                    QueryParameter.with("mailTitle", msg.getSubject())
-                    .parameters());
-        	if(!tickets.isEmpty()){
-        		// The ticket exists
-                Comment comment = new Comment();
-                comment.setCommenter(user);
-                comment.setCreateEpoch(new Date().getTime());
-                comment.setComment(getMessage(msg));
-
-                Ticket ticket = tickets.get(0);
-                ticket.setGmailJobTicketed(true);
-                ticket.setComment(comment);
-                ticket.setSendEmailToRequester(true);
-                if (ticket.getAssignee() != null) {
-                    ticket.setSendEmailToAssignee(true);
-                }
-                ticket.edit(JNOC.TicketStatus.OPEN, user);
-
-                // Take care of the attachements
-                for (Attachment a : attachments) {
-                    ticket.setAttachment(a);
-                    ticket.addAttachment();
-                }
-        	}else{
+//        	@SuppressWarnings("unchecked")
+//			List<Ticket> tickets = dap.findWithNamedQuery("Ticket.findAllByTitle",
+//                    QueryParameter.with("mailTitle", msg.getSubject())
+//                    .parameters());
+//        	if(!tickets.isEmpty()){
+//        		// The ticket exists
+//                return ;
+//        	}else{
         		// Create a new ticket
                 Comment comment = new Comment();
                 comment.setCommenter(user);
                 comment.setCreateEpoch(new Date().getTime());
-                comment.setComment(getMessage(msg));
+                comment.setComment(getMessage(msg, null));
 
                 Ticket ticket = new Ticket();
                 ticket.setGmailJobTicketed(true);
@@ -215,7 +196,7 @@ public class EmailToTicket {
                     ticket.setAttachment(a);
                     ticket.addAttachment();
                 }
-        	}
+//        	}
 
         }
     }
@@ -348,11 +329,12 @@ public class EmailToTicket {
     /**
      *
      * @param message
+     * @param ticket 
      * @return
      * @throws MessagingException
      * @throws IOException
      */
-    private String getMessage(Message message) throws
+    private String getMessage(Message message, Ticket ticket) throws
             MessagingException, IOException {
 
         String result = null;
@@ -387,42 +369,46 @@ public class EmailToTicket {
             result = Jsoup.parse(html).text();
         }
 
-        /*
-         If the email is part of a discussion it will feature our email in the
-         original message header so we can cut the email here so as not to include
-         previouse parts of the email.
-         */
-//        String emailAddress = System.getenv("JNOC_SENDER_EMAIL");
-//        if (result != null && result.contains(emailAddress)) {
-//            result = StringUtils.substringBefore(
-//                    result,
-//                    emailAddress);
-//            result = result.substring(0, result.lastIndexOf("\n"));
-//        }
-
-        /* 
-         If people have a signature it will have their name in it usually. It is
-         also unlikely that their name will feature in the last 10% section of 
-         the email unless its part of their signature. So we can look for that and 
-         cut off the email at that point.
-         */
         // Get the name
-        String from = "unknown";
-        if (message.getReplyTo().length >= 1) {
-            from = message.getReplyTo()[0].toString();
-        } else if (message.getFrom().length >= 1) {
-            from = message.getFrom()[0].toString();
-        }
+        if(ticket!=null){
+        	
+            /*
+            If the email is part of a discussion it will feature our email in the
+            original message header so we can cut the email here so as not to include
+            previouse parts of the email.
+            */
+           String emailAddress = System.getenv("JNOC_SENDER_EMAIL");
+           if (result != null && result.contains(emailAddress)) {
+               result = StringUtils.substringBefore(
+                       result,
+                       emailAddress);
+               result = result.substring(0, result.lastIndexOf("\n"));
+           }
 
-//        String name = StringUtils.substringBefore(from, "<").trim();
-//        // Just for my name because of the appostrohe
-//        if (name.contains("Tarka")) {
-//            name = "Tarka";
-//        }
-//        if (result != null && result.contains(name)) {
-//            result = StringUtils.substringBefore(result, name);
-//            result = result.substring(0, result.lastIndexOf("\n"));
-//        }
+           /* 
+            If people have a signature it will have their name in it usually. It is
+            also unlikely that their name will feature in the last 10% section of 
+            the email unless its part of their signature. So we can look for that and 
+            cut off the email at that point.
+            */
+        	
+        	String from = "unknown";
+            if (message.getReplyTo().length >= 1) {
+                from = message.getReplyTo()[0].toString();
+            } else if (message.getFrom().length >= 1) {
+                from = message.getFrom()[0].toString();
+            }
+
+            String name = StringUtils.substringBefore(from, "<").trim();
+            // Just for my name because of the appostrohe
+            if (name.contains("Tarka")) {
+                name = "Tarka";
+            }
+            if (result != null && result.contains(name)) {
+                result = StringUtils.substringBefore(result, name);
+                result = result.substring(0, result.lastIndexOf("\n"));
+            }
+        }
 
         // Remove any embedded image strings.
         if (result != null) {
