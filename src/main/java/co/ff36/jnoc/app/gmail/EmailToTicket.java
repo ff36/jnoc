@@ -102,7 +102,7 @@ public class EmailToTicket {
         // Aquire the user account or create it if not
         User user = aquireAccount(msg);
 
-        if (subject.matches("(.*)(\\({1})(DTX-)([0-9]*)(\\){1})(.*)")) {
+        if (subject.matches("(.*)(\\({1})(JNOC-)([0-9]*)(\\){1})(.*)")) {
             // Extract the email id
             String fullEmailId = StringUtils.substringBetween(msg.getSubject(), "(", ")");
             String emailId = fullEmailId.substring(4);
