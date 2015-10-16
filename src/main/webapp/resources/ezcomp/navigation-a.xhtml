@@ -118,6 +118,15 @@
                                                            onmouseover="document.getElementById('report-hover-details').style.display = 'block'"
                                                            onmouseout="document.getElementById('report-hover-details').style.display = 'none'"/>
                                         </ui:remove>
+                                        <ui:fragment>
+                                            <p:graphicImage value="#{uriUtil.icon('black/doc_lines_stright_icon_16.png', true)}"/>
+                                            <p:commandLink value="Documents"
+                                                           action="#{navigator.navigate('LIST_DOCUMENTS')}"
+                                                           process="@this"
+                                                           type="button"
+                                                           onmouseover="document.getElementById('document-hover-details').style.display = 'block'"
+                                                           onmouseout="document.getElementById('document-hover-details').style.display = 'none'"/>
+                                        </ui:fragment>
                                     </h:panelGrid>
                                 </p:column>
 
@@ -145,7 +154,7 @@
                                         <br></br>
                                         <h:outputText value="Support Tickets let you manage your case ticket cycles. Create, update, and resolve reported issues. "/>
                                     </div>
-
+				
                                     <div id="incident-hover-details" class="menu-hover-details" style="display: none">
                                         <p:graphicImage value="#{uriUtil.icon('black/flag_icon_48.png', true)}"/>
                                         <br></br>
@@ -181,7 +190,13 @@
                                         <br></br>
                                         <h:outputText value="Analytics provides monitoring for DAS resources. Track metrics, gain insight, and react immediately to keep sites running smoothly."/>
                                     </div>
-
+                                    
+									<div id="document-hover-details" class="menu-hover-details" style="display: none">
+                                        <p:graphicImage value="#{uriUtil.icon('black/doc_lines_stright_icon_48.png', true)}"/>
+                                        <br></br>
+                                        <h:outputText value="Document allow you to storage all related files. "/>
+                                    </div>
+                                    
                                 </p:column>
 
                             </p:submenu>  

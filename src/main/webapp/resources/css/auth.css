@@ -2174,3 +2174,22 @@ DIV.timeline-event-selected
 #assignee-chart text {
     fill: #474747;
 }
+
+.treeTable-style .ui-widget-content{background:#fff;}
+.treeTable-style tbody tr td{cursor: pointer;}
+.treeTable-style tbody tr td{background:none;}
+.treeTable-style tbody tr:hover{background:#eee;}
+
+.file-upload-myclass .ui-fileupload-buttonbar {
+    background: transparent none;
+    border: none;
+}
+
+.file-upload-myclass .ui-fileupload-content {
+    display: none;
+}
+
+.file-upload-myclass .ui-state-hover{background:none; border:none;}
+.file-upload-myclass .ui-state-default{background:none; border:none;}
+.file-upload-myclass{position:relative; top:-5px;left:-12px;}
+

@@ -8,7 +8,7 @@
     version="1.8">
  
     <schedule>
-    	<!-- 
+    	
         <job>
             <name>GmailJob</name>
             <group>GmailGroup</group>
@@ -21,10 +21,10 @@
                 <name>GmailTrigger</name>
                 <job-name>GmailJob</job-name>
                 <job-group>GmailGroup</job-group>
-                <cron-expression>*/30 * * * * ?</cron-expression>
+                <cron-expression>* */3 * * * ?</cron-expression>
             </cron>
         </trigger>
-        
+        <!-- 
         <job>
             <name>FeedbackJob</name>
             <group>FeedbackGroup</group>
@@ -41,7 +41,7 @@
             </cron>
         </trigger>
         
-         
+        
         <job>
             <name>TicketReportOfWeeklyJob</name>
             <group>reportEmailGroup</group>
@@ -58,7 +58,7 @@
             </cron>
         </trigger>
         
-        -->
+         -->
     </schedule>
 
 </job-scheduling-data>

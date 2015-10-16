@@ -1,0 +1,121 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:ez="http://xmlns.jcp.org/jsf/composite/ezcomp"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<h:outputStylesheet name="css/auth.css" />
+	<h:outputStylesheet name="css/common.css" />
+	<link rel="shortcut icon" type="image/png"
+		href="#{request.contextPath}/resources/images/favicon.ico" />
+	<title>#{msgs['default.page.title']} |
+		#{msgs['admin.document.list.page.title']}</title>
+</h:head>
+
+<h:body>
+
+        <h:form id="form">
+
+		<pe:ajaxErrorHandler />
+
+		<p:growl id="growl" redisplay="false" showDetail="false"
+			sticky="false" />
+
+		<ez:navigation-a />
+
+		<pe:layout widgetVar="layoutWgt" maskPanesEarly="true">
+
+			<pe:layoutPane id="north" position="north" closable="false"
+				resizable="false" size="40" />
+
+			<pe:layoutPane id="center" position="center"
+					resizeWhileDragging="true" maskContents="true">
+
+				<table class="page-container">
+					<thead>
+						<tr><th>Documents</th></tr>
+					</thead>
+					<tbody><tr><td>
+						<p:remoteCommand async="true" actionListener="#{storageView.init()}" 
+							update=":form:lazy-update-class"/>
+						<h:panelGroup id="lazy-update-class" rendered="#{true}">
+							<p:treeTable value="#{storageView.root}" var="doc" styleClass="treeTable-style">
+						        <f:facet name="header">
+						            Document Viewer
+						        </f:facet>
+
+						        <p:column headerText="Name">
+						            <h:outputText value="#{doc.name}" />
+						        </p:column>
+						       
+						    	<p:column style="width:80px; ">
+						    		<ui:fragment rendered="#{doc.isLeaf()}">
+						    			<ui:remove>
+								            <p:commandLink update=":form:documentPanel" oncomplete="PF('documentDialog').show()" title="View Detail" 
+								            		styleClass="ui-icon ui-icon-search" style="margin-left:4px; margin-right:4px; float:left;">
+								                <f:setPropertyActionListener value="#{doc}" target="#{storageView.selectedDocument}" />
+								            </p:commandLink>
+						    			</ui:remove>
+						    			<a title="View Detail" href="#{doc.url}"  target="_blank"
+							            	class="ui-icon ui-icon-search" style="margin-left:4px; margin-right:4px; float:left;">
+							            </a>
+						            </ui:fragment>
+						            <ui:fragment rendered="#{!doc.isLeaf()}">
+						            	<p:fileUpload styleClass="file-upload-myclass" fileUploadListener="#{doc.upload}" label="" style="width:24px; height:24px;margin-left:4px; margin-right:4px; float:left; " 
+						            			mode="advanced" update=":form:growl :form:lazy-update-class" auto="true"/>
+						            </ui:fragment>
+						            <p:commandLink title="Delete"  styleClass="ui-icon ui-icon-trash" style="margin-left:4px; margin-right:4px; float:left;"
+					            		action="#{doc.delete}" oncomplete="#{storageView.init()}" update=":form:growl :form:lazy-update-class" 
+						            />
+						        </p:column>
+						    </p:treeTable>
+						    
+						    <ui:remove>
+					        <p:dialog id="dialog" header="Document Detail" showEffect="fade" width="800" height="600" widgetVar="documentDialog" modal="false" resizable="false">
+						        <p:outputPanel id="documentPanel">
+						        	<ui:fragment rendered="#{storageView.selectedDocument.isLeaf()}">
+
+			                            <iframe id="document" 
+			                                    src="#{storageView.selectedDocument.buildURL()}" 
+			                                    width="100%"  
+			                                    height="100%" 
+			                                    frameborder="0">  
+			                            </iframe> 
+			
+			                        </ui:fragment>
+			                        
+			                        <ui:fragment rendered="#{!storageView.selectedDocument.isLeaf()}">
+			                            <h2>Sorry, this document is not available.</h2> 
+			                        </ui:fragment>
+						        
+                           	 	</p:outputPanel>
+                           	</p:dialog>
+							</ui:remove>
+							
+						</h:panelGroup>
+					</td></tr></tbody>
+				</table>
+
+				<p:spacer width="100%" height="50px" />
+
+			</pe:layoutPane>
+
+			<pe:layoutPane id="south" position="south" closable="false"
+				resizable="false" size="40">
+				<ez:footer />
+			</pe:layoutPane>
+
+		</pe:layout>
+
+	</h:form>
+
+</h:body>
+
+</html>
+

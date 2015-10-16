@@ -359,6 +359,9 @@ public class Navigator implements Serializable {
                 case "EDIT_DAS_WITH_PARAM":
                 	url = url.concat("/a/das/edit.jsf?" + parameter);
                 	break;
+                case "LIST_DOCUMENTS":
+                	url = url.concat("/a/documents/list.jsf");
+                	break;
             }
 
             ectx.redirect(url);
