@@ -17,19 +17,23 @@
 
 package co.ff36.jnoc.service.user;
 
-import co.ff36.jnoc.app.misc.JsfUtil;
-import co.ff36.jnoc.app.model.DataTable;
-import co.ff36.jnoc.app.model.ModelQuery;
-import co.ff36.jnoc.app.model.UserModelQuery;
-import co.ff36.jnoc.app.service.internal.DefaultAttributeFilter;
-
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
+
+import co.ff36.jnoc.app.misc.JsfUtil;
+import co.ff36.jnoc.app.model.DataTable;
+import co.ff36.jnoc.app.model.ModelQuery;
+import co.ff36.jnoc.app.model.UserModelQuery;
+import co.ff36.jnoc.app.service.internal.DefaultAttributeFilter;
+import co.ff36.jnoc.per.dap.CrudService;
+import co.ff36.jnoc.per.entity.Ticket;
+import co.ff36.jnoc.per.entity.User;
 
 /**
  * User table CDI bean. Provides advanced data table capability for
@@ -52,7 +56,10 @@ public class Users implements Serializable {
     private DataTable dataTable;
     private final ModelQuery model;
     private final Map<String, List<String>> parameters;
-
+    
+    private User selectUser;
+    @EJB
+    private CrudService dap;
 //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="Constructors">
@@ -72,10 +79,18 @@ public class Users implements Serializable {
     public DataTable getDataTable() {
         return dataTable;
     }
- 
+    
 //</editor-fold>
 
-    //<editor-fold defaultstate="collapsed" desc="Setters">
+    public User getSelectUser() {
+		return selectUser;
+	}
+
+	public void setSelectUser(User u) {
+		this.selectUser = (User) dap.find(User.class, Long.valueOf(u.getId()));
+	}
+
+	//<editor-fold defaultstate="collapsed" desc="Setters">
     /**
      * Set the value of dataTable.
      *

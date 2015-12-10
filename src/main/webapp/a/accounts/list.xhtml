@@ -403,7 +403,9 @@
                                                             <p:menuitem value="Edit Permission" 
                                                                         oncomplete="PF('permission-dlg').show();" 
                                                                         actionListener="#{user.resetPermission()}" 
-                                                                        disabled="#{!jsfSessionUser.currentUser.hasPermission('permission,account:edit')}"/> 
+                                                                        disabled="#{!jsfSessionUser.currentUser.hasPermission('permission,account:edit')}">
+                                                            		<f:setPropertyActionListener value="#{user}" target="#{users.selectUser}"/>
+                                                            </p:menuitem> 
                                                             <p:menuitem value="Edit Group" 
                                                                         oncomplete="PF('group-dlg').show();" 
                                                                         actionListener="#{user.resetGroup()}" 
@@ -655,7 +657,7 @@
 
                                                             <h:outputText value="Current Permissions" style="font-weight: bold"/>
 
-                                                            <p:dataTable value="#{user.permissions}"
+                                                            <p:dataTable value="#{users.selectUser.permissions}"
                                                                          var="permission"
                                                                          styleClass="blank-table dlg-permission-update-class">
 
@@ -669,7 +671,7 @@
                                                                                    process="@(.dlg-permission-update-class)">
                                                                         <p:graphicImage value="#{uriUtil.icon('black/trash_icon_16.png', true)}"/>
                                                                         <p:collector value="#{permission}" 
-                                                                                     removeFrom="#{user.permissions}" 
+                                                                                     removeFrom="#{users.selectUser.permissions}" 
                                                                                      unique="true"/> 
                                                                     </p:commandLink>
                                                                 </p:column>
@@ -683,16 +685,16 @@
                                                             <table class="blank-table">
                                                                 <tr>
                                                                     <td>
-                                                                        <p:inputText value="#{user.newPermission.expression}"
+                                                                        <p:inputText value="#{users.selectUser.newPermission.expression}"
                                                                                      styleClass="dlg-permission-update-class dlg-permission-process-class"/>
                                                                     </td>
                                                                     <td>
                                                                         <p:commandButton id="add-per-button"
                                                                                          value="Add Permission"
-                                                                                         action="#{user.resetPermission()}"
+                                                                                         action="#{users.selectUser.resetPermission()}"
                                                                                          update="@(.dlg-permission-update-class)">
-                                                                            <p:collector value="#{user.newPermission}" 
-                                                                                         addTo="#{user.permissions}" 
+                                                                            <p:collector value="#{users.selectUser.newPermission}" 
+                                                                                         addTo="#{users.selectUser.permissions}" 
                                                                                          unique="true"/>
                                                                         </p:commandButton>
 
@@ -704,7 +706,7 @@
 
                                                             <p:commandButton id="per-save-button" 
                                                                              styleClass="green-button permission-save-button-update-class" 
-                                                                             actionListener="#{user.update()}" 
+                                                                             actionListener="#{users.selectUser.update()}" 
                                                                              value="Save" 
                                                                              process="@this" 
                                                                              update="@(.permission-update-class) :form:growl"
