@@ -8,7 +8,7 @@
     version="1.8">
  
     <schedule>
-    	
+    	 <!-- 
         <job>
             <name>GmailJob</name>
             <group>GmailGroup</group>
@@ -24,7 +24,7 @@
                 <cron-expression>* */3 * * * ?</cron-expression>
             </cron>
         </trigger>
-        <!-- 
+       
         <job>
             <name>FeedbackJob</name>
             <group>FeedbackGroup</group>

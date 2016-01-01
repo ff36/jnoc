@@ -36,7 +36,6 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.StringUtils;
-import org.castor.util.StringUtil;
 
 import co.ff36.jnoc.per.dap.CrudService;
 
@@ -67,7 +66,7 @@ public class Carrier {
 	private String notes;
 	
 	@ManyToOne
-	@JoinColumn(name="dasId")
+	@JoinColumn(name="DAS_ID")
 	private DAS das;
 	
 	@Transient

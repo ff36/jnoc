@@ -25,7 +25,6 @@ import java.util.logging.Logger;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -35,7 +34,6 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
 import co.ff36.jnoc.per.dap.CrudService;
@@ -45,9 +43,9 @@ import co.ff36.jnoc.per.dap.CrudService;
  * @author xm
  */
 @NamedQueries({
-    @NamedQuery(name = "Role.findAll", query = "SELECT r FROM role r"),
-    @NamedQuery(name = "Role.findByID", query = "SELECT r FROM role r WHERE r.id = :id")})
-@Entity(name="role")
+    @NamedQuery(name = "Role.findAll", query = "SELECT r FROM Role r"),
+    @NamedQuery(name = "Role.findByID", query = "SELECT r FROM Role r WHERE r.id = :id")})
+@Entity
 public class Role implements java.io.Serializable{
 	private static final Logger LOG = Logger.getLogger(Role.class.getName());
 	
@@ -62,9 +60,9 @@ public class Role implements java.io.Serializable{
 	
 	@ManyToMany
 	@JoinTable(
-		name="role_permission_template", 
-		joinColumns={@JoinColumn(name="Role_ID")},
-		inverseJoinColumns={@JoinColumn(name="Permission_template_ID")}
+		name="ROLE_PERMISSION_TEMPLATE", 
+		joinColumns={@JoinColumn(name="ROLE_ID")},
+		inverseJoinColumns={@JoinColumn(name="PERMISSION_TEMPLATE_ID")}
 	)
 	private List<PermissionTemplate> permissions = new ArrayList<PermissionTemplate>();
 	

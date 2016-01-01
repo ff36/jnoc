@@ -1,48 +1,48 @@
-create table `carrier`(
-	id bigint primary key AUTO_INCREMENT,
-	title varchar(100),
-	name  varchar(100),
-	phone varchar(100),
-	email varchar(500),
-	nocEmail varchar(500),
-	btsId int,
-	location varchar(100), 
-	notes varchar(500),
-	dasId bigint, 
+create table `CARRIER`(
+	ID bigint primary key AUTO_INCREMENT,
+	TITLE varchar(100),
+	NAME  varchar(100),
+	PHONE varchar(100),
+	EMAIL varchar(500),
+	NOCEMAIL varchar(500),
+	BTSID int,
+	LOCATION varchar(100), 
+	NOTES varchar(500),
+	DAS_ID bigint, 
 	
-	constraint `das_carrier_fk` foreign key(`dasId`) references `das`(`id`) on delete cascade
+	constraint `DAS_CARRIER_FK` foreign key(`DAS_ID`) references `das`(`ID`) on delete cascade
 );
 
---role == group
-create table `role`(
-	id bigint primary key AUTO_INCREMENT,
-	name varchar(100)
+-- role == group
+create table `ROLE`(
+	ID bigint primary key AUTO_INCREMENT,
+	NAME varchar(100)
 );
 
-create table subject_role(
-	User_ID bigint,
-	Role_ID bigint,
-	PRIMARY KEY (`User_ID`,`Role_ID`),
-	CONSTRAINT `FK_subject_role_s_id` FOREIGN KEY (`User_ID`) REFERENCES `subject` (`ID`),
-	CONSTRAINT `FK_subject_role_r_id` FOREIGN KEY (`Role_ID`) REFERENCES `role` (`ID`)
+create table SUBJECT_ROLE(
+	USER_ID bigint,
+	ROLE_ID bigint,
+	PRIMARY KEY (`USER_ID`,`ROLE_ID`),
+	CONSTRAINT `FK_subject_role_s_id` FOREIGN KEY (`USER_ID`) REFERENCES `subject` (`ID`),
+	CONSTRAINT `FK_subject_role_r_id` FOREIGN KEY (`ROLE_ID`) REFERENCES `role` (`ID`)
 );
 
-create table permisison_template(
+create table PERMISISON_TEMPLATE(
 	ID bigint primary key AUTO_INCREMENT,
 	EXPRESSION varchar(255) DEFAULT NULL
 );
 
-create table role_permission_template(
-	Role_ID bigint,
-	Permission_template_ID bigint,
-	PRIMARY KEY (`Role_ID`,`Permission_template_ID`),
-	CONSTRAINT `FK_role_permission_templater_id` FOREIGN KEY (`Role_ID`) REFERENCES `role` (`ID`),
-	CONSTRAINT `FK_role_permission_templatep_id` FOREIGN KEY (`Permission_template_ID`) REFERENCES `permisison_template` (`ID`)
+create table ROLE_PERMISSION_TEMPLATE(
+	ROLE_ID bigint,
+	PERMISSION_TEMPLATE_ID bigint,
+	PRIMARY KEY (`ROLE_ID`,`PERMISSION_TEMPLATE_ID`),
+	CONSTRAINT `FK_role_permission_templater_id` FOREIGN KEY (`ROLE_ID`) REFERENCES `role` (`ID`),
+	CONSTRAINT `FK_role_permission_templatep_id` FOREIGN KEY (`PERMISSION_TEMPLATE_ID`) REFERENCES `PERMISISON_TEMPLATE` (`ID`)
 );
 
-INSERT INTO `role` VALUES (1,'admin'),(2,'employee'),(3,'guest');
-INSERT INTO `permisison_template` values(1, '*:*'), (2, 'accounts:access,create,edit'), (3, 'ticket:*'), (4, 'company:*,das:*'), (5, 'rma:*'), (6, 'ticket:access,accounts:access');
-INSERT INTO `subject_role` VALUES (1,1),(152,2),(153,3);
-INSERT INTO `role_permission_template` VALUES (1,1),(2,2),(2,3),(2,4),(2,5),(3,6);
+INSERT INTO `ROLE` VALUES (1,'admin'),(2,'employee'),(3,'guest');
+INSERT INTO `PERMISISON_TEMPLATE` values(1, '*:*'), (2, 'accounts:access,create,edit'), (3, 'ticket:*'), (4, 'company:*,das:*'), (5, 'rma:*'), (6, 'ticket:access,accounts:access');
+INSERT INTO `SUBJECT_ROLE` VALUES (1,1),(152,2),(153,3);
+INSERT INTO `ROLE_PERMISSION_TEMPLATE` VALUES (1,1),(2,2),(2,3),(2,4),(2,5),(3,6);
 
 

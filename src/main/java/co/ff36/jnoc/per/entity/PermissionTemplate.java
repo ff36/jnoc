@@ -30,7 +30,6 @@ import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import javax.persistence.Version;
 
 /**
  * @version 4.0.0
@@ -41,7 +40,7 @@ import javax.persistence.Version;
     @NamedQuery(name = "PermissionTemplate.findAll", query = "SELECT e FROM PermissionTemplate e"),
     @NamedQuery(name = "PermissionTemplate.findByID", query = "SELECT e FROM PermissionTemplate e WHERE e.id = :id")
 })
-@Table(name="permisison_template")
+@Table(name="PERMISISON_TEMPLATE")
 @Entity
 public class PermissionTemplate implements Serializable {
 

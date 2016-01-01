@@ -70,8 +70,6 @@ import co.ff36.jnoc.per.project.JNOC.TicketSeverity;
 import co.ff36.jnoc.per.project.JNOC.TicketStatus;
 import co.ff36.jnoc.per.project.JNOC.TicketTopic;
 
-import co.ff36.jnoc.per.entity.Ticket_;
-
 /**
  * This class is mapped in the persistence layer allowing instances of this
  * class to be persisted.
@@ -116,6 +114,7 @@ public class Ticket implements Serializable {
     @Enumerated(EnumType.STRING)
     private TicketSeverity severity;
     private String title;
+    
     private String mailTitle;
     
     @ManyToOne
