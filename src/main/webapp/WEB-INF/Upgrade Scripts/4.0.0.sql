@@ -23,8 +23,8 @@ create table SUBJECT_ROLE(
 	USER_ID bigint,
 	ROLE_ID bigint,
 	PRIMARY KEY (`USER_ID`,`ROLE_ID`),
-	CONSTRAINT `FK_subject_role_s_id` FOREIGN KEY (`USER_ID`) REFERENCES `subject` (`ID`),
-	CONSTRAINT `FK_subject_role_r_id` FOREIGN KEY (`ROLE_ID`) REFERENCES `role` (`ID`)
+	CONSTRAINT `FK_subject_role_s_id` FOREIGN KEY (`USER_ID`) REFERENCES `SUBJECT` (`ID`),
+	CONSTRAINT `FK_subject_role_r_id` FOREIGN KEY (`ROLE_ID`) REFERENCES `ROLE` (`ID`)
 );
 
 create table PERMISISON_TEMPLATE(
@@ -36,7 +36,7 @@ create table ROLE_PERMISSION_TEMPLATE(
 	ROLE_ID bigint,
 	PERMISSION_TEMPLATE_ID bigint,
 	PRIMARY KEY (`ROLE_ID`,`PERMISSION_TEMPLATE_ID`),
-	CONSTRAINT `FK_role_permission_templater_id` FOREIGN KEY (`ROLE_ID`) REFERENCES `role` (`ID`),
+	CONSTRAINT `FK_role_permission_templater_id` FOREIGN KEY (`ROLE_ID`) REFERENCES `ROLE` (`ID`),
 	CONSTRAINT `FK_role_permission_templatep_id` FOREIGN KEY (`PERMISSION_TEMPLATE_ID`) REFERENCES `PERMISISON_TEMPLATE` (`ID`)
 );
 
