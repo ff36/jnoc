@@ -1262,7 +1262,7 @@ public class User implements Serializable {
 			}
 		}
     	this.permissions.clear();
-    	this.permissions.addAll(permissions);
+    	this.permissions.addAll(tpermissions);
     	
     	User user = (User) dap.update(this);
     	this.version = user.version;
